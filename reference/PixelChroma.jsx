@@ -453,10 +453,13 @@ export default function ChromiesPrototype() {
   };
 
   return (
-    <div style={{
-      fontFamily: FONT_BODY, background: "#0b0a0b", color: "#f4f2ea",
-      minHeight: "100vh", padding: "0 0 48px",
-    }}>
+    <div
+      className="chromies-root"
+      style={{
+        fontFamily: FONT_BODY, background: "#0b0a0b", color: "#f4f2ea",
+        minHeight: "100vh", padding: "0 0 48px", overflowX: "hidden",
+      }}
+    >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
         .chroma-btn { font-family:${FONT_BODY}; font-size:13px; border:1.5px solid #f4f2ea; background:#f4f2ea; color:#0b0a0b; padding:9px 16px; cursor:pointer; transition:all .12s; letter-spacing:.02em; }
@@ -466,21 +469,109 @@ export default function ChromiesPrototype() {
         .chroma-btn.hot { background:#ff5470; border-color:#ff5470; color:#0b0a0b; }
         .chroma-num { font-family:${FONT_MONO}; font-size:14px; border:1.5px solid #34312d; background:#151314; padding:8px 10px; width:92px; color:#f4f2ea; }
         input[type=range].cr { accent-color:#ff5470; }
+
+        @media (max-width: 768px) {
+          .chromies-root {
+            overflow-x: hidden !important;
+          }
+
+          .chromies-header {
+            padding: 20px 16px !important;
+            align-items: flex-start !important;
+            flex-direction: column !important;
+          }
+
+          .chromies-title {
+            font-size: 40px !important;
+            line-height: 0.95 !important;
+          }
+
+          .chromies-subtitle {
+            font-size: 13px !important;
+            max-width: 100% !important;
+          }
+
+          .chromies-stats {
+            width: 100% !important;
+            gap: 14px !important;
+          }
+
+          .chromies-demo-section {
+            padding: 16px !important;
+          }
+
+          .chromies-demo-grid {
+            display: flex !important;
+            overflow-x: auto !important;
+            gap: 10px !important;
+            padding-bottom: 8px !important;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .chromies-demo-grid > button {
+            min-width: 132px !important;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+          }
+
+          .chromies-main-grid {
+            display: block !important;
+          }
+
+          .chromies-art-section {
+            padding: 18px 16px !important;
+            border-right: none !important;
+            border-bottom: 2px solid #34312d !important;
+          }
+
+          .chromies-info-section {
+            padding: 18px 16px !important;
+          }
+
+          .chromies-controls {
+            gap: 8px !important;
+          }
+
+          .chromies-preview {
+            width: 100% !important;
+            max-width: 92vw !important;
+          }
+
+          .chromies-traits-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .chromies-palette-strip > div {
+            height: 24px !important;
+          }
+
+          .chromies-palette-strip span {
+            font-size: 7px !important;
+          }
+
+          .chromies-footer {
+            padding: 18px 16px 0 !important;
+          }
+        }
       `}</style>
 
-      <header style={{ borderBottom: "2px solid #34312d", padding: "28px 32px 22px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
+      <header
+        className="chromies-header"
+        style={{ borderBottom: "2px solid #34312d", padding: "28px 32px 22px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}
+      >
         <div>
           <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: "#8a8780", marginBottom: 4 }}>
             indexed identity · evolved companion signal · demo index
           </div>
-          <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 58, lineHeight: 0.9, margin: 0, fontWeight: 400 }}>
+          <h1 className="chromies-title" style={{ fontFamily: FONT_DISPLAY, fontSize: 58, lineHeight: 0.9, margin: 0, fontWeight: 400 }}>
             CHROMIES<span style={{ color: "#ff5470" }}>.</span>
           </h1>
-          <div style={{ fontSize: 14, color: "#b8b2a8", marginTop: 8, maxWidth: 760 }}>
+          <div className="chromies-subtitle" style={{ fontSize: 14, color: "#b8b2a8", marginTop: 8, maxWidth: 760 }}>
             An evolved indexed identity system inspired by Normies: 64×64, 16-color curated ramps, deterministic RLE SVG output, and collectible companion archetypes.
           </div>
         </div>
-        <div style={{ display: "flex", gap: 28, alignItems: "flex-end", flexWrap: "wrap" }}>
+        <div className="chromies-stats" style={{ display: "flex", gap: 28, alignItems: "flex-end", flexWrap: "wrap" }}>
           <StatChip label="Grid" value="64 × 64" mono />
           <StatChip label="Pixels" value="4,096" mono />
           <StatChip label="Depth" value="4 bpp" mono />
@@ -489,7 +580,7 @@ export default function ChromiesPrototype() {
         </div>
       </header>
 
-      <section style={{ padding: "22px 32px", borderBottom: "2px solid #34312d", background: "#100f10" }}>
+      <section className="chromies-demo-section" style={{ padding: "22px 32px", borderBottom: "2px solid #34312d", background: "#100f10" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
           <div>
             <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 28, margin: 0, fontWeight: 400 }}>Demo Index</h2>
@@ -497,16 +588,16 @@ export default function ChromiesPrototype() {
           </div>
           <button className="chroma-btn hot" onClick={randomToken}>Generate Chromie</button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(120px, 1fr))", gap: 12 }}>
+        <div className="chromies-demo-grid" style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(120px, 1fr))", gap: 12 }}>
           {HERO_DEMOS.map((h) => (
             <TokenPreview key={`${h.tokenId}-${h.mode}`} {...h} onSelect={selectHero} />
           ))}
         </div>
       </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.12fr) minmax(360px,0.88fr)", gap: 0, alignItems: "stretch" }}>
-        <section style={{ padding: "28px 32px", borderRight: "2px solid #34312d" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+      <div className="chromies-main-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0,1.12fr) minmax(360px,0.88fr)", gap: 0, alignItems: "stretch" }}>
+        <section className="chromies-art-section" style={{ padding: "28px 32px", borderRight: "2px solid #34312d" }}>
+          <div className="chromies-controls" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
             <span style={{ fontFamily: FONT_MONO, fontSize: 13, color: "#8a8780" }}>CHROMIE #</span>
             <input className="chroma-num" type="number" min={0} max={9999} value={tokenId}
               onChange={(e) => setTokenId(Math.max(0, Math.min(9999, +e.target.value || 0)))} />
@@ -515,7 +606,7 @@ export default function ChromiesPrototype() {
             <button className="chroma-btn ghost" onClick={() => setShowGrid(g => !g)}>{showGrid ? "Hide grid" : "Show grid"}</button>
           </div>
 
-          <div style={{ position: "relative", width: size, maxWidth: "100%", margin: "0 auto", border: "2px solid #34312d", background: token.palette.colors[0], aspectRatio: "1/1", boxShadow: "0 20px 80px rgba(0,0,0,.45)" }}>
+          <div className="chromies-preview" style={{ position: "relative", width: size, maxWidth: "100%", margin: "0 auto", border: "2px solid #34312d", background: token.palette.colors[0], aspectRatio: "1/1", boxShadow: "0 20px 80px rgba(0,0,0,.45)" }}>
             <div dangerouslySetInnerHTML={{ __html: svg.replace('width="1024" height="1024"', 'width="100%" height="100%"') }} />
             {showGrid && (
               <svg viewBox={`0 0 ${GRID} ${GRID}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: 0.22 }}>
@@ -539,7 +630,7 @@ export default function ChromiesPrototype() {
             <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780", marginBottom: 8 }}>
               Palette · <span style={{ color: "#f4f2ea", fontFamily: FONT_MONO }}>{token.palette.name}</span> <span style={{ color: "#ff5470" }}>(id {token.paletteId})</span>
             </div>
-            <div style={{ display: "flex", gap: 0, border: "1.5px solid #34312d" }}>
+            <div className="chromies-palette-strip" style={{ display: "flex", gap: 0, border: "1.5px solid #34312d" }}>
               {token.palette.colors.map((c, i) => (
                 <div key={i} title={`index ${i}: ${c}`} style={{ flex: 1, height: 32, background: c, position: "relative" }}>
                   <span style={{ position: "absolute", bottom: 1, left: 0, right: 0, textAlign: "center", fontSize: 8, fontFamily: FONT_MONO, color: i < 5 ? "#fff" : "#000", opacity: 0.65 }}>{i.toString(16).toUpperCase()}</span>
@@ -549,10 +640,10 @@ export default function ChromiesPrototype() {
           </div>
         </section>
 
-        <section style={{ padding: "28px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
+        <section className="chromies-info-section" style={{ padding: "28px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
           <div>
             <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 26, margin: "0 0 12px", fontWeight: 400 }}>Traits</h2>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "#34312d", border: "1.5px solid #34312d" }}>
+            <div className="chromies-traits-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "#34312d", border: "1.5px solid #34312d" }}>
               {Object.entries(token.traits).map(([k, v]) => (
                 <div key={k} style={{ background: "#151314", padding: "10px 12px" }}>
                   <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780" }}>{k}</div>
@@ -612,7 +703,7 @@ export default function ChromiesPrototype() {
         </section>
       </div>
 
-      <footer style={{ padding: "20px 32px 0", fontSize: 11.5, color: "#8a8780", fontFamily: FONT_MONO, lineHeight: 1.7 }}>
+      <footer className="chromies-footer" style={{ padding: "20px 32px 0", fontSize: 11.5, color: "#8a8780", fontFamily: FONT_MONO, lineHeight: 1.7 }}>
         Reference renderer: deterministic seed → 4096 palette indices → 16-color palette → RLE SVG rects.
         Chromies is positioned as a collectible companion identity system: clean signal, awakened form, disciplined structure.
       </footer>
