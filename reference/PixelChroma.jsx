@@ -375,7 +375,7 @@ function renderSVG(buf, palette, { size = 1024, skipBg = true, bgIndex = 0 } = {
   return { svg, rects };
 }
 
-const FONT_DISPLAY = "'DM Serif Display', Georgia, serif";
+const FONT_DISPLAY = "'Robotastic', sans-serif";
 const FONT_MONO = "'IBM Plex Mono', ui-monospace, monospace";
 const FONT_BODY = "'Space Grotesk', system-ui, sans-serif";
 
@@ -398,7 +398,7 @@ function TokenPreview({ tokenId, mode, label, note, onSelect }) {
     }}>
       <div style={{ aspectRatio: "1/1", border: "1px solid #34312d", background: token.palette.colors[0], overflow: "hidden" }}
         dangerouslySetInnerHTML={{ __html: svg.replace('width="512" height="512"', 'width="100%" height="100%"') }} />
-      <div style={{ fontFamily: FONT_MONO, fontSize: 10, color: "#ff5470", marginTop: 8 }}>{label}</div>
+      <div style={{ fontFamily: FONT_DISPLAY, fontSize: 10, color: "#ff5470", marginTop: 8, letterSpacing: "0.04em" }}>{label}</div>
       <div style={{ fontSize: 11, color: "#8a8780", marginTop: 2 }}>{note}</div>
     </button>
   );
@@ -461,7 +461,13 @@ export default function ChromiesPrototype() {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        @font-face {
+          font-family: 'Robotastic';
+          src: url('/fonts/robotastic.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+        }
         .chroma-btn { font-family:${FONT_BODY}; font-size:13px; border:1.5px solid #f4f2ea; background:#f4f2ea; color:#0b0a0b; padding:9px 16px; cursor:pointer; transition:all .12s; letter-spacing:.02em; }
         .chroma-btn:hover { background:#ff5470; border-color:#ff5470; color:#0b0a0b; }
         .chroma-btn.ghost { background:transparent; color:#f4f2ea; }
