@@ -5,3 +5,5 @@ ponder-env.d.ts
 generated/
 dist/
 coverage/
+
+lib/
