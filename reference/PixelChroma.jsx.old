@@ -1,0 +1,404 @@
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
+
+// ============================================================================
+//  CHROMA — a color, higher-resolution successor to Normies
+//  64x64 grid · 4 bits-per-pixel · 16-color curated-ramp palettes
+//  This component IS the reference renderer: index buffer + palette -> RLE SVG,
+//  the exact logic an on-chain renderer contract would mirror.
+// ============================================================================
+
+const GRID = 64;          // 64x64 = 4096 pixels (~2.6x Normies' 1600)
+const PX = GRID * GRID;
+const BPP = 4;            // 4 bits per pixel -> palette index 0..15
+const NORMIE_API = "https://api.normies.art";
+
+// ---- Curated 16-color ramps (authored once, referenced on-chain by ID) -----
+// Each palette: index 0 is "background", 1..15 build a coherent ramp.
+const PALETTES = [
+  {
+    id: 0, name: "Ember",
+    colors: ["#1a1014","#2d161c","#451d24","#5e2730","#7a3340","#9c4050","#c25062","#e06478",
+             "#f2879a","#ffb0bd","#ffd28f","#ffac4a","#ff7b2e","#e8541d","#a83515","#5c1d0f"],
+  },
+  {
+    id: 1, name: "Tide",
+    colors: ["#08111c","#0d1f33","#13314d","#1a456b","#225d8c","#2d7aad","#3f9bcc","#5cbce0",
+             "#86d6ee","#b8eefa","#d4f6e8","#8fe6c4","#4fcf9c","#1d9e75","#0f6e56","#063f33"],
+  },
+  {
+    id: 2, name: "Dusk",
+    colors: ["#0f0a1a","#1c1330","#2c1c4a","#3e2a66","#523a84","#6a4ca6","#8463c4","#a181df",
+             "#c0a3f0","#ddc8fb","#f6d6ec","#e89bc9","#d4609f","#a8447a","#6f2a52","#3a1530"],
+  },
+  {
+    id: 3, name: "Verdant",
+    colors: ["#0a1108","#142010","#1f3318","#2c4a20","#3d662b","#519136","#6db742","#8fd95a",
+             "#bff07e","#e4ffb0","#fff0a8","#f5c45e","#d99432","#a8651c","#6e3e12","#3a210a"],
+  },
+  {
+    id: 4, name: "Mono+",
+    colors: ["#0a0a0b","#161618","#242427","#343438","#48494b","#5f6063","#787a7d","#94969a",
+             "#b1b3b7","#cfd1d4","#e3e5e4","#f2f3f2","#ff5470","#3f9bcc","#ffac4a","#6db742"],
+  },
+  {
+    id: 5, name: "Candy",
+    colors: ["#1a0f1a","#2e1730","#4a2050","#6a2c72","#8c3a92","#b14fae","#d46bc4","#ef8fd6",
+             "#ffb8e6","#ffe0f4","#fff3cc","#ffd96b","#ffb03f","#ff7a5c","#e84d6b","#8c2a4a"],
+  },
+];
+
+// ---- Trait vocabulary (drives generation + metadata, Normies-style) --------
+const TYPES = ["Human", "Cat", "Alien", "Droid", "Specter"];
+const EXPRESSIONS = ["Neutral", "Smile", "Serious", "Smug", "Surprised", "Sleepy"];
+const HEADGEAR = ["None", "Cap", "Crown", "Halo", "Antenna", "Top Hat", "Visor", "Beanie"];
+const EYEWEAR = ["None", "Shades", "Round Glasses", "Visor", "Eyepatch", "VR"];
+
+// ---------------------------------------------------------------------------
+//  Tiny deterministic PRNG (mulberry32) — same seed => same token, always.
+// ---------------------------------------------------------------------------
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
+
+// ---------------------------------------------------------------------------
+//  GENERATOR — produce a 4096-entry Uint8 index buffer (values 0..15)
+//  from a token id. This is intentionally simple "face" generative art:
+//  a head silhouette, eyes, mouth, headgear. The point is to demonstrate the
+//  FORMAT (indexed color at 64x64), not to be the final art engine.
+// ---------------------------------------------------------------------------
+function generateToken(id) {
+  const rng = mulberry32(id * 2654435761 + 12345);
+  const paletteId = Math.floor(rng() * PALETTES.length);
+  const palette = PALETTES[paletteId];
+
+  const traits = {
+    Type: pick(rng, TYPES),
+    Expression: pick(rng, EXPRESSIONS),
+    Headgear: pick(rng, HEADGEAR),
+    Eyewear: pick(rng, EYEWEAR),
+    Palette: palette.name,
+  };
+
+  const buf = new Uint8Array(PX); // all 0 = background index
+  const set = (x, y, v) => {
+    if (x < 0 || y < 0 || x >= GRID || y >= GRID) return;
+    buf[y * GRID + x] = v;
+  };
+  const fillRect = (x0, y0, w, h, v) => {
+    for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) set(x, y, v);
+  };
+
+  // color roles into ramp indices
+  const skin = 5 + Math.floor(rng() * 3);     // mid ramp
+  const skinShade = skin + 3;                  // darker for shadow
+  const skinLight = Math.max(1, skin - 3);     // lighter highlight
+  const feature = 12 + Math.floor(rng() * 3);  // bright accent (eyes/mouth)
+  const gear = 9 + Math.floor(rng() * 4);
+
+  // --- head silhouette: rounded block centered ---
+  const cx = 32, top = 14, hw = 18 + Math.floor(rng() * 3), hh = 30 + Math.floor(rng() * 4);
+  for (let y = 0; y < hh; y++) {
+    // ellipse-ish rounding at corners
+    const t = y / hh;
+    const round = Math.round(Math.sin(t * Math.PI) * 2);
+    const halfW = hw - (y < 4 ? (4 - y) : 0) - (y > hh - 5 ? (y - (hh - 5)) : 0);
+    for (let dx = -halfW; dx <= halfW; dx++) {
+      const x = cx + dx;
+      // simple directional shading
+      let v = skin;
+      if (dx < -halfW + 3) v = skinShade;
+      else if (dx > halfW - 3) v = skinLight;
+      set(x, top + y, v);
+    }
+  }
+
+  // ears / antennae depending on type
+  if (traits.Type === "Cat") {
+    for (let i = 0; i < 5; i++) { fillRect(cx - hw + 2, top - 5 + i, 5 - i, 1, skinShade); fillRect(cx + hw - 6 + i, top - 5 + i, 5 - i, 1, skinShade); }
+  } else if (traits.Type === "Alien") {
+    fillRect(cx - 1, top - 8, 2, 8, gear); set(cx, top - 9, feature);
+  }
+
+  // --- eyes ---
+  const eyeY = top + Math.floor(hh * 0.42);
+  const eyeDx = 7 + Math.floor(rng() * 2);
+  const eyeW = traits.Expression === "Surprised" ? 4 : 3;
+  const eyeH = traits.Expression === "Sleepy" ? 1 : (traits.Expression === "Surprised" ? 4 : 2);
+  const drawEye = (ex) => {
+    fillRect(ex - eyeW, eyeY, eyeW * 2, eyeH, 1);         // dark socket
+    set(ex - 1, eyeY, feature); set(ex, eyeY, feature);    // bright iris
+  };
+  drawEye(cx - eyeDx); drawEye(cx + eyeDx);
+
+  // eyewear overlay
+  if (traits.Eyewear === "Shades") {
+    fillRect(cx - eyeDx - eyeW - 1, eyeY - 1, (eyeDx + eyeW + 1) * 2, eyeH + 2, 1);
+  } else if (traits.Eyewear === "VR") {
+    fillRect(cx - eyeDx - eyeW - 2, eyeY - 2, (eyeDx + eyeW + 2) * 2, eyeH + 4, gear);
+    fillRect(cx - eyeDx - eyeW - 1, eyeY - 1, (eyeDx + eyeW + 1) * 2, eyeH + 2, 1);
+  }
+
+  // --- mouth ---
+  const mY = top + Math.floor(hh * 0.72);
+  if (traits.Expression === "Smile") { for (let i = -4; i <= 4; i++) set(cx + i, mY + Math.round(Math.abs(i) * 0.4), feature); }
+  else if (traits.Expression === "Serious") fillRect(cx - 4, mY, 9, 1, skinShade);
+  else if (traits.Expression === "Smug") { for (let i = -4; i <= 2; i++) set(cx + i, mY - Math.round((i + 4) * 0.3), 1); }
+  else if (traits.Expression === "Surprised") fillRect(cx - 2, mY - 1, 4, 4, 1);
+  else fillRect(cx - 3, mY, 7, 1, skinShade);
+
+  // --- headgear ---
+  const g = traits.Headgear;
+  if (g === "Cap") { fillRect(cx - hw, top - 2, hw * 2, 5, gear); fillRect(cx - hw - 4, top + 2, 6, 2, gear); }
+  else if (g === "Crown") { for (let i = 0; i < 5; i++) fillRect(cx - 12 + i * 6, top - 6 + (i % 2) * 3, 4, 6, 13); fillRect(cx - 14, top - 1, 28, 3, 13); }
+  else if (g === "Halo") { for (let i = -10; i <= 10; i++) { set(cx + i, top - 7, 11); } }
+  else if (g === "Top Hat") { fillRect(cx - 10, top - 14, 20, 12, 1); fillRect(cx - 15, top - 3, 30, 3, 1); }
+  else if (g === "Beanie") { fillRect(cx - hw, top - 4, hw * 2, 7, gear); }
+  else if (g === "Visor") { fillRect(cx - hw - 1, top - 1, hw * 2 + 2, 3, gear); }
+  else if (g === "Antenna") { fillRect(cx - 1, top - 9, 2, 9, gear); set(cx, top - 10, feature); }
+
+  return { buf, palette, paletteId, traits };
+}
+
+// ---------------------------------------------------------------------------
+//  RENDERER — index buffer + palette -> RLE-optimized SVG string.
+//  Merges horizontal runs of identical index into single <rect>s. This is the
+//  exact optimization Normies' V3 renderer uses, generalized to color.
+// ---------------------------------------------------------------------------
+function renderSVG(buf, palette, { size = 1024, skipBg = true, bgIndex = 0 } = {}) {
+  const cell = size / GRID;
+  let rects = 0;
+  let body = "";
+  for (let y = 0; y < GRID; y++) {
+    let x = 0;
+    while (x < GRID) {
+      const idx = buf[y * GRID + x];
+      let run = 1;
+      while (x + run < GRID && buf[y * GRID + x + run] === idx) run++;
+      if (!(skipBg && idx === bgIndex)) {
+        body += `<rect x="${x * cell}" y="${y * cell}" width="${run * cell}" height="${cell}" fill="${palette.colors[idx]}"/>`;
+        rects++;
+      }
+      x += run;
+    }
+  }
+  const bg = palette.colors[bgIndex];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="${bg}"/>${body}</svg>`;
+  return { svg, rects };
+}
+
+// ---------------------------------------------------------------------------
+//  UI
+// ---------------------------------------------------------------------------
+const FONT_DISPLAY = "'DM Serif Display', Georgia, serif";
+const FONT_MONO = "'IBM Plex Mono', ui-monospace, monospace";
+const FONT_BODY = "'Space Grotesk', system-ui, sans-serif";
+
+function StatChip({ label, value, mono }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <span style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8a8780" }}>{label}</span>
+      <span style={{ fontSize: 15, fontFamily: mono ? FONT_MONO : FONT_BODY, color: "#1a1a18" }}>{value}</span>
+    </div>
+  );
+}
+
+export default function ChromaPrototype() {
+  const [tokenId, setTokenId] = useState(7);
+  const [size, setSize] = useState(560);
+  const [showGrid, setShowGrid] = useState(false);
+  const [skipBg, setSkipBg] = useState(true);
+
+  // live Normie reference
+  const [normieId, setNormieId] = useState(7);
+  const [normieSvg, setNormieSvg] = useState(null);
+  const [normieErr, setNormieErr] = useState(null);
+  const [loadingNormie, setLoadingNormie] = useState(false);
+
+  const token = useMemo(() => generateToken(tokenId), [tokenId]);
+  const { svg, rects } = useMemo(
+    () => renderSVG(token.buf, token.palette, { size: 1024, skipBg }),
+    [token, skipBg]
+  );
+
+  // storage math
+  const indexBytes = (PX * BPP) / 8;            // 2048
+  const paletteBytes = 16 * 3;                  // 48
+  const totalBytes = indexBytes + paletteBytes; // 2096
+  const normieBytes = 200;
+  const mult = (totalBytes / normieBytes).toFixed(1);
+
+  const fetchNormie = useCallback(async (id) => {
+    setLoadingNormie(true); setNormieErr(null);
+    try {
+      const r = await fetch(`${NORMIE_API}/normie/${id}/image.svg`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const t = await r.text();
+      setNormieSvg(t);
+    } catch (e) {
+      setNormieErr(e.message || "fetch failed");
+      setNormieSvg(null);
+    } finally {
+      setLoadingNormie(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchNormie(normieId); }, []); // initial only
+
+  const randomToken = () => setTokenId(Math.floor(Math.random() * 10000));
+
+  return (
+    <div style={{
+      fontFamily: FONT_BODY, background: "#e8e6df", color: "#1a1a18",
+      minHeight: "100%", padding: "0 0 48px",
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        .chroma-btn { font-family:${FONT_BODY}; font-size:13px; border:1.5px solid #1a1a18; background:#1a1a18; color:#f4f2ea; padding:9px 16px; cursor:pointer; transition:all .12s; letter-spacing:.02em; }
+        .chroma-btn:hover { background:#c25062; border-color:#c25062; }
+        .chroma-btn.ghost { background:transparent; color:#1a1a18; }
+        .chroma-btn.ghost:hover { background:#1a1a18; color:#f4f2ea; }
+        .chroma-num { font-family:${FONT_MONO}; font-size:14px; border:1.5px solid #1a1a18; background:#f4f2ea; padding:8px 10px; width:84px; color:#1a1a18; }
+        .swatch:hover { transform:translateY(-2px); }
+        input[type=range].cr { accent-color:#c25062; }
+      `}</style>
+
+      {/* Masthead */}
+      <header style={{ borderBottom: "2px solid #1a1a18", padding: "28px 32px 20px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: "#8a8780", marginBottom: 4 }}>On-chain · indexed color · concept</div>
+          <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 52, lineHeight: 0.92, margin: 0, fontWeight: 400 }}>
+            CHROMA<span style={{ color: "#c25062" }}>.</span>
+          </h1>
+          <div style={{ fontSize: 13, color: "#56544e", marginTop: 6 }}>
+            64×64 · 16-color curated ramps · the format Normies could grow into
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 28, alignItems: "flex-end" }}>
+          <StatChip label="Grid" value="64 × 64" mono />
+          <StatChip label="Pixels" value="4,096" mono />
+          <StatChip label="Depth" value="4 bpp" mono />
+          <StatChip label="Bytes" value={`${totalBytes}`} mono />
+          <StatChip label="vs Normies" value={`${mult}×`} mono />
+        </div>
+      </header>
+
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.15fr) minmax(0,0.85fr)", gap: 0, alignItems: "stretch" }}>
+        {/* LEFT — the live token */}
+        <section style={{ padding: "28px 32px", borderRight: "2px solid #1a1a18" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+            <span style={{ fontFamily: FONT_MONO, fontSize: 13, color: "#8a8780" }}>CHROMA #</span>
+            <input className="chroma-num" type="number" min={0} max={9999} value={tokenId}
+              onChange={(e) => setTokenId(Math.max(0, Math.min(9999, +e.target.value || 0)))} />
+            <button className="chroma-btn" onClick={randomToken}>Randomize</button>
+            <button className="chroma-btn ghost" onClick={() => setShowGrid(g => !g)}>{showGrid ? "Hide grid" : "Show grid"}</button>
+          </div>
+
+          <div style={{ position: "relative", width: size, maxWidth: "100%", margin: "0 auto", border: "2px solid #1a1a18", background: token.palette.colors[0], aspectRatio: "1/1" }}>
+            <div dangerouslySetInnerHTML={{ __html: svg.replace('width="1024" height="1024"', 'width="100%" height="100%"') }} />
+            {showGrid && (
+              <svg viewBox={`0 0 ${GRID} ${GRID}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: 0.18 }}>
+                {Array.from({ length: GRID + 1 }).map((_, i) => (
+                  <g key={i}>
+                    <line x1={i} y1={0} x2={i} y2={GRID} stroke="#000" strokeWidth={0.03} />
+                    <line x1={0} y1={i} x2={GRID} y2={i} stroke="#000" strokeWidth={0.03} />
+                  </g>
+                ))}
+              </svg>
+            )}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 16 }}>
+            <span style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780" }}>Preview size</span>
+            <input className="cr" type="range" min={320} max={680} step={20} value={size} onChange={e => setSize(+e.target.value)} style={{ flex: 1 }} />
+            <span style={{ fontFamily: FONT_MONO, fontSize: 12 }}>{size}px</span>
+          </div>
+
+          {/* palette strip */}
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780", marginBottom: 8 }}>
+              Palette · <span style={{ color: "#1a1a18", fontFamily: FONT_MONO }}>{token.palette.name}</span> <span style={{ color: "#c25062" }}>(id {token.paletteId})</span>
+            </div>
+            <div style={{ display: "flex", gap: 0, border: "1.5px solid #1a1a18" }}>
+              {token.palette.colors.map((c, i) => (
+                <div key={i} title={`index ${i}: ${c}`} style={{ flex: 1, height: 32, background: c, position: "relative" }}>
+                  <span style={{ position: "absolute", bottom: 1, left: 0, right: 0, textAlign: "center", fontSize: 8, fontFamily: FONT_MONO, color: i < 5 ? "#fff" : "#000", opacity: 0.6 }}>{i.toString(16).toUpperCase()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* RIGHT — traits, storage, reference */}
+        <section style={{ padding: "28px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
+          {/* traits */}
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 24, margin: "0 0 12px", fontWeight: 400 }}>Traits</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "#1a1a18", border: "1.5px solid #1a1a18" }}>
+              {Object.entries(token.traits).map(([k, v]) => (
+                <div key={k} style={{ background: "#f4f2ea", padding: "10px 12px" }}>
+                  <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780" }}>{k}</div>
+                  <div style={{ fontSize: 15, fontFamily: FONT_BODY, marginTop: 2 }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* storage breakdown */}
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 24, margin: "0 0 12px", fontWeight: 400 }}>On-chain footprint</h2>
+            <div style={{ fontFamily: FONT_MONO, fontSize: 12.5, lineHeight: 1.9, background: "#1a1a18", color: "#e8e6df", padding: "14px 16px" }}>
+              <div>pixel data &nbsp;= 4096 px × 4 bit = <span style={{ color: "#ffac4a" }}>{indexBytes} B</span></div>
+              <div>palette &nbsp;&nbsp;&nbsp;&nbsp;= 16 × RGB24 &nbsp;&nbsp;&nbsp;= <span style={{ color: "#ffac4a" }}>{paletteBytes} B</span></div>
+              <div style={{ borderTop: "1px solid #4a4843", marginTop: 4, paddingTop: 4 }}>per token &nbsp;&nbsp;= <span style={{ color: "#5cbce0" }}>{totalBytes} B</span> &nbsp;→ 1 SSTORE2 chunk</div>
+              <div style={{ color: "#8a8780", marginTop: 6 }}># run-length rects in this token: <span style={{ color: "#86d6ee" }}>{rects}</span></div>
+            </div>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, fontSize: 13, cursor: "pointer" }}>
+              <input type="checkbox" checked={skipBg} onChange={e => setSkipBg(e.target.checked)} style={{ accentColor: "#c25062" }} />
+              Skip background index (don't emit rects for index 0)
+            </label>
+          </div>
+
+          {/* live Normie reference */}
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 24, margin: "0 0 4px", fontWeight: 400 }}>Live Normie</h2>
+            <div style={{ fontSize: 12, color: "#56544e", marginBottom: 10 }}>
+              Real data from <span style={{ fontFamily: FONT_MONO }}>api.normies.art</span> — 40×40, 2 colors. The jump in fidelity is the whole pitch.
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
+              <input className="chroma-num" type="number" min={0} max={9999} value={normieId}
+                onChange={e => setNormieId(Math.max(0, Math.min(9999, +e.target.value || 0)))} />
+              <button className="chroma-btn ghost" onClick={() => fetchNormie(normieId)} disabled={loadingNormie}>
+                {loadingNormie ? "Loading…" : "Fetch"}
+              </button>
+            </div>
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ width: 150, height: 150, border: "2px solid #1a1a18", background: "#e3e5e4", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                {normieSvg
+                  ? <div style={{ width: "100%", height: "100%" }} dangerouslySetInnerHTML={{ __html: normieSvg.replace(/width="\d+"/, 'width="100%"').replace(/height="\d+"/, 'height="100%"') }} />
+                  : <span style={{ fontSize: 11, color: normieErr ? "#c25062" : "#8a8780", textAlign: "center", padding: 8, fontFamily: FONT_MONO }}>{normieErr ? `couldn't load (${normieErr})` : "—"}</span>}
+              </div>
+              <div style={{ fontFamily: FONT_MONO, fontSize: 11.5, lineHeight: 1.8, color: "#56544e" }}>
+                <div>Normie &nbsp;40×40 · 1 bpp · 200 B</div>
+                <div>Chroma &nbsp;64×64 · 4 bpp · {totalBytes} B</div>
+                <div style={{ color: "#c25062", marginTop: 6 }}>+160% pixels</div>
+                <div style={{ color: "#c25062" }}>2 → 16 colors</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer style={{ padding: "20px 32px 0", fontSize: 11.5, color: "#8a8780", fontFamily: FONT_MONO, lineHeight: 1.7 }}>
+        The SVG you see is built by the same index-buffer → RLE-rect logic an on-chain renderer would run.
+        Generative faces here are a placeholder to show the format; the real collection's art engine would be richer.
+      </footer>
+    </div>
+  );
+}

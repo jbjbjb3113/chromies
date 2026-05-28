@@ -1,0 +1,36 @@
+{
+"name": "homies",
+"version": "1.0.0",
+"description": "Chroma indexer and API",
+"main": "api/server.ts",
+"scripts": {
+"dev": "vite --host 0.0.0.0",
+"dev:api": "tsx api/server.ts",
+"dev:ponder": "ponder dev",
+"start:api": "tsx api/server.ts",
+"build:types": "tsc --noEmit",
+"build:art": "tsx scripts/build-art.ts"
+},
+"keywords": [],
+"author": "",
+"license": "ISC",
+"type": "module",
+"dependencies": {
+"@ponder/client": "^0.16.6",
+"@vitejs/plugin-react": "^6.0.2",
+"dotenv": "^17.4.2",
+"express": "^5.2.1",
+"express-rate-limit": "^8.5.2",
+"ponder": "^0.16.6",
+"react": "^19.2.6",
+"react-dom": "^19.2.6",
+"sharp": "^0.34.5",
+"viem": "^2.51.3"
+},
+"devDependencies": {
+"@types/express": "^5.0.6",
+"@types/node": "^25.9.1",
+"tsx": "^4.22.3",
+"typescript": "^5.9.3"
+}
+}

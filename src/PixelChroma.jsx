@@ -1,0 +1,612 @@
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+
+// ============================================================================
+//  CHROMIES — indexed companion identity demo
+//  64x64 grid · 4 bits-per-pixel · 16-color curated-ramp palettes
+//
+//  This file is intentionally split into two ideas:
+//
+//  1) FORMAT PROOF
+//     index buffer -> 16-color palette -> RLE SVG rects
+//     This mirrors what an on-chain renderer contract can do.
+//
+//  2) ART DIRECTION PROOF
+//     The placeholder generator made generic faces.
+//     This rewrite pushes collectible companion archetypes:
+//     asymmetry, masks, slanted eyes, hair silhouettes, marks, piercings.
+//
+//  This remains a browser demo, not the final collection engine.
+// ============================================================================
+
+const GRID = 64;
+const PX = GRID * GRID;
+const BPP = 4;
+const NORMIE_API = "https://api.normies.art";
+
+const PALETTES = [
+  {
+    id: 0, name: "Ember",
+    colors: ["#1a1014","#2d161c","#451d24","#5e2730","#7a3340","#9c4050","#c25062","#e06478",
+             "#f2879a","#ffb0bd","#ffd28f","#ffac4a","#ff7b2e","#e8541d","#a83515","#5c1d0f"],
+  },
+  {
+    id: 1, name: "Tide",
+    colors: ["#08111c","#0d1f33","#13314d","#1a456b","#225d8c","#2d7aad","#3f9bcc","#5cbce0",
+             "#86d6ee","#b8eefa","#d4f6e8","#8fe6c4","#4fcf9c","#1d9e75","#0f6e56","#063f33"],
+  },
+  {
+    id: 2, name: "Dusk",
+    colors: ["#0f0a1a","#1c1330","#2c1c4a","#3e2a66","#523a84","#6a4ca6","#8463c4","#a181df",
+             "#c0a3f0","#ddc8fb","#f6d6ec","#e89bc9","#d4609f","#a8447a","#6f2a52","#3a1530"],
+  },
+  {
+    id: 3, name: "Verdant",
+    colors: ["#0a1108","#142010","#1f3318","#2c4a20","#3d662b","#519136","#6db742","#8fd95a",
+             "#bff07e","#e4ffb0","#fff0a8","#f5c45e","#d99432","#a8651c","#6e3e12","#3a210a"],
+  },
+  {
+    id: 4, name: "Mono+",
+    colors: ["#0a0a0b","#161618","#242427","#343438","#48494b","#5f6063","#787a7d","#94969a",
+             "#b1b3b7","#cfd1d4","#e3e5e4","#f2f3f2","#ff5470","#3f9bcc","#ffac4a","#6db742"],
+  },
+  {
+    id: 5, name: "Candy",
+    colors: ["#1a0f1a","#2e1730","#4a2050","#6a2c72","#8c3a92","#b14fae","#d46bc4","#ef8fd6",
+             "#ffb8e6","#ffe0f4","#fff3cc","#ffd96b","#ffb03f","#ff7a5c","#e84d6b","#8c2a4a"],
+  },
+];
+
+const HERO_DEMOS = [
+  { label: "Serc Signal", tokenId: 1207, mode: "punk", note: "evolved signal maskline" },
+  { label: "Razor Hawk", tokenId: 2219, mode: "punk", note: "hawk profile / sharp eyes" },
+  { label: "Overgrown Drift", tokenId: 4061, mode: "punk", note: "drift fringe companion form" },
+  { label: "Signal Ghost", tokenId: 7777, mode: "punk", note: "awakened street identity" },
+  { label: "Indexed Proof", tokenId: 7, mode: "classic", note: "baseline renderer proof" },
+];
+
+const TYPES = ["Human", "Cat", "Alien", "Droid", "Specter"];
+const EXPRESSIONS = ["Neutral", "Smile", "Serious", "Smug", "Surprised", "Sleepy"];
+const HEADGEAR = ["None", "Cap", "Crown", "Halo", "Antenna", "Top Hat", "Visor", "Beanie"];
+const EYEWEAR = ["None", "Shades", "Round Glasses", "Visor", "Eyepatch", "VR"];
+
+const PUNK_ARCHETYPES = ["Masked Punk", "Chrome Goth", "Drift Rat", "Graffiti Kid", "Wasteland Skater", "Signal Ghost"];
+const MASKS = ["Respirator", "Bandana", "Street Mask", "Half Mask"];
+const HAIR = ["Magenta Spikes", "Side Sweep", "Broken Hawk", "Chrome Dreads", "Jagged Fringe", "Static Burst"];
+const MARKS = ["Under-eye Slash", "Forehead Glyph", "Cheek Pixel", "Bridge Scar", "Temple Tag"];
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const pick = (rng, arr) => arr[Math.floor(rng() * arr.length)];
+
+function makeBuffer() {
+  const buf = new Uint8Array(PX);
+  const set = (x, y, v) => {
+    if (x < 0 || y < 0 || x >= GRID || y >= GRID) return;
+    buf[y * GRID + x] = Math.max(0, Math.min(15, v));
+  };
+  const fillRect = (x0, y0, w, h, v) => {
+    for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) set(x, y, v);
+  };
+  const line = (x0, y0, x1, y1, v) => {
+    let dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    let dy = -Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    let err = dx + dy;
+    while (true) {
+      set(x0, y0, v);
+      if (x0 === x1 && y0 === y1) break;
+      const e2 = 2 * err;
+      if (e2 >= dy) { err += dy; x0 += sx; }
+      if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+  };
+  const triangle = (a, b, c, v) => {
+    const minX = Math.max(0, Math.floor(Math.min(a[0], b[0], c[0])));
+    const maxX = Math.min(GRID - 1, Math.ceil(Math.max(a[0], b[0], c[0])));
+    const minY = Math.max(0, Math.floor(Math.min(a[1], b[1], c[1])));
+    const maxY = Math.min(GRID - 1, Math.ceil(Math.max(a[1], b[1], c[1])));
+    const area = (p1, p2, p3) => (p1[0]*(p2[1]-p3[1]) + p2[0]*(p3[1]-p1[1]) + p3[0]*(p1[1]-p2[1]));
+    const A = area(a, b, c);
+    for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+      const p = [x + 0.5, y + 0.5];
+      const w1 = area(p, b, c) / A;
+      const w2 = area(a, p, c) / A;
+      const w3 = area(a, b, p) / A;
+      if (w1 >= 0 && w2 >= 0 && w3 >= 0) set(x, y, v);
+    }
+  };
+  return { buf, set, fillRect, line, triangle };
+}
+
+function generateClassicToken(id) {
+  const rng = mulberry32(id * 2654435761 + 12345);
+  const paletteId = Math.floor(rng() * PALETTES.length);
+  const palette = PALETTES[paletteId];
+
+  const traits = {
+    Mode: "Classic Placeholder",
+    Type: pick(rng, TYPES),
+    Expression: pick(rng, EXPRESSIONS),
+    Headgear: pick(rng, HEADGEAR),
+    Eyewear: pick(rng, EYEWEAR),
+    Palette: palette.name,
+  };
+
+  const { buf, set, fillRect } = makeBuffer();
+
+  const skin = 5 + Math.floor(rng() * 3);
+  const skinShade = Math.min(15, skin + 3);
+  const skinLight = Math.max(1, skin - 3);
+  const feature = 12 + Math.floor(rng() * 3);
+  const gear = 9 + Math.floor(rng() * 4);
+
+  const cx = 32, top = 14, hw = 18 + Math.floor(rng() * 3), hh = 30 + Math.floor(rng() * 4);
+  for (let y = 0; y < hh; y++) {
+    const halfW = hw - (y < 4 ? (4 - y) : 0) - (y > hh - 5 ? (y - (hh - 5)) : 0);
+    for (let dx = -halfW; dx <= halfW; dx++) {
+      let v = skin;
+      if (dx < -halfW + 3) v = skinShade;
+      else if (dx > halfW - 3) v = skinLight;
+      set(cx + dx, top + y, v);
+    }
+  }
+
+  const eyeY = top + Math.floor(hh * 0.42);
+  const eyeDx = 7 + Math.floor(rng() * 2);
+  const eyeW = traits.Expression === "Surprised" ? 4 : 3;
+  const eyeH = traits.Expression === "Sleepy" ? 1 : (traits.Expression === "Surprised" ? 4 : 2);
+  const drawEye = (ex) => {
+    fillRect(ex - eyeW, eyeY, eyeW * 2, eyeH, 1);
+    set(ex - 1, eyeY, feature); set(ex, eyeY, feature);
+  };
+  drawEye(cx - eyeDx); drawEye(cx + eyeDx);
+
+  const mY = top + Math.floor(hh * 0.72);
+  if (traits.Expression === "Smile") for (let i = -4; i <= 4; i++) set(cx + i, mY + Math.round(Math.abs(i) * 0.4), feature);
+  else if (traits.Expression === "Serious") fillRect(cx - 4, mY, 9, 1, skinShade);
+  else if (traits.Expression === "Smug") for (let i = -4; i <= 2; i++) set(cx + i, mY - Math.round((i + 4) * 0.3), 1);
+  else if (traits.Expression === "Surprised") fillRect(cx - 2, mY - 1, 4, 4, 1);
+  else fillRect(cx - 3, mY, 7, 1, skinShade);
+
+  const g = traits.Headgear;
+  if (g === "Cap") { fillRect(cx - hw, top - 2, hw * 2, 5, gear); fillRect(cx - hw - 4, top + 2, 6, 2, gear); }
+  else if (g === "Beanie") fillRect(cx - hw, top - 4, hw * 2, 7, gear);
+  else if (g === "Visor") fillRect(cx - hw - 1, top - 1, hw * 2 + 2, 3, gear);
+
+  return { buf, palette, paletteId, traits };
+}
+
+function generatePunkToken(id) {
+  const rng = mulberry32(id * 1597334677 + 98765);
+
+  // Bias toward Mono+, Candy, Dusk because those sell the black/neon identity.
+  const paletteId = [4, 5, 2, 0, 1][Math.floor(rng() * 5)];
+  const palette = PALETTES[paletteId];
+
+  const archetype = pick(rng, PUNK_ARCHETYPES);
+  const hair = pick(rng, HAIR);
+  const mask = pick(rng, MASKS);
+  const mark = pick(rng, MARKS);
+
+  const traits = {
+    Mode: "Punk Portrait",
+    Archetype: archetype,
+    Hair: hair,
+    Mask: mask,
+    Mark: mark,
+    Palette: palette.name,
+  };
+
+  const { buf, set, fillRect, line, triangle } = makeBuffer();
+
+  const dark = 1;
+  const shadow = 2 + Math.floor(rng() * 2);
+  const mid = 5 + Math.floor(rng() * 2);
+  const light = 8 + Math.floor(rng() * 2);
+  const hot = paletteId === 4 ? 12 : 13 + Math.floor(rng() * 2);
+  const secondary = paletteId === 4 ? 13 : 10 + Math.floor(rng() * 3);
+
+  const cx = 32 + Math.floor(rng() * 3) - 1;
+  const top = 13 + Math.floor(rng() * 2);
+  const hh = 37;
+  const hw = 16 + Math.floor(rng() * 3);
+
+  // Neck / collar block.
+  fillRect(cx - 10, 49, 20, 8, shadow);
+  triangle([cx - 24, 63], [cx, 51], [cx + 24, 63], dark);
+  fillRect(cx - 14, 55, 28, 5, 1);
+
+  // Angular head silhouette.
+  for (let y = 0; y < hh; y++) {
+    const yy = top + y;
+    const t = y / hh;
+    let left = cx - hw + Math.round(Math.abs(0.45 - t) * 4);
+    let right = cx + hw - Math.round(Math.abs(0.45 - t) * 3);
+
+    if (y < 6) { left += 4 - Math.floor(y * 0.5); right -= 3 - Math.floor(y * 0.4); }
+    if (y > 29) { left += Math.floor((y - 29) * 0.9); right -= Math.floor((y - 29) * 0.9); }
+
+    // Intentional asymmetry.
+    left += Math.floor(rng() * 2);
+    right += y % 5 === 0 ? 1 : 0;
+
+    for (let x = left; x <= right; x++) {
+      let v = mid;
+      if (x < left + 4) v = shadow;
+      if (x > right - 4) v = light;
+      if (y > 22) v = Math.min(v, mid);
+      set(x, yy, v);
+    }
+  }
+
+  // Hair mass: jagged, directional, asymmetric.
+  const hairSide = rng() > 0.35 ? -1 : 1;
+  const baseY = top + 4;
+  const hairColor = hot;
+  const hairDark = Math.max(1, hot - 3);
+
+  // Base hair cap.
+  for (let y = 0; y < 11; y++) {
+    const skew = hairSide * Math.floor(y * 0.9);
+    fillRect(cx - hw - 2 + skew, top - 3 + y, hw * 2 + 2 - y, 1, y < 4 ? hairColor : hairDark);
+  }
+
+  // Big spikes / chunks.
+  const spikeCount = 7 + Math.floor(rng() * 4);
+  for (let i = 0; i < spikeCount; i++) {
+    const rootX = cx - hw + Math.floor((i / (spikeCount - 1)) * hw * 2) + Math.floor(rng() * 5) - 2;
+    const rootY = baseY + Math.floor(rng() * 5);
+    const tipX = rootX + hairSide * (4 + Math.floor(rng() * 10));
+    const tipY = top - 8 + Math.floor(rng() * 9);
+    triangle([rootX - 3, rootY + 4], [rootX + 4, rootY + 3], [tipX, tipY], rng() > 0.25 ? hairColor : hairDark);
+  }
+
+  // Side dreads / fringe.
+  if (hair.includes("Dreads") || hair.includes("Sweep") || rng() > 0.4) {
+    const side = hairSide;
+    for (let i = 0; i < 4; i++) {
+      const x = cx + side * (12 + i * 2);
+      const y0 = top + 4 + i;
+      line(x, y0, x + side * (3 + Math.floor(rng() * 3)), y0 + 16 + Math.floor(rng() * 8), i % 2 ? hairColor : hairDark);
+      line(x + side, y0 + 1, x + side * (4 + Math.floor(rng() * 3)), y0 + 17 + Math.floor(rng() * 6), hairDark);
+    }
+  }
+
+  // Mask: dark lower-face anchor. This is the identity-maker.
+  const maskY = top + 24;
+  if (mask === "Bandana") {
+    triangle([cx - 15, maskY], [cx + 15, maskY], [cx, maskY + 17], dark);
+    fillRect(cx - 12, maskY - 2, 25, 5, 1);
+  } else if (mask === "Respirator") {
+    fillRect(cx - 14, maskY - 1, 29, 13, dark);
+    fillRect(cx - 7, maskY + 7, 15, 5, 2);
+    set(cx - 5, maskY + 9, secondary); set(cx + 5, maskY + 9, secondary);
+  } else {
+    fillRect(cx - 15, maskY, 31, 12, dark);
+    triangle([cx - 15, maskY], [cx - 10, maskY + 13], [cx - 3, maskY + 13], dark);
+    triangle([cx + 15, maskY], [cx + 10, maskY + 13], [cx + 3, maskY + 13], dark);
+  }
+
+  // Slanted angry eyes.
+  const eyeY = top + 19;
+  const drawSlantEye = (ex, dir) => {
+    line(ex - 5, eyeY + (dir > 0 ? 1 : 0), ex + 4, eyeY - 2, dark);
+    line(ex - 4, eyeY + 1, ex + 3, eyeY, dark);
+    set(ex - 1, eyeY, secondary);
+    set(ex, eyeY - 1, secondary);
+    set(ex + 1, eyeY - 1, light);
+  };
+  drawSlantEye(cx - 7, -1);
+  drawSlantEye(cx + 8, 1);
+
+  // Brows / aggression lines.
+  line(cx - 15, eyeY - 5, cx - 5, eyeY - 3, dark);
+  line(cx + 4, eyeY - 3, cx + 15, eyeY - 6, dark);
+
+  // Nose bridge / shadow.
+  line(cx, eyeY + 3, cx - 2, eyeY + 12, shadow);
+  set(cx + 1, eyeY + 7, light);
+
+  // Marks / tattoos.
+  if (mark === "Under-eye Slash") line(cx + 11, eyeY + 4, cx + 15, eyeY + 8, hot);
+  else if (mark === "Forehead Glyph") { set(cx - 2, top + 10, hot); set(cx, top + 9, hot); set(cx + 2, top + 10, hot); }
+  else if (mark === "Cheek Pixel") fillRect(cx - 14, eyeY + 9, 3, 3, hot);
+  else if (mark === "Bridge Scar") line(cx - 2, eyeY - 2, cx + 2, eyeY + 4, hot);
+  else line(cx + 13, top + 14, cx + 16, top + 10, hot);
+
+  // Piercings / metallic pixels.
+  if (rng() > 0.35) {
+    set(cx - 16, top + 28, 10);
+    set(cx + 16, top + 29, 10);
+  }
+  if (rng() > 0.55) set(cx + 3, maskY - 2, 10);
+
+  // Edge grime / controlled noise, still palette-indexed.
+  for (let i = 0; i < 28; i++) {
+    const x = cx - hw - 2 + Math.floor(rng() * (hw * 2 + 5));
+    const y = top + 8 + Math.floor(rng() * 34);
+    if (rng() > 0.55) set(x, y, rng() > 0.5 ? shadow : light);
+  }
+
+  return { buf, palette, paletteId, traits };
+}
+
+function generateToken(id, mode = "punk") {
+  return mode === "classic" ? generateClassicToken(id) : generatePunkToken(id);
+}
+
+function renderSVG(buf, palette, { size = 1024, skipBg = true, bgIndex = 0 } = {}) {
+  const cell = size / GRID;
+  let rects = 0;
+  let body = "";
+
+  for (let y = 0; y < GRID; y++) {
+    let x = 0;
+    while (x < GRID) {
+      const idx = buf[y * GRID + x];
+      let run = 1;
+      while (x + run < GRID && buf[y * GRID + x + run] === idx) run++;
+      if (!(skipBg && idx === bgIndex)) {
+        body += `<rect x="${x * cell}" y="${y * cell}" width="${run * cell}" height="${cell}" fill="${palette.colors[idx]}"/>`;
+        rects++;
+      }
+      x += run;
+    }
+  }
+
+  const bg = palette.colors[bgIndex];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" shape-rendering="crispEdges"><rect width="${size}" height="${size}" fill="${bg}"/>${body}</svg>`;
+  return { svg, rects };
+}
+
+const FONT_DISPLAY = "'DM Serif Display', Georgia, serif";
+const FONT_MONO = "'IBM Plex Mono', ui-monospace, monospace";
+const FONT_BODY = "'Space Grotesk', system-ui, sans-serif";
+
+function StatChip({ label, value, mono }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <span style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8a8780" }}>{label}</span>
+      <span style={{ fontSize: 15, fontFamily: mono ? FONT_MONO : FONT_BODY, color: "#f4f2ea" }}>{value}</span>
+    </div>
+  );
+}
+
+function TokenPreview({ tokenId, mode, label, note, onSelect }) {
+  const token = useMemo(() => generateToken(tokenId, mode), [tokenId, mode]);
+  const { svg } = useMemo(() => renderSVG(token.buf, token.palette, { size: 512, skipBg: true }), [token]);
+  return (
+    <button onClick={() => onSelect(tokenId, mode)} style={{
+      border: "1.5px solid #34312d", background: "#151314", color: "#f4f2ea",
+      padding: 8, cursor: "pointer", textAlign: "left"
+    }}>
+      <div style={{ aspectRatio: "1/1", border: "1px solid #34312d", background: token.palette.colors[0], overflow: "hidden" }}
+        dangerouslySetInnerHTML={{ __html: svg.replace('width="512" height="512"', 'width="100%" height="100%"') }} />
+      <div style={{ fontFamily: FONT_MONO, fontSize: 10, color: "#ff5470", marginTop: 8 }}>{label}</div>
+      <div style={{ fontSize: 11, color: "#8a8780", marginTop: 2 }}>{note}</div>
+    </button>
+  );
+}
+
+export default function ChromiesPrototype() {
+  const [tokenId, setTokenId] = useState(1207);
+  const [mode, setMode] = useState("punk");
+  const [size, setSize] = useState(560);
+  const [showGrid, setShowGrid] = useState(false);
+  const [skipBg, setSkipBg] = useState(true);
+
+  const [normieId, setNormieId] = useState(7);
+  const [normieSvg, setNormieSvg] = useState(null);
+  const [normieErr, setNormieErr] = useState(null);
+  const [loadingNormie, setLoadingNormie] = useState(false);
+
+  const token = useMemo(() => generateToken(tokenId, mode), [tokenId, mode]);
+  const { svg, rects } = useMemo(() => renderSVG(token.buf, token.palette, { size: 1024, skipBg }), [token, skipBg]);
+
+  const indexBytes = (PX * BPP) / 8;
+  const paletteBytes = 16 * 3;
+  const totalBytes = indexBytes + paletteBytes;
+  const normieBytes = 200;
+  const mult = (totalBytes / normieBytes).toFixed(1);
+
+  const fetchNormie = useCallback(async (id) => {
+    setLoadingNormie(true); setNormieErr(null);
+    try {
+      const r = await fetch(`${NORMIE_API}/normie/${id}/image.svg`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const t = await r.text();
+      setNormieSvg(t);
+    } catch (e) {
+      setNormieErr(e.message || "fetch failed");
+      setNormieSvg(null);
+    } finally {
+      setLoadingNormie(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchNormie(normieId); }, []);
+
+  const randomToken = () => {
+    setMode("punk");
+    setTokenId(Math.floor(Math.random() * 10000));
+  };
+
+  const selectHero = (id, nextMode) => {
+    setTokenId(id);
+    setMode(nextMode);
+  };
+
+  return (
+    <div style={{
+      fontFamily: FONT_BODY, background: "#0b0a0b", color: "#f4f2ea",
+      minHeight: "100vh", padding: "0 0 48px",
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+        .chroma-btn { font-family:${FONT_BODY}; font-size:13px; border:1.5px solid #f4f2ea; background:#f4f2ea; color:#0b0a0b; padding:9px 16px; cursor:pointer; transition:all .12s; letter-spacing:.02em; }
+        .chroma-btn:hover { background:#ff5470; border-color:#ff5470; color:#0b0a0b; }
+        .chroma-btn.ghost { background:transparent; color:#f4f2ea; }
+        .chroma-btn.ghost:hover { background:#f4f2ea; color:#0b0a0b; }
+        .chroma-btn.hot { background:#ff5470; border-color:#ff5470; color:#0b0a0b; }
+        .chroma-num { font-family:${FONT_MONO}; font-size:14px; border:1.5px solid #34312d; background:#151314; padding:8px 10px; width:92px; color:#f4f2ea; }
+        input[type=range].cr { accent-color:#ff5470; }
+      `}</style>
+
+      <header style={{ borderBottom: "2px solid #34312d", padding: "28px 32px 22px", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: "0.3em", textTransform: "uppercase", color: "#8a8780", marginBottom: 4 }}>
+            indexed identity · evolved companion signal · demo index
+          </div>
+          <h1 style={{ fontFamily: FONT_DISPLAY, fontSize: 58, lineHeight: 0.9, margin: 0, fontWeight: 400 }}>
+            CHROMIES<span style={{ color: "#ff5470" }}>.</span>
+          </h1>
+          <div style={{ fontSize: 14, color: "#b8b2a8", marginTop: 8, maxWidth: 760 }}>
+            An evolved indexed identity system inspired by Normies: 64×64, 16-color curated ramps, deterministic RLE SVG output, and collectible companion archetypes.
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 28, alignItems: "flex-end", flexWrap: "wrap" }}>
+          <StatChip label="Grid" value="64 × 64" mono />
+          <StatChip label="Pixels" value="4,096" mono />
+          <StatChip label="Depth" value="4 bpp" mono />
+          <StatChip label="Bytes" value={`${totalBytes}`} mono />
+          <StatChip label="vs Normies" value={`${mult}×`} mono />
+        </div>
+      </header>
+
+      <section style={{ padding: "22px 32px", borderBottom: "2px solid #34312d", background: "#100f10" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 28, margin: 0, fontWeight: 400 }}>Demo Index</h2>
+            <div style={{ fontSize: 12, color: "#8a8780" }}>Collectible archetypes and companion evolutions: proof render + identity direction.</div>
+          </div>
+          <button className="chroma-btn hot" onClick={randomToken}>Generate Chromie</button>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(120px, 1fr))", gap: 12 }}>
+          {HERO_DEMOS.map((h) => (
+            <TokenPreview key={`${h.tokenId}-${h.mode}`} {...h} onSelect={selectHero} />
+          ))}
+        </div>
+      </section>
+
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.12fr) minmax(360px,0.88fr)", gap: 0, alignItems: "stretch" }}>
+        <section style={{ padding: "28px 32px", borderRight: "2px solid #34312d" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
+            <span style={{ fontFamily: FONT_MONO, fontSize: 13, color: "#8a8780" }}>CHROMIE #</span>
+            <input className="chroma-num" type="number" min={0} max={9999} value={tokenId}
+              onChange={(e) => setTokenId(Math.max(0, Math.min(9999, +e.target.value || 0)))} />
+            <button className={`chroma-btn ${mode === "punk" ? "hot" : "ghost"}`} onClick={() => setMode("punk")}>Companion Mode</button>
+            <button className={`chroma-btn ${mode === "classic" ? "hot" : "ghost"}`} onClick={() => setMode("classic")}>Baseline Proof</button>
+            <button className="chroma-btn ghost" onClick={() => setShowGrid(g => !g)}>{showGrid ? "Hide grid" : "Show grid"}</button>
+          </div>
+
+          <div style={{ position: "relative", width: size, maxWidth: "100%", margin: "0 auto", border: "2px solid #34312d", background: token.palette.colors[0], aspectRatio: "1/1", boxShadow: "0 20px 80px rgba(0,0,0,.45)" }}>
+            <div dangerouslySetInnerHTML={{ __html: svg.replace('width="1024" height="1024"', 'width="100%" height="100%"') }} />
+            {showGrid && (
+              <svg viewBox={`0 0 ${GRID} ${GRID}`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", opacity: 0.22 }}>
+                {Array.from({ length: GRID + 1 }).map((_, i) => (
+                  <g key={i}>
+                    <line x1={i} y1={0} x2={i} y2={GRID} stroke="#fff" strokeWidth={0.035} />
+                    <line x1={0} y1={i} x2={GRID} y2={i} stroke="#fff" strokeWidth={0.035} />
+                  </g>
+                ))}
+              </svg>
+            )}
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 16 }}>
+            <span style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780" }}>Preview size</span>
+            <input className="cr" type="range" min={320} max={680} step={20} value={size} onChange={e => setSize(+e.target.value)} style={{ flex: 1 }} />
+            <span style={{ fontFamily: FONT_MONO, fontSize: 12 }}>{size}px</span>
+          </div>
+
+          <div style={{ marginTop: 20 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780", marginBottom: 8 }}>
+              Palette · <span style={{ color: "#f4f2ea", fontFamily: FONT_MONO }}>{token.palette.name}</span> <span style={{ color: "#ff5470" }}>(id {token.paletteId})</span>
+            </div>
+            <div style={{ display: "flex", gap: 0, border: "1.5px solid #34312d" }}>
+              {token.palette.colors.map((c, i) => (
+                <div key={i} title={`index ${i}: ${c}`} style={{ flex: 1, height: 32, background: c, position: "relative" }}>
+                  <span style={{ position: "absolute", bottom: 1, left: 0, right: 0, textAlign: "center", fontSize: 8, fontFamily: FONT_MONO, color: i < 5 ? "#fff" : "#000", opacity: 0.65 }}>{i.toString(16).toUpperCase()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section style={{ padding: "28px 32px", display: "flex", flexDirection: "column", gap: 24 }}>
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 26, margin: "0 0 12px", fontWeight: 400 }}>Traits</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "#34312d", border: "1.5px solid #34312d" }}>
+              {Object.entries(token.traits).map(([k, v]) => (
+                <div key={k} style={{ background: "#151314", padding: "10px 12px" }}>
+                  <div style={{ fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "#8a8780" }}>{k}</div>
+                  <div style={{ fontSize: 15, fontFamily: FONT_BODY, marginTop: 2 }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 26, margin: "0 0 12px", fontWeight: 400 }}>On-chain Footprint</h2>
+            <div style={{ fontFamily: FONT_MONO, fontSize: 12.5, lineHeight: 1.9, background: "#151314", color: "#e8e6df", padding: "14px 16px", border: "1.5px solid #34312d" }}>
+              <div>identity map = 4096 px × 4 bit = <span style={{ color: "#ffac4a" }}>{indexBytes} B</span></div>
+              <div>palette &nbsp;&nbsp;&nbsp;&nbsp;= 16 × RGB24 &nbsp;&nbsp;&nbsp;= <span style={{ color: "#ffac4a" }}>{paletteBytes} B</span></div>
+              <div style={{ borderTop: "1px solid #34312d", marginTop: 4, paddingTop: 4 }}>per token &nbsp;&nbsp;= <span style={{ color: "#5cbce0" }}>{totalBytes} B</span> &nbsp;→ 1 SSTORE2 chunk</div>
+              <div style={{ color: "#8a8780", marginTop: 6 }}>RLE rects in this chromie: <span style={{ color: "#86d6ee" }}>{rects}</span></div>
+            </div>
+            <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 10, fontSize: 13, cursor: "pointer", color: "#b8b2a8" }}>
+              <input type="checkbox" checked={skipBg} onChange={e => setSkipBg(e.target.checked)} style={{ accentColor: "#ff5470" }} />
+              Skip background index when emitting SVG rects
+            </label>
+          </div>
+
+          <div>
+            <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: 26, margin: "0 0 4px", fontWeight: 400 }}>Live Normie Reference</h2>
+            <div style={{ fontSize: 12, color: "#8a8780", marginBottom: 10 }}>
+              Real data from <span style={{ fontFamily: FONT_MONO }}>api.normies.art</span>. Not replacement — an awakened companion identity path.
+            </div>
+            <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10, flexWrap: "wrap" }}>
+              <input className="chroma-num" type="number" min={0} max={9999} value={normieId}
+                onChange={e => setNormieId(Math.max(0, Math.min(9999, +e.target.value || 0)))} />
+              <button className="chroma-btn ghost" onClick={() => fetchNormie(normieId)} disabled={loadingNormie}>
+                {loadingNormie ? "Loading…" : "Fetch"}
+              </button>
+            </div>
+            <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+              <div style={{ width: 150, height: 150, border: "2px solid #34312d", background: "#151314", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                {normieSvg
+                  ? <div style={{ width: "100%", height: "100%" }} dangerouslySetInnerHTML={{ __html: normieSvg.replace(/width="\d+"/, 'width="100%"').replace(/height="\d+"/, 'height="100%"') }} />
+                  : <span style={{ fontSize: 11, color: normieErr ? "#ff5470" : "#8a8780", textAlign: "center", padding: 8, fontFamily: FONT_MONO }}>{normieErr ? `couldn't load (${normieErr})` : "—"}</span>}
+              </div>
+              <div style={{ fontFamily: FONT_MONO, fontSize: 11.5, lineHeight: 1.8, color: "#b8b2a8" }}>
+                <div>Normie &nbsp;40×40 · 1 bpp · 200 B</div>
+                <div>Chromies 64×64 · 4 bpp · {totalBytes} B</div>
+                <div style={{ color: "#ff5470", marginTop: 6 }}>+160% indexed surface</div>
+                <div style={{ color: "#ff5470" }}>2 → 16 signal states</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ border: "1.5px solid #34312d", background: "#151314", padding: 14 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#ff5470", marginBottom: 6 }}>Pitch framing</div>
+            <div style={{ fontSize: 14, lineHeight: 1.55, color: "#d8d1c5" }}>
+              Renderer math is proven. Direction is now collectible and design-forward. This demo shows an indexed street identity system that evolves from Normies while staying deterministic and on-chain constrained.
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer style={{ padding: "20px 32px 0", fontSize: 11.5, color: "#8a8780", fontFamily: FONT_MONO, lineHeight: 1.7 }}>
+        Reference renderer: deterministic seed → 4096 palette indices → 16-color palette → RLE SVG rects.
+        Chromies is positioned as a collectible companion identity system: clean signal, awakened form, disciplined structure.
+      </footer>
+    </div>
+  );
+}

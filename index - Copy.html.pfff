@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chromies — a companion mint for Normies</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Space Grotesk', system-ui, sans-serif; background: #e8e6df; color: #1a1a18; padding-bottom: 40px; -webkit-font-smoothing: antialiased; }
+  header { border-bottom: 2px solid #1a1a18; padding: 24px 20px 18px; text-align: center; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: #8a8780; }
+  h1 { font-family: 'DM Serif Display', Georgia, serif; font-size: 46px; margin: 4px 0 0; line-height: 1; }
+  h1 span { color: #c25062; }
+  .sub { font-size: 14px; color: #56544e; margin-top: 6px; }
+  .tabs { display: flex; justify-content: center; padding: 18px 20px 0; }
+  .tab { font-size: 14px; padding: 10px 18px; border: 2px solid #1a1a18; background: transparent; color: #1a1a18; cursor: pointer; font-weight: 500; font-family: inherit; }
+  .tab.active { background: #1a1a18; color: #f4f2ea; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 24px 20px; }
+  .controls { display: flex; gap: 10px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 24px; }
+  .mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+  .num { font-family: 'IBM Plex Mono', monospace; font-size: 16px; border: 2px solid #1a1a18; background: #f4f2ea; padding: 9px 10px; width: 100px; color: #1a1a18; }
+  .btn { font-size: 14px; border: 2px solid #1a1a18; background: #1a1a18; color: #f4f2ea; padding: 10px 18px; cursor: pointer; font-weight: 500; font-family: inherit; }
+  .btn:hover { background: #c25062; border-color: #c25062; }
+  .btn.ghost { background: transparent; color: #1a1a18; }
+  .btn.ghost:hover { background: #1a1a18; color: #f4f2ea; }
+  .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; max-width: 560px; margin: 0 auto; }
+  .cell { width: 100%; aspect-ratio: 1/1; border: 2px solid #1a1a18; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .cell img, .cell svg { width: 100%; height: 100%; display: block; }
+  .caption { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a8780; margin-top: 6px; text-align: center; line-height: 1.5; }
+  .caption .dim { color: #b0aea6; }
+  .arrow { font-size: 28px; color: #c25062; font-weight: 700; }
+  .palette { display: flex; border: 2px solid #1a1a18; max-width: 560px; margin: 20px auto 0; }
+  .palette div { flex: 1; height: 22px; }
+  .note { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: #8a8780; line-height: 1.7; max-width: 560px; margin: 20px auto 0; text-align: center; }
+  .note .accent { color: #c25062; }
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; justify-items: center; max-width: 560px; margin: 0 auto; }
+  .tile { width: 100%; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">A companion mint for Normies</div>
+    <h1>CHROMIES<span>.</span></h1>
+    <div class="sub">Your Normie, in full color — 64×64, 16-color palettes, fully on-chain.</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-companion">Companion</button>
+    <button class="tab" id="tab-gallery">Gallery</button>
+  </div>
+
+  <!-- COMPANION VIEW -->
+  <section class="wrap" id="view-companion">
+    <div class="controls">
+      <span class="mono" style="color:#8a8780">Normie #</span>
+      <input class="num" type="number" min="0" max="9999" value="1459" id="normie-id" />
+      <button class="btn" id="get-btn">Get my Chromie</button>
+    </div>
+    <div class="pair">
+      <div>
+        <div class="cell" style="background:#e3e5e4" id="normie-cell"></div>
+        <div class="caption" id="normie-cap">Normie #1459<br><span class="dim">40×40 · 2 color · live from API</span></div>
+      </div>
+      <div class="arrow">→</div>
+      <div>
+        <div class="cell" id="chromie-cell"></div>
+        <div class="caption" id="chromie-cap"></div>
+      </div>
+    </div>
+    <div class="palette" id="palette-strip"></div>
+    <p class="note">
+      Each Chromie is the color counterpart to its Normie. The Normie loads live from api.normies.art;
+      the Chromie renders through the same index-buffer → RLE-SVG pipeline as the on-chain contract.
+      <br><span class="accent">Note:</span> the exact derivation (how real pixels + traits map to color) is the open design question — that's the conversation.
+    </p>
+  </section>
+
+  <!-- GALLERY VIEW -->
+  <section class="wrap hidden" id="view-gallery" style="text-align:center">
+    <button class="btn ghost" id="shuffle-btn" style="margin-bottom:20px">↻ Shuffle</button>
+    <div class="gallery" id="gallery-grid"></div>
+    <p class="note">A taste of the range — 6 curated palettes, layered trait composition, 4,096 pixels each.</p>
+  </section>
+
+<script>
+const GRID = 64, PX = GRID * GRID, NORMIE_API = "https://api.normies.art";
+const PALETTES = [
+  { name:"Ember",   colors:["#1a1014","#2d161c","#451d24","#5e2730","#7a3340","#9c4050","#c25062","#e06478","#f2879a","#ffb0bd","#ffd28f","#ffac4a","#ff7b2e","#e8541d","#a83515","#5c1d0f"] },
+  { name:"Tide",    colors:["#08111c","#0d1f33","#13314d","#1a456b","#225d8c","#2d7aad","#3f9bcc","#5cbce0","#86d6ee","#b8eefa","#d4f6e8","#8fe6c4","#4fcf9c","#1d9e75","#0f6e56","#063f33"] },
+  { name:"Dusk",    colors:["#0f0a1a","#1c1330","#2c1c4a","#3e2a66","#523a84","#6a4ca6","#8463c4","#a181df","#c0a3f0","#ddc8fb","#f6d6ec","#e89bc9","#d4609f","#a8447a","#6f2a52","#3a1530"] },
+  { name:"Verdant", colors:["#0a1108","#142010","#1f3318","#2c4a20","#3d662b","#519136","#6db742","#8fd95a","#bff07e","#e4ffb0","#fff0a8","#f5c45e","#d99432","#a8651c","#6e3e12","#3a210a"] },
+  { name:"Mono+",   colors:["#0a0a0b","#161618","#242427","#343438","#48494b","#5f6063","#787a7d","#94969a","#b1b3b7","#cfd1d4","#e3e5e4","#f2f3f2","#ff5470","#3f9bcc","#ffac4a","#6db742"] },
+  { name:"Candy",   colors:["#1a0f1a","#2e1730","#4a2050","#6a2c72","#8c3a92","#b14fae","#d46bc4","#ef8fd6","#ffb8e6","#ffe0f4","#fff3cc","#ffd96b","#ffb03f","#ff7a5c","#e84d6b","#8c2a4a"] },
+];
+const TYPES=["Human","Cat","Alien","Droid","Specter"], EXPR=["Neutral","Smile","Serious","Smug","Surprised","Sleepy"];
+const HEAD=["None","Cap","Crown","Halo","Antenna","Top Hat","Visor","Beanie"], EYE=["None","Shades","Round Glasses","Visor","Eyepatch","VR"];
+
+function mulberry32(seed){let a=seed>>>0;return function(){a|=0;a=(a+0x6d2b79f5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+const pick=(rng,arr)=>arr[Math.floor(rng()*arr.length)];
+
+function generateChromie(id){
+  const rng=mulberry32(id*2654435761+12345);
+  const palette=PALETTES[Math.floor(rng()*PALETTES.length)];
+  const traits={Type:pick(rng,TYPES),Expression:pick(rng,EXPR),Headgear:pick(rng,HEAD),Eyewear:pick(rng,EYE),Palette:palette.name};
+  const buf=new Uint8Array(PX);
+  const set=(x,y,v)=>{if(x>=0&&y>=0&&x<GRID&&y<GRID)buf[y*GRID+x]=v;};
+  const fr=(x0,y0,w,h,v)=>{for(let y=y0;y<y0+h;y++)for(let x=x0;x<x0+w;x++)set(x,y,v);};
+  const skin=5+Math.floor(rng()*3), sShade=skin+3, sLight=Math.max(1,skin-3);
+  const feat=12+Math.floor(rng()*3), gear=9+Math.floor(rng()*4);
+  const cx=32, top=14, hw=18+Math.floor(rng()*3), hh=30+Math.floor(rng()*4);
+  for(let y=0;y<hh;y++){const halfW=hw-(y<4?(4-y):0)-(y>hh-5?(y-(hh-5)):0);for(let dx=-halfW;dx<=halfW;dx++){let v=skin;if(dx<-halfW+3)v=sShade;else if(dx>halfW-3)v=sLight;set(cx+dx,top+y,v);}}
+  if(traits.Type==="Cat"){for(let i=0;i<5;i++){fr(cx-hw+2,top-5+i,5-i,1,sShade);fr(cx+hw-6+i,top-5+i,5-i,1,sShade);}}
+  else if(traits.Type==="Alien"){fr(cx-1,top-8,2,8,gear);set(cx,top-9,feat);}
+  const eyeY=top+Math.floor(hh*0.42), eyeDx=7+Math.floor(rng()*2);
+  const eyeW=traits.Expression==="Surprised"?4:3, eyeH=traits.Expression==="Sleepy"?1:(traits.Expression==="Surprised"?4:2);
+  const eye=(ex)=>{fr(ex-eyeW,eyeY,eyeW*2,eyeH,1);set(ex-1,eyeY,feat);set(ex,eyeY,feat);};
+  eye(cx-eyeDx);eye(cx+eyeDx);
+  if(traits.Eyewear==="Shades")fr(cx-eyeDx-eyeW-1,eyeY-1,(eyeDx+eyeW+1)*2,eyeH+2,1);
+  else if(traits.Eyewear==="VR"){fr(cx-eyeDx-eyeW-2,eyeY-2,(eyeDx+eyeW+2)*2,eyeH+4,gear);fr(cx-eyeDx-eyeW-1,eyeY-1,(eyeDx+eyeW+1)*2,eyeH+2,1);}
+  const mY=top+Math.floor(hh*0.72);
+  if(traits.Expression==="Smile"){for(let i=-4;i<=4;i++)set(cx+i,mY+Math.round(Math.abs(i)*0.4),feat);}
+  else if(traits.Expression==="Serious")fr(cx-4,mY,9,1,sShade);
+  else if(traits.Expression==="Smug"){for(let i=-4;i<=2;i++)set(cx+i,mY-Math.round((i+4)*0.3),1);}
+  else if(traits.Expression==="Surprised")fr(cx-2,mY-1,4,4,1);
+  else fr(cx-3,mY,7,1,sShade);
+  const g=traits.Headgear;
+  if(g==="Cap"){fr(cx-hw,top-2,hw*2,5,gear);fr(cx-hw-4,top+2,6,2,gear);}
+  else if(g==="Crown"){for(let i=0;i<5;i++)fr(cx-12+i*6,top-6+(i%2)*3,4,6,13);fr(cx-14,top-1,28,3,13);}
+  else if(g==="Halo"){for(let i=-10;i<=10;i++)set(cx+i,top-7,11);}
+  else if(g==="Top Hat"){fr(cx-10,top-14,20,12,1);fr(cx-15,top-3,30,3,1);}
+  else if(g==="Beanie")fr(cx-hw,top-4,hw*2,7,gear);
+  else if(g==="Visor")fr(cx-hw-1,top-1,hw*2+2,3,gear);
+  else if(g==="Antenna"){fr(cx-1,top-9,2,9,gear);set(cx,top-10,feat);}
+  return {buf,palette,traits};
+}
+
+function renderSVG(buf,palette){
+  const cell=1000/GRID; let body="";
+  for(let y=0;y<GRID;y++){let x=0;while(x<GRID){const idx=buf[y*GRID+x];let run=1;while(x+run<GRID&&buf[y*GRID+x+run]===idx)run++;if(idx!==0)body+=`<rect x="${x*cell}" y="${y*cell}" width="${run*cell}" height="${cell}" fill="${palette.colors[idx]}"/>`;x+=run;}}
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" shape-rendering="crispEdges"><rect width="1000" height="1000" fill="${palette.colors[0]}"/>${body}</svg>`;
+}
+
+function showCompanion(id){
+  // left: live Normie via <img> (no fetch/CORS) with graceful fallback
+  const nc=document.getElementById('normie-cell');
+  nc.innerHTML=`<img src="${NORMIE_API}/normie/${id}/image.svg" alt="Normie #${id}" onerror="this.parentNode.innerHTML='<span class=&quot;caption&quot; style=&quot;color:#c25062;padding:10px&quot;>couldn\\'t load #${id}</span>'" />`;
+  document.getElementById('normie-cap').innerHTML=`Normie #${id}<br><span class="dim">40×40 · 2 color · live from API</span>`;
+  // right: generated Chromie
+  const {buf,palette}=generateChromie(id);
+  const cc=document.getElementById('chromie-cell');
+  cc.style.background=palette.colors[0];
+  cc.innerHTML=renderSVG(buf,palette);
+  document.getElementById('chromie-cap').innerHTML=`Chromie #${id}<br><span class="dim">64×64 · ${palette.name} · 16 color</span>`;
+  const ps=document.getElementById('palette-strip');
+  ps.innerHTML=palette.colors.map(c=>`<div style="background:${c}"></div>`).join('');
+}
+
+function renderGallery(seed){
+  const grid=document.getElementById('gallery-grid');
+  let html="";
+  for(let i=0;i<9;i++){
+    const id=(seed*37+i*911)%10000;
+    const {buf,palette}=generateChromie(id);
+    html+=`<div class="tile"><div class="cell" style="background:${palette.colors[0]}">${renderSVG(buf,palette)}</div><div class="caption">Chromie #${id}</div></div>`;
+  }
+  grid.innerHTML=html;
+}
+
+// wiring
+document.getElementById('get-btn').addEventListener('click',()=>{
+  const v=Math.max(0,Math.min(9999,parseInt(document.getElementById('normie-id').value)||0));
+  document.getElementById('normie-id').value=v; showCompanion(v);
+});
+document.getElementById('normie-id').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('get-btn').click();});
+let gSeed=100;
+document.getElementById('shuffle-btn').addEventListener('click',()=>{gSeed++;renderGallery(gSeed);});
+document.getElementById('tab-companion').addEventListener('click',()=>{
+  document.getElementById('tab-companion').classList.add('active');document.getElementById('tab-gallery').classList.remove('active');
+  document.getElementById('view-companion').classList.remove('hidden');document.getElementById('view-gallery').classList.add('hidden');
+});
+document.getElementById('tab-gallery').addEventListener('click',()=>{
+  document.getElementById('tab-gallery').classList.add('active');document.getElementById('tab-companion').classList.remove('active');
+  document.getElementById('view-gallery').classList.remove('hidden');document.getElementById('view-companion').classList.add('hidden');
+  renderGallery(gSeed);
+});
+
+// init
+showCompanion(1459);
+</script>
+</body>
+</html>
