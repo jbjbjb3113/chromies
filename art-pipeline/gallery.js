@@ -111,7 +111,7 @@ function main() {
     mTierCounts[mTier.name] = (mTierCounts[mTier.name] || 0) + 1;
 
     const baseBuf = compositeChromie(renderPicks, traits, 0, null, null);
-    const { tier, driftMap, strays } = buildPhase3Effects(tokenId, picks, baseBuf, tierOverride);
+    const { tier, driftMap, strays } = buildPhase3Effects(tokenId, picks, baseBuf, tierOverride, character);
     tierCounts[tier.name] = (tierCounts[tier.name] || 0) + 1;
 
     let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);

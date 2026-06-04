@@ -66,9 +66,10 @@
         "#f0eae0": "highlight"
       },
       "variants": [
-        { "name": "UnderArmour", "file": "BODYTATTOO_UnderArmour.png", "weight": 20 },
-        { "name": "AkuHeart", "file": "BODYTATTOO_AkuHeart.png", "weight": 10 },
+        { "name": "UnderArmour", "file": "BODYTATTOO_UnderArmour.png", "weight": 15 },
+        { "name": "AkuHeart", "file": "BODYTATTOO_AkusHeart.png", "weight": 10 },
         { "name": "Pyramid", "file": "BODYTATTOO_Pyramid.png", "weight": 10 },
+        { "name": "Normies", "file": "BODYTATTOO_Normies.png", "weight": 5 },
         { "name": "None", "file": "BODYTATTOO_None.png", "weight": 60 }
       ]
     },

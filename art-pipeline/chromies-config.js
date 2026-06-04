@@ -139,6 +139,7 @@ const PIXEL_MUTATION = {
 // forcedSlots: slot overrides applied after variant roll (cannot be overridden).
 // slotWeightOverrides: per-slot variant weight multipliers (0 = never, <1 = rarer, >1 = more common).
 // slotVariantPool: per-slot whitelist — only named variants are eligible for that character.
+// slotDriftOverrides: per-slot fixed drift applied regardless of drift tier. { slot: { dx, dy } }
 const CHARACTERS = [
   {
     name: "HeroA",
@@ -170,7 +171,6 @@ const CHARACTERS = [
       mustache: { Thick: 0.1 },
     },
     slotVariantPool: {
-      // Female-only hair pool — male-coded styles excluded
       hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
       necklace: ["Female_Chain", "None"],
     },
@@ -192,6 +192,10 @@ const CHARACTERS = [
       glasses: "None",
     },
     slotWeightOverrides: {},
+    // Tattoo drifts up 4px on alien — sits higher on the alien skull/neck area
+    slotDriftOverrides: {
+      tattoo: { dx: 0, dy: -4 },
+    },
   },
   {
     name: "Cat",

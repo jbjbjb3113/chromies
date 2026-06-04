@@ -116,7 +116,7 @@ function compositeChromie(picks, traits, tokenId = 0, driftMap = null, mTier = n
     if (driftMap && driftMap[layer.slot]) {
       const { dx, dy } = driftMap[layer.slot];
       if (dx !== 0 || dy !== 0) {
-        layerBuf = applyDriftToBuffer(layer.buf, dx, dy);
+        layerBuf = applyDriftToBuffer(layerBuf, dx, dy);
       }
     }
     for (let i = 0; i < PX; i++) {
@@ -473,7 +473,7 @@ function updateMaster(tokenId, paletteKey, picks, tier, mTier, character = null)
 // PHASE 3 + MUTATION
 // ============================================================================
 
-function buildPhase3Effects(tokenId, picks, composedBuf, tierOverride = null) {
+function buildPhase3Effects(tokenId, picks, composedBuf, tierOverride = null, character = null) {
   let tier = pickDriftTier(tokenId);
   if (tierOverride) {
     const found = (PHASE3.driftTiers || []).find(t => t.name.toLowerCase() === tierOverride.toLowerCase());
@@ -484,6 +484,15 @@ function buildPhase3Effects(tokenId, picks, composedBuf, tierOverride = null) {
     driftMap[slot] = getSlotDrift(tokenId, slot, tier);
   }
   const strays = getStrayPixels(tokenId, composedBuf, tier);
+  // Apply character-level slot drift overrides (fixed dx/dy regardless of tier)
+  if (character && character.slotDriftOverrides) {
+    for (const [slot, override] of Object.entries(character.slotDriftOverrides)) {
+      if (picks[slot]) {
+        driftMap[slot] = { dx: override.dx || 0, dy: override.dy || 0 };
+      }
+    }
+  }
+
   return { tier, driftMap, strays };
 }
 
@@ -543,7 +552,7 @@ function main() {
 
   const mTier = getMutationTier(tokenId, mtierOverride);
   const baseBuf = compositeChromie(renderPicks, traits, 0, null, null);
-  const { tier, driftMap, strays } = buildPhase3Effects(tokenId, picks, baseBuf, tierOverride);
+  const { tier, driftMap, strays } = buildPhase3Effects(tokenId, picks, baseBuf, tierOverride, character);
 
   console.log(`  drift tier:    ${tier.name} (maxDrift=${tier.maxDrift}, strays=${strays.length})`);
   console.log(`  mutation tier: ${mTier.name} (paletteSwap=${(mTier.paletteSwap * 100).toFixed(0)}%)`);
