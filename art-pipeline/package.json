@@ -1,0 +1,15 @@
+{
+  "name": "chromies-pipeline",
+  "version": "0.1.0",
+  "description": "Hand-art layer pipeline for Chromies — extract role-indexed component data from Aseprite PNGs, composite + render through the on-chain renderer logic.",
+  "private": true,
+  "scripts": {
+    "extract": "node extract-components.js",
+    "render": "node render-chromie.js",
+    "render:signal": "node render-chromie.js SIGNAL",
+    "build": "node extract-components.js && node render-chromie.js SIGNAL"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0"
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "_comment": "Trait catalog for Chromies. Each slot has zOrder, drawColors, and a list of variants. The renderer picks one variant per slot per token, weighted by the 'weight' field. Use 'None' for empty variants (fully transparent PNG). Variants with matching 'group' values coordinate across slots. Variants with 'mutationScale' multiply the tier's mutation intensity for that variant — small/tight shapes use 1.0, larger/looser shapes use 1.5-2.5.",
+  "palettes": [
+    { "name": "SIGNAL", "weight": 50 },
+    { "name": "ACID",   "weight": 12 },
+    { "name": "CYAN",   "weight": 12 },
+    { "name": "GHOST",  "weight": 10 },
+    { "name": "BLOOD",  "weight": 10 },
+    { "name": "MOSS",   "weight": 6 }
+  ],
+  "slots": {
+    "hood": {
+      "zOrder": 5,
+      "drawColors": {
+        "#1c1c26": "hood",
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Classic", "file": "HOOD_Classic.png", "weight": 20 },
+        { "name": "None",    "file": "HOOD_None.png",    "weight": 80 }
+      ]
+    },
+    "shirt": {
+      "zOrder": 6,
+      "drawColors": {
+        "#1c1c26": "hood",
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Crew", "file": "SHIRT_Crew.png", "weight": 40 },
+        { "name": "Tank", "file": "SHIRT_Tank.png", "weight": 20, "group": "tank" },
+        { "name": "None", "file": "SHIRT_None.png", "weight": 40 }
+      ]
+    },
+    "body": {
+      "zOrder": 9,
+      "drawColors": {
+        "#1c1c26": "hood",
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight",
+        "#4c270f": "skin_shadow_deep",
+        "#89532a": "skin_shadow",
+        "#b2723f": "skin_mid",
+        "#d18b4d": "skin_light",
+        "#df9c5e": "skin_highlight"
+      },
+      "variants": [
+        { "name": "Tank",    "file": "BODY_Tank.png",    "weight": 1, "group": "tank" },
+        { "name": "Default", "file": "BODY_Default.png", "weight": 9 },
+        { "name": "None",    "file": "BODY_None.png",    "weight": 0 }
+      ]
+    },
+    "neck": {
+      "zOrder": 8,
+      "drawColors": {
+        "#4c270f": "skin_shadow_deep",
+        "#89532a": "skin_shadow",
+        "#b2723f": "skin_mid",
+        "#d18b4d": "skin_light",
+        "#df9c5e": "skin_highlight",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "HeroA", "file": "NECK_HeroA.png", "weight": 100 }
+      ]
+    },
+    "head": {
+      "zOrder": 10,
+      "drawColors": {
+        "#4c270f": "skin_shadow_deep",
+        "#89532a": "skin_shadow",
+        "#b2723f": "skin_mid",
+        "#d18b4d": "skin_light",
+        "#df9c5e": "skin_highlight",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "HeroA", "file": "HEAD_HeroA.png", "weight": 100 }
+      ]
+    },
+    "tattoo": {
+      "zOrder": 15,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#ff2d8a": "eye_signal",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Signal", "file": "TATTOO_Signal.png", "weight": 25 },
+        { "name": "None",   "file": "TATTOO_None.png",   "weight": 75 }
+      ]
+    },
+    "mask": {
+      "zOrder": 20,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "None", "file": "MASK_None.png", "weight": 100 }
+      ]
+    },
+    "beard": {
+      "zOrder": 25,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Full", "file": "BEARD_Full.png", "weight": 40, "mutationScale": 1.5 },
+        { "name": "None", "file": "BEARD_None.png", "weight": 60 }
+      ]
+    },
+    "mustache": {
+      "zOrder": 26,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Thick", "file": "MUSTACHE_Thick.png", "weight": 30, "mutationScale": 0.5 },
+        { "name": "None",  "file": "MUSTACHE_None.png",  "weight": 70 }
+      ]
+    },
+    "eyes": {
+      "zOrder": 30,
+      "drawColors": {
+        "#1a0a14": "eye_socket",
+        "#a01856": "eye_glow",
+        "#ff2d8a": "eye_signal",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Signal", "file": "EYES_Signal.png", "weight": 100 }
+      ]
+    },
+    "earrings": {
+      "zOrder": 32,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#ff2d8a": "eye_signal",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Stud", "file": "EARRINGS_Stud.png", "weight": 30 },
+        { "name": "None", "file": "EARRINGS_None.png", "weight": 70 }
+      ]
+    },
+    "glasses": {
+      "zOrder": 35,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Shades", "file": "GLASSES_Shades.png", "weight": 50 },
+        { "name": "None",   "file": "GLASSES_None.png",   "weight": 50 }
+      ]
+    },
+    "hair": {
+      "zOrder": 40,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#4d051b": "hair_dark",
+        "#9b2352": "hair_mid",
+        "#db5a91": "hair_bright",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "Mohawk",    "file": "HAIR_Mohawk.png",    "weight": 15, "mutationScale": 1.0 },
+        { "name": "Pompadour", "file": "HAIR_Pompadour.png", "weight": 15, "mutationScale": 1.0 },
+        { "name": "MrT",       "file": "HAIR_MrT.png",       "weight": 10, "mutationScale": 1.2 },
+        { "name": "Afro",      "file": "HAIR_Afro.png",      "weight": 25, "mutationScale": 2.0 },
+        { "name": "Dreads",    "file": "HAIR_Dreads.png",    "weight": 10, "mutationScale": 2.5 },
+        { "name": "Surfer",    "file": "HAIR_Surfer.png",    "weight": 20, "mutationScale": 1.8 },
+        { "name": "None",      "file": "HAIR_None.png",      "weight": 5 }
+      ]
+    }
+  }
+}

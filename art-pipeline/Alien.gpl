@@ -1,0 +1,18 @@
+GIMP Palette
+#
+225 229 224	background
+8   7   4	mask_dark
+29  26  5	mask_mid
+200 195 155	highlight
+44  40  15	skin_shadow_deep
+94  89  61	skin_shadow
+135 127 81	skin_mid
+158 150 98	skin_light
+184 177 126	skin_highlight
+33  30  12	hood
+19  20  18	eye_socket
+85  82  59	eye_glow
+253 251 251	eye_signal
+56  53  37	hair_dark
+93  88  64	hair_mid
+178 172 120	hair_bright

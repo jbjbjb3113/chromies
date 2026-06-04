@@ -2,7 +2,15 @@ import "dotenv/config";
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { generateToken, PALETTES, EXPRESSIONS, EYEWEAR, HEADGEAR, TYPES } from "../src/art/engine";
+import {
+  generateToken,
+  PALETTES,
+  EXPRESSIONS,
+  EYEWEAR,
+  HEADGEAR,
+  TYPES,
+  driftFromLegacyMode,
+} from "../src/art/engine";
 
 type OutputRow = {
   tokenId: number;
@@ -20,6 +28,14 @@ type OutputRow = {
 
 async function main(): Promise<void> {
   const totalSupply = Number(process.env.CHROMA_TOTAL_SUPPLY ?? 10000);
+  const driftLevel = process.env.CHROMA_DRIFT_LEVEL
+    ? Number(process.env.CHROMA_DRIFT_LEVEL) / 100
+    : process.env.CHROMA_GENERATION_MODE
+      ? driftFromLegacyMode(process.env.CHROMA_GENERATION_MODE)
+      : 0.5;
+  if (!Number.isFinite(driftLevel) || driftLevel < 0 || driftLevel > 1) {
+    throw new Error("CHROMA_DRIFT_LEVEL must be 0–100 (or legacy CHROMA_GENERATION_MODE).");
+  }
   if (!Number.isInteger(totalSupply) || totalSupply <= 0) {
     throw new Error("CHROMA_TOTAL_SUPPLY must be a positive integer.");
   }
@@ -33,7 +49,7 @@ async function main(): Promise<void> {
   const hash = createHash("sha256");
 
   for (let tokenId = 0; tokenId < totalSupply; tokenId++) {
-    const token = generateToken(tokenId);
+    const token = generateToken(tokenId, driftLevel);
     const row: OutputRow = {
       tokenId,
       traits: {
@@ -58,6 +74,8 @@ async function main(): Promise<void> {
 
   const manifest = {
     totalSupply,
+    driftLevel,
+    driftPercent: Math.round(driftLevel * 100),
     format: "jsonl",
     packedBufferBytes: 2048,
     pixelGrid: "64x64",

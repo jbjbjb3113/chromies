@@ -1,0 +1,148 @@
+// ============================================================================
+// pixel-mutation.js
+// Per-token pixel mutation. Two effects:
+//   A. paletteSwap — swap drawn pixels with siblings in same role family
+//   B. edge multi-pass — silhouette wobbles via N passes of erode+dilate
+//
+// Optional `mutationScale` (per variant, from traits.json) multiplies the
+// tier's per-pixel probabilities. 1.0 = baseline. Higher values give larger
+// silhouettes (Afro, Dreads) more deviation; lower values protect small
+// precision shapes (Mustache, Mohawk) from being shredded.
+// Pass count (edgePasses) is also scaled, rounded to nearest integer.
+//
+// All effects deterministic from token ID + slot. Settings in chromies-config.js.
+// ============================================================================
+
+const { PIXEL_MUTATION, SETTINGS } = require("./chromies-config");
+
+const GRID = SETTINGS.grid;
+const PX = GRID * GRID;
+
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function seedFromStr(s) {
+  let seed = 0;
+  for (let i = 0; i < s.length; i++) seed = (seed * 31 + s.charCodeAt(i)) | 0;
+  return seed;
+}
+
+function pickMutationTier(tokenId) {
+  if (!PIXEL_MUTATION || !PIXEL_MUTATION.enabled) {
+    return { name: "Pristine", paletteSwap: 0, edgeErode: 0, edgeDilate: 0, edgePasses: 0 };
+  }
+  const tiers = PIXEL_MUTATION.tiers || [];
+  if (tiers.length === 0) {
+    return { name: "Pristine", paletteSwap: 0, edgeErode: 0, edgeDilate: 0, edgePasses: 0 };
+  }
+  const rng = mulberry32(seedFromStr(`${tokenId}:mutation_tier`));
+  const total = tiers.reduce((s, t) => s + (t.weight || 1), 0);
+  let r = rng() * total;
+  for (const t of tiers) {
+    r -= (t.weight || 1);
+    if (r < 0) return t;
+  }
+  return tiers[tiers.length - 1];
+}
+
+function findFamilyForSlot(slotIndex, paletteFamilies) {
+  for (const [familyName, members] of Object.entries(paletteFamilies)) {
+    if (members.includes(slotIndex)) return { name: familyName, members };
+  }
+  return null;
+}
+
+function applyPaletteSwap(buf, tokenId, slot, swapProb) {
+  if (swapProb <= 0) return buf;
+  const families = PIXEL_MUTATION.paletteFamilies || {};
+  const out = new Uint8Array(buf);
+  const rng = mulberry32(seedFromStr(`${tokenId}:swap:${slot}`));
+
+  for (let i = 0; i < PX; i++) {
+    const cur = buf[i];
+    if (cur === 0) continue;
+    const family = findFamilyForSlot(cur, families);
+    if (!family) continue;
+    if (rng() < swapProb) {
+      out[i] = family.members[Math.floor(rng() * family.members.length)];
+    }
+  }
+  return out;
+}
+
+function edgePass(buf, tokenId, slot, passId, erodeProb, dilateProb) {
+  const out = new Uint8Array(buf);
+  const rng = mulberry32(seedFromStr(`${tokenId}:edge:${slot}:p${passId}`));
+  const edgesDrawn = [];
+  const edgesBg = [];
+  for (let y = 0; y < GRID; y++) {
+    for (let x = 0; x < GRID; x++) {
+      const cur = buf[y * GRID + x];
+      let nBg = 0;
+      const drawnN = [];
+      for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || nx >= GRID || ny < 0 || ny >= GRID) continue;
+        const n = buf[ny * GRID + nx];
+        if (n === 0) nBg++;
+        else drawnN.push(n);
+      }
+      if (cur !== 0 && nBg > 0) edgesDrawn.push(y * GRID + x);
+      if (cur === 0 && drawnN.length > 0) edgesBg.push({ idx: y * GRID + x, neighbors: drawnN });
+    }
+  }
+  for (const i of edgesDrawn) {
+    if (rng() < erodeProb) out[i] = 0;
+  }
+  for (const e of edgesBg) {
+    if (rng() < dilateProb) {
+      out[e.idx] = e.neighbors[Math.floor(rng() * e.neighbors.length)];
+    }
+  }
+  return out;
+}
+
+function applyEdgeMutation(buf, tokenId, slot, erodeProb, dilateProb, passes) {
+  if (passes <= 0 || (erodeProb <= 0 && dilateProb <= 0)) return buf;
+  let cur = buf;
+  for (let p = 0; p < passes; p++) {
+    cur = edgePass(cur, tokenId, slot, p, erodeProb, dilateProb);
+  }
+  return cur;
+}
+
+// Variant-aware mutation: scale probabilities and pass count by the variant's
+// mutationScale (defaults to 1.0). Bigger floppy shapes can take more deviation.
+function mutateLayer(buf, tokenId, slot, tier, mutationScale = 1.0) {
+  if (!PIXEL_MUTATION || !PIXEL_MUTATION.enabled) return buf;
+  const mutableSlots = PIXEL_MUTATION.mutableSlots || [];
+  if (!mutableSlots.includes(slot)) return buf;
+
+  const scale = (typeof mutationScale === "number" && mutationScale > 0) ? mutationScale : 1.0;
+
+  // Clamp probabilities to safe range so high-scale variants don't go past 100%
+  const swap   = Math.min(1.0, (tier.paletteSwap || 0) * scale);
+  const erode  = Math.min(1.0, (tier.edgeErode   || 0) * scale);
+  const dilate = Math.min(1.0, (tier.edgeDilate  || 0) * scale);
+  // Scale pass count proportionally; minimum 1 if any edge mutation requested
+  let passes = Math.round((tier.edgePasses || 0) * scale);
+  if (passes < 1 && (erode > 0 || dilate > 0) && tier.edgePasses > 0) passes = 1;
+
+  let out = buf;
+  out = applyPaletteSwap(out, tokenId, slot, swap);
+  out = applyEdgeMutation(out, tokenId, slot, erode, dilate, passes);
+  return out;
+}
+
+module.exports = {
+  pickMutationTier,
+  mutateLayer,
+};

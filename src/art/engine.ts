@@ -8,12 +8,85 @@ export const HEADGEAR = ["None", "Cap", "Crown", "Halo", "Antenna", "Top Hat", "
 export const EYEWEAR = ["None", "Shades", "Round Glasses", "Visor", "Eyepatch", "VR"] as const;
 export const PALETTES = ["Ember", "Tide", "Dusk", "Verdant", "Mono+", "Candy"] as const;
 
+import {
+  type AwakeningModifiers,
+  awakeningSeed,
+  clampDrift,
+  driftFromLegacyMode,
+  driftPercent,
+  getAwakeningModifiers,
+  getDriftAnchorLabel,
+  getDriftDescriptor,
+  getPureChromieModifiers,
+  lerp,
+} from "./awakening";
+
+export {
+  getAwakeningModifiers,
+  awakeningSeed,
+  clampDrift,
+  driftFromLegacyMode,
+  driftFromPercent,
+  driftPercent,
+  getDriftAnchorLabel,
+  getDriftDescriptor,
+  getPureChromieModifiers,
+  lerp,
+} from "./awakening";
+export type { AwakeningModifiers } from "./awakening";
+export { buildDriftChromie, buildPureChromie, mutateMirrorBuffer, getStructuralStrength } from "./drift";
+export { applyStructuralEvolution, analyzeSilhouette } from "./structuralMutation";
+export {
+  PALETTE_FAMILIES,
+  PALETTE_FAMILY_LIST,
+  PALETTE_SEMANTIC,
+  buildIndexedPaletteColors,
+  paletteFamilyToMirrorPalette,
+  resolvePaletteFamilyId,
+  paletteFamilySeed,
+} from "./paletteFamilies";
+export type { PaletteFamilyId, PaletteFamilyDef, PaletteSemantic } from "./paletteFamilies";
+export {
+  generateMirrorChromie,
+  generateMirrorChromieFromPixels,
+  fetchNormiePixels,
+  parseNormiePixels,
+  upscaleNormieTo64,
+  colorizeMirrorMask,
+} from "./mirror";
+export type { MirrorChromieResult, MirrorPalette } from "./mirror";
+export {
+  CANONICAL_HERO_CHROMIES,
+  D_LOCK_CANON_PATH,
+  D_LOCK_GEOMETRY,
+  PURE_SKULL_TEST,
+  renderChromieDLock,
+  resolveCanonicalHero,
+  resolveCanonicalHeroByKey,
+  setPureSkullTest,
+} from "./dLockDoctrine";
+export { generateDLockChromie } from "./chromieGenerate";
+export {
+  WALL_PREVIEW_MODE,
+  generateCollectionWall,
+  renderWallSvg,
+  setWallPreviewMode,
+} from "./collectionWall";
+export type { CollectionWallResult, WallCell, WallSize } from "./collectionWall";
+export { validateSpeciesCompression, validateSpeciesAtScale } from "./speciesCompressionQa";
+export type { QaFailureCode, SpeciesQaResult } from "./speciesCompressionQa";
+export { getDLockMaterials, buildMaterialsForLineage } from "./dLockMaterials";
+export { resolveMaterialProfile, MASK_MATERIALS, HOODIE_MATERIALS, CHAIN_MATERIALS, EYE_MATERIALS } from "./dLockMaterialProfiles";
+export type { DLockDraw, DLockRenderOptions, CanonicalHeroChromie, MaterialProfile } from "./dLockDoctrine";
+export type { DLockMaterials } from "./dLockMaterials";
+
 type Traits = {
   typeId: number;
   expressionId: number;
   headgearId: number;
   eyewearId: number;
   paletteId: number;
+  awakeningId: number;
 };
 
 export type GeneratedToken = {
@@ -77,21 +150,31 @@ function createContext(): DrawCtx {
   return { buf, set, fillRect, drawCircle };
 }
 
-function buildTraits(tokenId: number, rng: () => number): Traits {
+function buildTraits(tokenId: number, rng: () => number, driftLevel: number): Traits {
   const typeId = pickWeighted(rng, [34, 16, 13, 22, 15]);
   const expressionId = pickWeighted(rng, [26, 20, 15, 13, 14, 12]);
   const headgearId = pickWeighted(rng, [40, 14, 8, 8, 8, 8, 8, 6]);
   const eyewearId = pickWeighted(rng, [42, 16, 12, 10, 8, 12]);
-  const paletteId = (Math.imul(tokenId, 2654435761) >>> 0) % PALETTES.length;
-  return { typeId, expressionId, headgearId, eyewearId, paletteId };
+  const modifiers = getAwakeningModifiers(driftLevel);
+  const paletteId =
+    modifiers.paletteMutation < 0.35
+      ? tokenId % PALETTES.length
+      : (Math.imul(tokenId, 2654435761) >>> 0) % PALETTES.length;
+  const awakeningId = Math.min(255, Math.round(clampDrift(driftLevel) * 255));
+  return { typeId, expressionId, headgearId, eyewearId, paletteId, awakeningId };
 }
 
-function drawBaseHead(ctx: DrawCtx, rng: () => number, traits: Traits): { cx: number; top: number; hw: number; hh: number } {
+function drawBaseHead(
+  ctx: DrawCtx,
+  rng: () => number,
+  traits: Traits,
+  modifiers: AwakeningModifiers,
+): { cx: number; top: number; hw: number; hh: number } {
   const { set } = ctx;
   const cx = 32;
-  const top = 13 + Math.floor(rng() * 3);
-  const hw = 16 + Math.floor(rng() * 5);
-  const hh = 30 + Math.floor(rng() * 5);
+  const top = 13 + Math.floor(rng() * 3 * modifiers.silhouetteVariance);
+  const hw = 16 + Math.floor(rng() * 5 * modifiers.silhouetteVariance);
+  const hh = 30 + Math.floor(rng() * 5 * modifiers.silhouetteVariance);
 
   const skin = 5 + ((traits.typeId + Math.floor(rng() * 3)) % 3);
   const shade = Math.min(15, skin + 3);
@@ -130,9 +213,15 @@ function drawBaseHead(ctx: DrawCtx, rng: () => number, traits: Traits): { cx: nu
   return { cx, top, hw, hh };
 }
 
-function drawEyes(ctx: DrawCtx, rng: () => number, traits: Traits, geom: { cx: number; top: number; hh: number }): void {
+function drawEyes(
+  ctx: DrawCtx,
+  rng: () => number,
+  traits: Traits,
+  geom: { cx: number; top: number; hh: number },
+  modifiers: AwakeningModifiers,
+): void {
   const eyeY = geom.top + Math.floor(geom.hh * 0.42);
-  const eyeDx = 7 + Math.floor(rng() * 3);
+  const eyeDx = 7 + Math.floor(rng() * 3 * modifiers.silhouetteVariance);
   const eyeW = traits.expressionId === 4 ? 4 : 3;
   const eyeH = traits.expressionId === 5 ? 1 : traits.expressionId === 4 ? 4 : 2;
   const iris = 12 + Math.floor(rng() * 4);
@@ -179,9 +268,15 @@ function drawMouth(ctx: DrawCtx, traits: Traits, geom: { cx: number; top: number
   }
 }
 
-function drawHeadgear(ctx: DrawCtx, traits: Traits, geom: { cx: number; top: number; hw: number }): void {
+function drawHeadgear(
+  ctx: DrawCtx,
+  traits: Traits,
+  geom: { cx: number; top: number; hw: number },
+  modifiers: AwakeningModifiers,
+): void {
   const g = traits.headgearId;
   const gear = 10;
+  if (modifiers.hairChaos < 0.35 && g > 4) return;
   if (g === 1) {
     ctx.fillRect(geom.cx - geom.hw, geom.top - 2, geom.hw * 2, 5, gear);
     ctx.fillRect(geom.cx - geom.hw - 4, geom.top + 2, 6, 2, gear);
@@ -218,15 +313,17 @@ function toHex(data: Uint8Array): `0x${string}` {
   return `0x${Buffer.from(data).toString("hex")}`;
 }
 
-export function generateToken(tokenId: number): GeneratedToken {
-  const rng = mulberry32((Math.imul(tokenId, 2654435761) + 12345) >>> 0);
-  const traits = buildTraits(tokenId, rng);
+export function generateToken(tokenId: number, driftLevel = 0.5): GeneratedToken {
+  const t = clampDrift(driftLevel);
+  const rng = mulberry32((Math.imul(tokenId, 2654435761) + 12345 + awakeningSeed(t)) >>> 0);
+  const traits = buildTraits(tokenId, rng, t);
+  const modifiers = getAwakeningModifiers(t);
   const ctx = createContext();
 
-  const geom = drawBaseHead(ctx, rng, traits);
-  drawEyes(ctx, rng, traits, geom);
+  const geom = drawBaseHead(ctx, rng, traits, modifiers);
+  drawEyes(ctx, rng, traits, geom, modifiers);
   drawMouth(ctx, traits, geom);
-  drawHeadgear(ctx, traits, geom);
+  drawHeadgear(ctx, traits, geom, modifiers);
 
   const traitBytes = Uint8Array.from([
     traits.typeId,

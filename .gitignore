@@ -6,4 +6,7 @@ generated/
 dist/
 coverage/
 
+# Generated art renders (regenerated via art-pipeline/generate.js + gallery.js)
+art-pipeline/output/
+
 lib/
