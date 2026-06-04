@@ -145,9 +145,15 @@
           "group": "tank"
         },
         {
+          "name": "Tank_Female",
+          "file": "SHIRT_Tank_Female.png",
+          "weight": 20,
+          "group": "tank_female"
+        },
+        {
           "name": "None",
           "file": "SHIRT_None.png",
-          "weight": 40
+          "weight": 20
         }
       ]
     },
@@ -180,6 +186,12 @@
           "name": "Alien",
           "file": "BODY_Alien.png",
           "weight": 0
+        },
+        {
+          "name": "Female_Tank",
+          "file": "BODY_Female_Tank.png",
+          "weight": 0,
+          "group": "tank_female"
         },
         {
           "name": "Female",

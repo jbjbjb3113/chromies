@@ -269,7 +269,7 @@ function applyCoverageRules(picks, traits, character = null) {
   const bodyTattooSlotDef = traits.slots.bodytattoo;
   const bodyVisible = () => {
     const b = out.body ? out.body.variant.name : null;
-    return b === "Default" || b === "Female" || b === "Alien";
+    return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien";
   };
 
   if (hoodPick === "Classic") {
@@ -279,7 +279,7 @@ function applyCoverageRules(picks, traits, character = null) {
   } else if (hoodPick === "None" && shirtPick === "None" && bodyPick !== "Tank") {
     promoteToDefault("body", bodySlotDef);
     // bodytattoo stays as rolled — body is visible
-  } else if ((bodyPick === "Default" || bodyPick === "Female") && (hoodPick !== "None" || shirtPick !== "None")) {
+  } else if ((bodyPick === "Default" || bodyPick === "Female" || bodyPick === "Female_Tank") && (hoodPick !== "None" || (shirtPick !== "None" && shirtPick !== "Tank_Female"))) {
     suppressTo("body", bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
   }
@@ -296,7 +296,7 @@ function applyCoverageRules(picks, traits, character = null) {
     const finalHood = out.hood ? out.hood.variant.name : null;
     const finalShirt = out.shirt ? out.shirt.variant.name : null;
     const necklaceVisible = (finalHood !== "Classic") &&
-                            (finalShirt === "None" || finalBody === "Tank");
+                            (finalShirt === "None" || finalShirt === "Tank_Female" || finalBody === "Tank" || finalBody === "Female_Tank");
     if (!necklaceVisible) {
       suppressTo("necklace", necklaceSlotDef);
     }
@@ -401,10 +401,18 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
 // METADATA + MASTER LEDGER
 // ============================================================================
 
+const CHARACTER_TYPE_DISPLAY = {
+  "HeroA": "Human",
+  "Alien": "Alien",
+  "Cat": "Cat",
+  "Agent": "Agent",
+};
+
 function buildMetadata(tokenId, paletteKey, picks, tier, mTier, character = null) {
   const attributes = [];
   if (character) {
-    attributes.push({ trait_type: "Character", value: character.name });
+    const typeDisplay = CHARACTER_TYPE_DISPLAY[character.name] || character.name;
+    attributes.push({ trait_type: "Type", value: typeDisplay });
     if (character.gender) attributes.push({ trait_type: "Gender", value: character.gender });
   }
   attributes.push({ trait_type: "Palette", value: paletteKey });
@@ -430,7 +438,7 @@ function updateMaster(tokenId, paletteKey, picks, tier, mTier, character = null)
     name: `Chromie #${String(tokenId).padStart(4, "0")}`,
   };
   if (character) {
-    row.character = character.name;
+    row.type = CHARACTER_TYPE_DISPLAY[character.name] || character.name;
     if (character.gender) row.gender = character.gender;
   }
   row.palette = paletteKey;
