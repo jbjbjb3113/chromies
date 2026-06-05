@@ -3,17 +3,20 @@ import { Link, NavLink } from "react-router-dom";
 
 export default function SiteHeader() {
   return (
-    <header className="fixed inset-x-0 top-0 z-30 border-b border-ink-line bg-ink/80 backdrop-blur">
+    <header className="fixed inset-x-0 top-0 z-30 border-b border-ink bg-paper/95 text-ink backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="text-lg font-black tracking-tight text-white">
+        <Link
+          to="/"
+          className="font-symtext text-sm font-bold uppercase tracking-[0.15em] text-ink"
+        >
           CHROMIES
         </Link>
         <div className="flex items-center gap-6">
           <NavLink
             to="/mint"
             className={({ isActive }) =>
-              `text-sm font-semibold transition-colors hover:text-signal ${
-                isActive ? "text-signal" : "text-neutral-300"
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
               }`
             }
           >
@@ -22,12 +25,22 @@ export default function SiteHeader() {
           <NavLink
             to="/lab"
             className={({ isActive }) =>
-              `text-sm font-semibold transition-colors hover:text-signal ${
-                isActive ? "text-signal" : "text-neutral-300"
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
               }`
             }
           >
             Lab
+          </NavLink>
+          <NavLink
+            to="/canvas"
+            className={({ isActive }) =>
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
+              }`
+            }
+          >
+            Canvas
           </NavLink>
           <button
             type="button"

@@ -5,7 +5,7 @@ function MouthSlider({ label, value, min, max, onChange }) {
   return (
     <label className="block">
       <div className="mb-1 flex items-center justify-between text-xs">
-        <span className="text-neutral-500">{label}</span>
+        <span className="text-ink/50">{label}</span>
         <span className="font-mono tabular-nums text-signal">{value}px</span>
       </div>
       <input
@@ -14,7 +14,7 @@ function MouthSlider({ label, value, min, max, onChange }) {
         max={max}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-[#ff2d8a]"
+        className="w-full accent-signal"
       />
     </label>
   );
@@ -24,16 +24,16 @@ export default function MouthCalibration({ mouth, onChange, onReset, disabled })
   const set = (patch) => onChange(clampMouth({ ...mouth, ...patch }));
 
   return (
-    <div className="w-full max-w-xs space-y-3 border border-ink-line bg-ink px-3 py-3">
+    <div className="w-full max-w-xs space-y-3 border border-ink bg-white px-3 py-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+        <span className="text-xs font-semibold uppercase tracking-widest text-ink/60">
           Mouth region
         </span>
         <button
           type="button"
           disabled={disabled}
           onClick={onReset}
-          className="border border-ink-line px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-400 hover:border-signal hover:text-signal disabled:opacity-40"
+          className="border border-ink px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink/60 hover:border-signal hover:text-signal disabled:opacity-40"
         >
           Reset
         </button>
@@ -68,7 +68,7 @@ export default function MouthCalibration({ mouth, onChange, onReset, disabled })
         onChange={(h) => set({ h })}
       />
 
-      <p className="text-[10px] text-neutral-600">
+      <p className="text-[10px] text-ink/45">
         Default: {DEFAULT_MOUTH.x}, {DEFAULT_MOUTH.y} · {DEFAULT_MOUTH.w}×{DEFAULT_MOUTH.h}px
       </p>
     </div>

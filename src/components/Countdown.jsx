@@ -32,12 +32,12 @@ export default function Countdown({ target }) {
       {units.map((unit) => (
         <div
           key={unit.label}
-          className="min-w-[72px] border border-ink-line bg-ink-soft px-4 py-3"
+          className="min-w-[72px] border border-ink bg-white px-4 py-3"
         >
           <div className="text-3xl font-black tabular-nums text-signal sm:text-4xl">
             {String(unit.value).padStart(2, "0")}
           </div>
-          <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-neutral-500">
+          <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-ink/50">
             {unit.label}
           </div>
         </div>

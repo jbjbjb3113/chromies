@@ -7,7 +7,7 @@ const LINKS = [
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-ink-line bg-ink">
+    <footer className="border-t border-ink bg-ink text-white">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
         <span className="text-sm font-extrabold tracking-tight text-white">
           chromies<span className="text-signal">.art</span>
@@ -23,7 +23,7 @@ export default function SiteFooter() {
             </a>
           ))}
         </nav>
-        <span className="text-xs text-neutral-600">
+        <span className="text-xs text-neutral-500">
           © {new Date().getFullYear()} CHROMIES
         </span>
       </div>

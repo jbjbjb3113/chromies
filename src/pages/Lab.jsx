@@ -409,15 +409,15 @@ export default function Lab() {
   ]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-ink text-white">
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
       <SiteHeader />
 
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-0 px-4 pt-24 pb-8 lg:flex-row">
         {/* Left — 40% */}
-        <aside className="flex w-full flex-col border border-ink-line bg-ink-soft lg:w-[40%]">
-          <div className="border-b border-ink-line px-4 py-4">
+        <aside className="flex w-full flex-col border border-ink bg-white lg:w-[40%]">
+          <div className="border-b border-ink px-4 py-4">
             <h1 className="text-lg font-black tracking-tight">Talk to your Chromie</h1>
-            <p className="mt-1 text-xs text-neutral-500">64×64 pixel identity · lip sync demo</p>
+            <p className="mt-1 text-xs text-ink/50">64×64 pixel identity · lip sync demo</p>
           </div>
 
           <div className="flex flex-col items-center gap-4 px-4 py-6">
@@ -434,7 +434,7 @@ export default function Lab() {
                 value={tokenInput}
                 onChange={(e) => setTokenInput(e.target.value)}
                 placeholder="Token ID"
-                className="flex-1 border border-ink-line bg-ink px-3 py-2 text-sm text-white outline-none focus:border-signal"
+                className="flex-1 border border-ink bg-white px-3 py-2 text-sm text-ink outline-none focus:border-signal"
               />
               <button
                 type="submit"
@@ -445,7 +445,7 @@ export default function Lab() {
             </form>
 
             {loadError && (
-              <p className="text-center text-xs text-red-400">{loadError}</p>
+              <p className="text-center text-xs text-red-600">{loadError}</p>
             )}
 
             {tokenImage ? (
@@ -459,7 +459,7 @@ export default function Lab() {
                 />
                 <p className="text-sm font-semibold text-signal">{chromieLabel}</p>
                 {metadata?.attributes && (
-                  <p className="max-w-xs text-center text-xs text-neutral-500">
+                  <p className="max-w-xs text-center text-xs text-ink/50">
                     {metadata.attributes.slice(0, 4).map((a) => a.value).join(" · ")}
                   </p>
                 )}
@@ -470,7 +470,7 @@ export default function Lab() {
                 )}
               </>
             ) : (
-              <div className="flex h-64 w-64 items-center justify-center border border-dashed border-ink-line text-sm text-neutral-600">
+              <div className="flex h-64 w-64 items-center justify-center border border-dashed border-ink text-sm text-ink/45">
                 Load a token
               </div>
             )}
@@ -478,14 +478,14 @@ export default function Lab() {
         </aside>
 
         {/* Right — 60% */}
-        <section className="flex w-full flex-col border border-t-0 border-ink-line lg:w-[60%] lg:border-t lg:border-l-0">
-          <div className="flex items-center justify-between border-b border-ink-line px-4 py-3">
-            <span className="text-sm font-semibold text-neutral-400">Chat</span>
+        <section className="flex w-full flex-col border border-t-0 border-ink lg:w-[60%] lg:border-t lg:border-l-0">
+          <div className="flex items-center justify-between border-b border-ink px-4 py-3">
+            <span className="text-sm font-semibold text-ink/60">Chat</span>
             <div className="flex items-center gap-2">
               <select
                 value={ttsProvider}
                 onChange={(e) => setTtsProvider(e.target.value)}
-                className="border border-ink-line bg-ink px-2 py-1 text-xs text-white outline-none"
+                className="border border-ink bg-white px-2 py-1 text-xs text-ink outline-none"
                 aria-label="Voice provider"
               >
                 <option value="browser">Browser TTS</option>
@@ -494,7 +494,7 @@ export default function Lab() {
               <button
                 type="button"
                 onClick={() => setSettingsOpen((o) => !o)}
-                className="border border-ink-line px-3 py-1 text-xs font-semibold text-neutral-300 hover:border-signal hover:text-signal"
+                className="border border-ink px-3 py-1 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal"
               >
                 Settings
               </button>
@@ -502,38 +502,38 @@ export default function Lab() {
           </div>
 
           {settingsOpen && (
-            <div className="space-y-3 border-b border-ink-line bg-ink px-4 py-4 text-sm">
+            <div className="space-y-3 border-b border-ink bg-white px-4 py-4 text-sm">
               <label className="block">
-                <span className="text-xs text-neutral-500">Chat API key</span>
+                <span className="text-xs text-ink/50">Chat API key</span>
                 <input
                   type="password"
                   value={chatApiKey}
                   onChange={(e) => setChatApiKey(e.target.value)}
-                  className="mt-1 w-full border border-ink-line bg-ink px-2 py-1.5 text-white outline-none focus:border-signal"
+                  className="mt-1 w-full border border-ink bg-white px-2 py-1.5 text-ink outline-none focus:border-signal"
                   placeholder={chatEndpointUsesDevProxy(endpoint ?? "") ? "Dev proxy — optional" : "sk-…"}
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-neutral-500">Chat model</span>
+                <span className="text-xs text-ink/50">Chat model</span>
                 <input
                   type="text"
                   value={chatModel}
                   onChange={(e) => setChatModel(e.target.value)}
-                  className="mt-1 w-full border border-ink-line bg-ink px-2 py-1.5 text-white outline-none focus:border-signal"
+                  className="mt-1 w-full border border-ink bg-white px-2 py-1.5 text-ink outline-none focus:border-signal"
                 />
               </label>
               <label className="block">
-                <span className="text-xs text-neutral-500">ElevenLabs API key</span>
+                <span className="text-xs text-ink/50">ElevenLabs API key</span>
                 <input
                   type="password"
                   value={elevenApiKey}
                   onChange={(e) => setElevenApiKey(e.target.value)}
-                  className="mt-1 w-full border border-ink-line bg-ink px-2 py-1.5 text-white outline-none focus:border-signal"
+                  className="mt-1 w-full border border-ink bg-white px-2 py-1.5 text-ink outline-none focus:border-signal"
                   placeholder={elevenProxyUrl ? "Optional — proxy can use server key" : "xi-…"}
                 />
               </label>
               {elevenProxyUrl && (
-                <label className="flex items-center gap-2 text-xs text-neutral-400">
+                <label className="flex items-center gap-2 text-xs text-ink/60">
                   <input
                     type="checkbox"
                     checked={elevenUseServerKey}
@@ -543,11 +543,11 @@ export default function Lab() {
                 </label>
               )}
               <label className="block">
-                <span className="text-xs text-neutral-500">ElevenLabs voice</span>
+                <span className="text-xs text-ink/50">ElevenLabs voice</span>
                 <select
                   value={elevenVoiceId}
                   onChange={(e) => setElevenVoiceId(e.target.value)}
-                  className="mt-1 w-full border border-ink-line bg-ink px-2 py-1.5 text-white outline-none"
+                  className="mt-1 w-full border border-ink bg-white px-2 py-1.5 text-ink outline-none"
                 >
                   {elevenVoices.length === 0 ? (
                     <option value={elevenVoiceId}>{elevenVoiceId}</option>
@@ -564,7 +564,7 @@ export default function Lab() {
           )}
 
           {chatError && (
-            <p className="border-b border-ink-line bg-red-950/30 px-4 py-2 text-xs text-red-300">
+            <p className="border-b border-red-200 bg-red-50 px-4 py-2 text-xs text-red-700">
               {chatError}
             </p>
           )}
@@ -576,21 +576,21 @@ export default function Lab() {
                   key={i}
                   className={`max-w-[90%] px-3 py-2 text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "ml-auto border border-signal/40 bg-signal/10 text-white"
-                      : "border border-ink-line bg-ink text-neutral-200"
+                      ? "ml-auto border border-signal/40 bg-signal/10 text-ink"
+                      : "border border-ink bg-white text-ink/80"
                   }`}
                 >
                   {m.content}
                 </div>
               ))}
               {sending && (
-                <p className="text-xs text-neutral-500">Thinking…</p>
+                <p className="text-xs text-ink/50">Thinking…</p>
               )}
               <div ref={messagesEndRef} />
             </div>
 
             <form
-              className="flex gap-2 border-t border-ink-line p-4"
+              className="flex gap-2 border-t border-ink p-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 void sendMessage();
@@ -602,7 +602,7 @@ export default function Lab() {
                 onChange={(e) => setDraft(e.target.value)}
                 disabled={loadedId === null || sending}
                 placeholder={loadedId ? "Say something…" : "Load a Chromie first"}
-                className="flex-1 border border-ink-line bg-ink px-3 py-2 text-sm text-white outline-none focus:border-signal disabled:opacity-50"
+                className="flex-1 border border-ink bg-white px-3 py-2 text-sm text-ink outline-none focus:border-signal disabled:opacity-50"
               />
               <button
                 type="submit"

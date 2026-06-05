@@ -36,16 +36,16 @@ const FAQ = [
 
 export default function Mint() {
   return (
-    <div className="min-h-screen bg-ink text-white">
+    <div className="min-h-screen bg-paper text-ink">
       <SiteHeader />
 
       {/* Hero */}
-      <section className="border-b border-ink-line px-6 pt-32 pb-20 text-center">
+      <section className="border-b border-ink px-6 pt-32 pb-20 text-center">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">
             CLAIM YOUR CHROMIE
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base font-medium text-neutral-300 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
             Minting opens soon. Connect your wallet to get notified.
           </p>
 
@@ -65,9 +65,9 @@ export default function Mint() {
       </section>
 
       {/* Featured token */}
-      <section className="border-b border-ink-line bg-ink-soft px-6 py-20">
+      <section className="border-b border-ink bg-white px-6 py-20">
         <div className="mx-auto flex max-w-md flex-col items-center text-center">
-          <div className="w-64 border border-ink-line bg-ink p-3">
+          <div className="w-64 border border-ink bg-paper p-3">
             <img
               src={FEATURED_TOKEN}
               alt="Featured Chromie"
@@ -75,7 +75,7 @@ export default function Mint() {
               className="pixelated aspect-square w-full select-none"
             />
           </div>
-          <p className="mt-8 max-w-md text-base leading-relaxed text-neutral-400">
+          <p className="mt-8 max-w-md text-base leading-relaxed text-ink/70">
             Each Chromie is generated on-chain from your token ID. No two are
             alike. Your mutation tier is determined at mint.
           </p>
@@ -83,17 +83,17 @@ export default function Mint() {
       </section>
 
       {/* Info cards */}
-      <section className="border-b border-ink-line">
+      <section className="border-b border-ink">
         <div className="mx-auto grid max-w-6xl grid-cols-1 sm:grid-cols-3">
           {INFO.map((item, i) => (
             <div
               key={item.label}
-              className={`border-ink-line px-8 py-12 text-center ${
+              className={`border-ink px-8 py-12 text-center ${
                 i > 0 ? "border-t sm:border-t-0 sm:border-l" : ""
               }`}
             >
               <div className="text-4xl font-black text-signal">{item.value}</div>
-              <div className="mt-2 text-sm uppercase tracking-widest text-neutral-500">
+              <div className="mt-2 text-sm uppercase tracking-widest text-ink/50">
                 {item.label}
               </div>
             </div>
@@ -104,19 +104,19 @@ export default function Mint() {
       {/* FAQ */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-xl font-extrabold uppercase tracking-[0.2em] text-neutral-400">
+          <h2 className="text-center text-xl font-extrabold uppercase tracking-[0.2em] text-ink/50">
             FAQ
           </h2>
-          <div className="mt-10 divide-y divide-ink-line border-y border-ink-line">
+          <div className="mt-10 divide-y divide-ink border-y border-ink">
             {FAQ.map((item) => (
               <details key={item.q} className="group">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-2 py-5 text-base font-semibold text-white transition-colors hover:text-signal">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-2 py-5 text-base font-semibold text-ink transition-colors hover:text-signal">
                   {item.q}
                   <span className="ml-4 text-signal transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="px-2 pb-5 text-sm leading-relaxed text-neutral-400">
+                <p className="px-2 pb-5 text-sm leading-relaxed text-ink/70">
                   {item.a}
                 </p>
               </details>

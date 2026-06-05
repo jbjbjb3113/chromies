@@ -47,7 +47,7 @@ export default function ChromieViewer({ image, mouthLevel, mouth = DEFAULT_MOUTH
       ref={canvasRef}
       width={DISPLAY}
       height={DISPLAY}
-      className="pixelated border border-ink-line bg-ink-soft"
+      className="pixelated border border-ink bg-white"
       aria-label="Chromie viewer"
     />
   );
