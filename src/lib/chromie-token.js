@@ -1,0 +1,105 @@
+const GRID = 64;
+const TOKEN_MAX = 9999;
+
+export function formatTokenId(id) {
+  return String(id).padStart(4, "0");
+}
+
+export function parseTokenId(raw) {
+  const n = Number.parseInt(String(raw).trim(), 10);
+  if (!Number.isFinite(n) || n < 1 || n > TOKEN_MAX) return null;
+  return n;
+}
+
+export function tokenPngUrl(id) {
+  return `/tokens/${formatTokenId(id)}.png`;
+}
+
+export function tokenJsonUrl(id) {
+  return `/tokens/${formatTokenId(id)}.json`;
+}
+
+export async function fetchChromieMetadata(id, signal) {
+  const res = await fetch(tokenJsonUrl(id), { signal, headers: { Accept: "application/json" } });
+  if (!res.ok) throw new Error(`Token #${id} metadata not found.`);
+  return res.json();
+}
+
+export function loadTokenImage(id) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed to load token #${id} image.`));
+    img.src = tokenPngUrl(id);
+  });
+}
+
+/** Default mouth region on 64×64 Chromie grid (pixel coords). */
+export const DEFAULT_MOUTH = {
+  x: 24,
+  y: 38,
+  w: 16,
+  h: 5,
+};
+
+const MOUTH_LOOK_PREFIX = "chromie-lab-mouth-look:token:";
+
+export function mouthLookTokenKey(tokenId) {
+  return `${MOUTH_LOOK_PREFIX}${tokenId}`;
+}
+
+export function clampMouth({ x, y, w, h }) {
+  const cx = Math.min(GRID - 1, Math.max(0, Math.round(x)));
+  const cy = Math.min(GRID - 1, Math.max(0, Math.round(y)));
+  const cw = Math.min(GRID - cx, Math.max(1, Math.round(w)));
+  const ch = Math.min(GRID - cy, Math.max(1, Math.round(h)));
+  return { x: cx, y: cy, w: cw, h: ch };
+}
+
+export function loadMouthForToken(tokenId) {
+  try {
+    const raw = localStorage.getItem(mouthLookTokenKey(tokenId));
+    if (!raw) return { ...DEFAULT_MOUTH };
+    const s = JSON.parse(raw);
+    return clampMouth({
+      x: Number.isFinite(s.x) ? s.x : DEFAULT_MOUTH.x,
+      y: Number.isFinite(s.y) ? s.y : DEFAULT_MOUTH.y,
+      w: Number.isFinite(s.w) ? s.w : DEFAULT_MOUTH.w,
+      h: Number.isFinite(s.h) ? s.h : DEFAULT_MOUTH.h,
+    });
+  } catch {
+    return { ...DEFAULT_MOUTH };
+  }
+}
+
+function mouthEqualsDefault(mouth) {
+  const m = clampMouth(mouth);
+  return (
+    m.x === DEFAULT_MOUTH.x &&
+    m.y === DEFAULT_MOUTH.y &&
+    m.w === DEFAULT_MOUTH.w &&
+    m.h === DEFAULT_MOUTH.h
+  );
+}
+
+export function saveMouthForToken(tokenId, mouth) {
+  try {
+    if (mouthEqualsDefault(mouth)) {
+      localStorage.removeItem(mouthLookTokenKey(tokenId));
+    } else {
+      localStorage.setItem(mouthLookTokenKey(tokenId), JSON.stringify(clampMouth(mouth)));
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+export function clearMouthForToken(tokenId) {
+  try {
+    localStorage.removeItem(mouthLookTokenKey(tokenId));
+  } catch {
+    /* ignore */
+  }
+}
+
+export { GRID };
