@@ -1,0 +1,87 @@
+{
+  "tokenId": 26,
+  "name": "Chromie #0026",
+  "image": "0026.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Male"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "SIGNAL_RED"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "Classic"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Crew"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "Scar"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "Goat"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "None"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Neo"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "MrT"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Pristine"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Drifted"
+    }
+  ]
+}

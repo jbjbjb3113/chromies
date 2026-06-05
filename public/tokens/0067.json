@@ -1,0 +1,87 @@
+{
+  "tokenId": 67,
+  "name": "Chromie #0067",
+  "image": "0067.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Female"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "SIGNAL_RED"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "None"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Female"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "UnderArmour"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA_Female"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA_Female"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "Goat"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "Stud"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "None"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Dreads"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "OffKilter"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Drifted"
+    }
+  ]
+}

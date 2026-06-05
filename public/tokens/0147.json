@@ -1,0 +1,87 @@
+{
+  "tokenId": 147,
+  "name": "Chromie #0147",
+  "image": "0147.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Male"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "SIGNAL_GREY"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Crew"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "Normies"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "Male_Chain"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "Marks"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "Thick"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "None"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Neo"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Dreads"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Drifted"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "OffKilter"
+    }
+  ]
+}

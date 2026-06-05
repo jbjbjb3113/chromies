@@ -1,0 +1,87 @@
+{
+  "tokenId": 11,
+  "name": "Chromie #0011",
+  "image": "0011.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Female"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "GHOST"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "Classic"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Crew"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Female"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "AkuHeart"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "Female_Ornate"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA_Female"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA_Female"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "None"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Shades"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "FadeRight"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Pristine"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Drifted"
+    }
+  ]
+}

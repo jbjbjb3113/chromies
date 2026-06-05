@@ -1,0 +1,83 @@
+{
+  "tokenId": 108,
+  "name": "Chromie #0108",
+  "image": "0108.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Cat"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "CAT"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Tank"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Tank"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Cat"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "Stud"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "None"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Afro"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Standard"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Standard"
+    }
+  ]
+}

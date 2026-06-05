@@ -1,0 +1,87 @@
+{
+  "tokenId": 76,
+  "name": "Chromie #0076",
+  "image": "0076.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Alien"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Non-Binary"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "ALIEN"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Crew"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Alien"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "Alien"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Alien"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Alien"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "None"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "None"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "None"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Pristine"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "OffKilter"
+    }
+  ]
+}

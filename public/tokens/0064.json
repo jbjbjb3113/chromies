@@ -1,0 +1,87 @@
+{
+  "tokenId": 64,
+  "name": "Chromie #0064",
+  "image": "0064.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Male"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "BLOOD"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "Classic"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "None"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "Scar"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "Stud"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Neo"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Surfer"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Standard"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Standard"
+    }
+  ]
+}

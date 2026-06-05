@@ -1,0 +1,87 @@
+{
+  "tokenId": 75,
+  "name": "Chromie #0075",
+  "image": "0075.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Male"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "CYAN"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "Classic"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "None"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "Scar"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "Thick"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "None"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Neo"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Mohawk"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Drifted"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "OffKilter"
+    }
+  ]
+}

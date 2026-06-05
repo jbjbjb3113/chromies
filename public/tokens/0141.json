@@ -1,0 +1,87 @@
+{
+  "tokenId": 141,
+  "name": "Chromie #0141",
+  "image": "0141.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Male"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "BLOOD"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Tank"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Tank"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "Full"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "Thick"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "Stud"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Neo"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Mohawk"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Standard"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Standard"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "tokenId": 69,
+  "name": "Chromie #0069",
+  "image": "0069.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Cat"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "CAT"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Crew"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Cat"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "Stud"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Neo"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Afro"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Drifted"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Drifted"
+    }
+  ]
+}

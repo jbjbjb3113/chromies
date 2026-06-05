@@ -1,0 +1,83 @@
+{
+  "tokenId": 15,
+  "name": "Chromie #0015",
+  "image": "0015.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Cat"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "CAT"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "None"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Default"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "Pyramid"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "Female_UpsideDownCross"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA"
+    },
+    {
+      "trait_type": "Head",
+      "value": "Cat"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "Stud"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "Shades"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "MrT"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Pristine"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Drifted"
+    }
+  ]
+}

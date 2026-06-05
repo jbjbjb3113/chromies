@@ -1,0 +1,87 @@
+{
+  "tokenId": 72,
+  "name": "Chromie #0072",
+  "image": "0072.png",
+  "attributes": [
+    {
+      "trait_type": "Type",
+      "value": "Human"
+    },
+    {
+      "trait_type": "Gender",
+      "value": "Female"
+    },
+    {
+      "trait_type": "Palette",
+      "value": "SIGNAL"
+    },
+    {
+      "trait_type": "Hood",
+      "value": "None"
+    },
+    {
+      "trait_type": "Shirt",
+      "value": "Crew"
+    },
+    {
+      "trait_type": "Body",
+      "value": "Female"
+    },
+    {
+      "trait_type": "Bodytattoo",
+      "value": "None"
+    },
+    {
+      "trait_type": "Necklace",
+      "value": "None"
+    },
+    {
+      "trait_type": "Neck",
+      "value": "HeroA_Female"
+    },
+    {
+      "trait_type": "Head",
+      "value": "HeroA_Female"
+    },
+    {
+      "trait_type": "Tattoo",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Mask",
+      "value": "None"
+    },
+    {
+      "trait_type": "Beard",
+      "value": "None"
+    },
+    {
+      "trait_type": "Mustache",
+      "value": "None"
+    },
+    {
+      "trait_type": "Eyes",
+      "value": "Signal"
+    },
+    {
+      "trait_type": "Earrings",
+      "value": "None"
+    },
+    {
+      "trait_type": "Glasses",
+      "value": "None"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Afro"
+    },
+    {
+      "trait_type": "Drift",
+      "value": "Standard"
+    },
+    {
+      "trait_type": "Mutation",
+      "value": "Standard"
+    }
+  ]
+}
