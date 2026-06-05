@@ -296,3 +296,7 @@ Canvas tool: https://normie-canvas-lab.jbjbjb2112.workers.dev/agent
 - Cat neck asset
 - Awaken Chromie event (ERC-8004)
 - Talking pixel avatar (lip sync from mouth pixels + ElevenLabs)
+
+
+
+Domain: chromies.art ✅
