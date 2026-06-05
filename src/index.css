@@ -97,8 +97,24 @@ h3,
   will-change: transform;
 }
 
+@keyframes hero-grid-scroll-reverse {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--hero-scroll-x), 0, 0);
+  }
+}
+
+.hero-grid-scroll-reverse {
+  animation-name: hero-grid-scroll-reverse;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
 .animate-marquee {
-  animation: marquee 40s linear infinite;
+  animation: marquee 80s linear infinite;
 }
 
 .marquee-track:hover .animate-marquee {

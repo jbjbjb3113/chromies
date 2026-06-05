@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TOKEN_CELL_PX, TOKEN_IMAGES } from "../data/tokens.js";
 
-const SCROLL_DURATION_S = 100;
+const SCROLL_DURATION_S = 200;
 
 function buildPanelTiles(cols, rows) {
   const count = cols * rows;

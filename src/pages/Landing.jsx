@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import SiteHeader from "../components/SiteHeader.jsx";
 import TokenGridBackground from "../components/TokenGridBackground.jsx";
+import TokenHeroForeground from "../components/TokenHeroForeground.jsx";
+import TokenPortraitStrip from "../components/TokenPortraitStrip.jsx";
 
 const FEATURED = [
   { id: "0042", label: "SIGNAL" },
@@ -124,7 +126,14 @@ export default function Landing() {
       {/* 1. Hero */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20 sm:px-6">
         <TokenGridBackground opacity={0.08} animate />
-        <div className="relative z-10 mx-auto max-w-[960px] text-center">
+        <TokenHeroForeground opacity={0.35} />
+        <div
+          className="relative z-10 mx-auto w-fit max-w-full p-8 text-center"
+          style={{
+            backgroundColor: "rgba(240, 237, 232, 0.96)",
+            border: "1px solid #8a8780",
+          }}
+        >
           <h1 className="text-5xl tracking-tight text-ink sm:text-7xl md:text-8xl">
             CHROMIES
           </h1>
@@ -144,34 +153,39 @@ export default function Landing() {
       </section>
 
       {/* 2. What are Chromies? */}
-      <SectionShell>
-        <SectionTitle>What are Chromies?</SectionTitle>
-        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="max-w-prose text-sm leading-relaxed text-ink/80">
-            <p>
-              Chromies are on-chain generative pixel-art identities — 64×64 faces
-              built from a fixed 16-color palette, deterministic from token ID.
-            </p>
-            <p className="mt-4">
-              Every Chromie is rendered and stored entirely on the blockchain. No
-              IPFS. No external servers. One seed, one face, forever unique — but
-              editable by holders through the Chromie Canvas.
-            </p>
-            <p className="mt-4">
-              They are CC0, interoperable, and built for a colorful on-chain future.
-            </p>
-          </div>
-          <div className="mx-auto grid grid-cols-2 gap-x-10 gap-y-8 lg:mx-0">
-            {FEATURED.map((t) => (
-              <FeaturedToken
-                key={t.id}
-                src={`/tokens/${t.id}.png`}
-                label={t.label}
-              />
-            ))}
+      <section className="border-t border-ink">
+        <div className="mx-auto max-w-[960px] px-5 py-16 sm:px-6">
+          <SectionTitle>What are Chromies?</SectionTitle>
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div className="max-w-prose text-sm leading-relaxed text-ink/80">
+              <p>
+                Chromies are on-chain generative pixel-art identities — 64×64 faces
+                built from a fixed 16-color palette, deterministic from token ID.
+              </p>
+              <p className="mt-4">
+                Every Chromie is rendered and stored entirely on the blockchain. No
+                IPFS. No external servers. One seed, one face, forever unique — but
+                editable by holders through the Chromie Canvas.
+              </p>
+              <p className="mt-4">
+                They are CC0, interoperable, and built for a colorful on-chain future.
+              </p>
+            </div>
+            <div className="mx-auto grid grid-cols-2 gap-x-10 gap-y-8 lg:mx-0">
+              {FEATURED.map((t) => (
+                <FeaturedToken
+                  key={t.id}
+                  src={`/tokens/${t.id}.png`}
+                  label={t.label}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </SectionShell>
+        <div className="mt-12">
+          <TokenPortraitStrip />
+        </div>
+      </section>
 
       {/* 3. Built Together */}
       <SectionShell>

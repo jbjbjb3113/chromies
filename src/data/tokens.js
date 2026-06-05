@@ -29,3 +29,16 @@ export function pickTokens(count, offset = 0) {
   }
   return out;
 }
+
+export const PORTRAIT_STRIP_CELL_PX = 128;
+
+/** Curated mix — palettes, types, hair, and gender variety for the landing strip. */
+export const PORTRAIT_STRIP_IDS = [
+  "0042", "0139", "0010", "0001", "0015", "0076", "0028", "0086", "0062", "0048",
+  "0123", "0128", "0094", "0038", "0018", "0056", "0068", "0007", "0034", "0045",
+  "0103", "0121", "0135", "0143",
+];
+
+export const PORTRAIT_STRIP_IMAGES = PORTRAIT_STRIP_IDS.map(
+  (id) => `/tokens/${id}.png`
+);
