@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { TOKEN_IMAGES } from "../data/tokens.js";
 
-const CELL_PX = 640;
+const CELL_PX = 768;
 const SCROLL_DURATION_S = 128;
 
 function buildStripTiles(count, offset = 23) {
@@ -31,7 +31,7 @@ function StripPanel({ tiles }) {
   );
 }
 
-export default function TokenHeroForeground({ opacity = 0.35 }) {
+export default function TokenHeroForeground({ opacity = 0.45 }) {
   const wrapRef = useRef(null);
   const [width, setWidth] = useState(1280);
 
@@ -60,7 +60,7 @@ export default function TokenHeroForeground({ opacity = 0.35 }) {
       ref={wrapRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 overflow-hidden select-none"
-      style={{ top: "3%", height: "94%", opacity }}
+      style={{ top: "0%", height: "100%", opacity }}
     >
       <div className="flex h-full items-center">
         <div

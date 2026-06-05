@@ -125,11 +125,11 @@ export default function Landing() {
       {/* 1. Hero */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20 sm:px-6">
         <TokenGridBackground opacity={0.08} animate />
-        <TokenHeroForeground opacity={0.35} />
+        <TokenHeroForeground opacity={0.45} />
         <div
           className="relative z-10 mx-auto w-fit max-w-full p-8 text-center"
           style={{
-            backgroundColor: "rgba(240, 237, 232, 0.96)",
+            backgroundColor: "rgba(240, 237, 232, 0.71)",
             border: "1px solid #8a8780",
           }}
         >
