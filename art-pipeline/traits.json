@@ -98,6 +98,10 @@
       "weight": 2
     },
     {
+      "name": "CAT",
+      "weight": 0
+    },
+    {
       "name": "ALIEN",
       "weight": 0
     }
@@ -206,7 +210,7 @@
       ]
     },
     "bodytattoo": {
-      "zOrder": 11,
+      "zOrder": 7,
       "drawColors": {
         "#1a0d0e": "mask_dark",
         "#ff2d8a": "eye_signal",
@@ -257,6 +261,26 @@
           "name": "Female_Chain",
           "file": "NECKLACE_Female_Chain.png",
           "weight": 15
+        },
+        {
+          "name": "Female_Ornate",
+          "file": "NECKLACE_Chain_Female_Ornate.png",
+          "weight": 10
+        },
+        {
+          "name": "Female_Flower",
+          "file": "NECKLACE_Female_Flower.png",
+          "weight": 10
+        },
+        {
+          "name": "Female_UpsideDownCross",
+          "file": "NECKLACE_Female_UpsideDownCross.png",
+          "weight": 8
+        },
+        {
+          "name": "Female_Opal",
+          "file": "NECKLACE_Female_Opal.png",
+          "weight": 10
         },
         {
           "name": "None",
@@ -312,6 +336,11 @@
         {
           "name": "HeroA_Female",
           "file": "HEAD_Female_Hero_A.png",
+          "weight": 0
+        },
+        {
+          "name": "Cat",
+          "file": "HEAD_Cat.png",
           "weight": 0
         },
         {
@@ -481,9 +510,14 @@
           "weight": 25
         },
         {
+          "name": "VR",
+          "file": "GLASSES_VR.png",
+          "weight": 10
+        },
+        {
           "name": "None",
           "file": "GLASSES_None.png",
-          "weight": 50
+          "weight": 40
         }
       ]
     },

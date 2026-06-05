@@ -263,6 +263,16 @@ const PALETTES = {
       "#a8b830", "#3d0a00", "#8c2200", "#d94f1e",
     ],
   },
+  CAT: {
+    name: "CAT",
+    description: "Tabby. Natural cat fur. Locked to Cat character.",
+    colors: [
+      "#e3e5e4", "#0f0c08", "#1e1a12", "#e8dfc8",
+      "#1a1510", "#3d3428", "#6b5e4a", "#9a8a72",
+      "#c8b89a", "#2a2218", "#0a0e08", "#4a7a20",
+      "#8ac830", "#1a1510", "#4a3e2e", "#7a6a52",
+    ],
+  },
   ALIEN: {
     name: "ALIEN",
     description: "Olive khaki. Alien skin. Locked to Alien character.",
@@ -302,14 +312,17 @@ const PHASE3 = {
 const PIXEL_MUTATION = {
   enabled: true,
   tiers: [
-    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, weight: 8  },
-    { name: "Standard",  paletteSwap: 0.08, edgeErode: 0.08, edgeDilate: 0.08, weight: 60 },
-    { name: "Drifted",   paletteSwap: 0.15, edgeErode: 0.15, edgeDilate: 0.15, weight: 25 },
-    { name: "OffKilter", paletteSwap: 0.25, edgeErode: 0.25, edgeDilate: 0.25, weight: 7  },
+    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, weight: 3  },
+    { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, weight: 30 },
+    { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, weight: 50 },
+    { name: "OffKilter", paletteSwap: 0.20, edgeErode: 0.10, edgeDilate: 0.08, edgePasses: 2, weight: 17 },
   ],
-  mutableSlots: ["hair"],
+  mutableSlots: ["hair", "head", "neck", "body"],
   paletteFamilies: {
     "hair": [13, 14, 15],   // hair_dark, hair_mid, hair_bright
+    "head": [4, 5, 6, 7, 8],
+    "neck": [4, 5, 6, 7, 8],
+    "body": [4, 5, 6, 7, 8],
   },
 };
 
@@ -352,7 +365,7 @@ const CHARACTERS = [
     },
     slotVariantPool: {
       hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
-  necklace: ["Female_Chain", "None"],
+  necklace: ["Female_Chain", "Female_Ornate", "Female_Flower", "Female_UpsideDownCross", "Female_Opal", "None"],
   shirt: ["Crew", "Tank_Female", "None"],
     },
   },
@@ -381,11 +394,13 @@ const CHARACTERS = [
   {
     name: "Cat",
     gender: null,
-    weight: 11,
-    palettePool: null,
+    weight: 50,
+    palettePool: ["CAT"],
     forcedSlots: {
       head: "Cat",
-      neck: "Cat",
+      neck: "HeroA",
+      beard: "None",
+      mustache: "None",
     },
     slotWeightOverrides: {},
   },
