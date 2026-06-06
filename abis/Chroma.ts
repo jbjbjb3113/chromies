@@ -1,6 +1,90 @@
 export const chromaAbi = [
   {
     type: "function",
+    name: "phase",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint8" }],
+  },
+  {
+    type: "function",
+    name: "totalSupply",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "MAX_SUPPLY",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "MINT_PRICE",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "ALLOWLIST_ONE_PRICE",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "ALLOWLIST_TWO_PRICE",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "MAX_PER_WALLET_ONE",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "claimedOne",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "claimedTwo",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "claimedPublic",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "address" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "mint",
+    stateMutability: "payable",
+    inputs: [],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "mint",
+    stateMutability: "payable",
+    inputs: [{ name: "proof", type: "bytes32[]" }],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "ownerOf",
     stateMutability: "view",
     inputs: [{ name: "tokenId", type: "uint256" }],
@@ -38,6 +122,14 @@ export const chromaAbi = [
     ],
   },
 ] as const;
+
+export const PHASE = {
+  Closed: 0,
+  AllowlistOne: 1,
+  AllowlistTwo: 2,
+  Public: 3,
+  Revealed: 4,
+} as const;
 
 export const chromaStorageAbi = [
   {
