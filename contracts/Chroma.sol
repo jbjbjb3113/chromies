@@ -29,6 +29,8 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error InvalidMerkleProof();
     error MaxPerWalletExceeded();
     error AlreadyRevealed();
+    error NotTokenOwner();
+    error AlreadyLocked();
 
     uint256 public constant MAX_SUPPLY = 5150;
     uint256 public constant MINT_PRICE = 0.006 ether;
@@ -45,8 +47,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
     mapping(address => uint256) public claimedTwo;
     mapping(address => uint256) public claimedPublic;
     mapping(uint256 => bool) public revealed;
+    mapping(uint256 => bool) public locked;
 
     event TokenRevealed(uint256 indexed tokenId);
+    event TokenLocked(uint256 indexed tokenId);
 
     ChromaStorage public immutable chromaStorage;
     IChromaRenderer public renderer;
@@ -99,6 +103,28 @@ contract Chroma is ERC721, ERC2981, Ownable {
         chromaStorage.writeTokenData(tokenId, pixels, traits);
         revealed[tokenId] = true;
         emit TokenRevealed(tokenId);
+    }
+
+    function inscribe(uint256 tokenId, bytes calldata pixels, bytes calldata traits, bytes32[] calldata proof)
+        external
+    {
+        if (ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
+        if (locked[tokenId]) revert AlreadyLocked();
+
+        bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
+        if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
+
+        if (!revealed[tokenId]) {
+            chromaStorage.writeTokenData(tokenId, pixels, traits);
+            revealed[tokenId] = true;
+        }
+
+        locked[tokenId] = true;
+        emit TokenLocked(tokenId);
+    }
+
+    function isLocked(uint256 tokenId) external view returns (bool) {
+        return locked[tokenId];
     }
 
     function setPhase(Phase _phase) external onlyOwner {

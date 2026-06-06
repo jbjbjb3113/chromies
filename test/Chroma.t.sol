@@ -552,7 +552,7 @@ contract ChromaTokenTest is Test {
 
 
 
-        vm.store(address(chroma), bytes32(uint256(17)), bytes32(uint256(5149)));
+        vm.store(address(chroma), bytes32(uint256(18)), bytes32(uint256(5149)));
 
         assert(chroma.totalSupply() == 5149);
 
@@ -876,6 +876,52 @@ contract ChromaCanvasTest is Test {
 
     }
 
+
+
+    function _inscribeLeaf(uint256 tokenId, bytes memory pixels, bytes memory traits)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(tokenId, pixels, traits));
+    }
+
+
+
+    function _lockToken(uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
+        bytes32 leaf = _inscribeLeaf(tokenId, pixels, traits);
+        chroma.setRevealRoot(leaf);
+        bytes32[] memory proof = new bytes32[](0);
+        chroma.inscribe(tokenId, pixels, traits, proof);
+    }
+
+
+
+    function test_Canvas_Blocked_WhenLocked() external {
+        chroma.mint(address(this), 600, basePixels, baseTraits);
+        _lockToken(600, basePixels, baseTraits);
+
+        vm.expectRevert(ChromaCanvas.TokenLocked.selector);
+        canvas.applyDiff(600, hex"00000f");
+    }
+
+
+
+    function test_MutationShift_Blocked_WhenLocked() external {
+        bytes memory traits =
+            hex"0000000000000000000000000000000200000000000000000000000000000000";
+        chroma.mint(address(this), 601, basePixels, traits);
+        chroma.setApprovalForAll(address(canvas), true);
+
+        chroma.mint(address(this), 602, basePixels, baseTraits);
+        _grantActionPoints(601, 602);
+
+        _lockToken(601, basePixels, traits);
+
+        vm.expectRevert(ChromaCanvas.TokenLocked.selector);
+        canvas.shiftMutationTier(601, 2);
+    }
+
 }
 
 
@@ -1046,6 +1092,46 @@ contract ChromaPhaseMintTest is Test {
 
         assert(uriBytes.length > prefix.length);
 
+    }
+
+
+
+    function test_Inscribe_LocksToken() external {
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}();
+
+        bytes memory pixels = new bytes(2048);
+        _setPixel(pixels, 0, 0, 4);
+        bytes memory traits = TraitFixtures.zeroTraits();
+
+        bytes32 leaf = _revealLeaf(1, pixels, traits);
+        chroma.setRevealRoot(leaf);
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.inscribe(1, pixels, traits, proof);
+
+        assert(chroma.locked(1));
+        assert(chroma.isLocked(1));
+        assert(chroma.revealed(1));
+        assert(storageContract.hasData(1));
+        assert(keccak256(storageContract.getPixels(1)) == keccak256(pixels));
+    }
+
+
+
+    function test_Inscribe_NonOwner_Reverts() external {
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}();
+
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes32 leaf = _revealLeaf(1, pixels, traits);
+        chroma.setRevealRoot(leaf);
+        bytes32[] memory proof = new bytes32[](0);
+
+        vm.prank(address(0xBEEF));
+        vm.expectRevert(Chroma.NotTokenOwner.selector);
+        chroma.inscribe(1, pixels, traits, proof);
     }
 
 

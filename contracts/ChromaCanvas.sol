@@ -3,11 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
-
-interface IChromaToken {
-    function ownerOf(uint256 tokenId) external view returns (address);
-    function transferFrom(address from, address to, uint256 tokenId) external;
-}
+import {IChromaToken} from "./IChromaToken.sol";
 
 contract ChromaCanvas is Ownable {
     error NotTokenOwner();
@@ -19,6 +15,7 @@ contract ChromaCanvas is Ownable {
     error InvalidMutationShift();
     error InvalidMutationTier();
     error InvalidTransfer();
+    error TokenLocked();
 
     uint256 internal constant GRID_PIXELS = 4096;
     uint256 internal constant TRAIT_MUTATION_INDEX = 15;
@@ -72,6 +69,8 @@ contract ChromaCanvas is Ownable {
         actionPoints[msg.sender] += burnYield;
         emit BurnRevealed(msg.sender, burnedTokenId, burnYield);
 
+        if (chroma.isLocked(tokenId)) revert TokenLocked();
+
         if (diffData.length > 0) {
             _applyDiff(tokenId, diffData, msg.sender);
         }
@@ -83,6 +82,7 @@ contract ChromaCanvas is Ownable {
 
     function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
         if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
+        if (chroma.isLocked(tokenId)) revert TokenLocked();
         if (newTier > 3) revert InvalidMutationTier();
 
         bytes memory traits = chromaStorage.getTraits(tokenId);
@@ -139,6 +139,7 @@ contract ChromaCanvas is Ownable {
     }
 
     function _applyDiff(uint256 tokenId, bytes calldata diffData, address user) internal {
+        if (chroma.isLocked(tokenId)) revert TokenLocked();
         if (diffData.length == 0 || diffData.length % 3 != 0) revert InvalidDiffEncoding();
         uint256 entryCount = diffData.length / 3;
         if (actionPoints[user] < entryCount) revert InsufficientActionPoints();

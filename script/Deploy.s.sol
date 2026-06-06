@@ -34,6 +34,7 @@ contract DeployScript is Script {
 
         ChromaRenderer chromaRenderer = new ChromaRenderer(address(chromaStorage), deployer);
         chromaRenderer.setCanvas(address(chromaCanvas));
+        chromaRenderer.setChroma(address(chroma));
         chroma.setRenderer(address(chromaRenderer));
 
         chroma.setMerkleRootOne(MERKLE_ROOT_ONE);

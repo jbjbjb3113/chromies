@@ -6,12 +6,14 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IChromaCanvas} from "./IChromaCanvas.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
+import {IChromaToken} from "./IChromaToken.sol";
 
 contract ChromaRenderer is Ownable {
     using Strings for uint256;
 
     IChromaStorage public immutable chromaStorage;
     IChromaCanvas public chromaCanvas;
+    IChromaToken public chroma;
     uint256 internal constant GRID = 64;
     uint256 internal constant CELL = 16;
 
@@ -21,6 +23,10 @@ contract ChromaRenderer is Ownable {
 
     function setCanvas(address canvasAddress) external onlyOwner {
         chromaCanvas = IChromaCanvas(canvasAddress);
+    }
+
+    function setChroma(address chromaAddress) external onlyOwner {
+        chroma = IChromaToken(chromaAddress);
     }
 
     function renderSVG(uint256 tokenId) public view returns (string memory) {
@@ -120,8 +126,7 @@ contract ChromaRenderer is Ownable {
             _jsonAttribute("Hair", _hairLabel(uint8(traits[14]))),
             ",",
             _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15]))),
-            ",",
-            _jsonAttribute("Inscribed", "true"),
+            _statusAttribute(tokenId),
             ']}'
         );
 
@@ -184,6 +189,11 @@ contract ChromaRenderer is Ownable {
     function _getDiff(uint256 tokenId) internal view returns (uint16[] memory diffIndexes, uint8[] memory diffColors) {
         if (address(chromaCanvas) == address(0)) return (new uint16[](0), new uint8[](0));
         return chromaCanvas.getDiff(tokenId);
+    }
+
+    function _statusAttribute(uint256 tokenId) internal view returns (string memory) {
+        if (address(chroma) == address(0) || !chroma.isLocked(tokenId)) return "";
+        return string(abi.encodePacked(",", _jsonAttribute("Status", "Inscribed")));
     }
 
     function _jsonAttribute(string memory traitType, string memory value) internal pure returns (string memory) {
