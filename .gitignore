@@ -12,3 +12,7 @@ coverage/
 art-pipeline/output/
 
 /lib/
+
+# Foundry
+cache/
+out/
