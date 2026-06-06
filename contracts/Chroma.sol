@@ -54,7 +54,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
         address initialOwner,
         address royaltyReceiver,
         uint96 royaltyFeeNumerator
-    ) ERC721("Chroma", "CHROMA") Ownable(initialOwner) {
+    ) ERC721("Chromies", "CHROMIE") Ownable(initialOwner) {
         chromaStorage = ChromaStorage(storageAddress);
         _setDefaultRoyalty(royaltyReceiver, royaltyFeeNumerator);
     }
