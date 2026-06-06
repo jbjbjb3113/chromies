@@ -28,7 +28,7 @@ contract ChromaStorage is IChromaStorage, Ownable {
     //              24=CAT, 25=ALIEN
     // [2]  Hood: 0=None, 1=Classic
     // [3]  Shirt: 0=None, 1=Crew, 2=Tank, 3=Tank_Female
-    // [4]  Body: 0=None, 1=Default, 2=Female, 3=Female_Tank, 4=Alien
+    // [4]  Body: 0=None, 1=Default, 2=Female, 3=Female_Tank, 4=Alien, 5=Tank
     // [5]  Bodytattoo: 0=None, 1=UnderArmour, 2=AkuHeart, 3=Pyramid, 4=Normies
     // [6]  Necklace: 0=None, 1=Male_Chain, 2=Female_Chain, 3=Female_Ornate,
     //               4=Female_Flower, 5=Female_UpsideDownCross, 6=Female_Opal
