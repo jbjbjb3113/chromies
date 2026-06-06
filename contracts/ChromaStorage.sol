@@ -73,6 +73,16 @@ contract ChromaStorage is IChromaStorage, Ownable {
         traitPointers[tokenId] = SSTORE2.write(traits);
     }
 
+    function revealTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external {
+        if (msg.sender != writer) revert UnauthorizedWriter();
+        if (pixels.length != PIXELS_LENGTH) revert InvalidPixelsLength();
+        if (traits.length != TRAITS_LENGTH) revert InvalidTraitsLength();
+        if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
+
+        pixelPointers[tokenId] = SSTORE2.write(pixels);
+        traitPointers[tokenId] = SSTORE2.write(traits);
+    }
+
     function getPixels(uint256 tokenId) external view override returns (bytes memory) {
         address pointer = pixelPointers[tokenId];
         if (pointer == address(0)) revert TokenNotWritten();

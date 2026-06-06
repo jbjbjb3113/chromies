@@ -552,7 +552,7 @@ contract ChromaTokenTest is Test {
 
 
 
-        vm.store(address(chroma), bytes32(uint256(10)), bytes32(uint256(4999)));
+        vm.store(address(chroma), bytes32(uint256(16)), bytes32(uint256(4999)));
 
         assert(chroma.totalSupply() == 4999);
 
@@ -873,6 +873,244 @@ contract ChromaCanvasTest is Test {
         }
 
         return false;
+
+    }
+
+}
+
+
+
+contract ChromaPhaseMintTest is Test {
+
+    Chroma internal chroma;
+
+    ChromaStorage internal storageContract;
+
+
+
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+
+        return this.onERC721Received.selector;
+
+    }
+
+
+
+    function setUp() public {
+
+        storageContract = new ChromaStorage(address(this), address(0));
+
+        chroma = new Chroma(address(storageContract), address(this), address(this), 500);
+
+        storageContract.setWriter(address(chroma));
+
+    }
+
+
+
+    function _leaf(address account) internal pure returns (bytes32) {
+
+        return keccak256(abi.encodePacked(account));
+
+    }
+
+
+
+    function test_AllowlistOne_Mint() external {
+
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.setMerkleRootOne(_leaf(address(this)));
+
+        chroma.setPhase(Chroma.Phase.AllowlistOne);
+
+
+
+        chroma.mint{value: 0.003 ether}(proof);
+
+
+
+        assert(chroma.ownerOf(1) == address(this));
+
+        assert(chroma.claimedOne(address(this)));
+
+        assert(chroma.totalSupply() == 1);
+
+        assert(!chroma.revealed(1));
+
+    }
+
+
+
+    function test_AllowlistTwo_Mint() external {
+
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.setMerkleRootTwo(_leaf(address(this)));
+
+        chroma.setPhase(Chroma.Phase.AllowlistTwo);
+
+
+
+        chroma.mint{value: 0.005 ether}(proof);
+
+
+
+        assert(chroma.ownerOf(1) == address(this));
+
+        assert(chroma.claimedTwo(address(this)) == 1);
+
+        assert(chroma.totalSupply() == 1);
+
+    }
+
+
+
+    function test_Public_Mint() external {
+
+        chroma.setPhase(Chroma.Phase.Public);
+
+
+
+        chroma.mint{value: 0.006 ether}();
+
+
+
+        assert(chroma.ownerOf(1) == address(this));
+
+        assert(chroma.claimedPublic(address(this)) == 1);
+
+        assert(chroma.totalSupply() == 1);
+
+    }
+
+
+
+    function test_Reveal_WritesPixels() external {
+
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+
+        chroma.setRenderer(address(renderer));
+
+        chroma.setPhase(Chroma.Phase.Public);
+
+        chroma.mint{value: 0.006 ether}();
+
+
+
+        bytes memory placeholder = storageContract.getPixels(1);
+
+        bytes memory emptyPixels = new bytes(2048);
+
+        assert(keccak256(placeholder) == keccak256(emptyPixels));
+
+
+
+        bytes memory pixels = new bytes(2048);
+
+        _setPixel(pixels, 0, 0, 4);
+
+        bytes memory traits = TraitFixtures.zeroTraits();
+
+
+
+        uint256[] memory tokenIds = new uint256[](1);
+
+        bytes[] memory pixelsArr = new bytes[](1);
+
+        bytes[] memory traitsArr = new bytes[](1);
+
+        tokenIds[0] = 1;
+
+        pixelsArr[0] = pixels;
+
+        traitsArr[0] = traits;
+
+
+
+        chroma.reveal(tokenIds, pixelsArr, traitsArr);
+
+
+
+        assert(chroma.revealed(1));
+
+        assert(keccak256(storageContract.getPixels(1)) == keccak256(pixels));
+
+
+
+        string memory uri = chroma.tokenURI(1);
+
+        bytes memory prefix = bytes("data:application/json;base64,");
+
+        bytes memory uriBytes = bytes(uri);
+
+        assert(uriBytes.length > prefix.length);
+
+    }
+
+
+
+    function test_WrongPhase_Reverts() external {
+
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.setMerkleRootOne(_leaf(address(this)));
+
+
+
+        vm.expectRevert(Chroma.WrongPhase.selector);
+
+        chroma.mint{value: 0.003 ether}(proof);
+
+
+
+        vm.expectRevert(Chroma.WrongPhase.selector);
+
+        chroma.mint{value: 0.006 ether}();
+
+    }
+
+
+
+    function test_MaxPerWallet_Enforced() external {
+
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.setMerkleRootOne(_leaf(address(this)));
+
+        chroma.setPhase(Chroma.Phase.AllowlistOne);
+
+
+
+        chroma.mint{value: 0.003 ether}(proof);
+
+
+
+        vm.expectRevert(Chroma.MaxPerWalletExceeded.selector);
+
+        chroma.mint{value: 0.003 ether}(proof);
+
+    }
+
+
+
+    function _setPixel(bytes memory packedPixels, uint256 x, uint256 y, uint8 value) internal pure {
+
+        uint256 flatIndex = y * 64 + x;
+
+        uint256 byteIndex = flatIndex >> 1;
+
+        uint8 current = uint8(packedPixels[byteIndex]);
+
+        if ((flatIndex & 1) == 0) {
+
+            packedPixels[byteIndex] = bytes1((current & 0x0f) | (value << 4));
+
+        } else {
+
+            packedPixels[byteIndex] = bytes1((current & 0xf0) | value);
+
+        }
 
     }
 
