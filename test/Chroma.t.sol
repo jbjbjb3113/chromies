@@ -50,7 +50,8 @@ contract ChromaStorageTest {
             pixels[i] = bytes1(uint8(i % 256));
         }
 
-        bytes memory traits = hex"0102030405";
+        // [0]=HeroA_Female, [1]=ACID, [2]=Classic, [3]=Tank, [4]=Female
+        bytes memory traits = hex"0101010202000000000000000000000000000000000000000000000000000000";
         writer.write(storageContract, 7, pixels, traits);
 
         bytes memory storedPixels = storageContract.getPixels(7);
@@ -64,7 +65,7 @@ contract ChromaStorageTest {
         WriterCaller writer = new WriterCaller();
         ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
         bytes memory pixels = new bytes(2048);
-        bytes memory traits = hex"0102030405";
+        bytes memory traits = hex"0101010202000000000000000000000000000000000000000000000000000000";
 
         (bool success,) = address(storageContract).call(
             abi.encodeWithSelector(storageContract.writeTokenData.selector, 1, pixels, traits)
@@ -77,7 +78,7 @@ contract ChromaStorageTest {
         WriterCaller writer = new WriterCaller();
         ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
         bytes memory pixels = new bytes(2048);
-        bytes memory traits = hex"0102030405";
+        bytes memory traits = hex"0101010202000000000000000000000000000000000000000000000000000000";
 
         writer.write(storageContract, 3, pixels, traits);
         (bool success,) = address(writer).call(
@@ -93,7 +94,7 @@ contract ChromaStorageTest {
         bytes memory invalidPixels = new bytes(2047);
         bytes memory invalidTraits = hex"01020304";
         bytes memory validPixels = new bytes(2048);
-        bytes memory validTraits = hex"0102030405";
+        bytes memory validTraits = hex"0101010202000000000000000000000000000000000000000000000000000000";
 
         (bool badPixels,) = address(writer).call(
             abi.encodeWithSelector(WriterCaller.write.selector, storageContract, 10, invalidPixels, validTraits)
@@ -121,12 +122,13 @@ contract ChromaRendererTest {
         _setPixel(pixels, 2, 1, 1);
         _setPixel(pixels, 3, 1, 1);
 
-        bytes memory traits = hex"0102030400";
+        // [0]=HeroA_Male, [1]=SIGNAL palette
+        bytes memory traits = hex"0000000000000000000000000000000000000000000000000000000000000000";
         writer.write(storageContract, 42, pixels, traits);
 
         string memory actual = renderer.renderSVG(42);
         string memory expected =
-            '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges"><rect width="1024" height="1024" fill="#1a1014"/><rect x="0" y="0" width="16" height="16" fill="#7a3340"/><rect x="16" y="0" width="48" height="16" fill="#9c4050"/><rect x="32" y="16" width="32" height="16" fill="#2d161c"/></svg>';
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges"><rect width="1024" height="1024" fill="#e3e5e4"/><rect x="0" y="0" width="16" height="16" fill="#4c270f"/><rect x="16" y="0" width="48" height="16" fill="#89532a"/><rect x="32" y="16" width="32" height="16" fill="#1a0d0e"/></svg>';
 
         assert(keccak256(bytes(actual)) == keccak256(bytes(expected)));
     }
@@ -138,7 +140,7 @@ contract ChromaRendererTest {
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 0, 0, 15);
-        bytes memory traits = hex"0000000000";
+        bytes memory traits = hex"0000000000000000000000000000000000000000000000000000000000000000";
         writer.write(storageContract, 1, pixels, traits);
 
         string memory uri = renderer.tokenURI(1);
@@ -174,7 +176,7 @@ contract ChromaTokenTest {
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 0, 0, 12);
-        bytes memory traits = hex"0000000000";
+        bytes memory traits = hex"0000000000000000000000000000000000000000000000000000000000000000";
         address recipient = address(0xBEEF);
         chroma.mint(recipient, 100, pixels, traits);
 
@@ -192,7 +194,8 @@ contract ChromaTokenTest {
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 1, 0, 15);
-        bytes memory traits = hex"0102030401";
+        // [0]=HeroA_Female, [1]=ACID, [13]=Neo, [14]=Mohawk
+        bytes memory traits = hex"0101000000000000000000000201000000000000000000000000000000000000";
         address recipient = address(0xBEEF);
         chroma.mint(recipient, 101, pixels, traits);
 
@@ -223,7 +226,7 @@ contract ChromaTokenTest {
         MockRendererB rendererB = new MockRendererB();
 
         bytes memory pixels = new bytes(2048);
-        bytes memory traits = hex"0000000000";
+        bytes memory traits = hex"0000000000000000000000000000000000000000000000000000000000000000";
         address recipient = address(0xBEEF);
         chroma.mint(recipient, 102, pixels, traits);
 
@@ -266,7 +269,7 @@ contract ChromaCanvasTest {
         chroma.setRenderer(address(renderer));
 
         bytes memory basePixels = new bytes(2048);
-        bytes memory traits = hex"0000000000";
+        bytes memory traits = hex"0000000000000000000000000000000000000000000000000000000000000000";
         address artTokenOwner = address(0xBEEF);
         chroma.mint(artTokenOwner, 200, basePixels, traits);
 
@@ -290,7 +293,7 @@ contract ChromaCanvasTest {
         assert(points == 15);
 
         string memory svg = renderer.renderSVG(200);
-        assert(_contains(svg, 'fill="#5c1d0f"'));
+        assert(_contains(svg, 'fill="#db5a91"'));
         assert(_contains(svg, '<rect x="0" y="0" width="16" height="16"'));
     }
 
