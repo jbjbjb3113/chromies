@@ -28,14 +28,26 @@ contract ChromaRenderer is Ownable {
         bytes memory traits = chromaStorage.getTraits(tokenId);
         string[16] memory palette = _paletteForToken(traits);
         (uint16[] memory diffIndexes, uint8[] memory diffColors) = _getDiff(tokenId);
+        uint8 mutationTier = uint8(traits[15]);
 
         bytes memory body;
         for (uint256 y = 0; y < GRID; ++y) {
             uint256 x = 0;
             while (x < GRID) {
+                uint256 flatIndex = y * GRID + x;
                 uint8 idx = _getCompositePixelIndex(pixels, x, y, diffIndexes, diffColors);
+                if (mutationTier != 0) {
+                    idx = _mutatePixelIndex(tokenId, flatIndex, idx, mutationTier);
+                }
+
                 uint256 run = 1;
-                while (x + run < GRID && _getCompositePixelIndex(pixels, x + run, y, diffIndexes, diffColors) == idx) {
+                while (x + run < GRID) {
+                    uint256 nextFlat = y * GRID + x + run;
+                    uint8 nextIdx = _getCompositePixelIndex(pixels, x + run, y, diffIndexes, diffColors);
+                    if (mutationTier != 0) {
+                        nextIdx = _mutatePixelIndex(tokenId, nextFlat, nextIdx, mutationTier);
+                    }
+                    if (nextIdx != idx) break;
                     ++run;
                 }
 
@@ -134,6 +146,37 @@ contract ChromaRenderer is Ownable {
             if (diffIndexes[idx] == flatIndex) return diffColors[idx];
         }
         return _getPixelIndex(pixels, x, y);
+    }
+
+    function _mutationSwapThreshold(uint8 tier) internal pure returns (uint8) {
+        if (tier == 1) return 5;
+        if (tier == 2) return 10;
+        if (tier == 3) return 20;
+        return 0;
+    }
+
+    function _mutatePixelIndex(uint256 tokenId, uint256 pixelIndex, uint8 paletteIndex, uint8 tier)
+        internal
+        pure
+        returns (uint8)
+    {
+        if (tier == 0 || paletteIndex == 0) return paletteIndex;
+
+        uint8 threshold = _mutationSwapThreshold(tier);
+        if (threshold == 0) return paletteIndex;
+
+        uint256 seed = uint256(keccak256(abi.encodePacked(tokenId, pixelIndex, "mutation")));
+        if (seed % 100 >= threshold) return paletteIndex;
+
+        if (paletteIndex >= 4 && paletteIndex <= 8) {
+            uint256 familyPos = paletteIndex - 4;
+            return uint8(4 + ((familyPos + seed) % 5));
+        }
+        if (paletteIndex >= 13 && paletteIndex <= 15) {
+            uint256 familyPos = paletteIndex - 13;
+            return uint8(13 + ((familyPos + seed) % 3));
+        }
+        return paletteIndex;
     }
 
     function _getDiff(uint256 tokenId) internal view returns (uint16[] memory diffIndexes, uint8[] memory diffColors) {
