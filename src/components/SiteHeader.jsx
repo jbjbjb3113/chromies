@@ -1,4 +1,5 @@
 import React from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Link, NavLink } from "react-router-dom";
 
 export default function SiteHeader() {
@@ -42,12 +43,11 @@ export default function SiteHeader() {
           >
             Canvas
           </NavLink>
-          <button
-            type="button"
-            className="border border-signal px-4 py-2 text-sm font-semibold text-signal transition-colors hover:bg-signal hover:text-ink"
-          >
-            Connect
-          </button>
+          <ConnectButton
+            showBalance={false}
+            chainStatus="icon"
+            accountStatus={{ smallScreen: "avatar", largeScreen: "full" }}
+          />
         </div>
       </div>
     </header>
