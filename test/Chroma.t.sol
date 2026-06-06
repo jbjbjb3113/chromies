@@ -552,23 +552,23 @@ contract ChromaTokenTest is Test {
 
 
 
-        vm.store(address(chroma), bytes32(uint256(16)), bytes32(uint256(4999)));
+        vm.store(address(chroma), bytes32(uint256(16)), bytes32(uint256(5149)));
 
-        assert(chroma.totalSupply() == 4999);
+        assert(chroma.totalSupply() == 5149);
 
 
 
         address holder = address(0xBEEF);
 
-        chroma.mint(holder, 5000, pixels, traits);
+        chroma.mint(holder, 5150, pixels, traits);
 
-        assert(chroma.totalSupply() == 5000);
+        assert(chroma.totalSupply() == 5150);
 
 
 
         vm.expectRevert(Chroma.MaxSupplyReached.selector);
 
-        chroma.mint(holder, 5001, pixels, traits);
+        chroma.mint(holder, 5151, pixels, traits);
 
     }
 

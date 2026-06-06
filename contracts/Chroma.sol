@@ -30,7 +30,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error MaxPerWalletExceeded();
     error ArrayLengthMismatch();
 
-    uint256 public constant MAX_SUPPLY = 5000;
+    uint256 public constant MAX_SUPPLY = 5150;
     uint256 public constant MINT_PRICE = 0.006 ether;
     uint256 public constant ALLOWLIST_ONE_PRICE = 0.003 ether;
     uint256 public constant ALLOWLIST_TWO_PRICE = 0.005 ether;
