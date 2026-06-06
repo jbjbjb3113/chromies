@@ -314,6 +314,52 @@ contract ChromaRendererTest {
 
 
 
+    function test_MutationTier_AffectsRender() external {
+
+        WriterCaller writer = new WriterCaller();
+
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
+
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+
+
+
+        bytes memory pixels = new bytes(2048);
+
+        for (uint256 x = 0; x < 64; ++x) {
+
+            _setPixel(pixels, x, 10, 6);
+
+        }
+
+
+
+        bytes memory pristineTraits = TraitFixtures.zeroTraits();
+
+        bytes memory offKilterTraits =
+
+            hex"0000000000000000000000000000000300000000000000000000000000000000";
+
+
+
+        writer.write(storageContract, 100, pixels, pristineTraits);
+
+        writer.write(storageContract, 101, pixels, offKilterTraits);
+
+
+
+        string memory svgPristine = renderer.renderSVG(100);
+
+        string memory svgMutated = renderer.renderSVG(101);
+
+
+
+        assert(keccak256(bytes(svgPristine)) != keccak256(bytes(svgMutated)));
+
+    }
+
+
+
     function _setPixel(bytes memory packedPixels, uint256 x, uint256 y, uint8 value) internal pure {
 
         uint256 flatIndex = y * 64 + x;
