@@ -932,7 +932,7 @@ contract ChromaPhaseMintTest is Test {
 
         assert(chroma.ownerOf(1) == address(this));
 
-        assert(chroma.claimedOne(address(this)));
+        assert(chroma.claimedOne(address(this)) == 1);
 
         assert(chroma.totalSupply() == 1);
 
@@ -1083,6 +1083,12 @@ contract ChromaPhaseMintTest is Test {
 
 
         chroma.mint{value: 0.003 ether}(proof);
+
+        chroma.mint{value: 0.003 ether}(proof);
+
+        assert(chroma.claimedOne(address(this)) == 2);
+
+        assert(chroma.totalSupply() == 2);
 
 
 

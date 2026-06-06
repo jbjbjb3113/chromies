@@ -34,12 +34,13 @@ contract Chroma is ERC721, ERC2981, Ownable {
     uint256 public constant MINT_PRICE = 0.006 ether;
     uint256 public constant ALLOWLIST_ONE_PRICE = 0.003 ether;
     uint256 public constant ALLOWLIST_TWO_PRICE = 0.005 ether;
+    uint256 public constant MAX_PER_WALLET_ONE = 2;
 
     Phase public phase = Phase.Closed;
     bytes32 public merkleRootOne;
     bytes32 public merkleRootTwo;
 
-    mapping(address => bool) public claimedOne;
+    mapping(address => uint256) public claimedOne;
     mapping(address => uint256) public claimedTwo;
     mapping(address => uint256) public claimedPublic;
     mapping(uint256 => bool) public revealed;
@@ -139,10 +140,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
 
     function _mintAllowlistOne(bytes32[] calldata proof) internal {
         if (msg.value < ALLOWLIST_ONE_PRICE) revert InsufficientPayment();
-        if (claimedOne[msg.sender]) revert MaxPerWalletExceeded();
+        if (claimedOne[msg.sender] >= MAX_PER_WALLET_ONE) revert MaxPerWalletExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootOne)) revert InvalidMerkleProof();
 
-        claimedOne[msg.sender] = true;
+        ++claimedOne[msg.sender];
         _mintPlaceholder(msg.sender);
     }
 
