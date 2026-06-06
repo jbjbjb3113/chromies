@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IChromaStorage} from "./IChromaStorage.sol";
 
 interface IChromaToken {
     function ownerOf(uint256 tokenId) external view returns (address);
@@ -15,9 +16,13 @@ contract ChromaCanvas is Ownable {
     error InsufficientActionPoints();
     error MissingCommit();
     error InvalidReveal();
+    error InvalidMutationShift();
+    error InvalidMutationTier();
+    error InvalidTransfer();
 
     uint256 internal constant GRID_PIXELS = 4096;
-    uint256 public constant ACTION_POINTS_PER_BURN = 16;
+    uint256 internal constant TRAIT_MUTATION_INDEX = 15;
+    uint256 public constant ACTION_POINTS_PER_BURN = 100;
     address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     struct PendingCommit {
@@ -31,6 +36,7 @@ contract ChromaCanvas is Ownable {
     }
 
     IChromaToken public immutable chroma;
+    IChromaStorage public immutable chromaStorage;
     mapping(address user => uint256 points) public actionPoints;
     mapping(address user => PendingCommit) public pendingCommit;
     mapping(uint256 tokenId => CanvasEdit[]) internal tokenDiffs;
@@ -38,9 +44,12 @@ contract ChromaCanvas is Ownable {
     event CommitSubmitted(address indexed user, bytes32 indexed commitment);
     event BurnRevealed(address indexed user, uint256 indexed burnedTokenId, uint256 actionPointsAwarded);
     event DiffApplied(address indexed user, uint256 indexed tokenId, uint256 entriesApplied);
+    event MutationTierShifted(uint256 indexed tokenId, uint8 oldTier, uint8 newTier);
+    event ActionPointsTransferred(address indexed from, address indexed to, uint256 amount);
 
-    constructor(address chromaAddress, address initialOwner) Ownable(initialOwner) {
+    constructor(address chromaAddress, address storageAddress, address initialOwner) Ownable(initialOwner) {
         chroma = IChromaToken(chromaAddress);
+        chromaStorage = IChromaStorage(storageAddress);
     }
 
     function submitCommit(bytes32 commitment) external {
@@ -58,14 +67,41 @@ contract ChromaCanvas is Ownable {
 
         if (chroma.ownerOf(burnedTokenId) != msg.sender) revert NotTokenOwner();
         chroma.transferFrom(msg.sender, DEAD_ADDRESS, burnedTokenId);
-        actionPoints[msg.sender] += ACTION_POINTS_PER_BURN;
-        emit BurnRevealed(msg.sender, burnedTokenId, ACTION_POINTS_PER_BURN);
 
-        _applyDiff(tokenId, diffData, msg.sender);
+        uint256 burnYield = _burnYield(burnedTokenId);
+        actionPoints[msg.sender] += burnYield;
+        emit BurnRevealed(msg.sender, burnedTokenId, burnYield);
+
+        if (diffData.length > 0) {
+            _applyDiff(tokenId, diffData, msg.sender);
+        }
     }
 
     function applyDiff(uint256 tokenId, bytes calldata diffData) external {
         _applyDiff(tokenId, diffData, msg.sender);
+    }
+
+    function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
+        if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
+        if (newTier > 3) revert InvalidMutationTier();
+
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        uint8 currentTier = uint8(traits[TRAIT_MUTATION_INDEX]);
+        uint256 cost = _mutationShiftCost(currentTier, newTier);
+        if (actionPoints[msg.sender] < cost) revert InsufficientActionPoints();
+
+        actionPoints[msg.sender] -= cost;
+        chromaStorage.updateTrait(tokenId, TRAIT_MUTATION_INDEX, newTier);
+        emit MutationTierShifted(tokenId, currentTier, newTier);
+    }
+
+    function transferActionPoints(address to, uint256 amount) external {
+        if (to == address(0)) revert InvalidTransfer();
+        if (actionPoints[msg.sender] < amount) revert InsufficientActionPoints();
+
+        actionPoints[msg.sender] -= amount;
+        actionPoints[to] += amount;
+        emit ActionPointsTransferred(msg.sender, to, amount);
     }
 
     function getDiff(uint256 tokenId) external view returns (uint16[] memory pixelIndexes, uint8[] memory newColorIndexes) {
@@ -87,6 +123,19 @@ contract ChromaCanvas is Ownable {
         diffCount = tokenDiffs[tokenId].length;
         customized = diffCount > 0;
         hasPendingCommit = pendingCommit[user].exists;
+    }
+
+    function _burnYield(uint256 tokenId) internal view returns (uint256) {
+        uint256 bonus = tokenDiffs[tokenId].length / 10;
+        return ACTION_POINTS_PER_BURN + bonus;
+    }
+
+    function _mutationShiftCost(uint8 currentTier, uint8 newTier) internal pure returns (uint256) {
+        if (newTier >= currentTier) revert InvalidMutationShift();
+        if (currentTier == 3 && newTier == 2) return 500;
+        if (currentTier == 2 && newTier == 1) return 1500;
+        if (currentTier == 1 && newTier == 0) return 5000;
+        revert InvalidMutationShift();
     }
 
     function _applyDiff(uint256 tokenId, bytes calldata diffData, address user) internal {

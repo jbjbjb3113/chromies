@@ -9,9 +9,13 @@ import {ChromaStorage} from "./ChromaStorage.sol";
 
 contract Chroma is ERC721, ERC2981, Ownable {
     error RendererNotSet();
+    error MaxSupplyReached();
+
+    uint256 public constant MAX_SUPPLY = 5000;
 
     ChromaStorage public immutable chromaStorage;
     IChromaRenderer public renderer;
+    uint256 private _totalSupply;
 
     constructor(
         address storageAddress,
@@ -23,9 +27,15 @@ contract Chroma is ERC721, ERC2981, Ownable {
         _setDefaultRoyalty(royaltyReceiver, royaltyFeeNumerator);
     }
 
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
     function mint(address to, uint256 tokenId, bytes calldata pixels, bytes calldata traits) external onlyOwner {
+        if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
         _safeMint(to, tokenId);
         chromaStorage.writeTokenData(tokenId, pixels, traits);
+        ++_totalSupply;
     }
 
     function setRenderer(address rendererAddress) external onlyOwner {

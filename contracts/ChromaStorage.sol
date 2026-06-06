@@ -11,6 +11,8 @@ contract ChromaStorage is IChromaStorage, Ownable {
     error InvalidTraitsLength();
     error TokenAlreadyWritten();
     error TokenNotWritten();
+    error UnauthorizedTraitUpdater();
+    error InvalidTraitIndex();
 
     uint256 internal constant PIXELS_LENGTH = 2048;
 
@@ -44,6 +46,7 @@ contract ChromaStorage is IChromaStorage, Ownable {
     // [17-31] Reserved for future traits
     uint256 internal constant TRAITS_LENGTH = 32;
     address public writer;
+    address public traitUpdater;
 
     mapping(uint256 tokenId => address) public pixelPointers;
     mapping(uint256 tokenId => address) public traitPointers;
@@ -54,6 +57,10 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     function setWriter(address newWriter) external onlyOwner {
         writer = newWriter;
+    }
+
+    function setTraitUpdater(address newTraitUpdater) external onlyOwner {
+        traitUpdater = newTraitUpdater;
     }
 
     function writeTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external {
@@ -76,5 +83,17 @@ contract ChromaStorage is IChromaStorage, Ownable {
         address pointer = traitPointers[tokenId];
         if (pointer == address(0)) revert TokenNotWritten();
         return SSTORE2.read(pointer);
+    }
+
+    function updateTrait(uint256 tokenId, uint256 traitIndex, uint8 value) external override {
+        if (msg.sender != traitUpdater) revert UnauthorizedTraitUpdater();
+        if (traitIndex >= TRAITS_LENGTH) revert InvalidTraitIndex();
+
+        address pointer = traitPointers[tokenId];
+        if (pointer == address(0)) revert TokenNotWritten();
+
+        bytes memory traits = SSTORE2.read(pointer);
+        traits[traitIndex] = bytes1(value);
+        traitPointers[tokenId] = SSTORE2.write(traits);
     }
 }
