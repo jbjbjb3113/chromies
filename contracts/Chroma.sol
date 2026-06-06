@@ -95,7 +95,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
         for (uint256 i = 0; i < tokenIds.length; ++i) {
             uint256 tokenId = tokenIds[i];
             _requireOwned(tokenId);
-            chromaStorage.revealTokenData(tokenId, pixelsArr[i], traitsArr[i]);
+            chromaStorage.writeTokenData(tokenId, pixelsArr[i], traitsArr[i]);
             revealed[tokenId] = true;
         }
     }
@@ -165,10 +165,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
     }
 
     function _mintPlaceholder(address to) internal {
+        if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
         uint256 tokenId = _totalSupply + 1;
-        bytes memory pixels = new bytes(2048);
-        bytes memory traits = new bytes(32);
-        _mintWithData(to, tokenId, pixels, traits, false);
+        _safeMint(to, tokenId);
+        ++_totalSupply;
     }
 
     function _mintWithData(address to, uint256 tokenId, bytes memory pixels, bytes memory traits, bool isRevealed)

@@ -998,11 +998,9 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-        bytes memory placeholder = storageContract.getPixels(1);
+        assert(!storageContract.hasData(1));
 
-        bytes memory emptyPixels = new bytes(2048);
-
-        assert(keccak256(placeholder) == keccak256(emptyPixels));
+        assert(!chroma.revealed(1));
 
 
 

@@ -6,6 +6,8 @@ interface IChromaStorage {
 
     function revealTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external;
 
+    function hasData(uint256 tokenId) external view returns (bool);
+
     function getPixels(uint256 tokenId) external view returns (bytes memory);
 
     function getTraits(uint256 tokenId) external view returns (bytes memory);
