@@ -347,3 +347,71 @@ Filed. Build after mint. Contract needs:
 - AP transfer function
 - Marketplace listing/escrow contract
 - Price discovery mechanism
+
+
+---
+
+## Inscribe / Lock Mechanic (Locked)
+
+### Concept
+Holders can permanently inscribe their Chromie on-chain via merkle proof.
+Inscription writes pixel data to Ethereum storage and locks the token forever.
+
+### Three token states
+| State | Canvas | AP | Trade | Rarity |
+|-------|--------|----|-------|--------|
+| Active | ✅ editable | ✅ earnable | ✅ | Standard |
+| Inscribed | ❌ frozen | ❌ locked | ✅ | Premium |
+| Burned | ❌ gone | yields AP | ❌ | Gone |
+
+### Mechanics
+- `inscribe(tokenId, pixels, traits, proof)` — owner only, merkle verified
+- Writes pixel data permanently to ChromaStorage via SSTORE2
+- Sets `locked[tokenId] = true` — irreversible
+- Token gets `Status: Inscribed` trait in metadata
+- Canvas edits blocked on locked tokens
+- Mutation tier shifting blocked on locked tokens
+
+### Economics
+- Inscribe gas: ~616k gas (~$13 at 15 gwei mainnet) — paid by holder
+- Optional — art available on IPFS immediately after mint
+- Inscribed tokens trade as distinct premium tier
+
+### Hybrid reveal model
+- Mint: cheap placeholder (~115k gas)
+- Art: available on IPFS/Arweave immediately, committed by merkle root
+- Reveal root: `0x3e956533997abafdcca2253c98299f18c0db09ad130debfd827e41b03c0e77b7`
+- Optional inscribe: permanent on-chain storage, holder pays gas
+
+### Messaging
+"Mint cheap. Inscribe if you want."
+Art locked on Ethereum at launch via merkle root.
+Pixel data on IPFS immediately.
+Optional on-chain inscription available anytime.
+Inscribed Chromies carry the Status: Inscribed trait — a permanent signal.
+
+### Inscribed Pristine — the holy grail
+- Pristine: 80 tokens at mint (1.6%)
+- Each burn toward Pristine costs ~70 burns
+- An inscribed Pristine = provably perfect, provably permanent
+- Rarest achievable state in the collection
+
+---
+
+## AI Auditor Agent (Filed — Post-Mint)
+
+### Concept
+An AI agent listed on OpenSea agent marketplace (or any A2A marketplace)
+that specializes in NFT smart contract security reviews.
+
+### What it does
+- Takes Solidity contracts as input
+- Checks for common vulnerabilities: reentrancy, access control,
+  integer overflow, merkle proof issues, supply cap bypass
+- Returns structured risk report with severity ratings
+- Suggests specific fixes
+
+### Why it works
+- Repeatable structured task with clear input/output
+- Fills gap: most small projects can't afford $5k formal audits
+- Could charge per rev
