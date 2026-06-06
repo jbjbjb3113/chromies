@@ -300,3 +300,50 @@ Canvas tool: https://normie-canvas-lab.jbjbjb2112.workers.dev/agent
 
 
 Domain: chromies.art ✅
+
+
+
+## Pixel Marketplace (Filed — Post-Mint)
+
+### Concept
+On-chain marketplace for trading Action Points between holders.
+Natural extension of the burn/AP economy.
+
+### What can be traded
+1. **Raw AP** — action points transferred wallet to wallet
+2. **Charged tokens** — tokens with AP already spent on edits, 
+   sold pre-loaded for burning
+3. **Burn bundles** — curated packages of tokens assembled 
+   specifically for burning toward Pristine
+
+### Mechanics
+- AP transfer function on-chain (send AP wallet to wallet)
+- Marketplace listing/escrow contract
+- Seller sets price in ETH
+- Buyer receives AP directly to their balance
+
+### Recursive burn value
+- Tokens with AP spent on them before burning yield bonus AP
+- Base burn yield: 100 AP
+- Each 10 AP spent on a token before burning adds +1 AP to burn yield
+- Creates second economy: build up tokens to burn them for max yield
+- Burn chains provable on-chain — lineage of sacrificed tokens visible
+
+### Pristine cost structure (locked)
+- OffKilter → Drifted: 500 AP
+- Drifted → Standard: 1,500 AP
+- Standard → Pristine: 5,000 AP
+- Full journey OffKilter → Pristine: 7,000 AP
+- Burn yield: 100 AP per token
+- Requires ~70 burns to reach Pristine from OffKilter
+- Theoretical max Pristine ever: ~220 tokens (near impossible in practice)
+
+### Site
+Lives at chromies.art/market — post-mint page
+Cursor can build UI once contract supports AP transfers
+
+### Status
+Filed. Build after mint. Contract needs:
+- AP transfer function
+- Marketplace listing/escrow contract
+- Price discovery mechanism
