@@ -312,7 +312,7 @@ const PHASE3 = {
 const PIXEL_MUTATION = {
   enabled: true,
   tiers: [
-    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, weight: 3  },
+    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, weight: 2  },
     { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, weight: 30 },
     { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, weight: 50 },
     { name: "OffKilter", paletteSwap: 0.20, edgeErode: 0.10, edgeDilate: 0.08, edgePasses: 2, weight: 17 },
@@ -394,7 +394,7 @@ const CHARACTERS = [
   {
     name: "Cat",
     gender: null,
-    weight: 50,
+    weight: 18,
     palettePool: ["CAT"],
     forcedSlots: {
       head: "Cat",
