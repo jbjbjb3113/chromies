@@ -120,6 +120,8 @@ contract ChromaRenderer is Ownable {
             _jsonAttribute("Hair", _hairLabel(uint8(traits[14]))),
             ",",
             _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15]))),
+            ",",
+            _jsonAttribute("Inscribed", "true"),
             ']}'
         );
 

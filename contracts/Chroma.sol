@@ -28,7 +28,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error WrongPhase();
     error InvalidMerkleProof();
     error MaxPerWalletExceeded();
-    error ArrayLengthMismatch();
+    error AlreadyRevealed();
 
     uint256 public constant MAX_SUPPLY = 5150;
     uint256 public constant MINT_PRICE = 0.006 ether;
@@ -39,11 +39,14 @@ contract Chroma is ERC721, ERC2981, Ownable {
     Phase public phase = Phase.Closed;
     bytes32 public merkleRootOne;
     bytes32 public merkleRootTwo;
+    bytes32 public revealRoot;
 
     mapping(address => uint256) public claimedOne;
     mapping(address => uint256) public claimedTwo;
     mapping(address => uint256) public claimedPublic;
     mapping(uint256 => bool) public revealed;
+
+    event TokenRevealed(uint256 indexed tokenId);
 
     ChromaStorage public immutable chromaStorage;
     IChromaRenderer public renderer;
@@ -84,20 +87,18 @@ contract Chroma is ERC721, ERC2981, Ownable {
         _mintPublic();
     }
 
-    function reveal(uint256[] calldata tokenIds, bytes[] calldata pixelsArr, bytes[] calldata traitsArr)
+    function reveal(uint256 tokenId, bytes calldata pixels, bytes calldata traits, bytes32[] calldata proof)
         external
-        onlyOwner
     {
-        if (tokenIds.length != pixelsArr.length || tokenIds.length != traitsArr.length) {
-            revert ArrayLengthMismatch();
-        }
+        _requireOwned(tokenId);
+        if (revealed[tokenId]) revert AlreadyRevealed();
 
-        for (uint256 i = 0; i < tokenIds.length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            _requireOwned(tokenId);
-            chromaStorage.writeTokenData(tokenId, pixelsArr[i], traitsArr[i]);
-            revealed[tokenId] = true;
-        }
+        bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
+        if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
+
+        chromaStorage.writeTokenData(tokenId, pixels, traits);
+        revealed[tokenId] = true;
+        emit TokenRevealed(tokenId);
     }
 
     function setPhase(Phase _phase) external onlyOwner {
@@ -110,6 +111,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
 
     function setMerkleRootTwo(bytes32 root) external onlyOwner {
         merkleRootTwo = root;
+    }
+
+    function setRevealRoot(bytes32 root) external onlyOwner {
+        revealRoot = root;
     }
 
     function withdraw() external onlyOwner {

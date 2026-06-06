@@ -552,7 +552,7 @@ contract ChromaTokenTest is Test {
 
 
 
-        vm.store(address(chroma), bytes32(uint256(16)), bytes32(uint256(5149)));
+        vm.store(address(chroma), bytes32(uint256(17)), bytes32(uint256(5149)));
 
         assert(chroma.totalSupply() == 5149);
 
@@ -916,6 +916,16 @@ contract ChromaPhaseMintTest is Test {
 
 
 
+    function _revealLeaf(uint256 tokenId, bytes memory pixels, bytes memory traits)
+        internal
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(tokenId, pixels, traits));
+    }
+
+
+
     function test_AllowlistOne_Mint() external {
 
         bytes32[] memory proof = new bytes32[](0);
@@ -1012,21 +1022,13 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-        uint256[] memory tokenIds = new uint256[](1);
+        bytes32 leaf = _revealLeaf(1, pixels, traits);
 
-        bytes[] memory pixelsArr = new bytes[](1);
+        chroma.setRevealRoot(leaf);
 
-        bytes[] memory traitsArr = new bytes[](1);
+        bytes32[] memory proof = new bytes32[](0);
 
-        tokenIds[0] = 1;
-
-        pixelsArr[0] = pixels;
-
-        traitsArr[0] = traits;
-
-
-
-        chroma.reveal(tokenIds, pixelsArr, traitsArr);
+        chroma.reveal(1, pixels, traits, proof);
 
 
 
@@ -1043,6 +1045,40 @@ contract ChromaPhaseMintTest is Test {
         bytes memory uriBytes = bytes(uri);
 
         assert(uriBytes.length > prefix.length);
+
+    }
+
+
+
+    function test_Reveal_InvalidProof_Reverts() external {
+
+        chroma.setPhase(Chroma.Phase.Public);
+
+        chroma.mint{value: 0.006 ether}();
+
+
+
+        bytes memory pixels = new bytes(2048);
+
+        _setPixel(pixels, 0, 0, 4);
+
+        bytes memory traits = TraitFixtures.zeroTraits();
+
+
+
+        chroma.setRevealRoot(bytes32(uint256(0xdeadbeef)));
+
+
+
+        bytes32[] memory proof = new bytes32[](1);
+
+        proof[0] = bytes32(uint256(1));
+
+
+
+        vm.expectRevert(Chroma.InvalidMerkleProof.selector);
+
+        chroma.reveal(1, pixels, traits, proof);
 
     }
 
