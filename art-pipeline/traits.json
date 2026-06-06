@@ -486,6 +486,26 @@
           "weight": 100
         },
         {
+          "name": "BlackEye",
+          "file": "EYES_BlackEye.png",
+          "weight": 15
+        },
+        {
+          "name": "MakeUp",
+          "file": "EYES_MakeUp.png",
+          "weight": 12
+        },
+        {
+          "name": "RunningMascara",
+          "file": "EYES_RunningMascara.png",
+          "weight": 10
+        },
+        {
+          "name": "Stoned",
+          "file": "EYES_Stoned.png",
+          "weight": 8
+        },
+        {
           "name": "Alien",
           "file": "EYES_ALien.png",
           "weight": 0
