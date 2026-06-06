@@ -283,6 +283,26 @@
           "weight": 10
         },
         {
+          "name": "Male_Chromies",
+          "file": "NECKLACE_Male_Chromies.png",
+          "weight": 10
+        },
+        {
+          "name": "Male_HappyFace",
+          "file": "NECKLACE_Male_HappyFace.png",
+          "weight": 8
+        },
+        {
+          "name": "Male_Normies",
+          "file": "NECKLACE_Male_Normies.png",
+          "weight": 8
+        },
+        {
+          "name": "Male_Pendent",
+          "file": "NECKLACE_Male_Pendent.png",
+          "weight": 8
+        },
+        {
           "name": "None",
           "file": "NECKLACE_None.png",
           "weight": 70

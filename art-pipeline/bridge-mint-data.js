@@ -79,6 +79,10 @@ const NECKLACE_BYTES = {
   Female_Flower: 4,
   Female_UpsideDownCross: 5,
   Female_Opal: 6,
+  Male_Chromies: 7,
+  Male_HappyFace: 8,
+  Male_Normies: 9,
+  Male_Pendent: 10,
 };
 const TATTOO_BYTES = { None: 0, Signal: 1, Thug: 2, Marks: 3, Scar: 4 };
 const MASK_BYTES = { None: 0 };

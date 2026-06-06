@@ -345,7 +345,7 @@ const CHARACTERS = [
     },
     slotWeightOverrides: {},
     slotVariantPool: {
-      necklace: ["Male_Chain", "None"],
+      necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
     },
   },
   {
