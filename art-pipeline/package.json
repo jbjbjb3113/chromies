@@ -10,6 +10,8 @@
     "build": "node extract-components.js && node render-chromie.js SIGNAL"
   },
   "dependencies": {
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.6.0",
     "pngjs": "^7.0.0"
   }
 }
