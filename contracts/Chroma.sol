@@ -201,7 +201,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
             string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(bytes(svg))));
 
         bytes memory json = abi.encodePacked(
-            '{"name":"Chroma #',
+            '{"name":"Chromie #',
             tokenId.toString(),
             ' (Unrevealed)","description":"Awaiting reveal.","image":"',
             image,
