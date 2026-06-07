@@ -3,6 +3,7 @@ import {
   useAccount,
   useChainId,
   useConnect,
+  useDisconnect,
   usePublicClient,
   useReadContracts,
   useWalletClient,
@@ -24,7 +25,7 @@ import {
 import { fetchMerkleProofs, lookupProof, proofToBytes32 } from "../lib/merkle.js";
 import { projectId, walletConnectConnector } from "../lib/wagmi.js";
 
-const FEATURED_TOKEN = "/tokens/0042.png";
+const FEATURED_TOKEN = "/alien-134.png";
 
 const FAQ = [
   {
@@ -44,6 +45,10 @@ const FAQ = [
     a: "Mint status updates live from the Chromies contract. Connect your wallet on Sepolia to mint when your phase is active.",
   },
 ];
+
+function shortenAddress(address) {
+  return `${address.slice(0, 6)}…${address.slice(-4)}`;
+}
 
 function formatEth(wei) {
   if (wei === undefined || wei === null) return "—";
@@ -176,6 +181,7 @@ export default function Mint() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { connect, isPending: isConnectingWallet } = useConnect();
+  const { disconnect } = useDisconnect();
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const { data: walletClient } = useWalletClient();
@@ -496,7 +502,22 @@ export default function Mint() {
           )}
 
           <div className="mt-10 flex flex-col items-center gap-6">
-            <WalletButton />
+            {isConnected && address && onSepolia ? (
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-semibold tabular-nums text-ink/80">
+                  {shortenAddress(address)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => disconnect()}
+                  className="border border-ink bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-ink transition-colors hover:border-signal hover:text-signal"
+                >
+                  Disconnect
+                </button>
+              </div>
+            ) : (
+              <WalletButton />
+            )}
 
             {!isConnected && walletConnectConnector && (
               <button
