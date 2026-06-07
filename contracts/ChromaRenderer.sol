@@ -126,6 +126,7 @@ contract ChromaRenderer is Ownable {
             _jsonAttribute("Hair", _hairLabel(uint8(traits[14]))),
             ",",
             _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15]))),
+            _levelAttribute(tokenId),
             _statusAttribute(tokenId),
             ']}'
         );
@@ -196,8 +197,24 @@ contract ChromaRenderer is Ownable {
         return string(abi.encodePacked(",", _jsonAttribute("Status", "Inscribed")));
     }
 
+    function _levelAttribute(uint256 tokenId) internal view returns (string memory) {
+        uint256 levelValue = 1;
+        if (address(chromaCanvas) != address(0)) {
+            levelValue = chromaCanvas.level(tokenId);
+        }
+        return string(abi.encodePacked(",", _jsonNumberAttribute("Level", levelValue)));
+    }
+
     function _jsonAttribute(string memory traitType, string memory value) internal pure returns (string memory) {
         return string(abi.encodePacked('{"trait_type":"', traitType, '","value":"', value, '"}'));
+    }
+
+    function _jsonNumberAttribute(string memory traitType, uint256 value) internal pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                '{"display_type":"number","trait_type":"', traitType, '","value":', value.toString(), "}"
+            )
+        );
     }
 
     function _paletteForToken(bytes memory traits) internal pure returns (string[16] memory palette) {

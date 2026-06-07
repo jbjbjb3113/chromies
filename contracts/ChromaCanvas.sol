@@ -37,6 +37,7 @@ contract ChromaCanvas is Ownable {
     mapping(address user => uint256 points) public actionPoints;
     mapping(address user => PendingCommit) public pendingCommit;
     mapping(uint256 tokenId => CanvasEdit[]) internal tokenDiffs;
+    mapping(uint256 tokenId => uint256 apSpent) public totalApSpent;
 
     event CommitSubmitted(address indexed user, bytes32 indexed commitment);
     event BurnRevealed(address indexed user, uint256 indexed burnedTokenId, uint256 actionPointsAwarded);
@@ -91,8 +92,13 @@ contract ChromaCanvas is Ownable {
         if (actionPoints[msg.sender] < cost) revert InsufficientActionPoints();
 
         actionPoints[msg.sender] -= cost;
+        totalApSpent[tokenId] += cost;
         chromaStorage.updateTrait(tokenId, TRAIT_MUTATION_INDEX, newTier);
         emit MutationTierShifted(tokenId, currentTier, newTier);
+    }
+
+    function level(uint256 tokenId) public view returns (uint256) {
+        return totalApSpent[tokenId] / 100 + 1;
     }
 
     function transferActionPoints(address to, uint256 amount) external {
@@ -154,6 +160,7 @@ contract ChromaCanvas is Ownable {
         }
 
         actionPoints[user] -= entryCount;
+        totalApSpent[tokenId] += entryCount;
         emit DiffApplied(user, tokenId, entryCount);
     }
 }

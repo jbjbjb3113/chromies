@@ -13,6 +13,7 @@ import {ChromaCanvas} from "../contracts/ChromaCanvas.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 
 
@@ -920,6 +921,65 @@ contract ChromaCanvasTest is Test {
 
         vm.expectRevert(ChromaCanvas.TokenLocked.selector);
         canvas.shiftMutationTier(601, 2);
+    }
+
+    function test_Level_StartsAtOne() external {
+        chroma.mint(address(this), 700, basePixels, baseTraits);
+        assert(canvas.level(700) == 1);
+        assert(canvas.totalApSpent(700) == 0);
+    }
+
+    function test_Level_IncreasesWithApSpend() external {
+        chroma.mint(address(this), 701, basePixels, baseTraits);
+        chroma.mint(address(this), 702, basePixels, baseTraits);
+        chroma.setApprovalForAll(address(canvas), true);
+        _grantActionPoints(701, 702);
+
+        bytes memory diffData = new bytes(300);
+        for (uint256 i = 0; i < 100; ++i) {
+            uint16 pixelIndex = uint16(i + 1);
+            diffData[i * 3] = bytes1(uint8(pixelIndex >> 8));
+            diffData[i * 3 + 1] = bytes1(uint8(pixelIndex));
+            diffData[i * 3 + 2] = bytes1(uint8(1));
+        }
+
+        canvas.applyDiff(701, diffData);
+
+        assert(canvas.totalApSpent(701) == 100);
+        assert(canvas.level(701) == 2);
+    }
+
+    function test_Level_TraitInTokenURI() external {
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        renderer.setCanvas(address(canvas));
+        chroma.setRenderer(address(renderer));
+
+        chroma.mint(address(this), 703, basePixels, baseTraits);
+        chroma.mint(address(this), 704, basePixels, baseTraits);
+        chroma.setApprovalForAll(address(canvas), true);
+        _grantActionPoints(703, 704);
+
+        bytes memory diffData = new bytes(300);
+        for (uint256 i = 0; i < 100; ++i) {
+            uint16 pixelIndex = uint16(i + 1);
+            diffData[i * 3] = bytes1(uint8(pixelIndex >> 8));
+            diffData[i * 3 + 1] = bytes1(uint8(pixelIndex));
+            diffData[i * 3 + 2] = bytes1(uint8(1));
+        }
+        canvas.applyDiff(703, diffData);
+
+        string memory json = _decodeTokenUri(renderer.tokenURI(703));
+        assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":2}'));
+    }
+
+    function _decodeTokenUri(string memory uri) internal pure returns (string memory) {
+        bytes memory prefix = bytes("data:application/json;base64,");
+        bytes memory raw = bytes(uri);
+        bytes memory encoded = new bytes(raw.length - prefix.length);
+        for (uint256 i = 0; i < encoded.length; ++i) {
+            encoded[i] = raw[i + prefix.length];
+        }
+        return string(Base64.decode(string(encoded)));
     }
 
 }
