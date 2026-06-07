@@ -604,8 +604,9 @@ export default function Mint() {
             />
           </div>
           <p className="mt-8 max-w-md text-base leading-relaxed text-ink/70">
-            Each Chromie is generated on-chain from your token ID. No two are
-            alike. Your mutation tier is determined at mint.
+            Each Chromie is a unique 64×64 pixel identity, permanently committed
+            to Ethereum. Your mutation tier is determined at mint. Inscribe to
+            write your art on-chain forever.
           </p>
         </div>
       </section>
