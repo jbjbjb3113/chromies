@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { TOKEN_IMAGES } from "../data/tokens.js";
+import { FOREGROUND_IMAGES } from "../data/tokens.js";
 
 const CELL_PX = 768;
 const SCROLL_DURATION_S = 128;
@@ -7,7 +7,7 @@ const SCROLL_DURATION_S = 128;
 function buildStripTiles(count, offset = 23) {
   const tiles = [];
   for (let i = 0; i < count; i++) {
-    tiles.push(TOKEN_IMAGES[(i * 11 + offset) % TOKEN_IMAGES.length]);
+    tiles.push(FOREGROUND_IMAGES[(i * 11 + offset) % FOREGROUND_IMAGES.length]);
   }
   return tiles;
 }
@@ -31,7 +31,7 @@ function StripPanel({ tiles }) {
   );
 }
 
-export default function TokenHeroForeground({ opacity = 0.45 }) {
+export default function TokenHeroForeground({ opacity = 0.72 }) {
   const wrapRef = useRef(null);
   const [width, setWidth] = useState(1280);
 

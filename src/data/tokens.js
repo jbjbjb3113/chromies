@@ -7,6 +7,12 @@ export const TOKEN_IMAGES = Array.from(
   (_, i) => `/tokens/${String(i + 1).padStart(4, "0")}.png`
 );
 
+/** 1024px no-background renders for the landing hero foreground scroll. */
+export const FOREGROUND_IMAGES = Array.from(
+  { length: TOKEN_COUNT },
+  (_, i) => `/foreground/${String(i + 1).padStart(4, "0")}.png`
+);
+
 export const TOKEN_CELL_PX = 64;
 
 /** Dense tile list covering a viewport — cycles all TOKEN_IMAGES. */

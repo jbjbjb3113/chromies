@@ -125,9 +125,9 @@ export default function Landing() {
       {/* 1. Hero */}
       <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20 sm:px-6">
         <TokenGridBackground opacity={0.08} animate />
-        <TokenHeroForeground opacity={0.45} />
+        <TokenHeroForeground opacity={0.72} />
         <div
-          className="relative z-10 mx-auto w-fit max-w-full p-8 text-center"
+          className="relative z-10 mx-auto w-fit max-w-full px-8 py-6 text-center sm:px-10 sm:py-7"
           style={{
             backgroundColor: "rgba(240, 237, 232, 0.71)",
             border: "1px solid #8a8780",
@@ -139,12 +139,9 @@ export default function Landing() {
           <p className="mt-5 text-[10px] tracking-[0.3em] text-ink/60 sm:text-xs">
             ON-CHAIN GENERATIVE IDENTITIES IN COLOR
           </p>
-          <p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-ink/80">
-            TBD on-chain, interoperable, CC0 pixel art faces. 64×64. 16 colors.
-          </p>
           <Link
             to="/mint"
-            className="mt-10 inline-block border border-signal px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal transition-colors hover:bg-signal hover:text-ink"
+            className="mt-6 inline-block border border-signal px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal transition-colors hover:bg-signal hover:text-ink"
           >
             MINT →
           </Link>
