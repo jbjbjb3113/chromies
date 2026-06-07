@@ -57,6 +57,10 @@ const FAQ = [
     a: "AP is the fuel of the Chromies economy. Earn AP by burning tokens. Spend AP to shift your mutation tier toward Pristine. AP can be transferred between wallets — enabling a secondary market for collectors chasing Pristine.",
   },
   {
+    q: "What is Level?",
+    a: "Every Chromie starts at Level 1. Your level increases as you spend Action Points — editing pixels on the canvas or shifting your mutation tier. Level is a numeric trait visible on OpenSea. There's no ceiling — the more you engage, the higher your level climbs. Level and Action Points are weighted 3× in rarity scoring, making highly active Chromies among the most valuable in the collection.",
+  },
+  {
     q: "Do I need to reveal my Chromie?",
     a: "No — your art is committed to Ethereum at launch via a merkle root. Nobody can change what your token looks like, ever. Pixel data is available immediately. Inscribing is optional — it permanently writes your art on-chain and locks it forever. You pay the gas. Your call.",
   },
