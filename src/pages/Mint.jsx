@@ -3,9 +3,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   useAccount,
   useChainId,
+  usePublicClient,
   useReadContracts,
-  useWaitForTransactionReceipt,
-  useWriteContract,
+  useWalletClient,
 } from "wagmi";
 import { decodeEventLog, formatEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
@@ -13,6 +13,8 @@ import SiteFooter from "../components/SiteFooter.jsx";
 import {
   chromaAbi,
   getChromaAddress,
+  getClaimedCount,
+  getRemainingMintAllowance,
   isChromaDeployed,
   PHASE,
   PHASE_LABELS,
@@ -106,15 +108,62 @@ function MintStatus({ phase, totalSupply, maxSupply, chainId }) {
   );
 }
 
+function QuantitySelector({ quantity, maxQuantity, onChange, disabled }) {
+  const canDecrease = !disabled && quantity > 1;
+  const canIncrease = !disabled && quantity < maxQuantity;
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink/50">
+        Quantity
+      </span>
+      <div className="flex items-center border border-ink">
+        <button
+          type="button"
+          onClick={() => onChange(quantity - 1)}
+          disabled={!canDecrease}
+          aria-label="Decrease quantity"
+          className="h-11 w-11 text-lg font-bold transition-colors hover:bg-signal hover:text-ink disabled:cursor-not-allowed disabled:text-ink/25 disabled:hover:bg-transparent"
+        >
+          −
+        </button>
+        <span className="min-w-12 border-x border-ink px-4 text-center text-lg font-black tabular-nums">
+          {quantity}
+        </span>
+        <button
+          type="button"
+          onClick={() => onChange(quantity + 1)}
+          disabled={!canIncrease}
+          aria-label="Increase quantity"
+          className="h-11 w-11 text-lg font-bold transition-colors hover:bg-signal hover:text-ink disabled:cursor-not-allowed disabled:text-ink/25 disabled:hover:bg-transparent"
+        >
+          +
+        </button>
+      </div>
+      <span className="text-xs text-ink/50">
+        {maxQuantity > 0
+          ? `${maxQuantity} remaining this phase`
+          : "No mints remaining"}
+      </span>
+    </div>
+  );
+}
+
 export default function Mint() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const chromaAddress = getChromaAddress(chainId);
+  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
 
   const [tier1Proof, setTier1Proof] = useState(null);
   const [tier2Proof, setTier2Proof] = useState(null);
   const [merkleError, setMerkleError] = useState(null);
-  const [mintedTokenId, setMintedTokenId] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [mintedTokenIds, setMintedTokenIds] = useState([]);
+  const [batchError, setBatchError] = useState(null);
+  const [isBatchMinting, setIsBatchMinting] = useState(false);
+  const [batchStep, setBatchStep] = useState(0);
 
   const { data: contractData, refetch: refetchContract } = useReadContracts({
     contracts: chromaAddress
@@ -164,6 +213,23 @@ export default function Mint() {
   const claimedTwo = address ? contractData?.[8]?.result : undefined;
   const claimedPublic = address ? contractData?.[9]?.result : undefined;
 
+  const claimedCount = useMemo(
+    () => getClaimedCount(phase, claimedOne, claimedTwo, claimedPublic),
+    [phase, claimedOne, claimedTwo, claimedPublic]
+  );
+
+  const maxQuantity = useMemo(
+    () => getRemainingMintAllowance(phase, claimedOne, claimedTwo, claimedPublic, maxPerWalletOne),
+    [phase, claimedOne, claimedTwo, claimedPublic, maxPerWalletOne]
+  );
+
+  useEffect(() => {
+    setQuantity((current) => {
+      if (maxQuantity <= 0) return 1;
+      return Math.min(Math.max(1, current), maxQuantity);
+    });
+  }, [maxQuantity, phase, address]);
+
   useEffect(() => {
     let cancelled = false;
     async function loadProofs() {
@@ -208,144 +274,156 @@ export default function Mint() {
     return { eligible: false, onList: false, price: publicPrice };
   }, [address, phase, tier1Proof, tier2Proof, tier1Price, tier2Price, publicPrice]);
 
-  const {
-    writeContract,
-    data: txHash,
-    isPending: isAwaitingSignature,
-    error: writeError,
-    reset: resetWrite,
-  } = useWriteContract();
-
-  const {
-    isLoading: isMinting,
-    isSuccess,
-    error: receiptError,
-    data: receipt,
-  } = useWaitForTransactionReceipt({ hash: txHash });
-
-  useEffect(() => {
-    if (isSuccess && receipt) {
-      const tokenId = extractMintedTokenId(receipt);
-      if (tokenId !== null) setMintedTokenId(tokenId);
-      refetchContract();
-    }
-  }, [isSuccess, receipt, refetchContract]);
-
-  const handleMint = useCallback(() => {
-    if (!chromaAddress) return;
-    resetWrite();
-    setMintedTokenId(null);
-
-    if (phase === PHASE.AllowlistOne && tier1Proof) {
-      writeContract({
-        address: chromaAddress,
-        abi: chromaAbi,
-        functionName: "mint",
-        args: [proofToBytes32(tier1Proof)],
-        value: tier1Price,
-      });
-      return;
-    }
-
-    if (phase === PHASE.AllowlistTwo && tier2Proof) {
-      writeContract({
-        address: chromaAddress,
-        abi: chromaAbi,
-        functionName: "mint",
-        args: [proofToBytes32(tier2Proof)],
-        value: tier2Price,
-      });
-      return;
-    }
-
-    if (phase === PHASE.Public) {
-      writeContract({
-        address: chromaAddress,
-        abi: chromaAbi,
-        functionName: "mint",
-        args: [],
-        value: publicPrice,
-      });
-    }
-  }, [
-    chromaAddress,
-    phase,
-    tier1Proof,
-    tier2Proof,
-    tier1Price,
-    tier2Price,
-    publicPrice,
-    writeContract,
-    resetWrite,
-  ]);
-
-  const mintDisabledReason = useMemo(() => {
-    if (!isConnected) return "Connect wallet to mint";
-    if (!isChromaDeployed(chainId)) return "Chromies not deployed on this network";
-    if (phase === PHASE.Closed) return "Mint not open";
-    if (phase === PHASE.Revealed) return "Mint complete";
-    if (phase === PHASE.AllowlistOne) {
-      if (!tier1Proof) return "Not on Tier 1 allowlist";
-      if (claimedOne !== undefined && maxPerWalletOne !== undefined && claimedOne >= maxPerWalletOne) {
-        return "Tier 1 wallet limit reached";
-      }
-    }
-    if (phase === PHASE.AllowlistTwo) {
-      if (!tier2Proof) return "Not on Tier 2 allowlist";
-      if (claimedTwo !== undefined && claimedTwo >= 2) return "Tier 2 wallet limit reached";
-    }
-    if (phase === PHASE.Public && claimedPublic !== undefined && claimedPublic >= 3) {
-      return "Public wallet limit reached";
-    }
-    if (totalSupply !== undefined && maxSupply !== undefined && totalSupply >= maxSupply) {
-      return "Sold out";
-    }
-    return null;
-  }, [
-    isConnected,
-    chainId,
-    phase,
-    tier1Proof,
-    tier2Proof,
-    claimedOne,
-    claimedTwo,
-    claimedPublic,
-    maxPerWalletOne,
-    totalSupply,
-    maxSupply,
-  ]);
-
-  const activePrice = useMemo(() => {
+  const unitPrice = useMemo(() => {
     if (phase === PHASE.AllowlistOne && tier1Proof) return tier1Price;
     if (phase === PHASE.AllowlistTwo && tier2Proof) return tier2Price;
     if (phase === PHASE.Public) return publicPrice;
     return allowlistStatus?.price ?? publicPrice;
   }, [phase, tier1Proof, tier2Proof, tier1Price, tier2Price, publicPrice, allowlistStatus]);
 
-  const txError = shortenError(writeError || receiptError);
+  const totalPrice = useMemo(() => {
+    if (unitPrice === undefined) return undefined;
+    return unitPrice * BigInt(quantity);
+  }, [unitPrice, quantity]);
+
+  const buildMintRequest = useCallback(() => {
+    if (phase === PHASE.AllowlistOne && tier1Proof) {
+      return {
+        functionName: "mint",
+        args: [proofToBytes32(tier1Proof)],
+        value: tier1Price,
+      };
+    }
+    if (phase === PHASE.AllowlistTwo && tier2Proof) {
+      return {
+        functionName: "mint",
+        args: [proofToBytes32(tier2Proof)],
+        value: tier2Price,
+      };
+    }
+    if (phase === PHASE.Public) {
+      return {
+        functionName: "mint",
+        args: [],
+        value: publicPrice,
+      };
+    }
+    return null;
+  }, [phase, tier1Proof, tier2Proof, tier1Price, tier2Price, publicPrice]);
+
+  const handleMint = useCallback(async () => {
+    if (!chromaAddress || !walletClient || !publicClient) return;
+
+    const request = buildMintRequest();
+    if (!request) return;
+
+    setBatchError(null);
+    setMintedTokenIds([]);
+    setIsBatchMinting(true);
+
+    const tokenIds = [];
+
+    try {
+      for (let i = 0; i < quantity; i++) {
+        setBatchStep(i + 1);
+
+        const hash = await walletClient.writeContract({
+          address: chromaAddress,
+          abi: chromaAbi,
+          functionName: request.functionName,
+          args: request.args,
+          value: request.value,
+        });
+
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        const tokenId = extractMintedTokenId(receipt);
+        if (tokenId !== null) tokenIds.push(tokenId);
+      }
+
+      setMintedTokenIds(tokenIds);
+      await refetchContract();
+    } catch (error) {
+      setBatchError(shortenError(error));
+      if (tokenIds.length > 0) {
+        setMintedTokenIds(tokenIds);
+        await refetchContract();
+      }
+    } finally {
+      setIsBatchMinting(false);
+      setBatchStep(0);
+    }
+  }, [
+    chromaAddress,
+    walletClient,
+    publicClient,
+    buildMintRequest,
+    quantity,
+    refetchContract,
+  ]);
+
+  const mintDisabledReason = useMemo(() => {
+    if (!isConnected) return "Connect wallet to mint";
+    if (!walletClient) return "Wallet not ready";
+    if (!isChromaDeployed(chainId)) return "Chromies not deployed on this network";
+    if (phase === PHASE.Closed) return "Mint not open";
+    if (phase === PHASE.Revealed) return "Mint complete";
+    if (phase === PHASE.AllowlistOne && !tier1Proof) return "Not on Tier 1 allowlist";
+    if (phase === PHASE.AllowlistTwo && !tier2Proof) return "Not on Tier 2 allowlist";
+    if (maxQuantity <= 0) return "Wallet mint limit reached";
+    if (totalSupply !== undefined && maxSupply !== undefined && totalSupply >= maxSupply) {
+      return "Sold out";
+    }
+    if (!buildMintRequest()) return "Mint unavailable for current phase";
+    return null;
+  }, [
+    isConnected,
+    walletClient,
+    chainId,
+    phase,
+    tier1Proof,
+    tier2Proof,
+    maxQuantity,
+    totalSupply,
+    maxSupply,
+    buildMintRequest,
+  ]);
+
   const buttonLabel = (() => {
-    if (mintedTokenId !== null) return `Chromie #${mintedTokenId} minted!`;
-    if (isMinting) return "Minting…";
-    if (isAwaitingSignature) return "Confirm in wallet";
+    if (mintedTokenIds.length > 0 && !isBatchMinting) {
+      if (mintedTokenIds.length === 1) {
+        return `Chromie #${mintedTokenIds[0]} minted!`;
+      }
+      return `${mintedTokenIds.length} Chromies minted!`;
+    }
+    if (isBatchMinting && batchStep > 0) {
+      return quantity > 1
+        ? `Minting ${batchStep} of ${quantity}…`
+        : "Minting…";
+    }
+    if (isBatchMinting) return "Confirm in wallet";
     if (mintDisabledReason) return mintDisabledReason;
-    return `Mint — ${formatEth(activePrice)}`;
+    const priceLabel = formatEth(totalPrice);
+    return quantity > 1 ? `Mint ${quantity} — ${priceLabel}` : `Mint — ${priceLabel}`;
   })();
 
   const infoCards = [
-    { value: formatEth(activePrice), label: "Your Price" },
+    {
+      value: formatEth(totalPrice),
+      label: quantity > 1 ? `Total (${quantity}×)` : "Your Price",
+    },
     { value: maxSupply !== undefined ? String(maxSupply) : "—", label: "Supply" },
     {
-      value:
-        phase === PHASE.AllowlistOne
-          ? `${maxPerWalletOne ?? 2}`
-          : phase === PHASE.AllowlistTwo
-            ? "2"
-            : phase === PHASE.Public
-              ? "3"
-              : "—",
-      label: "Per Wallet",
+      value: maxQuantity > 0 ? String(maxQuantity) : "0",
+      label: "Remaining",
     },
   ];
+
+  const showQuantity =
+    isConnected &&
+    maxQuantity > 0 &&
+    (phase === PHASE.AllowlistOne ||
+      phase === PHASE.AllowlistTwo ||
+      phase === PHASE.Public);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -373,14 +451,15 @@ export default function Mint() {
             <p className="mt-6 text-sm font-semibold text-signal">
               You&apos;re on the allowlist
               {allowlistStatus.eligible
-                ? ` — eligible for ${formatEth(allowlistStatus.price)}`
+                ? ` — ${formatEth(unitPrice)} each`
                 : " — wait for your phase or use public mint"}
             </p>
           )}
 
-          {address && !allowlistStatus?.onList && phase !== PHASE.Closed && (
+          {address && !allowlistStatus?.onList && phase === PHASE.Public && (
             <p className="mt-6 text-sm text-ink/60">
-              Public mint price: <strong className="text-ink">{formatEth(publicPrice)}</strong>
+              Public mint: <strong className="text-ink">{formatEth(publicPrice)}</strong> each
+              {claimedCount > 0 ? ` · ${claimedCount} already minted` : ""}
             </p>
           )}
 
@@ -388,26 +467,53 @@ export default function Mint() {
             <p className="mt-4 text-sm text-red-600">{merkleError}</p>
           )}
 
-          <div className="mt-10 flex flex-col items-center gap-4">
+          <div className="mt-10 flex flex-col items-center gap-6">
             <ConnectButton
               showBalance={false}
               chainStatus="icon"
               accountStatus="address"
             />
+
+            {showQuantity && (
+              <QuantitySelector
+                quantity={quantity}
+                maxQuantity={maxQuantity}
+                onChange={setQuantity}
+                disabled={isBatchMinting || Boolean(mintDisabledReason)}
+              />
+            )}
+
+            {showQuantity && unitPrice !== undefined && quantity > 1 && (
+              <p className="text-sm text-ink/60">
+                {formatEth(unitPrice)} × {quantity} ={" "}
+                <strong className="text-ink">{formatEth(totalPrice)}</strong>
+              </p>
+            )}
+
             <button
               type="button"
               onClick={handleMint}
-              disabled={Boolean(mintDisabledReason) || isAwaitingSignature || isMinting}
+              disabled={Boolean(mintDisabledReason) || isBatchMinting}
               className="border border-signal bg-signal px-8 py-3 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:hover:bg-ink/10 disabled:hover:text-ink/40"
             >
               {buttonLabel}
             </button>
-            {txError && (
-              <p className="max-w-md text-sm text-red-600">{txError}</p>
+
+            {batchError && (
+              <p className="max-w-md text-sm text-red-600">{batchError}</p>
             )}
-            {mintedTokenId !== null && (
+
+            {mintedTokenIds.length > 0 && (
               <p className="text-sm font-semibold text-signal">
-                Chromie #{String(mintedTokenId)} minted successfully.
+                {mintedTokenIds.length === 1
+                  ? `Chromie #${String(mintedTokenIds[0])} minted successfully.`
+                  : `Chromies #${mintedTokenIds.map(String).join(", #")} minted successfully.`}
+              </p>
+            )}
+
+            {quantity > 1 && !isBatchMinting && mintedTokenIds.length === 0 && !batchError && (
+              <p className="max-w-sm text-xs text-ink/50">
+                Each Chromie requires a separate on-chain transaction (one mint per tx).
               </p>
             )}
           </div>

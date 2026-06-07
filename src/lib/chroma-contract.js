@@ -28,3 +28,32 @@ export const PHASE_LABELS = {
   [PHASE.Public]: "Public Mint",
   [PHASE.Revealed]: "Revealed",
 };
+
+/** Per-phase wallet caps (contract: Tier2=2, Public=3; Tier1 reads MAX_PER_WALLET_ONE). */
+export const PHASE_WALLET_MAX = {
+  [PHASE.AllowlistOne]: null,
+  [PHASE.AllowlistTwo]: 2,
+  [PHASE.Public]: 3,
+};
+
+export function getPhaseWalletMax(phase, maxPerWalletOne) {
+  if (phase === PHASE.AllowlistOne) {
+    return maxPerWalletOne !== undefined ? Number(maxPerWalletOne) : 2;
+  }
+  if (phase === PHASE.AllowlistTwo) return PHASE_WALLET_MAX[PHASE.AllowlistTwo];
+  if (phase === PHASE.Public) return PHASE_WALLET_MAX[PHASE.Public];
+  return 0;
+}
+
+export function getClaimedCount(phase, claimedOne, claimedTwo, claimedPublic) {
+  if (phase === PHASE.AllowlistOne) return Number(claimedOne ?? 0);
+  if (phase === PHASE.AllowlistTwo) return Number(claimedTwo ?? 0);
+  if (phase === PHASE.Public) return Number(claimedPublic ?? 0);
+  return 0;
+}
+
+export function getRemainingMintAllowance(phase, claimedOne, claimedTwo, claimedPublic, maxPerWalletOne) {
+  const max = getPhaseWalletMax(phase, maxPerWalletOne);
+  const claimed = getClaimedCount(phase, claimedOne, claimedTwo, claimedPublic);
+  return Math.max(0, max - claimed);
+}
