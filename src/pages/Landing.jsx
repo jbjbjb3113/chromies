@@ -136,10 +136,10 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 top-[58%] z-10 flex justify-center sm:top-[56%]">
+        <div className="pointer-events-none absolute inset-x-0 top-[68%] z-10 flex justify-center sm:top-[66%]">
           <Link
             to="/mint"
-            className="pointer-events-auto border border-signal bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:bg-signal hover:text-ink"
+            className="pointer-events-auto border border-[#8a8780] bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95"
           >
             MINT →
           </Link>
