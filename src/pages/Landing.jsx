@@ -122,26 +122,24 @@ export default function Landing() {
     <div className="landing-mono min-h-screen bg-paper text-ink">
       <SiteHeader />
 
-      {/* 1. Hero */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 pt-24 pb-20 sm:px-6">
+      {/* 1. Hero — logo top, face unobstructed, MINT at torso */}
+      <section className="relative min-h-screen overflow-hidden border-b border-ink">
         <TokenGridBackground opacity={0.08} animate />
-        <TokenHeroForeground opacity={0.72} />
-        <div
-          className="relative z-10 mx-auto w-fit max-w-full px-8 py-6 text-center sm:px-10 sm:py-7"
-          style={{
-            backgroundColor: "rgba(240, 237, 232, 0.71)",
-            border: "1px solid #8a8780",
-          }}
-        >
-          <h1 className="text-5xl tracking-tight text-ink sm:text-7xl md:text-8xl">
+        <TokenHeroForeground opacity={0.95} />
+
+        <div className="relative z-10 px-5 pt-28 text-center sm:px-6 sm:pt-32">
+          <h1 className="font-symtext text-5xl font-black tracking-tighter text-ink sm:text-7xl">
             CHROMIES
           </h1>
-          <p className="mt-5 text-[10px] tracking-[0.3em] text-ink/60 sm:text-xs">
+          <p className="mt-4 text-[10px] tracking-[0.3em] text-ink/60 sm:text-xs">
             ON-CHAIN GENERATIVE IDENTITIES IN COLOR
           </p>
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 top-[58%] z-10 flex justify-center sm:top-[56%]">
           <Link
             to="/mint"
-            className="mt-6 inline-block border border-signal px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal transition-colors hover:bg-signal hover:text-ink"
+            className="pointer-events-auto border border-signal bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:bg-signal hover:text-ink"
           >
             MINT →
           </Link>

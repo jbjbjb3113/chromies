@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FOREGROUND_IMAGES } from "../data/tokens.js";
 
-const CELL_PX = 768;
+const CELL_PX = 946;
 const SCROLL_DURATION_S = 128;
 
 function buildStripTiles(count, offset = 23) {
@@ -31,7 +31,7 @@ function StripPanel({ tiles }) {
   );
 }
 
-export default function TokenHeroForeground({ opacity = 0.72 }) {
+export default function TokenHeroForeground({ opacity = 0.95 }) {
   const wrapRef = useRef(null);
   const [width, setWidth] = useState(1280);
 
