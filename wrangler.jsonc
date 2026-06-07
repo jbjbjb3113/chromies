@@ -1,8 +1,5 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "chromies",
-  "pages_build_output_dir": "dist",
-  "build": {
-    "command": "npm install --legacy-peer-deps && npm run build"
-  }
+  "pages_build_output_dir": "dist"
 }
