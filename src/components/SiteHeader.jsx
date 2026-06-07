@@ -1,6 +1,6 @@
 import React from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Link, NavLink } from "react-router-dom";
+import WalletButton from "./WalletButton.jsx";
 
 export default function SiteHeader() {
   return (
@@ -43,11 +43,7 @@ export default function SiteHeader() {
           >
             Canvas
           </NavLink>
-          <ConnectButton
-            showBalance={false}
-            chainStatus="icon"
-            accountStatus={{ smallScreen: "avatar", largeScreen: "full" }}
-          />
+          <WalletButton compact />
         </div>
       </div>
     </header>

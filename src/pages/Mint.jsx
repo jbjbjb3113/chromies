@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
   useAccount,
   useChainId,
@@ -10,8 +9,10 @@ import {
 import { decodeEventLog, formatEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
+import WalletButton from "../components/WalletButton.jsx";
 import {
   chromaAbi,
+  DEFAULT_CHAIN,
   getChromaAddress,
   getClaimedCount,
   getRemainingMintAllowance,
@@ -82,9 +83,18 @@ function shortenError(error) {
   return message.length > 160 ? `${message.slice(0, 160)}…` : message;
 }
 
-function MintStatus({ phase, totalSupply, maxSupply, chainId }) {
+function MintStatus({ phase, totalSupply, maxSupply, chainId, isConnected }) {
   const label = PHASE_LABELS[phase] ?? "Unknown";
+  const onSepolia = chainId === DEFAULT_CHAIN.id;
   const deployed = isChromaDeployed(chainId);
+  const wrongNetwork = isConnected && !onSepolia;
+
+  let headline = label;
+  if (wrongNetwork) {
+    headline = "Wrong Network";
+  } else if (!deployed) {
+    headline = "Switch to Sepolia";
+  }
 
   return (
     <div className="mx-auto max-w-xl border border-ink bg-white px-6 py-8">
@@ -92,9 +102,20 @@ function MintStatus({ phase, totalSupply, maxSupply, chainId }) {
         Live Mint Status
       </div>
       <div className="mt-3 font-symtext text-3xl font-black uppercase tracking-tight text-signal sm:text-4xl">
-        {deployed ? label : "Contract Not Deployed"}
+        {headline}
       </div>
-      {deployed && (
+      {wrongNetwork && (
+        <p className="mt-4 text-sm text-ink/70">
+          Chromies mints on <strong className="text-ink">Sepolia testnet</strong>. Switch your
+          wallet network to continue.
+        </p>
+      )}
+      {!wrongNetwork && !deployed && isConnected && (
+        <p className="mt-4 text-sm text-ink/70">
+          The Chromies contract is deployed on Sepolia. Use the button below to switch networks.
+        </p>
+      )}
+      {deployed && onSepolia && (
         <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-ink/70">
           <span>
             Minted: <strong className="text-ink">{totalSupply ?? "—"}</strong>
@@ -152,7 +173,8 @@ function QuantitySelector({ quantity, maxQuantity, onChange, disabled }) {
 export default function Mint() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const chromaAddress = getChromaAddress(chainId);
+  const onSepolia = chainId === DEFAULT_CHAIN.id;
+  const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
 
@@ -363,6 +385,7 @@ export default function Mint() {
 
   const mintDisabledReason = useMemo(() => {
     if (!isConnected) return "Connect wallet to mint";
+    if (!onSepolia) return "Switch to Sepolia testnet";
     if (!walletClient) return "Wallet not ready";
     if (!isChromaDeployed(chainId)) return "Chromies not deployed on this network";
     if (phase === PHASE.Closed) return "Mint not open";
@@ -377,6 +400,7 @@ export default function Mint() {
     return null;
   }, [
     isConnected,
+    onSepolia,
     walletClient,
     chainId,
     phase,
@@ -444,6 +468,7 @@ export default function Mint() {
               totalSupply={totalSupply}
               maxSupply={maxSupply}
               chainId={chainId}
+              isConnected={isConnected}
             />
           </div>
 
@@ -468,11 +493,7 @@ export default function Mint() {
           )}
 
           <div className="mt-10 flex flex-col items-center gap-6">
-            <ConnectButton
-              showBalance={false}
-              chainStatus="icon"
-              accountStatus="address"
-            />
+            <WalletButton />
 
             {showQuantity && (
               <QuantitySelector
