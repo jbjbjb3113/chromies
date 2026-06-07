@@ -34,19 +34,31 @@ const MINT_CONNECT_BTN_CLASS =
 const FAQ = [
   {
     q: "What is a Chromie?",
-    a: "A Chromie is a 64×64 generative pixel-art identity. Every face is built from a 16-color palette and is unique to its token ID.",
-  },
-  {
-    q: "What does on-chain mean?",
-    a: "The artwork is committed via merkle root at launch. Holders can optionally inscribe pixel data permanently on-chain. The chain is the source of truth.",
+    a: "A Chromie is a 64×64 pixel-art identity permanently committed to Ethereum. Every face is built from a 16-color palette, hand-crafted and deterministically assigned to your token ID. 5,150 exist. No two are alike.",
   },
   {
     q: "What is a mutation tier?",
-    a: "Each Chromie carries a mutation tier determined at mint. It influences rarity and the visual traits expressed by your token.",
+    a: "Every Chromie is born with a mutation tier — Pristine, Standard, Drifted, or OffKilter. The tier controls how much pixel drift and palette corruption your Chromie carries. OffKilter Chromies are glitched and chaotic. Pristine Chromies are pure — zero drift, zero corruption, perfect signal.",
   },
   {
-    q: "When is mint?",
-    a: "Mint status updates live from the Chromies contract. Connect your wallet on Sepolia to mint when your phase is active.",
+    q: "What is Pristine?",
+    a: "The rarest tier. Only 81 Pristine Chromies exist at mint — 1.6% of the collection. But Pristine isn't just born — it's earned. Burn Chromies to generate Action Points. Spend AP to shift your mutation tier upward toward Pristine. It takes roughly 70 burns to purify one token. The community decides how rare Pristine truly becomes over time.",
+  },
+  {
+    q: "What is Inscribe?",
+    a: "Inscribing permanently writes your Chromie's pixel data onto Ethereum. Once inscribed, the art is frozen forever — no edits, no mutations, no changes. The token carries the Inscribed trait on-chain. An Inscribed Pristine is the holy grail — provably perfect, provably permanent.",
+  },
+  {
+    q: "What is Burn?",
+    a: "Burning a Chromie destroys it and yields 100 Action Points. Tokens with canvas edits applied before burning yield bonus AP. Burn chains are provable on-chain — the lineage of sacrificed tokens is visible forever.",
+  },
+  {
+    q: "What are Action Points?",
+    a: "AP is the fuel of the Chromies economy. Earn AP by burning tokens. Spend AP to shift your mutation tier toward Pristine. AP can be transferred between wallets — enabling a secondary market for collectors chasing Pristine.",
+  },
+  {
+    q: "Do I need to reveal my Chromie?",
+    a: "No — your art is committed to Ethereum at launch via a merkle root. Nobody can change what your token looks like, ever. Pixel data is available immediately. Inscribing is optional — it permanently writes your art on-chain and locks it forever. You pay the gas. Your call.",
   },
 ];
 
