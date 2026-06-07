@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useChainId,
+  useConnect,
   usePublicClient,
   useReadContracts,
   useWalletClient,
@@ -21,6 +22,7 @@ import {
   PHASE_LABELS,
 } from "../lib/chroma-contract.js";
 import { fetchMerkleProofs, lookupProof, proofToBytes32 } from "../lib/merkle.js";
+import { projectId, walletConnectConnector } from "../lib/wagmi.js";
 
 const FEATURED_TOKEN = "/tokens/0042.png";
 
@@ -173,6 +175,7 @@ function QuantitySelector({ quantity, maxQuantity, onChange, disabled }) {
 export default function Mint() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
+  const { connect, isPending: isConnectingWallet } = useConnect();
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const { data: walletClient } = useWalletClient();
@@ -494,6 +497,17 @@ export default function Mint() {
 
           <div className="mt-10 flex flex-col items-center gap-6">
             <WalletButton />
+
+            {!isConnected && walletConnectConnector && (
+              <button
+                type="button"
+                onClick={() => connect({ connector: walletConnectConnector })}
+                disabled={isConnectingWallet || !projectId}
+                className="border border-ink bg-white px-8 py-3 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40"
+              >
+                {isConnectingWallet ? "Connecting…" : "Connect Mobile Wallet (QR)"}
+              </button>
+            )}
 
             {showQuantity && (
               <QuantitySelector
