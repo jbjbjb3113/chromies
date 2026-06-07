@@ -427,3 +427,37 @@ AI agent on OpenSea agent marketplace specializing in NFT smart contract securit
 
 ### Status
 Filed. Build post-mint as first awakened Chromie agent use case.
+
+---
+
+## Rarity Site (Filed — Post-Mint)
+
+### Concept
+`rarity.chromies.art` — rarity rankings, trait explorer, live OpenSea listings.
+Modelled on rarity.normies.art.
+
+### Rarity Scoring
+- Level and Action Points: scored by actual value (higher = rarer), 3× weight multiplier
+- All other traits: Information Content (IC) rarity scoring
+- Recursive burn count factors into fair value calculation
+
+### Fair Value Formula
+fairValue = (recursiveBurnCount × floorPrice) + tierFloor
+recursiveBurnCount: total Chromies consumed to customize this token, resolved recursively.
+tierFloor: cheapest listed Chromie of the same mutation tier.
+
+### Filter Categories
+- TOP100 — rarest 100 tokens
+- INSCRIBED — locked/inscribed tokens
+- PRISTINE — Level 4 mutation tier
+- Level ranges — filter by level bands
+- Price — listed, underpriced
+
+### Stack
+- React + Vite frontend
+- Chromies API as data source
+- OpenSea API for live listings and floor price
+- Ponder indexer for burn history
+
+### Status
+Filed. Build post-mint at rarity.chromies.art.
