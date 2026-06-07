@@ -13,10 +13,14 @@ function shortenAddress(address) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
 }
 
-const buttonClass =
+const defaultButtonClass =
   "border border-ink bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40";
 
-export default function WalletButton({ className = "", compact = false }) {
+export default function WalletButton({
+  className = "",
+  compact = false,
+  connectClassName = defaultButtonClass,
+}) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const { connect, isPending: isConnecting, error: connectError } = useConnect();
@@ -32,7 +36,7 @@ export default function WalletButton({ className = "", compact = false }) {
           type="button"
           onClick={() => connect({ connector: injectedConnector })}
           disabled={isConnecting}
-          className={buttonClass}
+          className={connectClassName}
         >
           {isConnecting ? "Connecting…" : "Connect Wallet"}
         </button>
@@ -51,7 +55,7 @@ export default function WalletButton({ className = "", compact = false }) {
             type="button"
             onClick={() => switchChain({ chainId: DEFAULT_CHAIN.id })}
             disabled={isSwitching}
-            className={buttonClass}
+            className={connectClassName}
           >
             {isSwitching ? "Switching…" : "Switch to Sepolia"}
           </button>
@@ -81,7 +85,7 @@ export default function WalletButton({ className = "", compact = false }) {
       <span className="text-xs font-semibold tabular-nums text-ink/80">
         {shortenAddress(address)}
       </span>
-      <button type="button" onClick={() => disconnect()} className={buttonClass}>
+      <button type="button" onClick={() => disconnect()} className={defaultButtonClass}>
         Disconnect
       </button>
     </div>

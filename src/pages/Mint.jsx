@@ -3,6 +3,7 @@ import {
   useAccount,
   useChainId,
   useConnect,
+  useConnectors,
   useDisconnect,
   usePublicClient,
   useReadContracts,
@@ -26,6 +27,9 @@ import { fetchMerkleProofs, lookupProof, proofToBytes32 } from "../lib/merkle.js
 import { projectId, walletConnectConnector } from "../lib/wagmi.js";
 
 const FEATURED_TOKEN = "/alien-134.png";
+
+const MINT_CONNECT_BTN_CLASS =
+  "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
 
 const FAQ = [
   {
@@ -182,6 +186,10 @@ export default function Mint() {
   const chainId = useChainId();
   const { connect, isPending: isConnectingWallet } = useConnect();
   const { disconnect } = useDisconnect();
+  const configuredConnectors = useConnectors();
+  const wcConnector = walletConnectConnector
+    ? configuredConnectors.find((connector) => connector.id === "walletConnect")
+    : null;
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const { data: walletClient } = useWalletClient();
@@ -501,33 +509,42 @@ export default function Mint() {
             <p className="mt-4 text-sm text-red-600">{merkleError}</p>
           )}
 
-          <div className="mt-10 flex flex-col items-center gap-6">
+          <div className="mt-10 flex w-full max-w-sm flex-col items-center gap-4 sm:max-w-none sm:gap-6">
             {isConnected && address && onSepolia ? (
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col items-center gap-3 sm:flex-row">
                 <span className="text-xs font-semibold tabular-nums text-ink/80">
                   {shortenAddress(address)}
                 </span>
                 <button
                   type="button"
                   onClick={() => disconnect()}
-                  className="border border-ink bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-ink transition-colors hover:border-signal hover:text-signal"
+                  className={MINT_CONNECT_BTN_CLASS}
                 >
                   Disconnect
                 </button>
               </div>
+            ) : !isConnected ? (
+              <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+                <WalletButton
+                  className="w-full sm:w-auto"
+                  connectClassName={MINT_CONNECT_BTN_CLASS}
+                />
+                {walletConnectConnector && projectId && wcConnector && (
+                  <button
+                    type="button"
+                    onClick={() => connect({ connector: wcConnector })}
+                    disabled={isConnectingWallet}
+                    className={MINT_CONNECT_BTN_CLASS}
+                  >
+                    {isConnectingWallet ? "Connecting…" : "Connect Mobile Wallet (QR)"}
+                  </button>
+                )}
+              </div>
             ) : (
-              <WalletButton />
-            )}
-
-            {!isConnected && walletConnectConnector && (
-              <button
-                type="button"
-                onClick={() => connect({ connector: walletConnectConnector })}
-                disabled={isConnectingWallet || !projectId}
-                className="border border-ink bg-white px-8 py-3 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40"
-              >
-                {isConnectingWallet ? "Connecting…" : "Connect Mobile Wallet (QR)"}
-              </button>
+              <WalletButton
+                className="w-full sm:w-auto"
+                connectClassName={MINT_CONNECT_BTN_CLASS}
+              />
             )}
 
             {showQuantity && (
