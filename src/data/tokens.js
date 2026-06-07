@@ -7,11 +7,8 @@ export const TOKEN_IMAGES = Array.from(
   (_, i) => `/tokens/${String(i + 1).padStart(4, "0")}.png`
 );
 
-/** 1024px no-background renders for the landing hero foreground scroll. */
-export const FOREGROUND_IMAGES = Array.from(
-  { length: TOKEN_COUNT },
-  (_, i) => `/foreground/${String(i + 1).padStart(4, "0")}.png`
-);
+/** Landing hero foreground scroll — loaded from /foreground/manifest.json at runtime. */
+export const FOREGROUND_MANIFEST_URL = "/foreground/manifest.json";
 
 export const TOKEN_CELL_PX = 64;
 
