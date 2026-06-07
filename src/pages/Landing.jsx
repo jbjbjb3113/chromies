@@ -142,12 +142,12 @@ export default function Landing() {
           <p className="mx-auto mt-8 max-w-xl text-sm leading-relaxed text-ink/80">
             TBD on-chain, interoperable, CC0 pixel art faces. 64×64. 16 colors.
           </p>
-          <a
-            href="#palettes"
+          <Link
+            to="/mint"
             className="mt-10 inline-block border border-signal px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal transition-colors hover:bg-signal hover:text-ink"
           >
-            VIEW COLLECTION →
-          </a>
+            MINT →
+          </Link>
         </div>
       </section>
 

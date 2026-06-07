@@ -3,7 +3,7 @@ import SplashScreen from "../components/SplashScreen.jsx";
 import Landing from "./Landing.jsx";
 
 const SPLASH_KEY = "chromies-splash-seen";
-const SPLASH_HOLD_MS = 2500;
+const SPLASH_HOLD_MS = 6500;
 const FADE_MS = 250;
 
 function hasSeenSplash() {
