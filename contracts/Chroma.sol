@@ -217,28 +217,34 @@ contract Chroma is ERC721, ERC2981, Ownable {
         return MerkleProof.verify(proof, root, leaf);
     }
 
-    function _unrevealedURI(uint256 tokenId) internal view returns (string memory) {
-        string memory svg = string(
+    function _unrevealedURI(uint256 tokenId) internal pure returns (string memory) {
+        string[5] memory images = [
+            "https://chromies.art/RevealImage.png",
+            "https://chromies.art/RevealImage_B.png",
+            "https://chromies.art/RevealImage_C.png",
+            "https://chromies.art/RevealImage_D.png",
+            "https://chromies.art/RevealImage_E.png"
+        ];
+        string memory image = images[tokenId % 5];
+        return string(
             abi.encodePacked(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges">',
-                '<rect width="1024" height="1024" fill="#141414"/>',
-                '<rect x="256" y="256" width="512" height="512" fill="#1f1f1f" stroke="#333" stroke-width="8"/>',
-                '<text x="512" y="540" text-anchor="middle" fill="#888" font-family="monospace" font-size="96">?</text>',
-                "</svg>"
+                "data:application/json;base64,",
+                Base64.encode(
+                    bytes(
+                        string(
+                            abi.encodePacked(
+                                '{"name":"Chromie #',
+                                Strings.toString(tokenId),
+                                ' (Unrevealed)",',
+                                '"description":"Awaiting reveal.",',
+                                '"image":"',
+                                image,
+                                '"}'
+                            )
+                        )
+                    )
+                )
             )
         );
-
-        string memory image =
-            string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(bytes(svg))));
-
-        bytes memory json = abi.encodePacked(
-            '{"name":"Chromie #',
-            tokenId.toString(),
-            ' (Unrevealed)","description":"Awaiting reveal.","image":"',
-            image,
-            '"}'
-        );
-
-        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
     }
 }
