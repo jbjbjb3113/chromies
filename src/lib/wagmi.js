@@ -11,14 +11,31 @@ function alchemyRpc(chainSlug) {
   return `https://${chainSlug}.g.alchemy.com/v2/${alchemyKey}`;
 }
 
-export const injectedConnector = injected({ shimDisconnect: true });
+export const metaMaskConnector = injected({
+  target: "metaMask",
+  shimDisconnect: true,
+});
+
+export const phantomConnector = injected({
+  target() {
+    if (typeof window === "undefined") return undefined;
+    const provider = window.phantom?.ethereum;
+    if (!provider) return undefined;
+    return { id: "phantom", name: "Phantom", provider };
+  },
+  shimDisconnect: true,
+});
+
+/** @deprecated Use metaMaskConnector — kept for SiteHeader */
+export const injectedConnector = metaMaskConnector;
+
 export const walletConnectConnector = projectId
   ? walletConnect({ projectId })
   : null;
 
 const connectors = walletConnectConnector
-  ? [injectedConnector, walletConnectConnector]
-  : [injectedConnector];
+  ? [metaMaskConnector, phantomConnector, walletConnectConnector]
+  : [metaMaskConnector, phantomConnector];
 
 export const wagmiConfig = createConfig({
   connectors,

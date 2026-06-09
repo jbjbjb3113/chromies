@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useChainId,
-  useConnect,
-  useConnectors,
   useDisconnect,
   usePublicClient,
   useReadContracts,
@@ -13,6 +11,7 @@ import { decodeEventLog, formatEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import WalletButton from "../components/WalletButton.jsx";
+import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import {
   chromaAbi,
   DEFAULT_CHAIN,
@@ -24,7 +23,6 @@ import {
   PHASE_LABELS,
 } from "../lib/chroma-contract.js";
 import { fetchMerkleProofs, lookupProof, proofToBytes32 } from "../lib/merkle.js";
-import { projectId, walletConnectConnector } from "../lib/wagmi.js";
 
 const FEATURED_TOKEN = "/alien-134.png";
 
@@ -200,12 +198,8 @@ function QuantitySelector({ quantity, maxQuantity, onChange, disabled }) {
 export default function Mint() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const { connect, isPending: isConnectingWallet } = useConnect();
   const { disconnect } = useDisconnect();
-  const configuredConnectors = useConnectors();
-  const wcConnector = walletConnectConnector
-    ? configuredConnectors.find((connector) => connector.id === "walletConnect")
-    : null;
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const { data: walletClient } = useWalletClient();
@@ -540,22 +534,12 @@ export default function Mint() {
                 </button>
               </div>
             ) : !isConnected ? (
-              <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
-                <WalletButton
-                  className="w-full sm:w-auto"
-                  connectClassName={MINT_CONNECT_BTN_CLASS}
-                />
-                {walletConnectConnector && projectId && wcConnector && (
-                  <button
-                    type="button"
-                    onClick={() => connect({ connector: wcConnector })}
-                    disabled={isConnectingWallet}
-                    className={MINT_CONNECT_BTN_CLASS}
-                  >
-                    {isConnectingWallet ? "Connecting…" : "Connect Mobile Wallet (QR)"}
-                  </button>
-                )}
-              </div>
+              <WalletSelectModal
+                open={walletModalOpen}
+                onOpen={() => setWalletModalOpen(true)}
+                onClose={() => setWalletModalOpen(false)}
+                buttonClassName={MINT_CONNECT_BTN_CLASS}
+              />
             ) : (
               <WalletButton
                 className="w-full sm:w-auto"
