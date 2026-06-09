@@ -32,35 +32,75 @@ const MINT_CONNECT_BTN_CLASS =
 const FAQ = [
   {
     q: "What is a Chromie?",
-    a: "A Chromie is a 64×64 pixel-art identity permanently committed to Ethereum. Every face is built from a 16-color palette, hand-crafted and deterministically assigned to your token ID. 5,150 exist. No two are alike.",
+    a: [
+      "A 64×64 pixel-art identity permanently committed to Ethereum. Every face is built from a fixed 16-color palette, hand-crafted and deterministically assigned to a token ID. 5,150 exist. No duplicates. No replacements.",
+    ],
   },
   {
-    q: "What is a mutation tier?",
-    a: "Every Chromie is born with a mutation tier — Pristine, Standard, Drifted, or OffKilter. The tier controls how much pixel drift and palette corruption your Chromie carries. OffKilter Chromies are glitched and chaotic. Pristine Chromies are pure — zero drift, zero corruption, perfect signal.",
+    q: "What is a Mutation Tier?",
+    a: [
+      "Every Chromie is born with a mutation tier — Pristine, Standard, Drifted, or OffKilter.",
+      "The tier determines how much pixel drift and palette corruption your Chromie carries. OffKilter Chromies are glitched and chaotic. Pristine Chromies carry perfect signal — no drift, no corruption, no noise.",
+    ],
   },
   {
     q: "What is Pristine?",
-    a: "The rarest tier. Only 81 Pristine Chromies exist at mint — 1.6% of the collection. But Pristine isn't just born — it's earned. Burn Chromies to generate Action Points. Spend AP to shift your mutation tier upward toward Pristine. It takes roughly 70 burns to purify one token. The community decides how rare Pristine truly becomes over time.",
+    a: [
+      "The rarest mutation tier.",
+      "Only 81 Pristine Chromies exist at mint — 1.6% of the collection.",
+      "But Pristine isn't just born — it's earned.",
+      "Burn Chromies to generate Action Points (AP). Spend AP to shift your mutation tier toward Pristine. It takes roughly 70 burns to fully purify a token.",
+      "The community ultimately determines how rare Pristine becomes over time.",
+    ],
   },
   {
-    q: "What is Inscribe?",
-    a: "Inscribing permanently writes your Chromie's pixel data onto Ethereum. Once inscribed, the art is frozen forever — no edits, no mutations, no changes. The token carries the Inscribed trait on-chain. An Inscribed Pristine is the holy grail — provably perfect, provably permanent.",
-  },
-  {
-    q: "What is Burn?",
-    a: "Burning a Chromie destroys it and yields 100 Action Points. Tokens with canvas edits applied before burning yield bonus AP. Burn chains are provable on-chain — the lineage of sacrificed tokens is visible forever.",
+    q: "What is the Canvas?",
+    a: [
+      "Every Chromie includes an editable pixel canvas.",
+      "Spend Action Points to modify individual pixels, evolve your artwork, and leave a permanent history of changes. Every edit contributes to your Chromie's progression and level.",
+      "No two Chromies need remain the same forever.",
+    ],
   },
   {
     q: "What are Action Points?",
-    a: "AP is the fuel of the Chromies economy. Earn AP by burning tokens. Spend AP to shift your mutation tier toward Pristine. AP can be transferred between wallets — enabling a secondary market for collectors chasing Pristine.",
+    a: [
+      "Action Points (AP) are the fuel of the Chromies economy.",
+      "Earn AP by burning Chromies. Spend AP to edit pixels on the canvas or shift your mutation tier toward Pristine.",
+      "AP can be transferred between wallets, creating a secondary market for collectors pursuing purification and progression.",
+    ],
+  },
+  {
+    q: "What is Burn?",
+    a: [
+      "Burning a Chromie permanently destroys it and yields 100 Action Points.",
+      "Tokens with canvas edits applied before burning receive bonus AP. Every burn is recorded on-chain, creating a permanent lineage of sacrificed Chromies.",
+    ],
   },
   {
     q: "What is Level?",
-    a: "Every Chromie starts at Level 1. Your level increases as you spend Action Points — editing pixels on the canvas or shifting your mutation tier. Level is a numeric trait visible on OpenSea. There's no ceiling — the more you engage, the higher your level climbs. Level and Action Points are weighted 3× in rarity scoring, making highly active Chromies among the most valuable in the collection.",
+    a: [
+      "Every Chromie starts at Level 1.",
+      "Level increases whenever Action Points are spent — whether editing pixels or shifting mutation tiers. There is no level cap.",
+      "Level is displayed as an on-chain trait and contributes heavily to Chromies' native rarity rankings, rewarding collectors who actively evolve their tokens.",
+    ],
   },
   {
-    q: "Do I need to reveal my Chromie?",
-    a: "No — your art is committed to Ethereum at launch via a merkle root. Nobody can change what your token looks like, ever. Pixel data is available immediately. Inscribing is optional — it permanently writes your art on-chain and locks it forever. You pay the gas. Your call.",
+    q: "What is Inscribe?",
+    a: [
+      "Inscribing permanently writes your Chromie's pixel data onto Ethereum.",
+      "Once inscribed, the art is frozen forever — no edits, no mutations, no changes.",
+      "The token receives the Inscribed trait on-chain.",
+      "An Inscribed Pristine is the highest form of a Chromie — provably perfect, provably permanent.",
+    ],
+  },
+  {
+    q: "Do I Need to Reveal My Chromie?",
+    a: [
+      "No.",
+      "Your Chromie's artwork is committed at launch through an on-chain Merkle root. The final art assignment cannot be changed.",
+      "Pixel data is available immediately.",
+      "Inscribing is optional and permanently writes your artwork onto Ethereum. If you choose to inscribe, you pay the gas. If not, your Chromie remains fully valid and collectible.",
+    ],
   },
 ];
 
@@ -643,11 +683,28 @@ export default function Mint() {
                     +
                   </span>
                 </summary>
-                <p className="px-2 pb-5 text-sm leading-relaxed text-ink/70">
-                  {item.a}
-                </p>
+                <div className="space-y-3 px-2 pb-5">
+                  {item.a.map((paragraph) => (
+                    <p key={paragraph} className="text-sm leading-relaxed text-ink/70">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </details>
             ))}
+          </div>
+
+          <div className="mt-12 border border-ink px-6 py-8 text-center">
+            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
+              Quick Summary
+            </h3>
+            <p className="mt-4 text-sm font-semibold tracking-wide text-ink">
+              Mint → Collect → Edit → Burn → Earn AP → Purify → Inscribe
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
+            <p className="mt-2 text-sm font-semibold tracking-wide text-signal">
+              Mint → Hold Forever
+            </p>
           </div>
         </div>
       </section>
