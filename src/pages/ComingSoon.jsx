@@ -36,7 +36,7 @@ export default function ComingSoon() {
     event.preventDefault();
     if (value === ACCESS_PASSWORD) {
       sessionStorage.setItem("chromies_access", "true");
-      navigate("/mint");
+      navigate("/landing");
     } else {
       setWrong(true);
       setShaking(true);
