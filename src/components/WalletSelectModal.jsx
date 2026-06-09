@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useConnect, useConnectors } from "wagmi";
+import { injected } from "wagmi/connectors";
 import { projectId } from "../lib/wagmi.js";
 
 const WALLET_BTN_CLASS =
@@ -63,21 +64,23 @@ function WalletConnectIcon() {
   );
 }
 
-function detectInjectedAvailability() {
+function getMetaMaskProvider() {
+  if (typeof window === "undefined") return null;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isMetaMask) ?? null;
+  }
+  return eth.isMetaMask ? eth : null;
+}
+
+function detectWalletAvailability() {
   if (typeof window === "undefined") {
     return { metaMask: false, phantom: false, walletConnect: false };
   }
 
-  const eth = window.ethereum;
-  let metaMask = false;
-  if (eth?.providers?.length) {
-    metaMask = eth.providers.some((provider) => provider.isMetaMask);
-  } else {
-    metaMask = Boolean(eth?.isMetaMask);
-  }
-
   return {
-    metaMask,
+    metaMask: Boolean(getMetaMaskProvider()),
     phantom: Boolean(window.phantom?.ethereum),
     walletConnect: Boolean(projectId),
   };
@@ -87,49 +90,63 @@ const WALLET_OPTIONS = [
   {
     id: "metaMask",
     label: "MetaMask",
-    connectorIds: ["metaMask", "io.metamask", "metaMaskSDK"],
     icon: MetaMaskIcon,
-    availabilityKey: "metaMask",
     hint: "Browser extension",
-    hideWhenUnavailable: false,
+    installUrl: "https://metamask.io",
+    kind: "injected",
   },
   {
     id: "phantom",
     label: "Phantom",
-    connectorIds: ["phantom"],
     icon: PhantomIcon,
-    availabilityKey: "phantom",
     hint: "Browser extension",
-    hideWhenUnavailable: false,
+    installUrl: "https://phantom.app",
+    kind: "injected",
   },
   {
     id: "trust",
     label: "Trust Wallet",
-    connectorIds: ["walletConnect"],
     icon: TrustIcon,
-    availabilityKey: "walletConnect",
     hint: "WalletConnect QR",
-    hideWhenUnavailable: true,
+    kind: "walletConnect",
   },
   {
     id: "ledger",
     label: "Ledger",
-    connectorIds: ["walletConnect"],
     icon: LedgerIcon,
-    availabilityKey: "walletConnect",
     hint: "WalletConnect QR",
-    hideWhenUnavailable: true,
+    kind: "walletConnect",
   },
   {
     id: "walletConnect",
     label: "Other / WalletConnect",
-    connectorIds: ["walletConnect"],
     icon: WalletConnectIcon,
-    availabilityKey: "walletConnect",
     hint: "WalletConnect QR",
-    hideWhenUnavailable: true,
+    kind: "walletConnect",
   },
 ];
+
+function createPhantomConnector() {
+  return injected({
+    target() {
+      const provider = window.phantom?.ethereum;
+      if (!provider) return undefined;
+      return { id: "phantom", name: "Phantom", provider };
+    },
+    shimDisconnect: true,
+  });
+}
+
+function createMetaMaskConnector() {
+  return injected({
+    target() {
+      const provider = getMetaMaskProvider();
+      if (!provider) return undefined;
+      return { id: "metaMask", name: "MetaMask", provider };
+    },
+    shimDisconnect: true,
+  });
+}
 
 export default function WalletSelectModal({
   open,
@@ -139,37 +156,82 @@ export default function WalletSelectModal({
   connectButtonLabel = "Connect Wallet",
 }) {
   const connectors = useConnectors();
-  const { connect, isPending, error: connectError, variables } = useConnect();
-  const [availability, setAvailability] = useState(detectInjectedAvailability);
+  const { connect, isPending, error: connectError } = useConnect();
+  const [availability, setAvailability] = useState(detectWalletAvailability);
+  const [connectingWalletId, setConnectingWalletId] = useState(null);
 
-  useEffect(() => {
-    if (!open) return;
-    setAvailability(detectInjectedAvailability());
-  }, [open]);
-
-  const resolveConnector = useCallback(
-    (option) => {
-      for (const connectorId of option.connectorIds) {
-        const match = connectors.find((connector) => connector.id === connectorId);
-        if (match) return match;
-      }
-      return null;
-    },
+  const walletConnectConnector = useMemo(
+    () => connectors.find((connector) => connector.id === "walletConnect") ?? null,
     [connectors],
   );
 
-  const options = useMemo(() => {
-    return WALLET_OPTIONS.map((option) => {
-      const connector = resolveConnector(option);
-      const available = Boolean(connector && availability[option.availabilityKey]);
-      const connecting = isPending && variables?.connector?.id === connector?.id;
-      return { ...option, connector, available, connecting };
-    }).filter((option) => option.available || !option.hideWhenUnavailable);
-  }, [availability, isPending, resolveConnector, variables?.connector?.id]);
+  useEffect(() => {
+    if (!open) return;
+    setAvailability(detectWalletAvailability());
+  }, [open]);
 
-  const handleConnect = (option) => {
-    if (!option.available || !option.connector || isPending) return;
-    connect({ connector: option.connector }, { onSuccess: () => onClose() });
+  const visibleOptions = useMemo(() => {
+    return WALLET_OPTIONS.filter((option) => {
+      if (option.kind === "walletConnect") return availability.walletConnect;
+      return true;
+    });
+  }, [availability.walletConnect]);
+
+  const handleWalletSelect = (walletId) => {
+    if (isPending) return;
+
+    if (walletId === "phantom") {
+      if (window.phantom?.ethereum) {
+        setConnectingWalletId("phantom");
+        connect(
+          { connector: createPhantomConnector() },
+          {
+            onSuccess: () => {
+              setConnectingWalletId(null);
+              onClose();
+            },
+            onError: () => setConnectingWalletId(null),
+          },
+        );
+      } else {
+        window.open("https://phantom.app", "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+
+    if (walletId === "metaMask") {
+      const provider = getMetaMaskProvider();
+      if (provider) {
+        setConnectingWalletId("metaMask");
+        connect(
+          { connector: createMetaMaskConnector() },
+          {
+            onSuccess: () => {
+              setConnectingWalletId(null);
+              onClose();
+            },
+            onError: () => setConnectingWalletId(null),
+          },
+        );
+      } else {
+        window.open("https://metamask.io", "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
+
+    if (!walletConnectConnector) return;
+
+    setConnectingWalletId(walletId);
+    connect(
+      { connector: walletConnectConnector },
+      {
+        onSuccess: () => {
+          setConnectingWalletId(null);
+          onClose();
+        },
+        onError: () => setConnectingWalletId(null),
+      },
+    );
   };
 
   return (
@@ -219,26 +281,36 @@ export default function WalletSelectModal({
             </div>
 
             <div className="mt-5 flex flex-col gap-2">
-              {options.map((option) => {
+              {visibleOptions.map((option) => {
                 const Icon = option.icon;
+                const installed =
+                  option.id === "metaMask"
+                    ? availability.metaMask
+                    : option.id === "phantom"
+                      ? availability.phantom
+                      : availability.walletConnect;
+                const connecting = connectingWalletId === option.id;
+
                 return (
                   <button
                     key={option.id}
                     type="button"
-                    disabled={!option.available || isPending}
-                    onClick={() => handleConnect(option)}
-                    className={`${WALLET_BTN_CLASS} ${
-                      option.available ? "" : "opacity-45"
-                    }`}
+                    disabled={isPending}
+                    onClick={() => handleWalletSelect(option.id)}
+                    className={`${WALLET_BTN_CLASS} ${installed ? "" : "opacity-80"}`}
                   >
                     <Icon />
                     <span className="flex min-w-0 flex-1 flex-col">
                       <span>{option.label}</span>
                       <span className="text-[10px] font-semibold normal-case tracking-normal text-ink/50">
-                        {option.available ? option.hint : "Not detected"}
+                        {installed
+                          ? option.hint
+                          : option.installUrl
+                            ? "Install extension"
+                            : "WalletConnect QR"}
                       </span>
                     </span>
-                    {option.connecting && (
+                    {connecting && (
                       <span className="text-[10px] font-bold uppercase tracking-wide text-signal">
                         …
                       </span>

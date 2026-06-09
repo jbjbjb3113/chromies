@@ -11,14 +11,27 @@ function alchemyRpc(chainSlug) {
   return `https://${chainSlug}.g.alchemy.com/v2/${alchemyKey}`;
 }
 
+function getMetaMaskProvider() {
+  if (typeof window === "undefined") return undefined;
+  const eth = window.ethereum;
+  if (!eth) return undefined;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isMetaMask);
+  }
+  return eth.isMetaMask ? eth : undefined;
+}
+
 export const metaMaskConnector = injected({
-  target: "metaMask",
+  target() {
+    const provider = getMetaMaskProvider();
+    if (!provider) return undefined;
+    return { id: "metaMask", name: "MetaMask", provider };
+  },
   shimDisconnect: true,
 });
 
 export const phantomConnector = injected({
   target() {
-    if (typeof window === "undefined") return undefined;
     const provider = window.phantom?.ethereum;
     if (!provider) return undefined;
     return { id: "phantom", name: "Phantom", provider };
