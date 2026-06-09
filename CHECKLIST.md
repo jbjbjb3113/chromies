@@ -41,6 +41,11 @@
 - [ ] Set phase to Tier 1 (AllowlistOne)
 - [ ] Announce mint
 
+### Infrastructure
+- [ ] Rotate Alchemy API key (exposed in broadcast JSON — done before mainnet)
+- [ ] Verify Alchemy free tier sufficient (300M CU/month — safe for mint event)
+- [ ] Consider Alchemy Growth plan for mainnet analytics (optional)
+
 ## Post-Mint
 - [ ] Pixel marketplace (chromies.art/market)
 - [ ] Rarity site (rarity.chromies.art)
