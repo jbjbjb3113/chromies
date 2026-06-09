@@ -263,7 +263,427 @@ const PALETTES = {
       "#a8b830", "#3d0a00", "#8c2200", "#d94f1e",
     ],
   },
-  CAT: {
+  SIGNAL_SHIRT_RED: {
+    name: "SIGNAL_SHIRT_RED",
+    description: "SIGNAL skin. Red shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#79241E", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  SIGNAL_SHIRT_PURPLE: {
+    name: "SIGNAL_SHIRT_PURPLE",
+    description: "SIGNAL skin. Purple shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#55153E", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  SIGNAL_SHIRT_ORANGE: {
+    name: "SIGNAL_SHIRT_ORANGE",
+    description: "SIGNAL skin. Orange shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#74411D", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  SIGNAL_SHIRT_OLIVE: {
+    name: "SIGNAL_SHIRT_OLIVE",
+    description: "SIGNAL skin. Olive shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#4C3D13", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  SIGNAL_SHIRT_GREEN: {
+    name: "SIGNAL_SHIRT_GREEN",
+    description: "SIGNAL skin. Green shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#144311", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  SIGNAL_SHIRT_GOLD: {
+    name: "SIGNAL_SHIRT_GOLD",
+    description: "SIGNAL skin. Gold shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#B3A92D", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  SIGNAL_SHIRT_BLUE: {
+    name: "SIGNAL_SHIRT_BLUE",
+    description: "SIGNAL skin. Blue shirt.",
+    colors: [
+      "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0",
+      "#4c270f", "#89532a", "#b2723f", "#d18b4d",
+      "#df9c5e", "#211A67", "#1a0a14", "#a01856",
+      "#ff2d8a", "#4d051b", "#9b2352", "#db5a91",
+    ],
+  },
+  ACID_SHIRT_RED: {
+    name: "ACID_SHIRT_RED",
+    description: "ACID skin. Red shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#6E2014", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  ACID_SHIRT_PURPLE: {
+    name: "ACID_SHIRT_PURPLE",
+    description: "ACID skin. Purple shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#4A1554", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  ACID_SHIRT_ORANGE: {
+    name: "ACID_SHIRT_ORANGE",
+    description: "ACID skin. Orange shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#7A4E12", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  ACID_SHIRT_OLIVE: {
+    name: "ACID_SHIRT_OLIVE",
+    description: "ACID skin. Olive shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#4A520E", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  ACID_SHIRT_GREEN: {
+    name: "ACID_SHIRT_GREEN",
+    description: "ACID skin. Green shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#1C5410", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  ACID_SHIRT_GOLD: {
+    name: "ACID_SHIRT_GOLD",
+    description: "ACID skin. Gold shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#A4B81E", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  ACID_SHIRT_BLUE: {
+    name: "ACID_SHIRT_BLUE",
+    description: "ACID skin. Blue shirt.",
+    colors: [
+      "#e3e5e4", "#0a1410", "#152620", "#e8f5d8",
+      "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
+      "#e8c5a8", "#0F4A55", "#0d1c14", "#5a8a2e",
+      "#a8ff2d", "#1f3a14", "#52a01e", "#9be042",
+    ],
+  },
+  CYAN_SHIRT_RED: {
+    name: "CYAN_SHIRT_RED",
+    description: "CYAN skin. Red shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#6E1428", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  CYAN_SHIRT_PURPLE: {
+    name: "CYAN_SHIRT_PURPLE",
+    description: "CYAN skin. Purple shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#3A1560", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  CYAN_SHIRT_ORANGE: {
+    name: "CYAN_SHIRT_ORANGE",
+    description: "CYAN skin. Orange shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#7A3E1A", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  CYAN_SHIRT_OLIVE: {
+    name: "CYAN_SHIRT_OLIVE",
+    description: "CYAN skin. Olive shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#3A4418", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  CYAN_SHIRT_GREEN: {
+    name: "CYAN_SHIRT_GREEN",
+    description: "CYAN skin. Green shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#0E4434", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  CYAN_SHIRT_GOLD: {
+    name: "CYAN_SHIRT_GOLD",
+    description: "CYAN skin. Gold shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#9A9428", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  CYAN_SHIRT_BLUE: {
+    name: "CYAN_SHIRT_BLUE",
+    description: "CYAN skin. Blue shirt.",
+    colors: [
+      "#e3e5e4", "#0a0e14", "#152028", "#d8eef5",
+      "#1a1008", "#3a2818", "#5e4028", "#7a5538",
+      "#9a704a", "#16307A", "#08141c", "#1e6088",
+      "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8",
+    ],
+  },
+  GHOST_SHIRT_RED: {
+    name: "GHOST_SHIRT_RED",
+    description: "GHOST skin. Red shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#5C1A2E", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  GHOST_SHIRT_PURPLE: {
+    name: "GHOST_SHIRT_PURPLE",
+    description: "GHOST skin. Purple shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#3E1A5E", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  GHOST_SHIRT_ORANGE: {
+    name: "GHOST_SHIRT_ORANGE",
+    description: "GHOST skin. Orange shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#6E3A20", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  GHOST_SHIRT_OLIVE: {
+    name: "GHOST_SHIRT_OLIVE",
+    description: "GHOST skin. Olive shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#44401E", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  GHOST_SHIRT_GREEN: {
+    name: "GHOST_SHIRT_GREEN",
+    description: "GHOST skin. Green shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#1A4028", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  GHOST_SHIRT_GOLD: {
+    name: "GHOST_SHIRT_GOLD",
+    description: "GHOST skin. Gold shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#9A8A32", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  GHOST_SHIRT_BLUE: {
+    name: "GHOST_SHIRT_BLUE",
+    description: "GHOST skin. Blue shirt.",
+    colors: [
+      "#e3e5e4", "#1f1a22", "#322a36", "#fafafa",
+      "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
+      "#e8d2c0", "#252050", "#1a1620", "#7d5a9a",
+      "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8",
+    ],
+  },
+  BLOOD_SHIRT_RED: {
+    name: "BLOOD_SHIRT_RED",
+    description: "BLOOD skin. Red shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#8A1A12", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  BLOOD_SHIRT_PURPLE: {
+    name: "BLOOD_SHIRT_PURPLE",
+    description: "BLOOD skin. Purple shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#581030", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  BLOOD_SHIRT_ORANGE: {
+    name: "BLOOD_SHIRT_ORANGE",
+    description: "BLOOD skin. Orange shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#8A3A10", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  BLOOD_SHIRT_OLIVE: {
+    name: "BLOOD_SHIRT_OLIVE",
+    description: "BLOOD skin. Olive shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#523A0E", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  BLOOD_SHIRT_GREEN: {
+    name: "BLOOD_SHIRT_GREEN",
+    description: "BLOOD skin. Green shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#1E440C", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  BLOOD_SHIRT_GOLD: {
+    name: "BLOOD_SHIRT_GOLD",
+    description: "BLOOD skin. Gold shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#B8921E", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  BLOOD_SHIRT_BLUE: {
+    name: "BLOOD_SHIRT_BLUE",
+    description: "BLOOD skin. Blue shirt.",
+    colors: [
+      "#e3e5e4", "#100404", "#220808", "#f5d8d2",
+      "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
+      "#dc8e68", "#1E1450", "#0a0202", "#7a1818",
+      "#ff3030", "#3a0606", "#8a1818", "#d83838",
+    ],
+  },
+  MOSS_SHIRT_RED: {
+    name: "MOSS_SHIRT_RED",
+    description: "MOSS skin. Red shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#6E2812", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+  MOSS_SHIRT_PURPLE: {
+    name: "MOSS_SHIRT_PURPLE",
+    description: "MOSS skin. Purple shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#4A1E3A", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+  MOSS_SHIRT_ORANGE: {
+    name: "MOSS_SHIRT_ORANGE",
+    description: "MOSS skin. Orange shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#7A4A16", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+  MOSS_SHIRT_OLIVE: {
+    name: "MOSS_SHIRT_OLIVE",
+    description: "MOSS skin. Olive shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#4A4A10", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+  MOSS_SHIRT_GREEN: {
+    name: "MOSS_SHIRT_GREEN",
+    description: "MOSS skin. Green shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#2A5414", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+  MOSS_SHIRT_GOLD: {
+    name: "MOSS_SHIRT_GOLD",
+    description: "MOSS skin. Gold shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#A89E28", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+  MOSS_SHIRT_BLUE: {
+    name: "MOSS_SHIRT_BLUE",
+    description: "MOSS skin. Blue shirt.",
+    colors: [
+      "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8",
+      "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
+      "#bc8e5a", "#14384A", "#0a1006", "#5a6820",
+      "#a8b830", "#283018", "#5a6830", "#8a9848",
+    ],
+  },
+    CAT: {
     name: "CAT",
     description: "Tabby. Natural cat fur. Locked to Cat character.",
     colors: [
@@ -312,10 +732,10 @@ const PHASE3 = {
 const PIXEL_MUTATION = {
   enabled: true,
   tiers: [
-    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, weight: 2  },
-    { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, weight: 30 },
-    { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, weight: 50 },
-    { name: "OffKilter", paletteSwap: 0.20, edgeErode: 0.10, edgeDilate: 0.08, edgePasses: 2, weight: 17 },
+    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, scatter: 0.00, scatterRadius: 0, weight: 2  },
+    { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, scatter: 0.02, scatterRadius: 2, weight: 30 },
+    { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, scatter: 0.05, scatterRadius: 3, weight: 50 },
+    { name: "OffKilter", paletteSwap: 0.20, edgeErode: 0.10, edgeDilate: 0.08, edgePasses: 2, scatter: 0.12, scatterRadius: 5, weight: 17 },
   ],
   mutableSlots: ["hair", "head", "neck", "body"],
   paletteFamilies: {
@@ -323,6 +743,9 @@ const PIXEL_MUTATION = {
     "head": [4, 5, 6, 7, 8],
     "neck": [4, 5, 6, 7, 8],
     "body": [4, 5, 6, 7, 8],
+    "shirt": [9],
+    "hood":  [9],
+    "glasses": [1, 3],
   },
 };
 

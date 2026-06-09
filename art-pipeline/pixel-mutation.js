@@ -110,6 +110,48 @@ function edgePass(buf, tokenId, slot, passId, erodeProb, dilateProb) {
   return out;
 }
 
+// Scatter: edge pixels teleport to a nearby empty cell — dissolve/static effect.
+// Edge set is computed on the input snapshot; moves land only on cells that are
+// background in both the snapshot and the output (no stomping drawn or already-
+// scattered pixels). Up to 4 placement attempts per triggered pixel; if none
+// lands, the pixel stays put. Deterministic from tokenId + slot + passId.
+function applyPixelScatter(buf, tokenId, slot, passId, scatterProb, scatterRadius) {
+  if (scatterProb <= 0 || scatterRadius <= 0) return buf;
+  const out = new Uint8Array(buf);
+  const rng = mulberry32(seedFromStr(`${tokenId}:scatter:${slot}:p${passId}`));
+
+  for (let y = 0; y < GRID; y++) {
+    for (let x = 0; x < GRID; x++) {
+      const idx = y * GRID + x;
+      const cur = buf[idx];
+      if (cur === 0) continue;
+
+      let isEdge = false;
+      for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || nx >= GRID || ny < 0 || ny >= GRID) continue;
+        if (buf[ny * GRID + nx] === 0) { isEdge = true; break; }
+      }
+      if (!isEdge) continue;
+      if (rng() >= scatterProb) continue;
+
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const dx = Math.floor(rng() * (scatterRadius * 2 + 1)) - scatterRadius;
+        const dy = Math.floor(rng() * (scatterRadius * 2 + 1)) - scatterRadius;
+        if (dx === 0 && dy === 0) continue;
+        const tx = x + dx, ty = y + dy;
+        if (tx < 0 || tx >= GRID || ty < 0 || ty >= GRID) continue;
+        const tIdx = ty * GRID + tx;
+        if (buf[tIdx] !== 0 || out[tIdx] !== 0) continue;
+        out[tIdx] = cur;
+        out[idx] = 0;
+        break;
+      }
+    }
+  }
+  return out;
+}
+
 function applyEdgeMutation(buf, tokenId, slot, erodeProb, dilateProb, passes) {
   if (passes <= 0 || (erodeProb <= 0 && dilateProb <= 0)) return buf;
   let cur = buf;
@@ -139,6 +181,7 @@ function mutateLayer(buf, tokenId, slot, tier, mutationScale = 1.0) {
   let out = buf;
   out = applyPaletteSwap(out, tokenId, slot, swap);
   out = applyEdgeMutation(out, tokenId, slot, erode, dilate, passes);
+  out = applyPixelScatter(out, tokenId, slot, 0, tier.scatter || 0, tier.scatterRadius || 0);
   return out;
 }
 

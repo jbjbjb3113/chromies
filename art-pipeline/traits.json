@@ -98,6 +98,174 @@
       "weight": 2
     },
     {
+      "name": "SIGNAL_SHIRT_RED",
+      "weight": 20
+    },
+    {
+      "name": "SIGNAL_SHIRT_PURPLE",
+      "weight": 15
+    },
+    {
+      "name": "SIGNAL_SHIRT_ORANGE",
+      "weight": 15
+    },
+    {
+      "name": "SIGNAL_SHIRT_OLIVE",
+      "weight": 15
+    },
+    {
+      "name": "SIGNAL_SHIRT_GREEN",
+      "weight": 15
+    },
+    {
+      "name": "SIGNAL_SHIRT_GOLD",
+      "weight": 10
+    },
+    {
+      "name": "SIGNAL_SHIRT_BLUE",
+      "weight": 15
+    },
+    {
+      "name": "ACID_SHIRT_RED",
+      "weight": 4
+    },
+    {
+      "name": "ACID_SHIRT_PURPLE",
+      "weight": 3
+    },
+    {
+      "name": "ACID_SHIRT_ORANGE",
+      "weight": 3
+    },
+    {
+      "name": "ACID_SHIRT_OLIVE",
+      "weight": 3
+    },
+    {
+      "name": "ACID_SHIRT_GREEN",
+      "weight": 3
+    },
+    {
+      "name": "ACID_SHIRT_GOLD",
+      "weight": 2
+    },
+    {
+      "name": "ACID_SHIRT_BLUE",
+      "weight": 3
+    },
+    {
+      "name": "CYAN_SHIRT_RED",
+      "weight": 4
+    },
+    {
+      "name": "CYAN_SHIRT_PURPLE",
+      "weight": 3
+    },
+    {
+      "name": "CYAN_SHIRT_ORANGE",
+      "weight": 3
+    },
+    {
+      "name": "CYAN_SHIRT_OLIVE",
+      "weight": 3
+    },
+    {
+      "name": "CYAN_SHIRT_GREEN",
+      "weight": 3
+    },
+    {
+      "name": "CYAN_SHIRT_GOLD",
+      "weight": 2
+    },
+    {
+      "name": "CYAN_SHIRT_BLUE",
+      "weight": 3
+    },
+    {
+      "name": "GHOST_SHIRT_RED",
+      "weight": 4
+    },
+    {
+      "name": "GHOST_SHIRT_PURPLE",
+      "weight": 3
+    },
+    {
+      "name": "GHOST_SHIRT_ORANGE",
+      "weight": 3
+    },
+    {
+      "name": "GHOST_SHIRT_OLIVE",
+      "weight": 3
+    },
+    {
+      "name": "GHOST_SHIRT_GREEN",
+      "weight": 3
+    },
+    {
+      "name": "GHOST_SHIRT_GOLD",
+      "weight": 2
+    },
+    {
+      "name": "GHOST_SHIRT_BLUE",
+      "weight": 3
+    },
+    {
+      "name": "BLOOD_SHIRT_RED",
+      "weight": 4
+    },
+    {
+      "name": "BLOOD_SHIRT_PURPLE",
+      "weight": 3
+    },
+    {
+      "name": "BLOOD_SHIRT_ORANGE",
+      "weight": 3
+    },
+    {
+      "name": "BLOOD_SHIRT_OLIVE",
+      "weight": 3
+    },
+    {
+      "name": "BLOOD_SHIRT_GREEN",
+      "weight": 3
+    },
+    {
+      "name": "BLOOD_SHIRT_GOLD",
+      "weight": 2
+    },
+    {
+      "name": "BLOOD_SHIRT_BLUE",
+      "weight": 3
+    },
+    {
+      "name": "MOSS_SHIRT_RED",
+      "weight": 2
+    },
+    {
+      "name": "MOSS_SHIRT_PURPLE",
+      "weight": 1
+    },
+    {
+      "name": "MOSS_SHIRT_ORANGE",
+      "weight": 1
+    },
+    {
+      "name": "MOSS_SHIRT_OLIVE",
+      "weight": 1
+    },
+    {
+      "name": "MOSS_SHIRT_GREEN",
+      "weight": 1
+    },
+    {
+      "name": "MOSS_SHIRT_GOLD",
+      "weight": 1
+    },
+    {
+      "name": "MOSS_SHIRT_BLUE",
+      "weight": 1
+    },
+    {
       "name": "CAT",
       "weight": 0
     },
