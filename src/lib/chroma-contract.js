@@ -2,7 +2,7 @@ import { sepolia, mainnet } from "wagmi/chains";
 import { chromaAbi, PHASE } from "../../abis/Chroma.ts";
 
 export const CHROMA_ADDRESS = {
-  [sepolia.id]: "0xd328B64ed99fbfE39cFAE80B46Db28553bcD35D9",
+  [sepolia.id]: "0x8d65E485d6c11896ce62692E565c8dE80473CeC9",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
