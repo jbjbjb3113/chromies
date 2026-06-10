@@ -290,6 +290,11 @@
           "weight": 20
         },
         {
+          "name": "SP_Classic",
+          "file": "SP_HOOD_Classic.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "HOOD_None.png",
           "weight": 80

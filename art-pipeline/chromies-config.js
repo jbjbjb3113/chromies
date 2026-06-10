@@ -859,7 +859,7 @@ const CHARACTERS = [
       earrings: ["None"],        // hidden from side view
       tattoo: ["None"],          // face tattoos hidden
       shirt: ["Crew", "Tank", "None"],   // existing shirts work
-      hood: ["Classic", "None"],         // existing hood works
+      hood: { SP_Classic: 20, None: 80 },
     },
     slotWeightOverrides: {},
   },
@@ -884,6 +884,7 @@ const CHARACTERS = [
       earrings: ["None"],
       tattoo: ["None"],
       shirt: ["Crew", "Tank_Female", "None"],
+      hood: { SP_Classic: 20, None: 80 },
     },
     slotWeightOverrides: {},
   },
