@@ -838,6 +838,55 @@ const CHARACTERS = [
     },
     slotWeightOverrides: {},
   },
+  {
+    name: "SideProfile",
+    gender: "Male",
+    weight: 20,
+    palettePool: null,
+    forcedSlots: {
+      head: "SP_HeroA",
+      neck: "SP_HeroA",
+      eyes: "None",        // eyes baked into SP head art
+      bodytattoo: "None",  // positioned for front-facing body
+    },
+    slotVariantPool: {
+      // Object form: weights REPLACE traits.json weights (SP_ variants are weight 0 there)
+      hair: { SP_Mohawk: 15, SP_Pompadour: 15, SP_MrT: 10, SP_Afro: 25, SP_Dreads: 10, SP_Surfer: 13, SP_FadeRight: 7, None: 5 },
+      beard: { SP_Full: 20, SP_Goat: 20, None: 60 },
+      glasses: { SP_Shades: 25, SP_Neo: 25, None: 50 },
+      mustache: ["None"],        // no SP mustache asset yet — front-view would misalign
+      necklace: ["None"],        // hidden from side view
+      earrings: ["None"],        // hidden from side view
+      tattoo: ["None"],          // face tattoos hidden
+      shirt: ["Crew", "Tank", "None"],   // existing shirts work
+      hood: ["Classic", "None"],         // existing hood works
+    },
+    slotWeightOverrides: {},
+  },
+  {
+    name: "SideProfile",
+    gender: "Female",
+    weight: 15,
+    palettePool: null,
+    forcedSlots: {
+      head: "SP_HeroA_Female",
+      neck: "SP_HeroA_Female",
+      body: "Female",
+      eyes: "None",        // eyes baked into SP head art
+      bodytattoo: "None",  // positioned for front-facing body
+    },
+    slotVariantPool: {
+      hair: { SP_Afro: 25, SP_Dreads: 10, SP_Surfer: 13, SP_Pompadour: 15, SP_FadeRight: 7, None: 5 },
+      beard: ["None"],
+      mustache: ["None"],
+      glasses: { SP_Shades: 25, SP_Neo: 25, None: 50 },
+      necklace: ["None"],
+      earrings: ["None"],
+      tattoo: ["None"],
+      shirt: ["Crew", "Tank_Female", "None"],
+    },
+    slotWeightOverrides: {},
+  },
 ];
 
 module.exports = { ROLES, PALETTES, SETTINGS, PHASE3, PIXEL_MUTATION, CHARACTERS };

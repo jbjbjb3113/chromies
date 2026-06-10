@@ -36,6 +36,8 @@ const CHARACTER_BYTES = {
   Alien: 2,
   Cat: 3,
   Agent: 4,
+  SideProfile_Male: 5,
+  SideProfile_Female: 6,
 };
 
 const PALETTE_BYTES = {
@@ -170,6 +172,9 @@ function characterKey(character) {
   if (!character) return "HeroA_Male";
   if (character.name === "HeroA") {
     return character.gender === "Female" ? "HeroA_Female" : "HeroA_Male";
+  }
+  if (character.name === "SideProfile") {
+    return character.gender === "Female" ? "SideProfile_Female" : "SideProfile_Male";
   }
   return character.name;
 }

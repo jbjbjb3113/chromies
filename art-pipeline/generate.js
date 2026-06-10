@@ -339,10 +339,21 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
 
     // slotVariantPool — if defined, ONLY these variant names are eligible for this slot.
     // Variants not in the pool are excluded entirely (weight set to 0).
-    // "None" is always kept if present, unless explicitly excluded from the pool.
+    // Two forms:
+    //   Array:  ["A", "B"]          — pool members keep their traits.json weight
+    //   Object: { A: 15, B: 25 }    — pool members get the given weight, REPLACING
+    //           the traits.json weight. Required for character-gated (weight 0)
+    //           variants like SP_ side-profile assets.
     if (character && character.slotVariantPool && character.slotVariantPool[slot]) {
-      const pool = new Set(character.slotVariantPool[slot]);
-      variants = variants.map(v => pool.has(v.name) ? v : { ...v, weight: 0 });
+      const poolDef = character.slotVariantPool[slot];
+      if (Array.isArray(poolDef)) {
+        const pool = new Set(poolDef);
+        variants = variants.map(v => pool.has(v.name) ? v : { ...v, weight: 0 });
+      } else {
+        variants = variants.map(v =>
+          poolDef[v.name] !== undefined ? { ...v, weight: poolDef[v.name] } : { ...v, weight: 0 }
+        );
+      }
     }
 
     // Filter out zero-weight variants before rolling (avoids picking character-locked variants)

@@ -502,6 +502,16 @@
           "name": "Alien",
           "file": "NECK_ALien.png",
           "weight": 0
+        },
+        {
+          "name": "SP_HeroA",
+          "file": "SP_NECK_HeroA.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_HeroA_Female",
+          "file": "SP_NECK_HeroA_Female.png",
+          "weight": 0
         }
       ]
     },
@@ -534,6 +544,16 @@
         {
           "name": "Alien",
           "file": "HEAD_ALien.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_HeroA",
+          "file": "SP_HEAD_HeroA.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_HeroA_Female",
+          "file": "SP_HEAD_HeroA_Female.png",
           "weight": 0
         }
       ]
@@ -609,6 +629,18 @@
           "mutationScale": 1.5
         },
         {
+          "name": "SP_Full",
+          "file": "SP_BEARD_Full.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "SP_Goat",
+          "file": "SP_BEARD_Goat.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
           "name": "None",
           "file": "BEARD_None.png",
           "weight": 60
@@ -677,6 +709,11 @@
           "name": "Alien",
           "file": "EYES_ALien.png",
           "weight": 0
+        },
+        {
+          "name": "None",
+          "file": "EYES_None.png",
+          "weight": 0
         }
       ]
     },
@@ -721,6 +758,16 @@
           "name": "VR",
           "file": "GLASSES_VR.png",
           "weight": 10
+        },
+        {
+          "name": "SP_Shades",
+          "file": "SP_GLASSES_Shades.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Neo",
+          "file": "SP_GLASSES_Neo.png",
+          "weight": 0
         },
         {
           "name": "None",
@@ -779,6 +826,48 @@
           "name": "FadeRight",
           "file": "HAIR_FadeRight.png",
           "weight": 7,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "SP_Mohawk",
+          "file": "SP_HAIR_Mohawk.png",
+          "weight": 0,
+          "mutationScale": 1.0
+        },
+        {
+          "name": "SP_Pompadour",
+          "file": "SP_HAIR_Pompadour.png",
+          "weight": 0,
+          "mutationScale": 1.0
+        },
+        {
+          "name": "SP_MrT",
+          "file": "SP_HAIR_MrT.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "SP_Afro",
+          "file": "SP_HAIR_Afro.png",
+          "weight": 0,
+          "mutationScale": 2.0
+        },
+        {
+          "name": "SP_Dreads",
+          "file": "SP_HAIR_Dreads.png",
+          "weight": 0,
+          "mutationScale": 2.5
+        },
+        {
+          "name": "SP_Surfer",
+          "file": "SP_HAIR_Surfer.png",
+          "weight": 0,
+          "mutationScale": 1.8
+        },
+        {
+          "name": "SP_FadeRight",
+          "file": "SP_HAIR_FadeRight.png",
+          "weight": 0,
           "mutationScale": 1.2
         },
         {
