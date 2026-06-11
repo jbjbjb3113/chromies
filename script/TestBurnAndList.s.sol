@@ -45,10 +45,8 @@ contract TestBurnAndList is Script {
         chroma.setPhase(Chroma.Phase.Public);
         console2.log("Phase set to Public");
 
-        for (uint256 i = 1; i <= 3; ++i) {
-            chroma.mint{value: 0.006 ether}();
-            console2.log("Minted token ID (public):", i);
-        }
+        chroma.mint{value: 0.018 ether}(3);
+        console2.log("Minted token IDs 1-3 (public, quantity 3)");
 
         // Public mint caps at 3/wallet -- token 4 via owner mint (placeholder data)
         chroma.mint(deployer, 4, new bytes(2048), new bytes(32));

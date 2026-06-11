@@ -1042,7 +1042,7 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-        chroma.mint{value: 0.003 ether}(proof);
+        chroma.mint{value: 0.003 ether}(proof, 1);
 
 
 
@@ -1068,7 +1068,7 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-        chroma.mint{value: 0.005 ether}(proof);
+        chroma.mint{value: 0.005 ether}(proof, 1);
 
 
 
@@ -1088,7 +1088,7 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
 
 
 
@@ -1110,7 +1110,7 @@ contract ChromaPhaseMintTest is Test {
 
         chroma.setPhase(Chroma.Phase.Public);
 
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
 
 
 
@@ -1158,7 +1158,7 @@ contract ChromaPhaseMintTest is Test {
 
     function test_Inscribe_LocksToken() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 0, 0, 4);
@@ -1181,7 +1181,7 @@ contract ChromaPhaseMintTest is Test {
 
     function test_Inscribe_NonOwner_Reverts() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.zeroTraits();
@@ -1200,7 +1200,7 @@ contract ChromaPhaseMintTest is Test {
 
         chroma.setPhase(Chroma.Phase.Public);
 
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
 
 
 
@@ -1240,13 +1240,13 @@ contract ChromaPhaseMintTest is Test {
 
         vm.expectRevert(Chroma.WrongPhase.selector);
 
-        chroma.mint{value: 0.003 ether}(proof);
+        chroma.mint{value: 0.003 ether}(proof, 1);
 
 
 
         vm.expectRevert(Chroma.WrongPhase.selector);
 
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
 
     }
 
@@ -1262,9 +1262,9 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-        chroma.mint{value: 0.003 ether}(proof);
+        chroma.mint{value: 0.003 ether}(proof, 1);
 
-        chroma.mint{value: 0.003 ether}(proof);
+        chroma.mint{value: 0.003 ether}(proof, 1);
 
         assert(chroma.claimedOne(address(this)) == 2);
 
@@ -1274,7 +1274,7 @@ contract ChromaPhaseMintTest is Test {
 
         vm.expectRevert(Chroma.MaxPerWalletExceeded.selector);
 
-        chroma.mint{value: 0.003 ether}(proof);
+        chroma.mint{value: 0.003 ether}(proof, 1);
 
     }
 

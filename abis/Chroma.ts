@@ -73,14 +73,17 @@ export const chromaAbi = [
     type: "function",
     name: "mint",
     stateMutability: "payable",
-    inputs: [],
+    inputs: [{ name: "quantity", type: "uint256" }],
     outputs: [],
   },
   {
     type: "function",
     name: "mint",
     stateMutability: "payable",
-    inputs: [{ name: "proof", type: "bytes32[]" }],
+    inputs: [
+      { name: "proof", type: "bytes32[]" },
+      { name: "quantity", type: "uint256" },
+    ],
     outputs: [],
   },
   {

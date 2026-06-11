@@ -2,18 +2,18 @@ import { sepolia, mainnet } from "wagmi/chains";
 import { chromaAbi, PHASE } from "../../abis/Chroma.ts";
 
 export const CHROMA_ADDRESS = {
-  [sepolia.id]: "0xDdd4Dec995F5a350a5c904f0094A396A7585A841",
+  [sepolia.id]: "0x9B25F9b43a9E5B15b33C97cd657EaaF8be843285",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 /** ChromaCanvasV2 — per-token AP system. The `canvas` param for marketplace listings. */
 export const CANVAS_ADDRESS = {
-  [sepolia.id]: "0xAEb83800E8Df81E23C281059480A8c437fE4E382",
+  [sepolia.id]: "0x3DF07db7DfaE6742a580f9AdDDf758538B4E9526",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 export const MARKETPLACE_ADDRESS = {
-  [sepolia.id]: "0xe8abFeaEF0DC9C37963f47D315B538338F1379F9",
+  [sepolia.id]: "0xC2284A259E55352bF03874b677113F29FcB59c24",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 

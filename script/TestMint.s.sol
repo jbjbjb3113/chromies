@@ -63,7 +63,7 @@ contract TestMint is Script {
         chroma.setPhase(Chroma.Phase.Public);
         console2.log("Phase set to Public");
 
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
         require(chroma.totalSupply() == revealTokenId, "reveal mint got unexpected token ID");
         console2.log("Minted token ID:", revealTokenId);
         console2.log("Owner:", chroma.ownerOf(revealTokenId));
@@ -75,7 +75,7 @@ contract TestMint is Script {
         console2.log("Revealed token ID:", revealTokenId);
         console2.log("Reveal complete - check tokenURI on Sepolia explorer");
 
-        chroma.mint{value: 0.006 ether}();
+        chroma.mint{value: 0.006 ether}(1);
         require(chroma.totalSupply() == inscribeTokenId, "inscribe mint got unexpected token ID");
         console2.log("Minted token ID for inscribe:", inscribeTokenId);
 

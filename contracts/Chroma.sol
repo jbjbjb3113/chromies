@@ -28,6 +28,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error WrongPhase();
     error InvalidMerkleProof();
     error MaxPerWalletExceeded();
+    error InvalidQuantity();
     error AlreadyRevealed();
     error NotTokenOwner();
     error AlreadyLocked();
@@ -76,19 +77,19 @@ contract Chroma is ERC721, ERC2981, Ownable {
         _mintWithData(to, tokenId, pixels, traits, true);
     }
 
-    function mint(bytes32[] calldata proof) external payable {
+    function mint(bytes32[] calldata proof, uint256 quantity) external payable {
         if (phase == Phase.AllowlistOne) {
-            _mintAllowlistOne(proof);
+            _mintAllowlistOne(proof, quantity);
         } else if (phase == Phase.AllowlistTwo) {
-            _mintAllowlistTwo(proof);
+            _mintAllowlistTwo(proof, quantity);
         } else {
             revert WrongPhase();
         }
     }
 
-    function mint() external payable {
+    function mint(uint256 quantity) external payable {
         if (phase != Phase.Public) revert WrongPhase();
-        _mintPublic();
+        _mintPublic(quantity);
     }
 
     function reveal(uint256 tokenId, bytes calldata pixels, bytes calldata traits, bytes32[] calldata proof)
@@ -169,30 +170,39 @@ contract Chroma is ERC721, ERC2981, Ownable {
         return super.supportsInterface(interfaceId);
     }
 
-    function _mintAllowlistOne(bytes32[] calldata proof) internal {
-        if (msg.value < ALLOWLIST_ONE_PRICE) revert InsufficientPayment();
-        if (claimedOne[msg.sender] >= MAX_PER_WALLET_ONE) revert MaxPerWalletExceeded();
+    function _mintAllowlistOne(bytes32[] calldata proof, uint256 quantity) internal {
+        if (quantity == 0) revert InvalidQuantity();
+        if (msg.value != ALLOWLIST_ONE_PRICE * quantity) revert InsufficientPayment();
+        if (claimedOne[msg.sender] + quantity > MAX_PER_WALLET_ONE) revert MaxPerWalletExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootOne)) revert InvalidMerkleProof();
 
-        ++claimedOne[msg.sender];
-        _mintPlaceholder(msg.sender);
+        claimedOne[msg.sender] += quantity;
+        for (uint256 i = 0; i < quantity; ++i) {
+            _mintPlaceholder(msg.sender);
+        }
     }
 
-    function _mintAllowlistTwo(bytes32[] calldata proof) internal {
-        if (msg.value < ALLOWLIST_TWO_PRICE) revert InsufficientPayment();
-        if (claimedTwo[msg.sender] >= 2) revert MaxPerWalletExceeded();
+    function _mintAllowlistTwo(bytes32[] calldata proof, uint256 quantity) internal {
+        if (quantity == 0) revert InvalidQuantity();
+        if (msg.value != ALLOWLIST_TWO_PRICE * quantity) revert InsufficientPayment();
+        if (claimedTwo[msg.sender] + quantity > 2) revert MaxPerWalletExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootTwo)) revert InvalidMerkleProof();
 
-        ++claimedTwo[msg.sender];
-        _mintPlaceholder(msg.sender);
+        claimedTwo[msg.sender] += quantity;
+        for (uint256 i = 0; i < quantity; ++i) {
+            _mintPlaceholder(msg.sender);
+        }
     }
 
-    function _mintPublic() internal {
-        if (msg.value < MINT_PRICE) revert InsufficientPayment();
-        if (claimedPublic[msg.sender] >= 3) revert MaxPerWalletExceeded();
+    function _mintPublic(uint256 quantity) internal {
+        if (quantity == 0) revert InvalidQuantity();
+        if (msg.value != MINT_PRICE * quantity) revert InsufficientPayment();
+        if (claimedPublic[msg.sender] + quantity > 3) revert MaxPerWalletExceeded();
 
-        ++claimedPublic[msg.sender];
-        _mintPlaceholder(msg.sender);
+        claimedPublic[msg.sender] += quantity;
+        for (uint256 i = 0; i < quantity; ++i) {
+            _mintPlaceholder(msg.sender);
+        }
     }
 
     function _mintPlaceholder(address to) internal {

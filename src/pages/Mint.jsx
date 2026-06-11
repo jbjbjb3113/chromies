@@ -114,8 +114,9 @@ function formatEth(wei) {
   return `${value.toFixed(value < 0.01 ? 4 : 3)} ETH`;
 }
 
-function extractMintedTokenId(receipt) {
-  if (!receipt?.logs) return null;
+function extractMintedTokenIds(receipt) {
+  const tokenIds = [];
+  if (!receipt?.logs) return tokenIds;
   for (const log of receipt.logs) {
     try {
       const decoded = decodeEventLog({
@@ -127,13 +128,13 @@ function extractMintedTokenId(receipt) {
         decoded.eventName === "Transfer" &&
         decoded.args.from?.toLowerCase() === zeroAddress
       ) {
-        return decoded.args.tokenId;
+        tokenIds.push(decoded.args.tokenId);
       }
     } catch {
       // skip unrelated logs
     }
   }
-  return null;
+  return tokenIds;
 }
 
 function shortenError(error) {
@@ -376,29 +377,30 @@ export default function Mint() {
   }, [unitPrice, quantity]);
 
   const buildMintRequest = useCallback(() => {
-    if (phase === PHASE.AllowlistOne && tier1Proof) {
+    const qty = BigInt(quantity);
+    if (phase === PHASE.AllowlistOne && tier1Proof && tier1Price !== undefined) {
       return {
         functionName: "mint",
-        args: [proofToBytes32(tier1Proof)],
-        value: tier1Price,
+        args: [proofToBytes32(tier1Proof), qty],
+        value: tier1Price * qty,
       };
     }
-    if (phase === PHASE.AllowlistTwo && tier2Proof) {
+    if (phase === PHASE.AllowlistTwo && tier2Proof && tier2Price !== undefined) {
       return {
         functionName: "mint",
-        args: [proofToBytes32(tier2Proof)],
-        value: tier2Price,
+        args: [proofToBytes32(tier2Proof), qty],
+        value: tier2Price * qty,
       };
     }
-    if (phase === PHASE.Public) {
+    if (phase === PHASE.Public && publicPrice !== undefined) {
       return {
         functionName: "mint",
-        args: [],
-        value: publicPrice,
+        args: [qty],
+        value: publicPrice * qty,
       };
     }
     return null;
-  }, [phase, tier1Proof, tier2Proof, tier1Price, tier2Price, publicPrice]);
+  }, [phase, quantity, tier1Proof, tier2Proof, tier1Price, tier2Price, publicPrice]);
 
   const handleMint = useCallback(async () => {
     if (!chromaAddress || !walletClient || !publicClient) return;
@@ -410,33 +412,22 @@ export default function Mint() {
     setMintedTokenIds([]);
     setIsBatchMinting(true);
 
-    const tokenIds = [];
-
     try {
-      for (let i = 0; i < quantity; i++) {
-        setBatchStep(i + 1);
+      // Quantity mint is a single transaction since the contract loop landed
+      setBatchStep(1);
+      const hash = await walletClient.writeContract({
+        address: chromaAddress,
+        abi: chromaAbi,
+        functionName: request.functionName,
+        args: request.args,
+        value: request.value,
+      });
 
-        const hash = await walletClient.writeContract({
-          address: chromaAddress,
-          abi: chromaAbi,
-          functionName: request.functionName,
-          args: request.args,
-          value: request.value,
-        });
-
-        const receipt = await publicClient.waitForTransactionReceipt({ hash });
-        const tokenId = extractMintedTokenId(receipt);
-        if (tokenId !== null) tokenIds.push(tokenId);
-      }
-
-      setMintedTokenIds(tokenIds);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      setMintedTokenIds(extractMintedTokenIds(receipt));
       await refetchContract();
     } catch (error) {
       setBatchError(shortenError(error));
-      if (tokenIds.length > 0) {
-        setMintedTokenIds(tokenIds);
-        await refetchContract();
-      }
     } finally {
       setIsBatchMinting(false);
       setBatchStep(0);
@@ -446,7 +437,6 @@ export default function Mint() {
     walletClient,
     publicClient,
     buildMintRequest,
-    quantity,
     refetchContract,
   ]);
 
