@@ -7,6 +7,9 @@ import App from "./App.jsx";
 import { wagmiConfig } from "./lib/wagmi.js";
 import "./index.css";
 
+// Temporary: verify WalletConnect projectId is present in the deployed build
+console.log("WC ID:", import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID);
+
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
