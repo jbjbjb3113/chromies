@@ -272,6 +272,10 @@
     {
       "name": "ALIEN",
       "weight": 0
+    },
+    {
+      "name": "SERC",
+      "weight": 0
     }
   ],
   "slots": {

@@ -703,6 +703,16 @@ const PALETTES = {
       "#fdfbfb", "#383525", "#5d5840", "#b2ac78",
     ],
   },
+  SERC: {
+    name: "SERC",
+    description: "Normies tribute. Monochrome grays from Normie #4354 (#e3e5e4 / #48494b), SIGNAL slot luminances mapped onto the two-tone ramp. Special/gated — weight 0.",
+    colors: [
+      "#e3e5e4", "#494a4c", "#505153", "#e3e5e4",
+      "#5e5f61", "#7e8081", "#959797", "#a7a9a9",
+      "#b3b4b4", "#525355", "#48494b", "#666869",
+      "#828384", "#4d4f50", "#6b6c6e", "#939595",
+    ],
+  },
 };
 
 const SETTINGS = {
