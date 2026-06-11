@@ -144,6 +144,13 @@ contract Chroma is ERC721, ERC2981, Ownable {
         revealRoot = root;
     }
 
+    /// @notice Testing helper — clears a wallet's per-phase mint counts.
+    function resetClaimed(address wallet) external onlyOwner {
+        claimedPublic[wallet] = 0;
+        claimedOne[wallet] = 0;
+        claimedTwo[wallet] = 0;
+    }
+
     function withdraw() external onlyOwner {
         (bool ok,) = payable(owner()).call{value: address(this).balance}("");
         if (!ok) revert WithdrawFailed();

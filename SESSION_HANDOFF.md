@@ -6,11 +6,11 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 ## Latest Sepolia Contracts
 | Contract | Address |
 |----------|---------|
-| ChromaStorage | `0x1Fad10143c8b6d4eF1C247C1C7BC0bA567166482` |
-| Chroma | `0x9B25F9b43a9E5B15b33C97cd657EaaF8be843285` |
-| ChromaCanvasV2 | `0x3DF07db7DfaE6742a580f9AdDDf758538B4E9526` |
-| ChromaRenderer | `0x9aB225b2929ffeBF3688c59A63e6D8a0Ab5BaaeD` |
-| PixelMarketplace | `0xC2284A259E55352bF03874b677113F29FcB59c24` |
+| ChromaStorage | `0x7a347C8eBa0D2662679ef6B27234c446F44Ca1Dd` |
+| Chroma | `0x16cE47A7e36053d6460347a22B9857729eb09C94` |
+| ChromaCanvasV2 | `0x35BdcfA0Dc7bCfC813C6B4e7da3AB58D05a5e274` |
+| ChromaRenderer | `0x3dCE3d1c8276F75A6133003617D2909818CD5BaE` |
+| PixelMarketplace | `0xBE257661D9574E64B96416D901333BE75AFfC12c` |
 
 ## Merkle Roots
 - Tier 1 (Normies): `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
@@ -57,9 +57,9 @@ node trait-breakdown.js
 ```powershell
 $env:PRIVATE_KEY = (Get-Content .env | Select-String "PRIVATE_KEY").ToString().Split("=",2)[1]
 $env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToString().Split("=",2)[1]
-$env:CHROMA_ADDRESS = "0x9B25F9b43a9E5B15b33C97cd657EaaF8be843285"
-$env:CANVAS_ADDRESS = "0x3DF07db7DfaE6742a580f9AdDDf758538B4E9526"
-$env:MARKETPLACE_ADDRESS = "0xC2284A259E55352bF03874b677113F29FcB59c24"
+$env:CHROMA_ADDRESS = "0x16cE47A7e36053d6460347a22B9857729eb09C94"
+$env:CANVAS_ADDRESS = "0x35BdcfA0Dc7bCfC813C6B4e7da3AB58D05a5e274"
+$env:MARKETPLACE_ADDRESS = "0xBE257661D9574E64B96416D901333BE75AFfC12c"
 ```
 
 ## Foundry

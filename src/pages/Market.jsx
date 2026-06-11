@@ -18,7 +18,7 @@ import {
 } from "../lib/chroma-contract.js";
 
 /** PixelMarketplace deploy block on Sepolia — use as fromBlock for any event queries. */
-export const MARKETPLACE_DEPLOY_BLOCK = 11037650n;
+export const MARKETPLACE_DEPLOY_BLOCK = 11037727n;
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
