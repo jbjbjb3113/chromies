@@ -149,7 +149,7 @@ function shortenError(error) {
   return message.length > 160 ? `${message.slice(0, 160)}…` : message;
 }
 
-function MintStatus({ phase, totalSupply, maxSupply, chainId, isConnected }) {
+function MintStatus({ phase, totalSupply, maxSupply, price, chainId, isConnected }) {
   const label = PHASE_LABELS[phase] ?? "Unknown";
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const deployed = isChromaDeployed(chainId);
@@ -182,14 +182,40 @@ function MintStatus({ phase, totalSupply, maxSupply, chainId, isConnected }) {
         </p>
       )}
       {deployed && onSepolia && (
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-ink/70">
-          <span>
-            Minted: <strong className="text-ink">{totalSupply ?? "—"}</strong>
-            {maxSupply !== undefined ? ` / ${maxSupply}` : ""}
-          </span>
-          <span className="hidden h-4 w-px bg-ink/20 sm:inline" />
-          <span>Network: Sepolia testnet</span>
-        </div>
+        <>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-ink/70">
+            <span>
+              Minted: <strong className="text-ink">{totalSupply ?? "—"}</strong>
+              {maxSupply !== undefined ? ` / ${maxSupply}` : ""}
+            </span>
+            <span className="hidden h-4 w-px bg-ink/20 sm:inline" />
+            <span>Network: Sepolia testnet</span>
+          </div>
+          <div className="mt-5 flex flex-col gap-2 border-t border-ink/10 pt-5">
+            <div className="flex items-baseline justify-center gap-2">
+              <span className="font-symtext text-xl font-black text-ink">
+                {formatEth(price)}
+              </span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink/50">
+                Your Price
+              </span>
+            </div>
+            <div className="flex items-baseline justify-center gap-2">
+              <span className="font-symtext text-xl font-black text-ink">5150</span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink/50">
+                Supply
+              </span>
+            </div>
+            <div className="flex items-baseline justify-center gap-2">
+              <span className="font-symtext text-xl font-black text-ink">
+                {totalSupply !== undefined ? (5150n - totalSupply).toString() : "—"}
+              </span>
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink/50">
+                Remaining
+              </span>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -524,6 +550,7 @@ export default function Mint() {
               phase={phase}
               totalSupply={totalSupply}
               maxSupply={maxSupply}
+              price={unitPrice}
               chainId={chainId}
               isConnected={isConnected}
             />
