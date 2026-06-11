@@ -1,18 +1,19 @@
 GIMP Palette
 #
- 10   6   8	Untitled
- 26  13  14	Untitled
- 42  21  24	Untitled
- 61  32  36	Untitled
- 76  39  15	Untitled
-137  83  42	Untitled
-178 114  63	Untitled
-209 139  77	Untitled
-223 156  94	Untitled
- 28  28  38	Untitled
- 26  10  20	Untitled
-160  24  86	Untitled
-240 234 224	Untitled
- 77   5  27	Untitled
-155  35  82	Untitled
-219  90 145	Untitled
+
+#e3e5e4  slot 0  background
+#1a0d0e  slot 1  mask_dark
+#2a1518  slot 2  mask_mid
+#f0eae0  slot 3  highlight
+#4c270f  slot 4  skin_shadow_deep
+#89532a  slot 5  skin_shadow
+#b2723f  slot 6  skin_mid
+#d18b4d  slot 7  skin_light
+#df9c5e  slot 8  skin_highlight
+#1c1c26  slot 9  hood
+#1a0a14  slot 10 eye_socket
+#a01856  slot 11 eye_glow
+#ff2d8a  slot 12 eye_signal
+#4d051b  slot 13 hair_dark
+#9b2352  slot 14 hair_mid
+#db5a91  slot 15 hair_bright

@@ -6,10 +6,11 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 ## Latest Sepolia Contracts
 | Contract | Address |
 |----------|---------|
-| ChromaStorage | `0xFa5A5D6baF57024Eb4cD8118DAF9963a2855Ce74` |
-| Chroma | `0x8d65E485d6c11896ce62692E565c8dE80473CeC9` |
-| ChromaCanvas | `0x050714AfC8d8a3b20E4435A54890c89a6CFF68FB` |
-| ChromaRenderer | `0x1f05dE96A028B24D61ef2b26a39aB1c749E2842D` |
+| ChromaStorage | `0x5b6982a01D253F042b246CCE019639c509359476` |
+| Chroma | `0xDdd4Dec995F5a350a5c904f0094A396A7585A841` |
+| ChromaCanvasV2 | `0xAEb83800E8Df81E23C281059480A8c437fE4E382` |
+| ChromaRenderer | `0x2550BE24e2da8689288AdbcB9665525Cb8DAe67F` |
+| PixelMarketplace | `0xe8abFeaEF0DC9C37963f47D315B538338F1379F9` |
 
 ## Merkle Roots
 - Tier 1 (Normies): `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
@@ -56,8 +57,9 @@ node trait-breakdown.js
 ```powershell
 $env:PRIVATE_KEY = (Get-Content .env | Select-String "PRIVATE_KEY").ToString().Split("=",2)[1]
 $env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToString().Split("=",2)[1]
-$env:CHROMA_ADDRESS = "0x8d65E485d6c11896ce62692E565c8dE80473CeC9"
-$env:CANVAS_ADDRESS = "0x050714AfC8d8a3b20E4435A54890c89a6CFF68FB"
+$env:CHROMA_ADDRESS = "0xDdd4Dec995F5a350a5c904f0094A396A7585A841"
+$env:CANVAS_ADDRESS = "0xAEb83800E8Df81E23C281059480A8c437fE4E382"
+$env:MARKETPLACE_ADDRESS = "0xe8abFeaEF0DC9C37963f47D315B538338F1379F9"
 ```
 
 ## Foundry
