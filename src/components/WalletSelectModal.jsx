@@ -292,6 +292,7 @@ const WALLET_OPTIONS = [
     label: "Ledger",
     icon: LedgerIcon,
     hint: "WalletConnect QR",
+    installUrl: "https://www.ledger.com",
     kind: "walletConnect",
   },
   {
@@ -350,7 +351,11 @@ export default function WalletSelectModal({
 
   const visibleOptions = useMemo(() => {
     return WALLET_OPTIONS.filter((option) => {
-      if (option.kind === "walletConnect") return availability.walletConnect;
+      // WalletConnect options need a projectId; keep ones with an install
+      // page (Ledger) visible regardless so they never silently disappear.
+      if (option.kind === "walletConnect") {
+        return availability.walletConnect || Boolean(option.installUrl);
+      }
       return true;
     });
   }, [availability.walletConnect]);
@@ -381,7 +386,13 @@ export default function WalletSelectModal({
       return;
     }
 
-    if (!walletConnectConnector) return;
+    if (!walletConnectConnector) {
+      const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
+      if (option?.installUrl) {
+        window.open(option.installUrl, "_blank", "noopener,noreferrer");
+      }
+      return;
+    }
 
     setConnectingWalletId(walletId);
     connect(
