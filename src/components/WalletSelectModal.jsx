@@ -346,17 +346,6 @@ export default function WalletSelectModal({
   useEffect(() => {
     if (!open) return;
     setAvailability(detectWalletAvailability());
-
-    // Temporary debug logging for wallet provider detection
-    console.log("window.ethereum:", window.ethereum);
-    console.log("window.ethereum.providers:", window.ethereum?.providers);
-    console.log("window.ethereum.isMetaMask:", window.ethereum?.isMetaMask);
-    console.log("window.ethereum.isTrust:", window.ethereum?.isTrust);
-    console.log("window.trustwallet:", window.trustwallet);
-    console.log("window.phantom:", window.phantom);
-    console.log("MetaMask provider found:", getMetaMaskProvider());
-    console.log("Trust provider found:", getTrustProvider());
-    console.log("Phantom provider found:", getPhantomProvider());
   }, [open]);
 
   const visibleOptions = useMemo(() => {
