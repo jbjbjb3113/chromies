@@ -1,6 +1,5 @@
 {
   "images": [
-    "/foreground/alien-134.png",
     "/foreground/0001.png",
     "/foreground/0002.png",
     "/foreground/0003.png",
@@ -12,7 +11,8 @@
     "/foreground/0009.png",
     "/foreground/0010.png",
     "/foreground/0011.png",
+    "/foreground/0012.png",
     "/foreground/0028.png",
-    "/foreground/0012.png"
+    "/foreground/alien-134.png"
   ]
 }
