@@ -64,24 +64,43 @@ function WalletConnectIcon() {
   );
 }
 
+// Trust Wallet injects itself as window.ethereum and can hijack generic
+// requests, so every wallet must resolve its own specific provider.
 function getMetaMaskProvider() {
   if (typeof window === "undefined") return null;
   const eth = window.ethereum;
   if (!eth) return null;
   if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isMetaMask) ?? null;
+    return eth.providers.find((provider) => provider.isMetaMask && !provider.isTrust) ?? null;
   }
-  return eth.isMetaMask ? eth : null;
+  return eth.isMetaMask && !eth.isTrust ? eth : null;
+}
+
+function getTrustProvider() {
+  if (typeof window === "undefined") return null;
+  if (window.trustwallet?.ethereum) return window.trustwallet.ethereum;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isTrust) ?? null;
+  }
+  return eth.isTrust ? eth : null;
+}
+
+function getPhantomProvider() {
+  if (typeof window === "undefined") return null;
+  return window.phantom?.ethereum ?? null;
 }
 
 function detectWalletAvailability() {
   if (typeof window === "undefined") {
-    return { metaMask: false, phantom: false, walletConnect: false };
+    return { metaMask: false, phantom: false, trust: false, walletConnect: false };
   }
 
   return {
     metaMask: Boolean(getMetaMaskProvider()),
-    phantom: Boolean(window.phantom?.ethereum),
+    phantom: Boolean(getPhantomProvider()),
+    trust: Boolean(getTrustProvider()),
     walletConnect: Boolean(projectId),
   };
 }
@@ -107,8 +126,9 @@ const WALLET_OPTIONS = [
     id: "trust",
     label: "Trust Wallet",
     icon: TrustIcon,
-    hint: "WalletConnect QR",
-    kind: "walletConnect",
+    hint: "Browser extension",
+    installUrl: "https://trustwallet.com",
+    kind: "injected",
   },
   {
     id: "ledger",
@@ -126,23 +146,19 @@ const WALLET_OPTIONS = [
   },
 ];
 
-function createPhantomConnector() {
-  return injected({
-    target() {
-      const provider = window.phantom?.ethereum;
-      if (!provider) return undefined;
-      return { id: "phantom", name: "Phantom", provider };
-    },
-    shimDisconnect: true,
-  });
-}
+const INJECTED_WALLETS = {
+  metaMask: { name: "MetaMask", getProvider: getMetaMaskProvider },
+  phantom: { name: "Phantom", getProvider: getPhantomProvider },
+  trust: { name: "Trust Wallet", getProvider: getTrustProvider },
+};
 
-function createMetaMaskConnector() {
+function createInjectedConnector(walletId) {
+  const { name, getProvider } = INJECTED_WALLETS[walletId];
   return injected({
     target() {
-      const provider = getMetaMaskProvider();
+      const provider = getProvider();
       if (!provider) return undefined;
-      return { id: "metaMask", name: "MetaMask", provider };
+      return { id: walletId, name, provider };
     },
     shimDisconnect: true,
   });
@@ -180,31 +196,12 @@ export default function WalletSelectModal({
   const handleWalletSelect = (walletId) => {
     if (isPending) return;
 
-    if (walletId === "phantom") {
-      if (window.phantom?.ethereum) {
-        setConnectingWalletId("phantom");
-        connect(
-          { connector: createPhantomConnector() },
-          {
-            onSuccess: () => {
-              setConnectingWalletId(null);
-              onClose();
-            },
-            onError: () => setConnectingWalletId(null),
-          },
-        );
-      } else {
-        window.open("https://phantom.app", "_blank", "noopener,noreferrer");
-      }
-      return;
-    }
-
-    if (walletId === "metaMask") {
-      const provider = getMetaMaskProvider();
+    if (INJECTED_WALLETS[walletId]) {
+      const provider = INJECTED_WALLETS[walletId].getProvider();
       if (provider) {
-        setConnectingWalletId("metaMask");
+        setConnectingWalletId(walletId);
         connect(
-          { connector: createMetaMaskConnector() },
+          { connector: createInjectedConnector(walletId) },
           {
             onSuccess: () => {
               setConnectingWalletId(null);
@@ -214,7 +211,10 @@ export default function WalletSelectModal({
           },
         );
       } else {
-        window.open("https://metamask.io", "_blank", "noopener,noreferrer");
+        const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
+        if (option?.installUrl) {
+          window.open(option.installUrl, "_blank", "noopener,noreferrer");
+        }
       }
       return;
     }
@@ -284,11 +284,9 @@ export default function WalletSelectModal({
               {visibleOptions.map((option) => {
                 const Icon = option.icon;
                 const installed =
-                  option.id === "metaMask"
-                    ? availability.metaMask
-                    : option.id === "phantom"
-                      ? availability.phantom
-                      : availability.walletConnect;
+                  option.kind === "injected"
+                    ? availability[option.id]
+                    : availability.walletConnect;
                 const connecting = connectingWalletId === option.id;
 
                 return (
