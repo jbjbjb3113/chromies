@@ -2,7 +2,8 @@
 // generate-serc-1of1.js — SERC 1/1: Normie #4354 rendered through the Chromies pipeline.
 //
 // Fetches Normie #4354's on-chain SVG from the Normies API, parses the 40x40
-// two-tone pixel grid, centers it on the 64x64 Chromies canvas, maps the two
+// two-tone pixel grid, scales it up to the full 64x64 Chromies canvas with
+// nearest-neighbor sampling (hard pixel edges, no interpolation), maps the two
 // Normie colors onto Chromies palette slots (dark -> slot 1, bg -> slot 0),
 // and renders via the Chromies renderer with the SIGNAL palette.
 //
@@ -17,7 +18,6 @@ const NORMIE_ID = 4354;
 const API = "https://api.normies.art";
 const NORMIE_SIZE = 40;
 const GRID = SETTINGS.grid; // 64
-const OFFSET = Math.floor((GRID - NORMIE_SIZE) / 2); // 12 — centers 40x40 in 64x64
 
 const DARK = "#48494b"; // drawn pixel -> palette slot 1 (mask_dark)
 const SLOT_BG = 0;
@@ -63,12 +63,16 @@ function parseSVGToGrid(svg) {
   return grid;
 }
 
+// Nearest-neighbor upscale 40x40 -> 64x64: each destination pixel samples the
+// nearest source pixel, preserving hard pixel-art edges.
 function buildChromieBuffer(normieGrid) {
   const buf = Buffer.alloc(GRID * GRID, SLOT_BG);
-  for (let y = 0; y < NORMIE_SIZE; y++) {
-    for (let x = 0; x < NORMIE_SIZE; x++) {
-      if (normieGrid[y * NORMIE_SIZE + x] === 1) {
-        buf[(y + OFFSET) * GRID + (x + OFFSET)] = SLOT_DARK;
+  for (let y = 0; y < GRID; y++) {
+    const sy = Math.min(NORMIE_SIZE - 1, Math.floor((y * NORMIE_SIZE) / GRID));
+    for (let x = 0; x < GRID; x++) {
+      const sx = Math.min(NORMIE_SIZE - 1, Math.floor((x * NORMIE_SIZE) / GRID));
+      if (normieGrid[sy * NORMIE_SIZE + sx] === 1) {
+        buf[y * GRID + x] = SLOT_DARK;
       }
     }
   }
