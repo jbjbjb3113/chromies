@@ -43,6 +43,67 @@ function TrustIcon() {
   );
 }
 
+function CoinbaseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" aria-hidden="true">
+      <rect width="24" height="24" rx="6" fill="#0052FF" />
+      <path
+        fill="#FFF"
+        d="M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15Zm-2.2 5.8c0-.3.2-.5.5-.5h3.4c.3 0 .5.2.5.5v3.4c0 .3-.2.5-.5.5h-3.4a.5.5 0 0 1-.5-.5v-3.4Z"
+      />
+    </svg>
+  );
+}
+
+function RainbowIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" aria-hidden="true">
+      <rect width="24" height="24" rx="6" fill="#001E59" />
+      <path fill="#FF4000" d="M5 19v-2a12 12 0 0 1 12 12h2v-2A14 14 0 0 0 5 13v6Z" transform="translate(0 -8)" />
+      <path fill="#FFD641" d="M5 19v-2a8 8 0 0 1 8 8h2v-2A10 10 0 0 0 5 13v6Z" transform="translate(0 -4)" />
+      <path fill="#01DA40" d="M5 19a4 4 0 0 1 4 4h2a6 6 0 0 0-6-6v2Z" />
+      <circle cx="5.8" cy="18.2" r="1.6" fill="#01DA40" />
+    </svg>
+  );
+}
+
+function OKXIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" aria-hidden="true">
+      <rect width="24" height="24" rx="6" fill="#000" />
+      <path
+        fill="#FFF"
+        d="M6 6h4v4H6V6Zm8 0h4v4h-4V6Zm-4 4h4v4h-4v-4Zm-4 4h4v4H6v-4Zm8 0h4v4h-4v-4Z"
+      />
+    </svg>
+  );
+}
+
+function RabbyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" aria-hidden="true">
+      <rect width="24" height="24" rx="6" fill="#8697FF" />
+      <path
+        fill="#FFF"
+        d="M17.5 11c-.8-2.6-3-4.5-5.7-4.9-.5-.1-.8.5-.4.8 1 .8 1.8 1.9 2.2 3.1l-3.1-1.5a4.5 4.5 0 0 0-5 .9l-.8.8c-.3.3-.1.8.3.8h2.3c-.6.7-.9 1.6-.9 2.5 0 .4.4.6.7.4l3.3-2 4.6 2.2c.7.3 1.5.3 2.1-.1.6-.4.7-1.2.4-2Z"
+      />
+    </svg>
+  );
+}
+
+function BraveIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" aria-hidden="true">
+      <rect width="24" height="24" rx="6" fill="#FFF" />
+      <path
+        fill="#FB542B"
+        d="M18.5 8.1 17 5.8l-2-.3-3-.5-3 .5-2 .3-1.5 2.3.7 2.4-.4 1.6 2 6 1.6 1.4L12 21l2.6-1.5 1.6-1.4 2-6-.4-1.6.7-2.4Z"
+      />
+      <path fill="#FFF" d="m12 13.7-2.4 1.5 2.4 2 2.4-2-2.4-1.5Zm-2.7-4.4 2.7 1 2.7-1-1-1.3h-3.4l-1 1.3Z" />
+    </svg>
+  );
+}
+
 function LedgerIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-6 w-6 shrink-0" aria-hidden="true">
@@ -92,17 +153,73 @@ function getPhantomProvider() {
   return window.phantom?.ethereum ?? null;
 }
 
-function detectWalletAvailability() {
-  if (typeof window === "undefined") {
-    return { metaMask: false, phantom: false, trust: false, walletConnect: false };
+function getCoinbaseProvider() {
+  if (typeof window === "undefined") return null;
+  if (window.coinbaseWalletExtension) return window.coinbaseWalletExtension;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isCoinbaseWallet) ?? null;
   }
+  return eth.isCoinbaseWallet ? eth : null;
+}
 
-  return {
-    metaMask: Boolean(getMetaMaskProvider()),
-    phantom: Boolean(getPhantomProvider()),
-    trust: Boolean(getTrustProvider()),
-    walletConnect: Boolean(projectId),
-  };
+function getRainbowProvider() {
+  if (typeof window === "undefined") return null;
+  if (window.rainbow) return window.rainbow;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isRainbow) ?? null;
+  }
+  return eth.isRainbow ? eth : null;
+}
+
+function getOKXProvider() {
+  if (typeof window === "undefined") return null;
+  if (window.okxwallet) return window.okxwallet;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isOKExWallet || provider.isOKX) ?? null;
+  }
+  return eth.isOKExWallet || eth.isOKX ? eth : null;
+}
+
+function getRabbyProvider() {
+  if (typeof window === "undefined") return null;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.isRabby) return eth;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isRabby) ?? null;
+  }
+  return null;
+}
+
+function getBraveProvider() {
+  if (typeof window === "undefined") return null;
+  const eth = window.ethereum;
+  if (!eth) return null;
+  if (eth.isBraveWallet) return eth;
+  if (eth.providers?.length) {
+    return eth.providers.find((provider) => provider.isBraveWallet) ?? null;
+  }
+  return null;
+}
+
+function detectWalletAvailability() {
+  const availability = { walletConnect: false };
+  for (const walletId of Object.keys(INJECTED_WALLETS)) {
+    availability[walletId] = false;
+  }
+  if (typeof window === "undefined") return availability;
+
+  for (const [walletId, { getProvider }] of Object.entries(INJECTED_WALLETS)) {
+    availability[walletId] = Boolean(getProvider());
+  }
+  availability.walletConnect = Boolean(projectId);
+  return availability;
 }
 
 const WALLET_OPTIONS = [
@@ -131,6 +248,46 @@ const WALLET_OPTIONS = [
     kind: "injected",
   },
   {
+    id: "coinbase",
+    label: "Coinbase Wallet",
+    icon: CoinbaseIcon,
+    hint: "Browser extension",
+    installUrl: "https://www.coinbase.com/wallet",
+    kind: "injected",
+  },
+  {
+    id: "rainbow",
+    label: "Rainbow",
+    icon: RainbowIcon,
+    hint: "Browser extension",
+    installUrl: "https://rainbow.me",
+    kind: "injected",
+  },
+  {
+    id: "okx",
+    label: "OKX Wallet",
+    icon: OKXIcon,
+    hint: "Browser extension",
+    installUrl: "https://www.okx.com/web3",
+    kind: "injected",
+  },
+  {
+    id: "rabby",
+    label: "Rabby",
+    icon: RabbyIcon,
+    hint: "Browser extension",
+    installUrl: "https://rabby.io",
+    kind: "injected",
+  },
+  {
+    id: "brave",
+    label: "Brave Wallet",
+    icon: BraveIcon,
+    hint: "Built into Brave",
+    installUrl: "https://brave.com/wallet",
+    kind: "injected",
+  },
+  {
     id: "ledger",
     label: "Ledger",
     icon: LedgerIcon,
@@ -150,6 +307,11 @@ const INJECTED_WALLETS = {
   metaMask: { name: "MetaMask", getProvider: getMetaMaskProvider },
   phantom: { name: "Phantom", getProvider: getPhantomProvider },
   trust: { name: "Trust Wallet", getProvider: getTrustProvider },
+  coinbase: { name: "Coinbase Wallet", getProvider: getCoinbaseProvider },
+  rainbow: { name: "Rainbow", getProvider: getRainbowProvider },
+  okx: { name: "OKX Wallet", getProvider: getOKXProvider },
+  rabby: { name: "Rabby", getProvider: getRabbyProvider },
+  brave: { name: "Brave Wallet", getProvider: getBraveProvider },
 };
 
 function createInjectedConnector(walletId) {
