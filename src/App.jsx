@@ -5,6 +5,7 @@ import PasswordGate from "./components/PasswordGate.jsx";
 import Landing from "./pages/Landing.jsx";
 import Lab from "./pages/Lab.jsx";
 import Mint from "./pages/Mint.jsx";
+import Market from "./pages/Market.jsx";
 import Canvas from "./pages/Canvas.jsx";
 import PixelChroma from "./PixelChroma.jsx";
 
@@ -17,6 +18,14 @@ export default function App() {
         element={
           <PasswordGate>
             <Mint />
+          </PasswordGate>
+        }
+      />
+      <Route
+        path="/market"
+        element={
+          <PasswordGate>
+            <Market />
           </PasswordGate>
         }
       />

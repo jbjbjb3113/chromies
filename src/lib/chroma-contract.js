@@ -6,6 +6,17 @@ export const CHROMA_ADDRESS = {
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
+/** ChromaCanvasV2 — per-token AP system. The `canvas` param for marketplace listings. */
+export const CANVAS_ADDRESS = {
+  [sepolia.id]: "0xAEb83800E8Df81E23C281059480A8c437fE4E382",
+  [mainnet.id]: "0x0000000000000000000000000000000000000000",
+};
+
+export const MARKETPLACE_ADDRESS = {
+  [sepolia.id]: "0xe8abFeaEF0DC9C37963f47D315B538338F1379F9",
+  [mainnet.id]: "0x0000000000000000000000000000000000000000",
+};
+
 export const SUPPORTED_CHAINS = [sepolia, mainnet];
 
 export const DEFAULT_CHAIN = sepolia;
@@ -14,6 +25,15 @@ export { chromaAbi, PHASE };
 
 export function getChromaAddress(chainId) {
   return CHROMA_ADDRESS[chainId] ?? null;
+}
+
+export function getCanvasAddress(chainId) {
+  return CANVAS_ADDRESS[chainId] ?? null;
+}
+
+export function getMarketplaceAddress(chainId) {
+  const address = MARKETPLACE_ADDRESS[chainId] ?? null;
+  return address && address !== "0x0000000000000000000000000000000000000000" ? address : null;
 }
 
 export function isChromaDeployed(chainId) {

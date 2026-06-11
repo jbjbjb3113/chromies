@@ -1,0 +1,81 @@
+export const pixelMarketplaceAbi = [
+  {
+    type: "function",
+    name: "list",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "canvas", type: "address" },
+      { name: "tokenId", type: "uint256" },
+      { name: "amount", type: "uint256" },
+      { name: "price", type: "uint256" },
+    ],
+    outputs: [{ name: "listingId", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "buy",
+    stateMutability: "payable",
+    inputs: [
+      { name: "listingId", type: "uint256" },
+      { name: "buyerTokenId", type: "uint256" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "cancel",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "listingId", type: "uint256" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "listings",
+    stateMutability: "view",
+    inputs: [{ name: "listingId", type: "uint256" }],
+    outputs: [
+      { name: "seller", type: "address" },
+      { name: "canvas", type: "address" },
+      { name: "tokenId", type: "uint256" },
+      { name: "amount", type: "uint256" },
+      { name: "price", type: "uint256" },
+    ],
+  },
+  {
+    type: "function",
+    name: "nextListingId",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "event",
+    name: "APListed",
+    inputs: [
+      { name: "listingId", type: "uint256", indexed: true },
+      { name: "canvas", type: "address", indexed: true },
+      { name: "tokenId", type: "uint256", indexed: true },
+      { name: "seller", type: "address", indexed: false },
+      { name: "amount", type: "uint256", indexed: false },
+      { name: "price", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "APSold",
+    inputs: [
+      { name: "listingId", type: "uint256", indexed: true },
+      { name: "canvas", type: "address", indexed: true },
+      { name: "buyerTokenId", type: "uint256", indexed: true },
+      { name: "buyer", type: "address", indexed: false },
+      { name: "sellerTokenId", type: "uint256", indexed: false },
+      { name: "amount", type: "uint256", indexed: false },
+      { name: "price", type: "uint256", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "APListingCancelled",
+    inputs: [{ name: "listingId", type: "uint256", indexed: true }],
+  },
+] as const;
