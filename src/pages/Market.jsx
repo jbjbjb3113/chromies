@@ -5,7 +5,7 @@ import {
   usePublicClient,
   useWalletClient,
 } from "wagmi";
-import { formatEther, parseEther } from "viem";
+import { formatEther, parseEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import WalletSelectModal from "../components/WalletSelectModal.jsx";
@@ -16,6 +16,9 @@ import {
   getCanvasAddress,
   getMarketplaceAddress,
 } from "../lib/chroma-contract.js";
+
+/** PixelMarketplace deploy block on Sepolia (0xa85f5c) — use as fromBlock for any event queries. */
+export const MARKETPLACE_DEPLOY_BLOCK = 11034460n;
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
@@ -151,46 +154,44 @@ export default function Market() {
     setLoadingListings(true);
     setLoadError(null);
     try {
-      const [listed, sold, cancelled] = await Promise.all([
-        publicClient.getContractEvents({
-          address: marketplaceAddress,
-          abi: pixelMarketplaceAbi,
-          eventName: "APListed",
-          fromBlock: "earliest",
-        }),
-        publicClient.getContractEvents({
-          address: marketplaceAddress,
-          abi: pixelMarketplaceAbi,
-          eventName: "APSold",
-          fromBlock: "earliest",
-        }),
-        publicClient.getContractEvents({
-          address: marketplaceAddress,
-          abi: pixelMarketplaceAbi,
-          eventName: "APListingCancelled",
-          fromBlock: "earliest",
-        }),
-      ]);
+      // Read listings straight from contract state: loop the listings mapping
+      // up to nextListingId. Sold/cancelled listings are deleted (zeroed), so
+      // an empty seller means inactive. More reliable than log scanning.
+      const nextListingId = await publicClient.readContract({
+        address: marketplaceAddress,
+        abi: pixelMarketplaceAbi,
+        functionName: "nextListingId",
+      });
 
-      const closed = new Set([
-        ...sold.map((log) => log.args.listingId.toString()),
-        ...cancelled.map((log) => log.args.listingId.toString()),
-      ]);
+      const ids = [];
+      for (let id = 1n; id < nextListingId; id += 1n) ids.push(id);
 
-      const active = listed
-        .filter((log) => !closed.has(log.args.listingId.toString()))
-        .map((log) => ({
-          listingId: log.args.listingId,
-          canvas: log.args.canvas,
-          tokenId: log.args.tokenId,
-          seller: log.args.seller,
-          amount: log.args.amount,
-          price: log.args.price,
+      const rows = await Promise.all(
+        ids.map((id) =>
+          publicClient.readContract({
+            address: marketplaceAddress,
+            abi: pixelMarketplaceAbi,
+            functionName: "listings",
+            args: [id],
+          }),
+        ),
+      );
+
+      const active = rows
+        .map(([seller, canvas, tokenId, amount, price], index) => ({
+          listingId: ids[index],
+          seller,
+          canvas,
+          tokenId,
+          amount,
+          price,
         }))
+        .filter((listing) => listing.seller !== zeroAddress)
         .sort((a, b) => (b.listingId > a.listingId ? 1 : -1));
 
       setListings(active);
     } catch (error) {
+      console.error("Failed to load marketplace listings:", error);
       setLoadError(errorMessage(error));
     } finally {
       setLoadingListings(false);
@@ -213,6 +214,7 @@ export default function Market() {
         setTxNotice(successNotice);
         await fetchListings();
       } catch (error) {
+        console.error("Marketplace transaction failed:", error);
         setTxError(errorMessage(error));
       } finally {
         setPendingAction(null);
