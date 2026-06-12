@@ -21,6 +21,16 @@ import { tokenPngUrl } from "../lib/chromie-token.js";
 /** PixelMarketplace deploy block on Sepolia — use as fromBlock for any event queries. */
 export const MARKETPLACE_DEPLOY_BLOCK = 11037727n;
 
+/** Temporary mock listings for layout/design testing — remove before launch. */
+const MOCK_LISTINGS = [
+  { id: "mock-1", tokenId: 42, collection: "CHROMIES", apAmount: 150, priceEth: "0.005", seller: "0x1234567890123456789012345678901234567890" },
+  { id: "mock-2", tokenId: 108, collection: "CHROMIES", apAmount: 75, priceEth: "0.002", seller: "0xABCDEF1234567890ABCDEF1234567890ABCDEF12" },
+  { id: "mock-3", tokenId: 7, collection: "NORMIES", apAmount: 300, priceEth: "0.012", seller: "0x9876543210987654321098765432109876543210" },
+  { id: "mock-4", tokenId: 256, collection: "CHROMIES", apAmount: 50, priceEth: "0.0015", seller: "0x1111222233334444555566667777888899990000" },
+  { id: "mock-5", tokenId: 19, collection: "NORMIES", apAmount: 500, priceEth: "0.02", seller: "0xAAAA1111BBBB2222CCCC3333DDDD4444EEEE5555" },
+  { id: "mock-6", tokenId: 333, collection: "CHROMIES", apAmount: 200, priceEth: "0.008", seller: "0x5555666677778888999900001111222233334444" },
+];
+
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
 
@@ -87,13 +97,30 @@ function TokenThumbnail({ tokenId }) {
   );
 }
 
-function ListingCard({ listing, chainId, isOwn, busy, onBuy, onCancel }) {
+function ListingCard({
+  listing,
+  chainId,
+  isOwn,
+  busy,
+  onBuy,
+  onCancel,
+  isDemo = false,
+  collectionOverride,
+}) {
   const [buyerTokenId, setBuyerTokenId] = useState("");
-  const collection = collectionLabel(listing.canvas, chainId);
-  const priceLabel = formatEthPrice(listing.price);
+  const collection = collectionOverride ?? collectionLabel(listing.canvas, chainId);
+  const tokenLabel = collection === "NORMIES" ? "Normie" : "Chromie";
+  const priceLabel = isDemo
+    ? `${Number(listing.priceEth).toFixed(Number(listing.priceEth) < 0.01 ? 4 : 3)} ETH`
+    : formatEthPrice(listing.price);
 
   return (
-    <article className="flex flex-col overflow-hidden border border-ink bg-white transition-colors hover:border-signal/60">
+    <article className="relative flex flex-col overflow-hidden border border-ink bg-white transition-colors hover:border-signal/60">
+      {isDemo && (
+        <span className="absolute right-2 top-2 z-10 border border-signal/40 bg-signal/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.15em] text-signal">
+          Demo
+        </span>
+      )}
       <TokenThumbnail tokenId={listing.tokenId} />
 
       <div className="flex flex-1 flex-col gap-4 p-4">
@@ -102,13 +129,13 @@ function ListingCard({ listing, chainId, isOwn, busy, onBuy, onCancel }) {
             {collection}
           </p>
           <h3 className="mt-1 text-base font-black tracking-tight text-ink">
-            Chromie #{listing.tokenId.toString()}
+            {tokenLabel} #{listing.tokenId.toString()}
           </h3>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="border border-ink/20 bg-paper px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-ink/60">
-            {listing.amount.toString()} AP
+            {(isDemo ? listing.apAmount : listing.amount).toString()} AP
           </span>
         </div>
 
@@ -125,7 +152,15 @@ function ListingCard({ listing, chainId, isOwn, busy, onBuy, onCancel }) {
         </div>
 
         <div className="pt-1">
-          {isOwn ? (
+          {isDemo ? (
+            <button
+              type="button"
+              disabled
+              className="w-full cursor-not-allowed border border-ink/20 bg-ink/5 px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-ink/40"
+            >
+              Demo listing
+            </button>
+          ) : isOwn ? (
             <button
               type="button"
               disabled={busy}
@@ -432,25 +467,41 @@ export default function Market() {
           {txError && <p className="mt-6 text-sm text-red-600">{txError}</p>}
           {loadError && <p className="mt-6 text-sm text-red-600">{loadError}</p>}
 
-          {listings.length === 0 && !loadingListings ? (
-            <div className="mt-8 border border-ink/30 px-6 py-10 text-center text-sm text-ink/50">
-              No active listings. Be the first — burn a Chromie, earn AP, list it here.
-            </div>
-          ) : (
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {listings.map((listing) => (
-                <ListingCard
-                  key={listing.listingId.toString()}
-                  listing={listing}
-                  chainId={chainId}
-                  isOwn={Boolean(address) && listing.seller.toLowerCase() === address.toLowerCase()}
-                  busy={pendingAction !== null}
-                  onBuy={handleBuy}
-                  onCancel={handleCancel}
-                />
-              ))}
-            </div>
+          {listings.length === 0 && !loadingListings && (
+            <p className="mt-6 text-center text-xs uppercase tracking-[0.15em] text-ink/40">
+              No on-chain listings — showing demo cards for layout preview
+            </p>
           )}
+
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {MOCK_LISTINGS.map((mock) => (
+              <ListingCard
+                key={mock.id}
+                isDemo
+                collectionOverride={mock.collection}
+                listing={{
+                  tokenId: BigInt(mock.tokenId),
+                  apAmount: mock.apAmount,
+                  priceEth: mock.priceEth,
+                  seller: mock.seller,
+                }}
+                chainId={chainId}
+                isOwn={false}
+                busy={false}
+              />
+            ))}
+            {listings.map((listing) => (
+              <ListingCard
+                key={listing.listingId.toString()}
+                listing={listing}
+                chainId={chainId}
+                isOwn={Boolean(address) && listing.seller.toLowerCase() === address.toLowerCase()}
+                busy={pendingAction !== null}
+                onBuy={handleBuy}
+                onCancel={handleCancel}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
