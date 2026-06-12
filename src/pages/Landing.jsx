@@ -106,8 +106,8 @@ export default function Landing() {
     <div className="landing-mono min-h-screen bg-paper text-ink">
       <SiteHeader />
 
-      {/* 1. Hero — logo top, face unobstructed, MINT at torso */}
-      <section className="relative min-h-screen overflow-hidden border-b border-ink">
+      {/* 1. Hero — logo top, Quick Summary + MINT at bottom */}
+      <section className="relative flex min-h-screen flex-col overflow-hidden border-b border-ink">
         <TokenGridBackground opacity={0.08} animate />
         <TokenHeroForeground opacity={0.95} />
 
@@ -120,13 +120,27 @@ export default function Landing() {
           </p>
         </div>
 
-        <div className="pointer-events-none absolute inset-x-0 top-[76%] z-10 flex justify-center sm:top-[74%]">
-          <Link
-            to="/mint"
-            className="pointer-events-auto border border-[#8a8780] bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95"
-          >
-            MINT →
-          </Link>
+        <div className="relative z-10 mt-auto px-5 pb-10 pt-8 text-center sm:px-6 sm:pb-12">
+          <div className="mx-auto max-w-3xl border border-ink bg-paper/80 px-6 py-8 text-center backdrop-blur-sm">
+            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
+              Quick Summary
+            </h3>
+            <p className="mt-4 text-sm font-semibold tracking-wide text-ink">
+              Mint → Collect → Edit → Burn → Earn AP → Purify → Inscribe
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
+            <p className="mt-2 text-sm font-semibold tracking-wide text-signal">
+              Mint → Hold Forever
+            </p>
+          </div>
+          <div className="mt-6 flex justify-center">
+            <Link
+              to="/mint"
+              className="border border-[#8a8780] bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95"
+            >
+              MINT →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -160,34 +174,7 @@ export default function Landing() {
         </div>
       </SectionShell>
 
-      {/* 3. What is a Chromie? + Quick Summary */}
-      <section className="border-t border-ink px-6 py-20">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-xl font-extrabold uppercase tracking-[0.2em] text-ink/50">
-            What is a Chromie?
-          </h2>
-          <p className="mt-8 text-center text-sm leading-relaxed text-ink/70">
-            A 64×64 pixel-art identity permanently committed to Ethereum. Every face is
-            built from a fixed 16-color palette, hand-crafted and deterministically
-            assigned to a token ID. 5,150 exist. No duplicates. No replacements.
-          </p>
-
-          <div className="mt-12 border border-ink px-6 py-8 text-center">
-            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
-              Quick Summary
-            </h3>
-            <p className="mt-4 text-sm font-semibold tracking-wide text-ink">
-              Mint → Collect → Edit → Burn → Earn AP → Purify → Inscribe
-            </p>
-            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
-            <p className="mt-2 text-sm font-semibold tracking-wide text-signal">
-              Mint → Hold Forever
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Built Together */}
+      {/* 3. Built Together */}
       <SectionShell>
         <SectionTitle>Built Together</SectionTitle>
         <div className="flex flex-col gap-10">
