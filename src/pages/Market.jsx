@@ -361,7 +361,7 @@ export default function Market() {
             ACTION POINT MARKET
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
-            Trade Action Points token-to-token. Non-custodial — AP stays in the
+            Trade Action Points token-to-token (NFT to NFT). Non-custodial — AP stays in the
             seller&apos;s Chromie until the moment of purchase.
           </p>
 
