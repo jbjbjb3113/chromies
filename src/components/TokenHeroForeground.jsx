@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FOREGROUND_MANIFEST_URL } from "../data/tokens.js";
 
-const CELL_PX = 851;
+const CELL_PX = 766; // 851px tiles scaled down 10%
 const SCROLL_DURATION_S = 128;
 
 function buildStripTiles(images, count, offset = 23) {
