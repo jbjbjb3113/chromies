@@ -838,6 +838,18 @@
           "mutationScale": 1.2
         },
         {
+          "name": "Buns",
+          "file": "HAIR_Buns.png",
+          "weight": 7,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "AZVet",
+          "file": "HAIR_AZVet.png",
+          "weight": 7,
+          "mutationScale": 1.2
+        },
+        {
           "name": "SP_Mohawk",
           "file": "SP_HAIR_Mohawk.png",
           "weight": 0,
