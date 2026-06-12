@@ -530,7 +530,7 @@ function getMutationTier(tokenId, mtierOverride = null) {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { tokenId: 1, palette: null, tier: null, mtier: null, skip: new Set(), character: null };
+  const result = { tokenId: 1, palette: null, tier: null, mtier: null, skip: new Set(), character: null, gender: null };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--token" || a === "-t") result.tokenId = parseInt(args[++i], 10);
@@ -538,6 +538,7 @@ function parseArgs() {
     else if (a === "--tier")  result.tier  = args[++i];
     else if (a === "--mtier") result.mtier = args[++i];
     else if (a === "--character") result.character = args[++i];
+    else if (a === "--gender") result.gender = args[++i];
     else if (a === "--skip") args[++i].split(",").forEach(s => result.skip.add(s.trim().toLowerCase()));
     else if (a.startsWith("--skip=")) a.slice(7).split(",").forEach(s => result.skip.add(s.trim().toLowerCase()));
   }
@@ -545,7 +546,7 @@ function parseArgs() {
 }
 
 function main() {
-  const { tokenId, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, skip, character: characterOverride } = parseArgs();
+  const { tokenId, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, skip, character: characterOverride, gender: genderOverride } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
 
   // Pick character
@@ -553,6 +554,14 @@ function main() {
   if (characterOverride) {
     const found = (CHARACTERS || []).find(c => c.name.toLowerCase() === characterOverride.toLowerCase());
     if (found) character = found;
+  }
+  if (genderOverride && character) {
+    const found = (CHARACTERS || []).find(c =>
+      c.name === character.name &&
+      c.gender && c.gender.toLowerCase() === genderOverride.toLowerCase()
+    );
+    if (found) character = found;
+    else console.warn(`  no ${character.name} entry with gender "${genderOverride}" — keeping ${character.gender || "rolled"}`);
   }
 
   const paletteKey = paletteOverride || pickPalette(tokenId, traits, character);
