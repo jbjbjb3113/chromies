@@ -35,6 +35,16 @@ export default function SiteHeader() {
           </NavLink>
           {/* Lab tab hidden for now — route still works at /lab */}
           <NavLink
+            to="/faq"
+            className={({ isActive }) =>
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
+              }`
+            }
+          >
+            FAQ
+          </NavLink>
+          <NavLink
             to="/canvas"
             className={({ isActive }) =>
               `text-xs uppercase tracking-widest transition-colors hover:text-signal ${

@@ -6,6 +6,7 @@ import Landing from "./pages/Landing.jsx";
 import Lab from "./pages/Lab.jsx";
 import Mint from "./pages/Mint.jsx";
 import Market from "./pages/Market.jsx";
+import FAQ from "./pages/FAQ.jsx";
 import Canvas from "./pages/Canvas.jsx";
 import PixelChroma from "./PixelChroma.jsx";
 
@@ -26,6 +27,14 @@ export default function App() {
         element={
           <PasswordGate>
             <Market />
+          </PasswordGate>
+        }
+      />
+      <Route
+        path="/faq"
+        element={
+          <PasswordGate>
+            <FAQ />
           </PasswordGate>
         }
       />
