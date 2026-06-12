@@ -64,10 +64,12 @@ const FUTURE = [
   },
 ];
 
-function SectionShell({ children, className = "", id }) {
+function SectionShell({ children, className = "", innerClassName = "", id }) {
   return (
     <section id={id} className={`border-t border-ink ${className}`}>
-      <div className="mx-auto max-w-[960px] px-5 py-16 sm:px-6">{children}</div>
+      <div className={`mx-auto max-w-[960px] px-5 py-16 sm:px-6 ${innerClassName}`}>
+        {children}
+      </div>
     </section>
   );
 }
@@ -146,8 +148,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 2. What are Chromies? */}
-      <SectionShell>
+      {/* 2. What are Chromies? — pt-8 halves the default py-16 top gap below the hero scroll */}
+      <SectionShell innerClassName="pt-8">
         <SectionTitle>What are Chromies?</SectionTitle>
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="max-w-prose text-sm leading-relaxed text-ink/80">
