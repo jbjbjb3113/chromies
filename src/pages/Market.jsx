@@ -16,6 +16,7 @@ import {
   getCanvasAddress,
   getMarketplaceAddress,
 } from "../lib/chroma-contract.js";
+import { tokenPngUrl } from "../lib/chromie-token.js";
 
 /** PixelMarketplace deploy block on Sepolia — use as fromBlock for any event queries. */
 export const MARKETPLACE_DEPLOY_BLOCK = 11037727n;
@@ -43,86 +44,119 @@ function errorMessage(error) {
   return message.length > 200 ? `${message.slice(0, 200)}…` : message;
 }
 
-function ListingRow({ listing, chainId, isOwn, busy, onBuy, onCancel }) {
-  const [buyerTokenId, setBuyerTokenId] = useState("");
+function formatEthPrice(wei) {
+  const value = Number(formatEther(wei));
+  if (value === 0) return "0 ETH";
+  if (value < 0.0001) return `${value.toFixed(6)} ETH`;
+  if (value < 0.01) return `${value.toFixed(4)} ETH`;
+  return `${value.toFixed(3)} ETH`;
+}
+
+function PixelPlaceholderIcon() {
+  return (
+    <svg viewBox="0 0 64 64" className="h-16 w-16 text-ink/25" aria-hidden="true">
+      <rect width="64" height="64" fill="currentColor" opacity="0.08" />
+      <rect x="20" y="18" width="24" height="24" fill="currentColor" opacity="0.35" />
+      <rect x="24" y="44" width="16" height="6" fill="currentColor" opacity="0.25" />
+    </svg>
+  );
+}
+
+function TokenThumbnail({ tokenId }) {
+  const [failed, setFailed] = useState(false);
+  const id = Number(tokenId);
+
+  if (failed || !Number.isFinite(id) || id < 1) {
+    return (
+      <div className="flex aspect-square w-full items-center justify-center border-b border-ink/10 bg-ink/[0.03]">
+        <PixelPlaceholderIcon />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-4 border border-ink bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-            Collection
-          </div>
-          <div className="text-sm font-bold text-ink">
-            {collectionLabel(listing.canvas, chainId)}
-          </div>
-        </div>
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-            Token
-          </div>
-          <div className="text-sm font-bold tabular-nums text-ink">
-            #{listing.tokenId.toString()}
-          </div>
-        </div>
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-            AP
-          </div>
-          <div className="text-sm font-black tabular-nums text-signal">
-            {listing.amount.toString()}
-          </div>
-        </div>
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-            Price
-          </div>
-          <div className="text-sm font-bold tabular-nums text-ink">
-            {formatEther(listing.price)} ETH
-          </div>
-        </div>
-        <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-            Seller
-          </div>
-          <div className="text-sm tabular-nums text-ink/70">
-            {isOwn ? "you" : shortenAddress(listing.seller)}
-          </div>
-        </div>
-      </div>
+    <div className="aspect-square w-full overflow-hidden border-b border-ink/10 bg-ink/[0.03]">
+      <img
+        src={tokenPngUrl(id)}
+        alt={`Chromie #${tokenId}`}
+        draggable={false}
+        className="pixelated h-full w-full object-cover"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+}
 
-      <div className="flex items-center gap-3">
-        {isOwn ? (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => onCancel(listing)}
-            className="border border-ink bg-white px-5 py-2 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40"
-          >
-            Cancel
-          </button>
-        ) : (
-          <>
-            <input
-              type="number"
-              min="1"
-              value={buyerTokenId}
-              onChange={(event) => setBuyerTokenId(event.target.value)}
-              placeholder="Your token #"
-              className={`${INPUT_CLASS} w-32`}
-            />
+function ListingCard({ listing, chainId, isOwn, busy, onBuy, onCancel }) {
+  const [buyerTokenId, setBuyerTokenId] = useState("");
+  const collection = collectionLabel(listing.canvas, chainId);
+  const priceLabel = formatEthPrice(listing.price);
+
+  return (
+    <article className="flex flex-col overflow-hidden border border-ink bg-white transition-colors hover:border-signal/60">
+      <TokenThumbnail tokenId={listing.tokenId} />
+
+      <div className="flex flex-1 flex-col gap-4 p-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+            {collection}
+          </p>
+          <h3 className="mt-1 text-base font-black tracking-tight text-ink">
+            Chromie #{listing.tokenId.toString()}
+          </h3>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="border border-ink/20 bg-paper px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-ink/60">
+            {listing.amount.toString()} AP
+          </span>
+        </div>
+
+        <div className="mt-auto space-y-1">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+            Price
+          </p>
+          <p className="font-symtext text-2xl font-black tabular-nums text-ink">
+            {priceLabel}
+          </p>
+          <p className="text-xs tabular-nums text-ink/50">
+            Seller {isOwn ? "you" : shortenAddress(listing.seller)}
+          </p>
+        </div>
+
+        <div className="pt-1">
+          {isOwn ? (
             <button
               type="button"
-              disabled={busy || !buyerTokenId}
-              onClick={() => onBuy(listing, buyerTokenId)}
-              className="border border-signal bg-signal px-5 py-2 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:hover:bg-ink/10"
+              disabled={busy}
+              onClick={() => onCancel(listing)}
+              className="w-full border border-ink bg-white px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40"
             >
-              Buy
+              Cancel listing
             </button>
-          </>
-        )}
+          ) : (
+            <div className="flex flex-col gap-2">
+              <input
+                type="number"
+                min="1"
+                value={buyerTokenId}
+                onChange={(event) => setBuyerTokenId(event.target.value)}
+                placeholder="Your token # to receive AP"
+                className={INPUT_CLASS}
+              />
+              <button
+                type="button"
+                disabled={busy || !buyerTokenId}
+                onClick={() => onBuy(listing, buyerTokenId)}
+                className="w-full border border-signal bg-signal px-4 py-2.5 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:hover:bg-ink/10"
+              >
+                Buy for {priceLabel}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -377,7 +411,7 @@ export default function Market() {
       )}
 
       <section className="px-6 py-14">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-6xl">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-extrabold uppercase tracking-[0.2em] text-ink/50">
               Active Listings
@@ -398,24 +432,25 @@ export default function Market() {
           {txError && <p className="mt-6 text-sm text-red-600">{txError}</p>}
           {loadError && <p className="mt-6 text-sm text-red-600">{loadError}</p>}
 
-          <div className="mt-8 flex flex-col gap-4">
-            {listings.length === 0 && !loadingListings && (
-              <div className="border border-ink/30 px-6 py-10 text-center text-sm text-ink/50">
-                No active listings. Be the first — burn a Chromie, earn AP, list it here.
-              </div>
-            )}
-            {listings.map((listing) => (
-              <ListingRow
-                key={listing.listingId.toString()}
-                listing={listing}
-                chainId={chainId}
-                isOwn={Boolean(address) && listing.seller.toLowerCase() === address.toLowerCase()}
-                busy={pendingAction !== null}
-                onBuy={handleBuy}
-                onCancel={handleCancel}
-              />
-            ))}
-          </div>
+          {listings.length === 0 && !loadingListings ? (
+            <div className="mt-8 border border-ink/30 px-6 py-10 text-center text-sm text-ink/50">
+              No active listings. Be the first — burn a Chromie, earn AP, list it here.
+            </div>
+          ) : (
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {listings.map((listing) => (
+                <ListingCard
+                  key={listing.listingId.toString()}
+                  listing={listing}
+                  chainId={chainId}
+                  isOwn={Boolean(address) && listing.seller.toLowerCase() === address.toLowerCase()}
+                  busy={pendingAction !== null}
+                  onBuy={handleBuy}
+                  onCancel={handleCancel}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
