@@ -31,7 +31,7 @@ export default function SiteHeader() {
               }`
             }
           >
-            Market
+            Action Point Market
           </NavLink>
           {/* Lab tab hidden for now — route still works at /lab */}
           <NavLink
