@@ -33,24 +33,6 @@ const PALETTES = [
   { tag: "#ff-blood", token: "0001", accent: "#ff3030" },
 ];
 
-const ARCH_STATS = [
-  {
-    value: "TBD",
-    unit: "BYTES",
-    detail: "Per token — art, metadata, and palette data stored entirely on-chain.",
-  },
-  {
-    value: "4,096",
-    unit: "PIXELS",
-    detail: "64×64 grid. One pixel, one palette index. No anti-aliasing. No servers.",
-  },
-  {
-    value: "100%",
-    unit: "ON-CHAIN",
-    detail: "Rendered and stored on the blockchain. The chain is the source of truth.",
-  },
-];
-
 const FUTURE = [
   {
     title: "CHROMIE CANVAS",
@@ -242,30 +224,7 @@ export default function Landing() {
         </p>
       </SectionShell>
 
-      {/* 5. On-Chain Architecture */}
-      <SectionShell>
-        <SectionTitle>On-Chain Architecture</SectionTitle>
-        <div className="grid grid-cols-1 gap-0 border border-ink sm:grid-cols-3">
-          {ARCH_STATS.map((s, i) => (
-            <div
-              key={s.unit}
-              className={`px-6 py-10 text-center ${
-                i > 0 ? "border-t border-ink sm:border-t-0 sm:border-l" : ""
-              }`}
-            >
-              <p className="text-4xl text-signal sm:text-5xl">{s.value}</p>
-              <p className="mt-2 text-xs uppercase tracking-[0.25em] text-signal">
-                {s.unit}
-              </p>
-              <p className="mx-auto mt-4 max-w-xs text-xs leading-relaxed text-ink/60">
-                {s.detail}
-              </p>
-            </div>
-          ))}
-        </div>
-      </SectionShell>
-
-      {/* 6. The Future */}
+      {/* 5. The Future */}
       <SectionShell>
         <SectionTitle>The Future</SectionTitle>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
