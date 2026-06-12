@@ -251,7 +251,48 @@ export default function Landing() {
         </div>
       </SectionShell>
 
-      {/* 3. Built Together */}
+      {/* 3. FAQ */}
+      <section className="border-t border-ink px-6 py-20">
+        <div className="mx-auto max-w-3xl">
+          <h2 className="text-center text-xl font-extrabold uppercase tracking-[0.2em] text-ink/50">
+            FAQ
+          </h2>
+          <div className="mt-10 divide-y divide-ink border-y border-ink">
+            {FAQ.map((item) => (
+              <details key={item.q} className="group">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-2 py-5 text-base font-semibold text-ink transition-colors hover:text-signal">
+                  {item.q}
+                  <span className="ml-4 text-signal transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <div className="space-y-3 px-2 pb-5">
+                  {item.a.map((paragraph) => (
+                    <p key={paragraph} className="text-sm leading-relaxed text-ink/70">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </div>
+
+          <div className="mt-12 border border-ink px-6 py-8 text-center">
+            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
+              Quick Summary
+            </h3>
+            <p className="mt-4 text-sm font-semibold tracking-wide text-ink">
+              Mint → Collect → Edit → Burn → Earn AP → Purify → Inscribe
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
+            <p className="mt-2 text-sm font-semibold tracking-wide text-signal">
+              Mint → Hold Forever
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Built Together */}
       <SectionShell>
         <SectionTitle>Built Together</SectionTitle>
         <div className="flex flex-col gap-10">
@@ -331,47 +372,6 @@ export default function Landing() {
           ))}
         </div>
       </SectionShell>
-
-      {/* 7. FAQ */}
-      <section className="border-t border-ink px-6 py-20">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="text-center text-xl font-extrabold uppercase tracking-[0.2em] text-ink/50">
-            FAQ
-          </h2>
-          <div className="mt-10 divide-y divide-ink border-y border-ink">
-            {FAQ.map((item) => (
-              <details key={item.q} className="group">
-                <summary className="flex cursor-pointer list-none items-center justify-between px-2 py-5 text-base font-semibold text-ink transition-colors hover:text-signal">
-                  {item.q}
-                  <span className="ml-4 text-signal transition-transform group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <div className="space-y-3 px-2 pb-5">
-                  {item.a.map((paragraph) => (
-                    <p key={paragraph} className="text-sm leading-relaxed text-ink/70">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </details>
-            ))}
-          </div>
-
-          <div className="mt-12 border border-ink px-6 py-8 text-center">
-            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
-              Quick Summary
-            </h3>
-            <p className="mt-4 text-sm font-semibold tracking-wide text-ink">
-              Mint → Collect → Edit → Burn → Earn AP → Purify → Inscribe
-            </p>
-            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
-            <p className="mt-2 text-sm font-semibold tracking-wide text-signal">
-              Mint → Hold Forever
-            </p>
-          </div>
-        </div>
-      </section>
 
       {/* 8. Footer — dark */}
       <footer className="border-t border-ink bg-ink text-white">
