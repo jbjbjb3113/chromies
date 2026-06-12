@@ -332,6 +332,16 @@
           "group": "tank_female"
         },
         {
+          "name": "SP_Crew_Female",
+          "file": "SP_SHIRT_Crew_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Tank_Female",
+          "file": "SP_SHIRT_Tank_Female.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "SHIRT_None.png",
           "weight": 20
@@ -888,6 +898,42 @@
         {
           "name": "SP_FadeRight",
           "file": "SP_HAIR_FadeRight.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "SP_Mohawk_Female",
+          "file": "SP_HAIR_Mohawk_Female.png",
+          "weight": 0,
+          "mutationScale": 1.0
+        },
+        {
+          "name": "SP_Afro_Female",
+          "file": "SP_HAIR_Afro_Female.png",
+          "weight": 0,
+          "mutationScale": 2.0
+        },
+        {
+          "name": "SP_Dreads_Female",
+          "file": "SP_HAIR_Dreads_Female.png",
+          "weight": 0,
+          "mutationScale": 2.5
+        },
+        {
+          "name": "SP_Surfer_Female",
+          "file": "SP_HAIR_Surfer_Female.png",
+          "weight": 0,
+          "mutationScale": 1.8
+        },
+        {
+          "name": "SP_Pompadour_Female",
+          "file": "SP_HAIR_Pompadour_Female.png",
+          "weight": 0,
+          "mutationScale": 1.0
+        },
+        {
+          "name": "SP_FadeRight_Female",
+          "file": "SP_HAIR_FadeRight_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },

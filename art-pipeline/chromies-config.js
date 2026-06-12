@@ -886,14 +886,26 @@ const CHARACTERS = [
       bodytattoo: "None",  // positioned for front-facing body
     },
     slotVariantPool: {
-      hair: { SP_Afro: 25, SP_Dreads: 10, SP_Surfer: 13, SP_Pompadour: 15, SP_FadeRight: 7, None: 5 },
+      hair: {
+        SP_Mohawk_Female: 15,
+        SP_Afro_Female: 20,
+        SP_Dreads_Female: 10,
+        SP_Surfer_Female: 13,
+        SP_Pompadour_Female: 15,
+        SP_FadeRight_Female: 7,
+        None: 5,
+      },
       beard: ["None"],
       mustache: ["None"],
       glasses: { SP_Shades: 25, SP_Neo: 25, None: 50 },
       necklace: ["None"],
       earrings: ["None"],
       tattoo: ["None"],
-      shirt: ["Crew", "Tank_Female", "None"],
+      shirt: {
+        SP_Crew_Female: 60,
+        SP_Tank_Female: 20,
+        None: 20,
+      },
       hood: { SP_Classic: 20, None: 80 },
     },
     slotWeightOverrides: {},
