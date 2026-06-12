@@ -530,7 +530,7 @@ function getMutationTier(tokenId, mtierOverride = null) {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { tokenId: 1, palette: null, tier: null, mtier: null, skip: new Set(), character: null, gender: null };
+  const result = { tokenId: 1, palette: null, tier: null, mtier: null, skip: new Set(), character: null, gender: null, hair: null };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--token" || a === "-t") result.tokenId = parseInt(args[++i], 10);
@@ -539,6 +539,7 @@ function parseArgs() {
     else if (a === "--mtier") result.mtier = args[++i];
     else if (a === "--character") result.character = args[++i];
     else if (a === "--gender") result.gender = args[++i];
+    else if (a === "--hair") result.hair = args[++i];
     else if (a === "--skip") args[++i].split(",").forEach(s => result.skip.add(s.trim().toLowerCase()));
     else if (a.startsWith("--skip=")) a.slice(7).split(",").forEach(s => result.skip.add(s.trim().toLowerCase()));
   }
@@ -546,7 +547,7 @@ function parseArgs() {
 }
 
 function main() {
-  const { tokenId, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, skip, character: characterOverride, gender: genderOverride } = parseArgs();
+  const { tokenId, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, skip, character: characterOverride, gender: genderOverride, hair: hairOverride } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
 
   // Pick character
@@ -576,6 +577,19 @@ function main() {
   if (skip.size > 0) console.log(`  skip: ${[...skip].join(", ")}`);
 
   const picks = pickTokenVariants(tokenId, traits, skip, character);
+
+  if (hairOverride) {
+    const hairDef = traits.slots.hair;
+    const found = hairDef.variants.find(v => v.name === hairOverride);
+    if (found) {
+      // Buffers are loaded inside pickTokenVariants, so load this one here
+      const filePath = path.join(SETTINGS.componentsDir, found.file);
+      picks.hair = { variant: found, file: found.file, buffer: extractToBuffer(filePath, hairDef.drawColors) };
+    } else {
+      console.warn(`  [WARN] hair variant "${hairOverride}" not found`);
+    }
+  }
+
   const renderPicks = applyCoverageRules(picks, traits, character);
 
   const mTier = getMutationTier(tokenId, mtierOverride);
