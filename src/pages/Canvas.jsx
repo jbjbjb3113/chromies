@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import { ROLES, getPaletteFromMetadata } from "../data/chromies-palettes.js";
+import { ROLES, PALETTES, getPaletteFromMetadata, resolvePalette } from "../data/chromies-palettes.js";
 import { useUndoRedo } from "../hooks/useUndoRedo.js";
 import {
   DISPLAY_SIZE,
@@ -12,8 +12,12 @@ import {
   downloadIndicesSvg,
   exportIndicesPng,
   floodFill,
+  imageDataToPreviewUrl,
+  indicesToPreviewUrl,
+  loadImageFromFile,
   loadTokenPixelIndices,
   paintPixel,
+  processImportImage,
 } from "../lib/pixel-canvas.js";
 import {
   fetchChromieMetadata,
@@ -30,6 +34,219 @@ const MIN_ZOOM = 25;
 const MAX_ZOOM = 800;
 const ZOOM_STEP = 25;
 const WHEEL_ZOOM_STEP = 15;
+const PALETTE_OPTIONS = Object.keys(PALETTES);
+const IMPORT_PREVIEW_SIZE = 128;
+
+function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
+  const fileInputRef = useRef(null);
+  const [sourceImage, setSourceImage] = useState(null);
+  const [fileName, setFileName] = useState("");
+  const [importPalette, setImportPalette] = useState(initialPaletteName ?? "SIGNAL");
+  const [resizeMethod, setResizeMethod] = useState("nearest");
+  const [beforeUrl, setBeforeUrl] = useState("");
+  const [afterUrl, setAfterUrl] = useState("");
+  const [previewIndices, setPreviewIndices] = useState(null);
+  const [importError, setImportError] = useState(null);
+  const [loadingFile, setLoadingFile] = useState(false);
+
+  const resetModal = useCallback(() => {
+    setSourceImage(null);
+    setFileName("");
+    setBeforeUrl("");
+    setAfterUrl("");
+    setPreviewIndices(null);
+    setImportError(null);
+    setLoadingFile(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
+
+  useEffect(() => {
+    if (!open) resetModal();
+  }, [open, resetModal]);
+
+  useEffect(() => {
+    if (open && initialPaletteName) {
+      setImportPalette(initialPaletteName);
+    }
+  }, [open, initialPaletteName]);
+
+  useEffect(() => {
+    if (!sourceImage) {
+      setBeforeUrl("");
+      setAfterUrl("");
+      setPreviewIndices(null);
+      return;
+    }
+    const pal = resolvePalette(importPalette);
+    const { indices, resized } = processImportImage(sourceImage, pal.colors, resizeMethod);
+    setPreviewIndices(indices);
+    if (resized) {
+      setBeforeUrl(imageDataToPreviewUrl(resized, IMPORT_PREVIEW_SIZE / 64));
+      setAfterUrl(indicesToPreviewUrl(indices, pal.colors, IMPORT_PREVIEW_SIZE / 64));
+    }
+  }, [sourceImage, importPalette, resizeMethod]);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(png|jpeg|jpg)$/i.test(file.type) && !/\.(png|jpe?g)$/i.test(file.name)) {
+      setImportError("Please choose a PNG or JPG image.");
+      return;
+    }
+    setLoadingFile(true);
+    setImportError(null);
+    try {
+      const img = await loadImageFromFile(file);
+      setSourceImage(img);
+      setFileName(file.name);
+    } catch (err) {
+      setImportError(err?.message ?? "Failed to load image.");
+      setSourceImage(null);
+      setFileName("");
+    } finally {
+      setLoadingFile(false);
+    }
+  };
+
+  const handleApply = () => {
+    if (!previewIndices) return;
+    onApply({
+      indices: cloneIndices(previewIndices),
+      palette: resolvePalette(importPalette),
+    });
+    onClose();
+  };
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-ink/40 p-4">
+      <div
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto border border-ink bg-paper shadow-lg"
+        role="dialog"
+        aria-labelledby="import-image-title"
+      >
+        <div className="border-b border-ink px-4 py-3">
+          <h2 id="import-image-title" className="text-sm font-black uppercase tracking-wide">
+            Import Image
+          </h2>
+          <p className="mt-1 text-xs text-ink/60">
+            Center-crop to 64×64, quantize to a Chromies palette. Local preview only.
+          </p>
+        </div>
+
+        <div className="space-y-4 px-4 py-4">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/png,image/jpeg,.png,.jpg,.jpeg"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loadingFile}
+            className="w-full border border-signal px-3 py-2 text-xs font-bold uppercase tracking-wide text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-50"
+          >
+            {loadingFile ? "Loading…" : fileName || "Choose PNG / JPG"}
+          </button>
+
+          <div>
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+              Quantize Palette
+            </p>
+            <select
+              value={importPalette}
+              onChange={(e) => setImportPalette(e.target.value)}
+              className="w-full border border-ink bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-signal"
+            >
+              {PALETTE_OPTIONS.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+              Resize Method
+            </p>
+            <div className="flex gap-1">
+              {[
+                { id: "nearest", label: "Nearest" },
+                { id: "average", label: "Average" },
+              ].map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setResizeMethod(opt.id)}
+                  className={`flex-1 border px-2 py-1.5 text-xs font-semibold transition-colors ${
+                    resizeMethod === opt.id
+                      ? "border-signal bg-signal/10 text-signal"
+                      : "border-ink text-ink/70 hover:border-ink/60"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {importError && <p className="text-xs text-signal">{importError}</p>}
+
+          {beforeUrl && afterUrl && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                  Resized
+                </p>
+                <img
+                  src={beforeUrl}
+                  alt="Resized 64×64 preview"
+                  className="pixelated mx-auto border border-ink bg-white"
+                  width={IMPORT_PREVIEW_SIZE}
+                  height={IMPORT_PREVIEW_SIZE}
+                />
+              </div>
+              <div className="text-center">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                  Quantized
+                </p>
+                <img
+                  src={afterUrl}
+                  alt="Palette-quantized preview"
+                  className="pixelated mx-auto border border-ink bg-white"
+                  width={IMPORT_PREVIEW_SIZE}
+                  height={IMPORT_PREVIEW_SIZE}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2 border-t border-ink px-4 py-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 border border-ink px-3 py-2 text-xs font-bold uppercase tracking-wide text-ink/70 transition-colors hover:border-signal hover:text-signal"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleApply}
+            disabled={!previewIndices}
+            className="flex-1 border border-signal px-3 py-2 text-xs font-bold uppercase tracking-wide text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function viewportOverflows(viewport) {
   return (
@@ -166,6 +383,8 @@ export default function Canvas() {
   const [zoomPercent, setZoomPercent] = useState(null);
   const [fitZoom, setFitZoom] = useState(100);
   const [panMode, setPanMode] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
+  const [importedActive, setImportedActive] = useState(false);
 
   const empty = useMemo(() => new Uint8Array(64 * 64), []);
   const { indices, setIndices, resetHistory, undo, redo, canUndo, canRedo, historyTick } =
@@ -181,6 +400,8 @@ export default function Canvas() {
   const fitZoomRef = useRef(100);
 
   const paletteColors = palette?.colors ?? [];
+  const canEdit = paletteColors.length > 0;
+  const exportLabel = loadedId ? formatTokenId(loadedId) : "import";
 
   const effectiveZoom = zoomPercent ?? fitZoom;
   const displayPx = Math.round((DISPLAY_SIZE * effectiveZoom) / 100);
@@ -219,6 +440,7 @@ export default function Canvas() {
       resetHistory(pix);
       setColorIndex(1);
       setShowDiff(false);
+      setImportedActive(false);
     } catch (err) {
       setLoadError(err?.message ?? "Failed to load token.");
       setLoadedId(null);
@@ -365,9 +587,24 @@ export default function Canvas() {
     return () => window.removeEventListener("keydown", onKey);
   }, [undo, redo]);
 
+  const handleImportApply = useCallback(
+    ({ indices: imported, palette: importPalette }) => {
+      setPalette(importPalette);
+      setOriginal(cloneIndices(imported));
+      resetHistory(imported);
+      setColorIndex(1);
+      setShowDiff(false);
+      setImportedActive(true);
+      setLoadedId(null);
+      setMetadata(null);
+      setLoadError(null);
+    },
+    [resetHistory],
+  );
+
   const applyAt = useCallback(
     (x, y) => {
-      if (!loadedId || !paletteColors.length) return;
+      if (!canEdit) return;
       const eraseIndex = 0;
       const paintIndex = tool === "erase" ? eraseIndex : colorIndex;
 
@@ -385,11 +622,11 @@ export default function Canvas() {
         return paintPixel(prev, x, y, paintIndex);
       });
     },
-    [loadedId, paletteColors.length, tool, colorIndex, setIndices],
+    [canEdit, tool, colorIndex, setIndices],
   );
 
   const onPointerDown = (e) => {
-    if (!loadedId || panMode) return;
+    if (!canEdit || panMode) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
     if (!coords) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -421,20 +658,20 @@ export default function Canvas() {
   };
 
   const handleExportPng = async () => {
-    if (!loadedId || !paletteColors.length) return;
+    if (!canEdit) return;
     const blob = await exportIndicesPng(indices, paletteColors);
     if (!blob) return;
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${formatTokenId(loadedId)}-edited.png`;
+    a.download = `${exportLabel}-edited.png`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const handleExportSvg = () => {
-    if (!loadedId || !paletteColors.length) return;
-    downloadIndicesSvg(indices, paletteColors, `chromie-${formatTokenId(loadedId)}.svg`);
+    if (!canEdit) return;
+    downloadIndicesSvg(indices, paletteColors, `chromie-${exportLabel}.svg`);
   };
 
   const selectedRole = ROLES[colorIndex] ?? `index_${colorIndex}`;
@@ -478,6 +715,13 @@ export default function Canvas() {
                   {loading ? "…" : "Load"}
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={() => setImportOpen(true)}
+                className="mt-2 w-full border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink/70 transition-colors hover:border-signal hover:text-signal"
+              >
+                Import Image
+              </button>
               {loadError && <p className="mt-2 text-xs text-signal">{loadError}</p>}
             </div>
 
@@ -500,8 +744,15 @@ export default function Canvas() {
                       </p>
                     )}
                   </>
+                ) : importedActive ? (
+                  <>
+                    <p className="text-sm font-bold text-ink">Imported</p>
+                    {palette && (
+                      <p className="mt-0.5 text-[10px] text-signal">{palette.name} palette</p>
+                    )}
+                  </>
                 ) : (
-                  <p className="text-xs text-ink/50">Load a token to begin.</p>
+                  <p className="text-xs text-ink/50">Load a token or import an image.</p>
                 )}
               </div>
             </div>
@@ -597,7 +848,7 @@ export default function Canvas() {
                 <button
                   type="button"
                   onClick={handleReset}
-                  disabled={!loadedId || diffCount === 0}
+                  disabled={!canEdit || diffCount === 0}
                   className="flex-1 border border-ink px-2 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
                 >
                   Reset
@@ -656,7 +907,7 @@ export default function Canvas() {
               <div className="flex min-h-full min-w-full items-center justify-center p-4 md:min-h-[min(100%,calc(100vh-12rem))] md:p-8">
                 <div
                   className={`shrink-0 border-2 shadow-sm ${
-                    loadedId ? "border-ink" : "border-dashed border-ink"
+                    canEdit ? "border-ink" : "border-dashed border-ink"
                   } bg-white`}
                 >
                   <canvas
@@ -666,7 +917,7 @@ export default function Canvas() {
                     className={`block ${
                       panMode
                         ? "pointer-events-none cursor-grab"
-                        : loadedId
+                        : canEdit
                           ? "cursor-crosshair"
                           : "cursor-not-allowed"
                     }`}
@@ -698,7 +949,7 @@ export default function Canvas() {
                 <button
                   type="button"
                   onClick={handleExportPng}
-                  disabled={!loadedId}
+                  disabled={!canEdit}
                   className="border border-signal px-3 py-2 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
                 >
                   Export PNG
@@ -706,7 +957,7 @@ export default function Canvas() {
                 <button
                   type="button"
                   onClick={handleExportSvg}
-                  disabled={!loadedId}
+                  disabled={!canEdit}
                   className="border border-signal px-3 py-2 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
                 >
                   Export SVG
@@ -719,7 +970,7 @@ export default function Canvas() {
                     type="checkbox"
                     checked={showDiff}
                     onChange={(e) => setShowDiff(e.target.checked)}
-                    disabled={!loadedId}
+                    disabled={!canEdit}
                     className="accent-signal"
                   />
                   <span className="text-xs font-semibold">
@@ -746,6 +997,13 @@ export default function Canvas() {
       </main>
 
       <SiteFooter />
+
+      <ImportImageModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        onApply={handleImportApply}
+        initialPaletteName={palette?.name ?? "SIGNAL"}
+      />
     </div>
   );
 }
