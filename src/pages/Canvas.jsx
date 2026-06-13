@@ -18,6 +18,7 @@ import {
   loadTokenPixelIndices,
   paintPixel,
   processImportImage,
+  processCleanImportImage,
 } from "../lib/pixel-canvas.js";
 import {
   fetchChromieMetadata,
@@ -41,20 +42,24 @@ function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
   const fileInputRef = useRef(null);
   const [sourceImage, setSourceImage] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [importMode, setImportMode] = useState("match");
   const [importPalette, setImportPalette] = useState(initialPaletteName ?? "SIGNAL");
   const [resizeMethod, setResizeMethod] = useState("nearest");
   const [beforeUrl, setBeforeUrl] = useState("");
   const [afterUrl, setAfterUrl] = useState("");
   const [previewIndices, setPreviewIndices] = useState(null);
+  const [previewPaletteColors, setPreviewPaletteColors] = useState(null);
   const [importError, setImportError] = useState(null);
   const [loadingFile, setLoadingFile] = useState(false);
 
   const resetModal = useCallback(() => {
     setSourceImage(null);
     setFileName("");
+    setImportMode("match");
     setBeforeUrl("");
     setAfterUrl("");
     setPreviewIndices(null);
+    setPreviewPaletteColors(null);
     setImportError(null);
     setLoadingFile(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -75,16 +80,33 @@ function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
       setBeforeUrl("");
       setAfterUrl("");
       setPreviewIndices(null);
+      setPreviewPaletteColors(null);
       return;
     }
+
+    if (importMode === "extract") {
+      const { indices, resized, paletteColors } = processCleanImportImage(
+        sourceImage,
+        resizeMethod,
+      );
+      setPreviewIndices(indices);
+      setPreviewPaletteColors(paletteColors);
+      if (resized && paletteColors.length) {
+        setBeforeUrl(imageDataToPreviewUrl(resized, IMPORT_PREVIEW_SIZE / 64));
+        setAfterUrl(indicesToPreviewUrl(indices, paletteColors, IMPORT_PREVIEW_SIZE / 64));
+      }
+      return;
+    }
+
     const pal = resolvePalette(importPalette);
     const { indices, resized } = processImportImage(sourceImage, pal.colors, resizeMethod);
     setPreviewIndices(indices);
+    setPreviewPaletteColors(null);
     if (resized) {
       setBeforeUrl(imageDataToPreviewUrl(resized, IMPORT_PREVIEW_SIZE / 64));
       setAfterUrl(indicesToPreviewUrl(indices, pal.colors, IMPORT_PREVIEW_SIZE / 64));
     }
-  }, [sourceImage, importPalette, resizeMethod]);
+  }, [sourceImage, importMode, importPalette, resizeMethod]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
@@ -110,9 +132,13 @@ function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
 
   const handleApply = () => {
     if (!previewIndices) return;
+    const palette =
+      importMode === "extract" && previewPaletteColors?.length
+        ? { name: "EXTRACTED", colors: previewPaletteColors }
+        : resolvePalette(importPalette);
     onApply({
       indices: cloneIndices(previewIndices),
-      palette: resolvePalette(importPalette),
+      palette,
     });
     onClose();
   };
@@ -131,7 +157,7 @@ function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
             Import Image
           </h2>
           <p className="mt-1 text-xs text-ink/60">
-            Center-crop to 64×64, quantize to a Chromies palette. Local preview only.
+            Center-crop to 64×64, then match a Chromies palette or extract colors locally.
           </p>
         </div>
 
@@ -154,20 +180,74 @@ function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
 
           <div>
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
-              Quantize Palette
+              Import Mode
             </p>
-            <select
-              value={importPalette}
-              onChange={(e) => setImportPalette(e.target.value)}
-              className="w-full border border-ink bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-signal"
-            >
-              {PALETTE_OPTIONS.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
+            <div className="flex flex-col gap-1">
+              {[
+                { id: "match", label: "Match to Chromies Palette" },
+                { id: "extract", label: "Extract Palette from Image" },
+              ].map((opt) => (
+                <label
+                  key={opt.id}
+                  className={`flex cursor-pointer items-center gap-2 border px-2 py-2 text-xs font-semibold transition-colors ${
+                    importMode === opt.id
+                      ? "border-signal bg-signal/10 text-signal"
+                      : "border-ink text-ink/70"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="import-mode"
+                    value={opt.id}
+                    checked={importMode === opt.id}
+                    onChange={() => setImportMode(opt.id)}
+                    className="accent-signal"
+                  />
+                  {opt.label}
+                </label>
               ))}
-            </select>
+            </div>
           </div>
+
+          {importMode === "match" && (
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                Chromies Palette
+              </p>
+              <select
+                value={importPalette}
+                onChange={(e) => setImportPalette(e.target.value)}
+                className="w-full border border-ink bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-signal"
+              >
+                {PALETTE_OPTIONS.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {importMode === "extract" && previewPaletteColors?.length > 0 && (
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                Extracted Palette (16 colors)
+              </p>
+              <div className="grid grid-cols-8 gap-0.5 border border-ink bg-white p-2">
+                {previewPaletteColors.map((hex, i) => (
+                  <div
+                    key={i}
+                    title={`${i}: ${hex}`}
+                    className="aspect-square border border-ink"
+                    style={{ backgroundColor: hex }}
+                  />
+                ))}
+              </div>
+              <p className="mt-1 text-[10px] text-ink/50">
+                Session-local palette — not an on-chain Chromies trait.
+              </p>
+            </div>
+          )}
 
           <div>
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">

@@ -289,21 +289,134 @@ function quantizeImageData(imageData, paletteColors) {
   return indices;
 }
 
+function rgbToHex(r, g, b) {
+  const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
+  return `#${[clamp(r), clamp(g), clamp(b)]
+    .map((v) => v.toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+function rgbDist2(r, g, b, cr, cg, cb) {
+  const dr = r - cr;
+  const dg = g - cg;
+  const db = b - cb;
+  return dr * dr + dg * dg + db * db;
+}
+
+const KMEANS_CLUSTERS = 16;
+const KMEANS_MAX_ITER = 24;
+
+/** k-means on 64×64 RGB pixels; returns indices 0–15 and 16 hex palette colors. */
+export function kMeansExtractPalette(imageData, k = KMEANS_CLUSTERS) {
+  const n = GRID * GRID;
+  const points = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const j = i * 4;
+    points[i] = {
+      r: imageData.data[j],
+      g: imageData.data[j + 1],
+      b: imageData.data[j + 2],
+    };
+  }
+
+  const centroids = [{ ...points[0] }];
+  while (centroids.length < k) {
+    let bestDist = -1;
+    let bestIdx = 0;
+    for (let p = 0; p < n; p++) {
+      let minD = Infinity;
+      for (const c of centroids) {
+        minD = Math.min(minD, rgbDist2(points[p].r, points[p].g, points[p].b, c.r, c.g, c.b));
+      }
+      if (minD > bestDist) {
+        bestDist = minD;
+        bestIdx = p;
+      }
+    }
+    centroids.push({ ...points[bestIdx] });
+  }
+
+  const indices = new Uint8Array(n);
+
+  for (let iter = 0; iter < KMEANS_MAX_ITER; iter++) {
+    let changed = false;
+    for (let p = 0; p < n; p++) {
+      let best = 0;
+      let bestD = Infinity;
+      for (let c = 0; c < k; c++) {
+        const d = rgbDist2(
+          points[p].r,
+          points[p].g,
+          points[p].b,
+          centroids[c].r,
+          centroids[c].g,
+          centroids[c].b,
+        );
+        if (d < bestD) {
+          bestD = d;
+          best = c;
+        }
+      }
+      if (indices[p] !== best) {
+        indices[p] = best;
+        changed = true;
+      }
+    }
+
+    const sums = Array.from({ length: k }, () => ({ r: 0, g: 0, b: 0, n: 0 }));
+    for (let p = 0; p < n; p++) {
+      const cluster = indices[p];
+      sums[cluster].r += points[p].r;
+      sums[cluster].g += points[p].g;
+      sums[cluster].b += points[p].b;
+      sums[cluster].n++;
+    }
+    for (let c = 0; c < k; c++) {
+      if (sums[c].n > 0) {
+        centroids[c] = {
+          r: sums[c].r / sums[c].n,
+          g: sums[c].g / sums[c].n,
+          b: sums[c].b / sums[c].n,
+        };
+      }
+    }
+    if (!changed) break;
+  }
+
+  const paletteColors = centroids.map((c) => rgbToHex(c.r, c.g, c.b).toLowerCase());
+  return { indices, paletteColors };
+}
+
+function resizeImportImage(img, method = "nearest") {
+  const { canvas: cropped, size } = centerCropSquare(img);
+  if (!size) return null;
+  return method === "average"
+    ? resizeAverageColor(cropped, size)
+    : resizeNearestNeighbor(cropped, size);
+}
+
 /** Center-crop, resize to 64×64, and quantize to palette indices. */
 export function processImportImage(img, paletteColors, method = "nearest") {
-  const { canvas: cropped, size } = centerCropSquare(img);
-  if (!size) {
-    return { indices: new Uint8Array(GRID * GRID), resized: null };
-  }
-  const resized =
-    method === "average"
-      ? resizeAverageColor(cropped, size)
-      : resizeNearestNeighbor(cropped, size);
+  const resized = resizeImportImage(img, method);
   if (!resized) {
     return { indices: new Uint8Array(GRID * GRID), resized: null };
   }
   const indices = quantizeImageData(resized, paletteColors);
   return { indices, resized };
+}
+
+/** Clean import — k-means extracts a session-local 16-color palette from the image. */
+export function processCleanImportImage(img, method = "nearest") {
+  const resized = resizeImportImage(img, method);
+  if (!resized) {
+    return {
+      indices: new Uint8Array(GRID * GRID),
+      resized: null,
+      paletteColors: [],
+    };
+  }
+  const { indices, paletteColors } = kMeansExtractPalette(resized);
+  return { indices, resized, paletteColors };
 }
 
 const PREVIEW_SCALE = 4;
