@@ -342,6 +342,11 @@
           "weight": 0
         },
         {
+          "name": "SP_Flannel_Female",
+          "file": "SP_SHIRT_Flannel_Female.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "SHIRT_None.png",
           "weight": 20

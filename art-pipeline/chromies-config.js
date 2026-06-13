@@ -902,8 +902,9 @@ const CHARACTERS = [
       earrings: ["None"],
       tattoo: ["None"],
       shirt: {
-        SP_Crew_Female: 60,
+        SP_Crew_Female: 40,
         SP_Tank_Female: 20,
+        SP_Flannel_Female: 20,
         None: 20,
       },
       hood: { SP_Classic: 20, None: 80 },
