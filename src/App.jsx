@@ -6,6 +6,7 @@ import Landing from "./pages/Landing.jsx";
 import Lab from "./pages/Lab.jsx";
 import Mint from "./pages/Mint.jsx";
 import Market from "./pages/Market.jsx";
+import MyChromies from "./pages/MyChromies.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import Canvas from "./pages/Canvas.jsx";
 import PixelChroma from "./PixelChroma.jsx";
@@ -27,6 +28,14 @@ export default function App() {
         element={
           <PasswordGate>
             <Market />
+          </PasswordGate>
+        }
+      />
+      <Route
+        path="/my-chromies"
+        element={
+          <PasswordGate>
+            <MyChromies />
           </PasswordGate>
         }
       />

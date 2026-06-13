@@ -43,6 +43,16 @@ export default function SiteHeader() {
           >
             Pixel Marketplace
           </NavLink>
+          <NavLink
+            to="/my-chromies"
+            className={({ isActive }) =>
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
+              }`
+            }
+          >
+            My Chromies
+          </NavLink>
           {/* Lab tab hidden for now — route still works at /lab */}
           <NavLink
             to="/canvas"
