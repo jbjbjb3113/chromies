@@ -309,7 +309,7 @@ function applyCoverageRules(picks, traits, character = null) {
 // VARIANT PICK — character-aware
 // ============================================================================
 
-function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = null) {
+function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = null, loadBuffers = true) {
   const picks = {};
 
   for (const [slot, def] of Object.entries(traits.slots)) {
@@ -401,11 +401,15 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
   }
 
   // Load buffers
+  if (loadBuffers) loadPickBuffers(picks, traits);
+  return picks;
+}
+
+function loadPickBuffers(picks, traits) {
   for (const [slot, pick] of Object.entries(picks)) {
     const filePath = path.join(SETTINGS.componentsDir, pick.file);
     pick.buffer = extractToBuffer(filePath, traits.slots[slot].drawColors);
   }
-  return picks;
 }
 
 // ============================================================================
@@ -530,7 +534,7 @@ function getMutationTier(tokenId, mtierOverride = null) {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { tokenId: 1, palette: null, tier: null, mtier: null, skip: new Set(), character: null, gender: null, hair: null };
+  const result = { tokenId: 1, palette: null, tier: null, mtier: null, skip: new Set(), character: null, gender: null, hair: null, hood: null, shirt: null };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--token" || a === "-t") result.tokenId = parseInt(args[++i], 10);
@@ -540,6 +544,8 @@ function parseArgs() {
     else if (a === "--character") result.character = args[++i];
     else if (a === "--gender") result.gender = args[++i];
     else if (a === "--hair") result.hair = args[++i];
+    else if (a === "--hood") result.hood = args[++i];
+    else if (a === "--shirt") result.shirt = args[++i];
     else if (a === "--skip") args[++i].split(",").forEach(s => result.skip.add(s.trim().toLowerCase()));
     else if (a.startsWith("--skip=")) a.slice(7).split(",").forEach(s => result.skip.add(s.trim().toLowerCase()));
   }
@@ -547,7 +553,7 @@ function parseArgs() {
 }
 
 function main() {
-  const { tokenId, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, skip, character: characterOverride, gender: genderOverride, hair: hairOverride } = parseArgs();
+  const { tokenId, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, skip, character: characterOverride, gender: genderOverride, hair: hairOverride, hood: hoodOverride, shirt: shirtOverride } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
 
   // Pick character
@@ -576,19 +582,42 @@ function main() {
   console.log(`Generating Chromie #${tokenId} (palette: ${paletteKey}${paletteOverride ? " — forced" : ""}${charLabel})`);
   if (skip.size > 0) console.log(`  skip: ${[...skip].join(", ")}`);
 
-  const picks = pickTokenVariants(tokenId, traits, skip, character);
+  const picks = pickTokenVariants(tokenId, traits, skip, character, false);
 
   if (hairOverride) {
     const hairDef = traits.slots.hair;
     const found = hairDef.variants.find(v => v.name === hairOverride);
     if (found) {
-      // Buffers are loaded inside pickTokenVariants, so load this one here
-      const filePath = path.join(SETTINGS.componentsDir, found.file);
-      picks.hair = { variant: found, file: found.file, buffer: extractToBuffer(filePath, hairDef.drawColors) };
+      picks.hair = { variant: found, file: found.file, buffer: null };
     } else {
       console.warn(`  [WARN] hair variant "${hairOverride}" not found`);
     }
   }
+  if (picks.hair) console.log(`  [hair] ${picks.hair.variant.name}`);
+
+  if (hoodOverride) {
+    const hoodDef = traits.slots.hood;
+    const found = hoodDef.variants.find(v => v.name === hoodOverride);
+    if (found) {
+      picks.hood = { variant: found, file: found.file, buffer: null };
+    } else {
+      console.warn(`  [WARN] hood variant "${hoodOverride}" not found`);
+    }
+  }
+  if (picks.hood) console.log(`  [hood] ${picks.hood.variant.name}`);
+
+  if (shirtOverride) {
+    const shirtDef = traits.slots.shirt;
+    const found = shirtDef.variants.find(v => v.name === shirtOverride);
+    if (found) {
+      picks.shirt = { variant: found, file: found.file, buffer: null };
+      console.log(`  [shirt] ${found.name}`);
+    } else {
+      console.warn(`  [WARN] shirt variant "${shirtOverride}" not found`);
+    }
+  }
+
+  loadPickBuffers(picks, traits);
 
   const renderPicks = applyCoverageRules(picks, traits, character);
 
@@ -633,6 +662,7 @@ if (require.main === module) main();
 module.exports = {
   pickCharacter,
   pickTokenVariants,
+  loadPickBuffers,
   applyCoverageRules,
   pickPalette,
   extractToBuffer,

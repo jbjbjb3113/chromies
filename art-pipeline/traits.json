@@ -311,7 +311,12 @@
         "#1c1c26": "hood",
         "#1a0d0e": "mask_dark",
         "#2a1518": "mask_mid",
-        "#f0eae0": "highlight"
+        "#f0eae0": "highlight",
+        "#4c270f": "skin_shadow_deep",
+        "#89532a": "skin_shadow",
+        "#b2723f": "skin_mid",
+        "#d18b4d": "skin_light",
+        "#df9c5e": "skin_highlight"
       },
       "variants": [
         {
@@ -330,6 +335,16 @@
           "file": "SHIRT_Tank_Female.png",
           "weight": 20,
           "group": "tank_female"
+        },
+        {
+          "name": "Crew_Female",
+          "file": "SHIRT_Crew_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "Flannel_Female",
+          "file": "SHIRT_Flannel_Female.png",
+          "weight": 0
         },
         {
           "name": "SP_Crew_Female",

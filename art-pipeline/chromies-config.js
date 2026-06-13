@@ -798,8 +798,13 @@ const CHARACTERS = [
     },
     slotVariantPool: {
       hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
-  necklace: ["Female_Chain", "Female_Ornate", "Female_Flower", "Female_UpsideDownCross", "Female_Opal", "None"],
-  shirt: ["Crew", "Tank_Female", "None"],
+      necklace: ["Female_Chain", "Female_Ornate", "Female_Flower", "Female_UpsideDownCross", "Female_Opal", "None"],
+      shirt: {
+        Crew_Female: 40,
+        Tank_Female: 20,
+        Flannel_Female: 20,
+        None: 20,
+      },
     },
   },
   {
