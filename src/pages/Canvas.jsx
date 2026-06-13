@@ -43,6 +43,27 @@ const WHEEL_ZOOM_STEP = 15;
 const PALETTE_OPTIONS = Object.keys(PALETTES);
 const IMPORT_PREVIEW_SIZE = 128;
 
+function isEditableField(target) {
+  if (!(target instanceof HTMLElement)) return false;
+  return (
+    target.isContentEditable ||
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT"
+  );
+}
+
+function brushPreviewRect(gridX, gridY, brushSize, displayPx) {
+  const half = Math.floor(brushSize / 2);
+  const cell = displayPx / 64;
+  return {
+    left: (gridX - half) * cell,
+    top: (gridY - half) * cell,
+    width: brushSize * cell,
+    height: brushSize * cell,
+  };
+}
+
 function ImportImageModal({ open, onClose, onApply, initialPaletteName }) {
   const fileInputRef = useRef(null);
   const [sourceImage, setSourceImage] = useState(null);
@@ -476,6 +497,7 @@ export default function Canvas() {
   const [bgEyedropperActive, setBgEyedropperActive] = useState(false);
   const [pickAndSwitchToPaint, setPickAndSwitchToPaint] = useState(true);
   const [altEyedropper, setAltEyedropper] = useState(false);
+  const [brushHoverGrid, setBrushHoverGrid] = useState(null);
 
   const empty = useMemo(() => new Uint8Array(64 * 64), []);
   const { indices, setIndices, resetHistory, undo, redo, canUndo, canRedo, historyTick } =
@@ -494,10 +516,21 @@ export default function Canvas() {
   const paletteColors = palette?.colors ?? [];
   const canEdit = paletteColors.length > 0;
   const isPaintColorPick = tool === "eyedropper" || altEyedropper;
+  const showBrushPreview =
+    canEdit &&
+    !panMode &&
+    (tool === "paint" || tool === "erase") &&
+    !isPaintColorPick &&
+    !bgEyedropperActive;
   const exportLabel = loadedId ? formatTokenId(loadedId) : "import";
 
   const effectiveZoom = zoomPercent ?? fitZoom;
   const displayPx = Math.round((DISPLAY_SIZE * effectiveZoom) / 100);
+
+  const brushPreviewStyle = useMemo(() => {
+    if (!brushHoverGrid || !showBrushPreview) return null;
+    return brushPreviewRect(brushHoverGrid.x, brushHoverGrid.y, brushSize, displayPx);
+  }, [brushHoverGrid, brushSize, displayPx, showBrushPreview]);
 
   useEffect(() => {
     zoomPercentRef.current = zoomPercent;
@@ -673,6 +706,10 @@ export default function Canvas() {
   }, []);
 
   useEffect(() => {
+    if (!showBrushPreview) setBrushHoverGrid(null);
+  }, [showBrushPreview]);
+
+  useEffect(() => {
     if (panMode) {
       setPainting(false);
       lastPaintRef.current = null;
@@ -693,7 +730,31 @@ export default function Canvas() {
         return;
       }
 
-      if (!(e.ctrlKey || e.metaKey)) return;
+      if (!(e.ctrlKey || e.metaKey)) {
+        if (
+          !isEditableField(e.target) &&
+          canEdit &&
+          e.key.length === 1 &&
+          !e.altKey &&
+          !e.shiftKey
+        ) {
+          const key = e.key.toLowerCase();
+          if (key === "b") {
+            e.preventDefault();
+            setTool("paint");
+          } else if (key === "e") {
+            e.preventDefault();
+            setTool("erase");
+          } else if (key === "g") {
+            e.preventDefault();
+            setTool("fill");
+          } else if (key === "i") {
+            e.preventDefault();
+            setTool("eyedropper");
+          }
+        }
+        return;
+      }
       if (e.key === "z" && !e.shiftKey) {
         e.preventDefault();
         undo();
@@ -774,6 +835,18 @@ export default function Canvas() {
     [canEdit, tool, colorIndex, brushSize, setIndices],
   );
 
+  const updateBrushHover = useCallback(
+    (clientX, clientY) => {
+      if (!showBrushPreview) {
+        setBrushHoverGrid(null);
+        return;
+      }
+      const coords = canvasCoordsFromEvent(mainCanvasRef.current, clientX, clientY);
+      setBrushHoverGrid(coords ? { x: coords.x, y: coords.y } : null);
+    },
+    [showBrushPreview],
+  );
+
   const onPointerDown = (e) => {
     if (!canEdit || panMode) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
@@ -803,6 +876,7 @@ export default function Canvas() {
   };
 
   const onPointerMove = (e) => {
+    updateBrushHover(e.clientX, e.clientY);
     if (!painting || tool === "fill" || panMode || isPaintColorPick) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
     if (!coords) return;
@@ -812,6 +886,11 @@ export default function Canvas() {
   const onPointerUp = () => {
     setPainting(false);
     lastPaintRef.current = null;
+  };
+
+  const onPointerLeave = () => {
+    setBrushHoverGrid(null);
+    onPointerUp();
   };
 
   const handleReset = () => {
@@ -957,7 +1036,9 @@ export default function Canvas() {
                   Pick & switch to paint
                 </label>
               )}
-              <p className="mt-1.5 text-[10px] text-ink/45">Hold Alt in paint mode to sample</p>
+              <p className="mt-1.5 text-[10px] text-ink/45">
+                Hold Alt in paint mode to sample · B E G I
+              </p>
             </div>
 
             <div>
@@ -1174,30 +1255,45 @@ export default function Canvas() {
                     canEdit ? "border-ink" : "border-dashed border-ink"
                   } bg-white`}
                 >
-                  <canvas
-                    ref={mainCanvasRef}
-                    width={DISPLAY_SIZE}
-                    height={DISPLAY_SIZE}
-                    className={`block ${
-                      panMode
-                        ? "pointer-events-none cursor-grab"
-                        : bgEyedropperActive || isPaintColorPick
-                          ? "cursor-cell"
-                          : canEdit
-                            ? "cursor-crosshair"
-                            : "cursor-not-allowed"
-                    }`}
-                    style={{
-                      imageRendering: "pixelated",
-                      width: displayPx,
-                      height: displayPx,
-                      touchAction: "none",
-                    }}
-                    onPointerDown={onPointerDown}
-                    onPointerMove={onPointerMove}
-                    onPointerUp={onPointerUp}
-                    onPointerLeave={onPointerUp}
-                  />
+                  <div className="relative">
+                    <canvas
+                      ref={mainCanvasRef}
+                      width={DISPLAY_SIZE}
+                      height={DISPLAY_SIZE}
+                      className={`block ${
+                        panMode
+                          ? "pointer-events-none cursor-grab"
+                          : bgEyedropperActive || isPaintColorPick
+                            ? "cursor-cell"
+                            : canEdit
+                              ? "cursor-crosshair"
+                              : "cursor-not-allowed"
+                      }`}
+                      style={{
+                        imageRendering: "pixelated",
+                        width: displayPx,
+                        height: displayPx,
+                        touchAction: "none",
+                      }}
+                      onPointerDown={onPointerDown}
+                      onPointerMove={onPointerMove}
+                      onPointerUp={onPointerUp}
+                      onPointerLeave={onPointerLeave}
+                    />
+                    {brushPreviewStyle && (
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute box-border border border-dashed border-white mix-blend-difference"
+                        style={{
+                          left: brushPreviewStyle.left,
+                          top: brushPreviewStyle.top,
+                          width: brushPreviewStyle.width,
+                          height: brushPreviewStyle.height,
+                          boxShadow: "0 0 0 1px rgba(0,0,0,0.65)",
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
