@@ -20,6 +20,50 @@ function colorDist2(r, g, b, hex) {
   return dr * dr + dg * dg + db * db;
 }
 
+const MAX_RGB_DIST = 255 * Math.sqrt(3);
+
+function rgbDist2(r, g, b, cr, cg, cb) {
+  const dr = r - cr;
+  const dg = g - cg;
+  const db = b - cb;
+  return dr * dr + dg * dg + db * db;
+}
+
+/** Mask (1 = remove) for pixels within RGB tolerance of target palette index. */
+export function computeRemovalMask(indices, paletteColors, targetIndex, tolerancePercent) {
+  const mask = new Uint8Array(GRID * GRID);
+  if (targetIndex == null || !paletteColors.length) return mask;
+
+  const [tr, tg, tb] = hexToRgb(paletteColors[targetIndex] ?? paletteColors[0]);
+  const maxDist = (Math.max(0, Math.min(100, tolerancePercent)) / 100) * MAX_RGB_DIST;
+  const maxDist2 = maxDist * maxDist;
+
+  for (let i = 0; i < GRID * GRID; i++) {
+    const [r, g, b] = hexToRgb(paletteColors[indices[i]] ?? paletteColors[0]);
+    if (rgbDist2(r, g, b, tr, tg, tb) <= maxDist2) {
+      mask[i] = 1;
+    }
+  }
+  return mask;
+}
+
+export function applyRemovalMask(indices, mask) {
+  const out = cloneIndices(indices);
+  for (let i = 0; i < GRID * GRID; i++) {
+    if (mask[i]) out[i] = 0;
+  }
+  return out;
+}
+
+export function countMaskPixels(mask) {
+  if (!mask) return 0;
+  let n = 0;
+  for (let i = 0; i < mask.length; i++) {
+    if (mask[i]) n++;
+  }
+  return n;
+}
+
 export function nearestPaletteIndex(r, g, b, a, paletteColors) {
   if (a < 128) return 0;
   let best = 0;
@@ -151,12 +195,13 @@ export function drawIndicesToCanvas(
   canvas,
   indices,
   paletteColors,
-  { original = null, showDiff = false } = {},
+  { original = null, showDiff = false, removalPreview = null } = {},
 ) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.imageSmoothingEnabled = false;
   const diffColor = hexToRgb("#ff2d8a");
+  const removeHighlight = hexToRgb("#2dd6ff");
 
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
@@ -167,7 +212,12 @@ export function drawIndicesToCanvas(
       const px = x * CANVAS_SCALE;
       const py = y * CANVAS_SCALE;
 
-      if (showDiff && original && indices[i] !== original[i]) {
+      if (removalPreview && removalPreview[i]) {
+        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+        ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
+        ctx.fillStyle = `rgba(${removeHighlight[0]}, ${removeHighlight[1]}, ${removeHighlight[2]}, 0.55)`;
+        ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
+      } else if (showDiff && original && indices[i] !== original[i]) {
         ctx.fillStyle = `rgb(${diffColor[0]}, ${diffColor[1]}, ${diffColor[2]})`;
         ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
         ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.45)`;
@@ -349,13 +399,6 @@ function rgbToHex(r, g, b) {
   return `#${[clamp(r), clamp(g), clamp(b)]
     .map((v) => v.toString(16).padStart(2, "0"))
     .join("")}`;
-}
-
-function rgbDist2(r, g, b, cr, cg, cb) {
-  const dr = r - cr;
-  const dg = g - cg;
-  const db = b - cb;
-  return dr * dr + dg * dg + db * db;
 }
 
 const KMEANS_CLUSTERS = 16;

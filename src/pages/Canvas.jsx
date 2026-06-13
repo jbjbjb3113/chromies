@@ -5,9 +5,12 @@ import { ROLES, PALETTES, getPaletteFromMetadata, resolvePalette } from "../data
 import { useUndoRedo } from "../hooks/useUndoRedo.js";
 import {
   DISPLAY_SIZE,
+  applyRemovalMask,
   canvasCoordsFromEvent,
   cloneIndices,
+  computeRemovalMask,
   countDiff,
+  countMaskPixels,
   drawIndicesToCanvas,
   downloadIndicesSvg,
   exportIndicesPng,
@@ -32,7 +35,7 @@ import {
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
 const TOOLS = ["paint", "erase", "fill"];
-const BRUSH_SIZES = [1, 2, 3, 4, 5];
+const BRUSH_SIZES = [1, 2, 3, 5, 8, 10];
 const MIN_ZOOM = 25;
 const MAX_ZOOM = 800;
 const ZOOM_STEP = 25;
@@ -468,6 +471,9 @@ export default function Canvas() {
   const [panMode, setPanMode] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [importedActive, setImportedActive] = useState(false);
+  const [bgPickIndex, setBgPickIndex] = useState(null);
+  const [bgTolerance, setBgTolerance] = useState(12);
+  const [bgEyedropperActive, setBgEyedropperActive] = useState(false);
 
   const empty = useMemo(() => new Uint8Array(64 * 64), []);
   const { indices, setIndices, resetHistory, undo, redo, canUndo, canRedo, historyTick } =
@@ -500,6 +506,19 @@ export default function Canvas() {
     if (!original || !indices) return 0;
     return countDiff(indices, original);
   }, [indices, original]);
+
+  const bgPreviewMask = useMemo(() => {
+    if (bgPickIndex === null || !paletteColors.length) return null;
+    return computeRemovalMask(indices, paletteColors, bgPickIndex, bgTolerance);
+  }, [indices, paletteColors, bgPickIndex, bgTolerance]);
+
+  const bgRemovalCount = useMemo(
+    () => countMaskPixels(bgPreviewMask),
+    [bgPreviewMask],
+  );
+
+  const pickedBgHex =
+    bgPickIndex !== null ? (paletteColors[bgPickIndex] ?? "#000000") : null;
 
   const loadToken = useCallback(async () => {
     const id = parseTokenId(tokenInput);
@@ -542,8 +561,9 @@ export default function Canvas() {
     drawIndicesToCanvas(canvas, indices, paletteColors, {
       original,
       showDiff,
+      removalPreview: bgPickIndex !== null ? bgPreviewMask : null,
     });
-  }, [indices, paletteColors, original, showDiff, historyTick]);
+  }, [indices, paletteColors, original, showDiff, historyTick, bgPickIndex, bgPreviewMask]);
 
   useEffect(() => {
     drawThumb(thumbCanvasRef.current, indices, paletteColors);
@@ -685,6 +705,13 @@ export default function Canvas() {
     [setIndices],
   );
 
+  const handleRemoveBackground = useCallback(() => {
+    if (!bgPreviewMask || bgRemovalCount === 0) return;
+    setIndices((prev) => applyRemovalMask(prev, bgPreviewMask));
+    setBgPickIndex(null);
+    setBgEyedropperActive(false);
+  }, [bgPreviewMask, bgRemovalCount, setIndices]);
+
   const applyAt = useCallback(
     (x, y) => {
       if (!canEdit) return;
@@ -714,6 +741,14 @@ export default function Canvas() {
     if (!canEdit || panMode) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
     if (!coords) return;
+
+    if (bgEyedropperActive) {
+      const picked = indices[coords.y * 64 + coords.x];
+      setBgPickIndex(picked);
+      setBgEyedropperActive(false);
+      return;
+    }
+
     e.currentTarget.setPointerCapture(e.pointerId);
     setPainting(true);
     lastPaintRef.current = null;
@@ -875,14 +910,14 @@ export default function Canvas() {
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Brush
               </p>
-              <div className="flex gap-1">
+              <div className="grid grid-cols-3 gap-1">
                 {BRUSH_SIZES.map((size) => (
                   <button
                     key={size}
                     type="button"
                     onClick={() => setBrushSize(size)}
                     disabled={tool === "fill"}
-                    className={`flex-1 border px-1 py-1.5 text-xs font-semibold transition-colors disabled:opacity-40 ${
+                    className={`border px-1 py-1.5 text-xs font-semibold transition-colors disabled:opacity-40 ${
                       brushSize === size
                         ? "border-signal bg-signal/10 text-signal"
                         : "border-ink text-ink/70 hover:border-ink/60"
@@ -893,6 +928,80 @@ export default function Canvas() {
                 ))}
               </div>
             </div>
+
+            {canEdit && (
+              <div className="border border-ink bg-white p-2">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                  Background Remover
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setBgEyedropperActive((v) => !v)}
+                  className={`mb-2 w-full border px-2 py-1.5 text-xs font-semibold transition-colors ${
+                    bgEyedropperActive
+                      ? "border-signal bg-signal/10 text-signal"
+                      : "border-ink text-ink/70 hover:border-ink/60"
+                  }`}
+                >
+                  {bgEyedropperActive ? "Click canvas to pick…" : "Eyedropper — pick color"}
+                </button>
+                {bgPickIndex !== null && pickedBgHex && (
+                  <div className="mb-2 flex items-center gap-2">
+                    <div
+                      className="h-6 w-6 shrink-0 border border-ink"
+                      style={{ backgroundColor: pickedBgHex }}
+                    />
+                    <p className="font-mono text-[10px] text-ink/60">
+                      index {bgPickIndex} · {pickedBgHex}
+                    </p>
+                  </div>
+                )}
+                <label className="mb-2 block">
+                  <span className="mb-1 flex justify-between text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                    <span>Tolerance</span>
+                    <span>{bgTolerance}%</span>
+                  </span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={bgTolerance}
+                    onChange={(e) => setBgTolerance(Number(e.target.value))}
+                    disabled={bgPickIndex === null}
+                    className="w-full accent-signal disabled:opacity-40"
+                  />
+                </label>
+                {bgPickIndex !== null && (
+                  <p className="mb-2 text-[10px] text-ink/60">
+                    Preview:{" "}
+                    <span className="font-semibold text-signal">{bgRemovalCount}</span> px
+                    highlighted cyan
+                  </p>
+                )}
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    onClick={handleRemoveBackground}
+                    disabled={bgPickIndex === null || bgRemovalCount === 0}
+                    className="flex-1 border border-signal px-2 py-1.5 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
+                  >
+                    Remove Background
+                  </button>
+                  {bgPickIndex !== null && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setBgPickIndex(null);
+                        setBgEyedropperActive(false);
+                      }}
+                      className="border border-ink px-2 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
 
             {paletteColors.length > 0 && (
               <div>
@@ -1018,9 +1127,11 @@ export default function Canvas() {
                     className={`block ${
                       panMode
                         ? "pointer-events-none cursor-grab"
-                        : canEdit
-                          ? "cursor-crosshair"
-                          : "cursor-not-allowed"
+                        : bgEyedropperActive
+                          ? "cursor-cell"
+                          : canEdit
+                            ? "cursor-crosshair"
+                            : "cursor-not-allowed"
                     }`}
                     style={{
                       imageRendering: "pixelated",
