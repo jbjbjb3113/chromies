@@ -36,8 +36,6 @@ const CHARACTER_BYTES = {
   Alien: 2,
   Cat: 3,
   Agent: 4,
-  SideProfile_Male: 5,
-  SideProfile_Female: 6,
 };
 
 const PALETTE_BYTES = {
@@ -66,50 +64,7 @@ const PALETTE_BYTES = {
   MOSS_GREY: 22,
   MOSS_RED: 23,
   CAT: 24,
-  SERC: 68,
   ALIEN: 25,
-  SIGNAL_SHIRT_RED: 26,
-  SIGNAL_SHIRT_PURPLE: 27,
-  SIGNAL_SHIRT_ORANGE: 28,
-  SIGNAL_SHIRT_OLIVE: 29,
-  SIGNAL_SHIRT_GREEN: 30,
-  SIGNAL_SHIRT_GOLD: 31,
-  SIGNAL_SHIRT_BLUE: 32,
-  ACID_SHIRT_RED: 33,
-  ACID_SHIRT_PURPLE: 34,
-  ACID_SHIRT_ORANGE: 35,
-  ACID_SHIRT_OLIVE: 36,
-  ACID_SHIRT_GREEN: 37,
-  ACID_SHIRT_GOLD: 38,
-  ACID_SHIRT_BLUE: 39,
-  CYAN_SHIRT_RED: 40,
-  CYAN_SHIRT_PURPLE: 41,
-  CYAN_SHIRT_ORANGE: 42,
-  CYAN_SHIRT_OLIVE: 43,
-  CYAN_SHIRT_GREEN: 44,
-  CYAN_SHIRT_GOLD: 45,
-  CYAN_SHIRT_BLUE: 46,
-  GHOST_SHIRT_RED: 47,
-  GHOST_SHIRT_PURPLE: 48,
-  GHOST_SHIRT_ORANGE: 49,
-  GHOST_SHIRT_OLIVE: 50,
-  GHOST_SHIRT_GREEN: 51,
-  GHOST_SHIRT_GOLD: 52,
-  GHOST_SHIRT_BLUE: 53,
-  BLOOD_SHIRT_RED: 54,
-  BLOOD_SHIRT_PURPLE: 55,
-  BLOOD_SHIRT_ORANGE: 56,
-  BLOOD_SHIRT_OLIVE: 57,
-  BLOOD_SHIRT_GREEN: 58,
-  BLOOD_SHIRT_GOLD: 59,
-  BLOOD_SHIRT_BLUE: 60,
-  MOSS_SHIRT_RED: 61,
-  MOSS_SHIRT_PURPLE: 62,
-  MOSS_SHIRT_ORANGE: 63,
-  MOSS_SHIRT_OLIVE: 64,
-  MOSS_SHIRT_GREEN: 65,
-  MOSS_SHIRT_GOLD: 66,
-  MOSS_SHIRT_BLUE: 67,
 };
 
 const HOOD_BYTES = { None: 0, Classic: 1 };
@@ -133,7 +88,7 @@ const TATTOO_BYTES = { None: 0, Signal: 1, Thug: 2, Marks: 3, Scar: 4 };
 const MASK_BYTES = { None: 0 };
 const BEARD_BYTES = { None: 0, Full: 1, Goat: 2 };
 const MUSTACHE_BYTES = { None: 0, Thick: 1 };
-const EYES_BYTES = { Signal: 0, BlackEye: 1, MakeUp: 2, RunningMascara: 3, Stoned: 4, Alien: 5, None: 6 };
+const EYES_BYTES = { Signal: 0, BlackEye: 1, MakeUp: 2, RunningMascara: 3, Stoned: 4, Alien: 5 };
 const EARRINGS_BYTES = { None: 0, Stud: 1 };
 const GLASSES_BYTES = { None: 0, Shades: 1, Neo: 2, VR: 3 };
 const HAIR_BYTES = {
@@ -145,6 +100,8 @@ const HAIR_BYTES = {
   Dreads: 5,
   Surfer: 6,
   FadeRight: 7,
+  AZVet: 8,
+  Buns: 9,
 };
 const MUTATION_BYTES = { Pristine: 0, Standard: 1, Drifted: 2, OffKilter: 3 };
 const DRIFT_BYTES = { Pristine: 0, Standard: 1, Drifted: 2, OffKilter: 3 };
@@ -173,9 +130,6 @@ function characterKey(character) {
   if (!character) return "HeroA_Male";
   if (character.name === "HeroA") {
     return character.gender === "Female" ? "HeroA_Female" : "HeroA_Male";
-  }
-  if (character.name === "SideProfile") {
-    return character.gender === "Female" ? "SideProfile_Female" : "SideProfile_Male";
   }
   return character.name;
 }

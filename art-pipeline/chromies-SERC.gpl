@@ -1,0 +1,20 @@
+GIMP Palette
+Name: Chromies SERC
+Columns: 16
+#
+227 229 228	background
+ 10   2   2	mask_dark
+ 26   5   5	mask_mid
+240 222 222	highlight
+ 28   5   5	skin_shadow_deep
+ 74  16  16	skin_shadow
+122  32  32	skin_mid
+160  48  48	skin_light
+192  64  64	skin_highlight
+ 42   8   8	hood
+ 15   2   2	eye_socket
+138   0   0	eye_glow
+255  32  32	eye_signal
+ 26   0   0	hair_dark
+ 90  15  15	hair_mid
+154  31  31	hair_bright
