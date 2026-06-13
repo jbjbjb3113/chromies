@@ -861,6 +861,7 @@ const CHARACTERS = [
     forcedSlots: {
       head: "SP_HeroA",
       neck: "SP_HeroA",
+      body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
       eyes: "None",        // eyes baked into SP head art
       bodytattoo: "None",  // positioned for front-facing body
     },
@@ -886,7 +887,7 @@ const CHARACTERS = [
     forcedSlots: {
       head: "SP_HeroA_Female",
       neck: "SP_HeroA_Female",
-      body: "Female",
+      body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
       eyes: "None",        // eyes baked into SP head art
       bodytattoo: "None",  // positioned for front-facing body
     },
