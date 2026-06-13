@@ -85,6 +85,8 @@ function ListingCard({
   onView,
   isDemo = false,
   collectionOverride,
+  publicClient,
+  chromaAddress,
 }) {
   const [buyerTokenId, setBuyerTokenId] = useState("");
   const collection = collectionOverride ?? collectionLabel(listing.canvas, chainId);
@@ -104,7 +106,11 @@ function ListingCard({
         className="block w-full text-left transition-opacity hover:opacity-95"
         aria-label={`View ${tokenLabel} #${listing.tokenId.toString()}`}
       >
-        <TokenThumbnail tokenId={listing.tokenId} />
+        <TokenThumbnail
+          tokenId={listing.tokenId}
+          publicClient={publicClient}
+          chromaAddress={chromaAddress}
+        />
       </button>
 
       <div className="flex flex-1 flex-col gap-4 p-4">
@@ -496,6 +502,8 @@ export default function Market() {
                 chainId={chainId}
                 isOwn={false}
                 busy={false}
+                publicClient={publicClient}
+                chromaAddress={chromaAddress}
                 onView={(listing) =>
                   openViewer(listing, { isDemo: true, collectionOverride: mock.collection })
                 }
@@ -508,6 +516,8 @@ export default function Market() {
                 chainId={chainId}
                 isOwn={Boolean(address) && listing.seller.toLowerCase() === address.toLowerCase()}
                 busy={pendingAction !== null}
+                publicClient={publicClient}
+                chromaAddress={chromaAddress}
                 onBuy={handleBuy}
                 onCancel={handleCancel}
                 onView={(item) => openViewer(item)}

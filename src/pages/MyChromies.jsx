@@ -12,7 +12,7 @@ import { fetchOwnedChromaTokenIds } from "../lib/chroma-ownership.js";
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
 
-function OwnedChromieCard({ tokenId, onView }) {
+function OwnedChromieCard({ tokenId, onView, publicClient, chromaAddress }) {
   return (
     <article className="relative flex flex-col overflow-hidden border border-ink bg-white transition-colors hover:border-signal/60">
       <button
@@ -21,7 +21,11 @@ function OwnedChromieCard({ tokenId, onView }) {
         className="block w-full text-left transition-opacity hover:opacity-95"
         aria-label={`View Chromie #${tokenId.toString()}`}
       >
-        <TokenThumbnail tokenId={tokenId} />
+        <TokenThumbnail
+          tokenId={tokenId}
+          publicClient={publicClient}
+          chromaAddress={chromaAddress}
+        />
       </button>
 
       <div className="flex flex-1 flex-col gap-4 p-4">
@@ -172,6 +176,8 @@ export default function MyChromies() {
                   key={tokenId.toString()}
                   tokenId={tokenId}
                   onView={setViewerTokenId}
+                  publicClient={publicClient}
+                  chromaAddress={chromaAddress}
                 />
               ))}
             </div>
