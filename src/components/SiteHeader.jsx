@@ -41,7 +41,7 @@ export default function SiteHeader() {
               }`
             }
           >
-            Action Point Market
+            Pixel Marketplace
           </NavLink>
           {/* Lab tab hidden for now — route still works at /lab */}
           <NavLink

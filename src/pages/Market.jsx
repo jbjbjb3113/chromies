@@ -358,7 +358,7 @@ export default function Market() {
       <section className="border-b border-ink px-6 pt-32 pb-16 text-center">
         <div className="mx-auto max-w-3xl">
           <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">
-            ACTION POINT MARKET
+            PIXEL MARKETPLACE
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
             Trade Action Points token-to-token (NFT to NFT). Non-custodial — AP stays in the
@@ -378,7 +378,7 @@ export default function Market() {
 
           {isConnected && !onSepolia && (
             <p className="mt-8 text-sm font-semibold text-signal">
-              The Action Point market lives on Sepolia testnet — switch your wallet network.
+              The Pixel Marketplace lives on Sepolia testnet — switch your wallet network.
             </p>
           )}
         </div>
