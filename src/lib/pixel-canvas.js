@@ -187,7 +187,9 @@ export function exportIndicesPng(indices, paletteColors) {
 }
 
 export function canvasCoordsFromEvent(canvas, clientX, clientY) {
+  if (!canvas) return null;
   const rect = canvas.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return null;
   const x = Math.floor(((clientX - rect.left) / rect.width) * GRID);
   const y = Math.floor(((clientY - rect.top) / rect.height) * GRID);
   if (x < 0 || y < 0 || x >= GRID || y >= GRID) return null;

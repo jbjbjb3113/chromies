@@ -26,6 +26,95 @@ import {
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
 const TOOLS = ["paint", "erase", "fill"];
+const MIN_ZOOM = 25;
+const MAX_ZOOM = 800;
+const ZOOM_STEP = 25;
+
+function clampZoom(value, fitZoom) {
+  const min = Math.min(100, fitZoom);
+  return Math.max(min, Math.min(MAX_ZOOM, Math.round(value)));
+}
+
+function computeFitZoom(width, height) {
+  const padding = 32;
+  const w = Math.max(1, width - padding);
+  const h = Math.max(1, height - padding);
+  const raw = Math.floor(Math.min(w / DISPLAY_SIZE, h / DISPLAY_SIZE) * 100);
+  return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, raw));
+}
+
+function ZoomControls({
+  zoomPercent,
+  fitZoom,
+  onZoomChange,
+  onFit,
+  panMode,
+  onPanModeToggle,
+  touchFriendly = false,
+}) {
+  const min = Math.min(100, fitZoom);
+  const btnClass = touchFriendly
+    ? "min-h-11 min-w-11 border border-ink px-3 text-lg font-bold text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-40"
+    : "border border-ink px-2 py-1 text-sm font-bold text-ink transition-colors hover:border-signal hover:text-signal disabled:opacity-40";
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-ink/50">Zoom</p>
+        <span className="font-mono text-[10px] text-ink/60">{zoomPercent}%</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onZoomChange(zoomPercent - ZOOM_STEP)}
+          disabled={zoomPercent <= min}
+          className={btnClass}
+          aria-label="Zoom out"
+        >
+          −
+        </button>
+        <input
+          type="range"
+          min={min}
+          max={MAX_ZOOM}
+          step={ZOOM_STEP}
+          value={zoomPercent}
+          onChange={(e) => onZoomChange(Number(e.target.value))}
+          className="hidden min-w-0 flex-1 accent-signal sm:block"
+        />
+        <button
+          type="button"
+          onClick={() => onZoomChange(zoomPercent + ZOOM_STEP)}
+          disabled={zoomPercent >= MAX_ZOOM}
+          className={btnClass}
+          aria-label="Zoom in"
+        >
+          +
+        </button>
+        <button
+          type="button"
+          onClick={onFit}
+          className="border border-ink px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-ink/70 transition-colors hover:border-signal hover:text-signal"
+        >
+          Fit
+        </button>
+      </div>
+      {onPanModeToggle && (
+        <button
+          type="button"
+          onClick={onPanModeToggle}
+          className={`w-full border px-2 py-2 text-xs font-semibold uppercase tracking-wide transition-colors ${
+            panMode
+              ? "border-signal bg-signal/10 text-signal"
+              : "border-ink text-ink/70 hover:border-ink/60"
+          } ${touchFriendly ? "min-h-11" : ""}`}
+        >
+          {panMode ? "Pan mode" : "Paint mode"}
+        </button>
+      )}
+    </div>
+  );
+}
 
 function drawThumb(canvas, indices, paletteColors) {
   if (!canvas || !indices) return;
@@ -54,6 +143,9 @@ export default function Canvas() {
   const [colorIndex, setColorIndex] = useState(1);
   const [showDiff, setShowDiff] = useState(false);
   const [painting, setPainting] = useState(false);
+  const [zoomPercent, setZoomPercent] = useState(null);
+  const [fitZoom, setFitZoom] = useState(100);
+  const [panMode, setPanMode] = useState(false);
 
   const empty = useMemo(() => new Uint8Array(64 * 64), []);
   const { indices, setIndices, resetHistory, undo, redo, canUndo, canRedo, historyTick } =
@@ -61,9 +153,14 @@ export default function Canvas() {
 
   const mainCanvasRef = useRef(null);
   const thumbCanvasRef = useRef(null);
+  const viewportRef = useRef(null);
   const lastPaintRef = useRef(null);
+  const zoomInitializedRef = useRef(false);
 
   const paletteColors = palette?.colors ?? [];
+
+  const effectiveZoom = zoomPercent ?? fitZoom;
+  const displayPx = Math.round((DISPLAY_SIZE * effectiveZoom) / 100);
 
   const traits = useMemo(() => metadata?.attributes ?? [], [metadata]);
 
@@ -120,6 +217,44 @@ export default function Canvas() {
   }, [indices, paletteColors, historyTick]);
 
   useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return undefined;
+
+    const updateFit = () => {
+      if (el.clientWidth < 48 || el.clientHeight < 48) return;
+      const fit = computeFitZoom(el.clientWidth, el.clientHeight);
+      setFitZoom(fit);
+      if (!zoomInitializedRef.current) {
+        zoomInitializedRef.current = true;
+        setZoomPercent(fit);
+      }
+    };
+
+    updateFit();
+    const ro = new ResizeObserver(updateFit);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const handleZoomChange = useCallback(
+    (next) => {
+      setZoomPercent(clampZoom(next, fitZoom));
+    },
+    [fitZoom],
+  );
+
+  const handleFitZoom = useCallback(() => {
+    setZoomPercent(fitZoom);
+  }, [fitZoom]);
+
+  useEffect(() => {
+    if (panMode) {
+      setPainting(false);
+      lastPaintRef.current = null;
+    }
+  }, [panMode]);
+
+  useEffect(() => {
     const onKey = (e) => {
       if (!(e.ctrlKey || e.metaKey)) return;
       if (e.key === "z" && !e.shiftKey) {
@@ -158,7 +293,7 @@ export default function Canvas() {
   );
 
   const onPointerDown = (e) => {
-    if (!loadedId) return;
+    if (!loadedId || panMode) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
     if (!coords) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -173,7 +308,7 @@ export default function Canvas() {
   };
 
   const onPointerMove = (e) => {
-    if (!painting || tool === "fill") return;
+    if (!painting || tool === "fill" || panMode) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
     if (!coords) return;
     applyAt(coords.x, coords.y);
@@ -375,6 +510,19 @@ export default function Canvas() {
               <p className="mt-1 text-[10px] text-ink/40">Ctrl+Z / Ctrl+Y</p>
             </div>
 
+            {zoomPercent !== null && (
+              <div className="hidden md:block">
+                <ZoomControls
+                  zoomPercent={effectiveZoom}
+                  fitZoom={fitZoom}
+                  onZoomChange={handleZoomChange}
+                  onFit={handleFitZoom}
+                  panMode={panMode}
+                  onPanModeToggle={() => setPanMode((p) => !p)}
+                />
+              </div>
+            )}
+
             {traits.length > 0 && (
               <div className="hidden max-h-36 overflow-y-auto border border-ink bg-white md:block">
                 <ul className="divide-y divide-ink-line text-[10px]">
@@ -391,27 +539,53 @@ export default function Canvas() {
 
           {/* Main canvas + action bar */}
           <section className="flex min-h-0 flex-1 flex-col">
-            <div className="flex flex-1 items-center justify-center bg-paper p-4 md:p-8">
-              <div
-                className={`border-2 shadow-sm ${
-                  loadedId ? "border-ink" : "border-dashed border-ink"
-                } bg-white`}
-              >
-                <canvas
-                  ref={mainCanvasRef}
-                  width={DISPLAY_SIZE}
-                  height={DISPLAY_SIZE}
-                  className={loadedId ? "cursor-crosshair" : "cursor-not-allowed"}
-                  style={{
-                    imageRendering: "pixelated",
-                    width: DISPLAY_SIZE,
-                    height: DISPLAY_SIZE,
-                  }}
-                  onPointerDown={onPointerDown}
-                  onPointerMove={onPointerMove}
-                  onPointerUp={onPointerUp}
-                  onPointerLeave={onPointerUp}
+            {zoomPercent !== null && (
+              <div className="shrink-0 border-b border-ink p-3 md:hidden">
+                <ZoomControls
+                  zoomPercent={effectiveZoom}
+                  fitZoom={fitZoom}
+                  onZoomChange={handleZoomChange}
+                  onFit={handleFitZoom}
+                  panMode={panMode}
+                  onPanModeToggle={() => setPanMode((p) => !p)}
+                  touchFriendly
                 />
+              </div>
+            )}
+
+            <div
+              ref={viewportRef}
+              className="min-h-[280px] flex-1 overflow-auto overscroll-contain bg-paper"
+            >
+              <div className="flex min-h-full min-w-full items-center justify-center p-4 md:min-h-[min(100%,calc(100vh-12rem))] md:p-8">
+                <div
+                  className={`shrink-0 border-2 shadow-sm ${
+                    loadedId ? "border-ink" : "border-dashed border-ink"
+                  } bg-white`}
+                >
+                  <canvas
+                    ref={mainCanvasRef}
+                    width={DISPLAY_SIZE}
+                    height={DISPLAY_SIZE}
+                    className={`block ${
+                      panMode
+                        ? "pointer-events-none cursor-grab"
+                        : loadedId
+                          ? "cursor-crosshair"
+                          : "cursor-not-allowed"
+                    }`}
+                    style={{
+                      imageRendering: "pixelated",
+                      width: displayPx,
+                      height: displayPx,
+                      touchAction: "none",
+                    }}
+                    onPointerDown={onPointerDown}
+                    onPointerMove={onPointerMove}
+                    onPointerUp={onPointerUp}
+                    onPointerLeave={onPointerUp}
+                  />
+                </div>
               </div>
             </div>
 
