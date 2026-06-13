@@ -16,7 +16,8 @@ import {
   indicesToPreviewUrl,
   loadImageFromFile,
   loadTokenPixelIndices,
-  paintPixel,
+  paintBrushAt,
+  paintBrushStroke,
   processImportImage,
   processCleanImportImage,
 } from "../lib/pixel-canvas.js";
@@ -31,6 +32,7 @@ import {
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
 const TOOLS = ["paint", "erase", "fill"];
+const BRUSH_SIZES = [1, 2, 3, 4, 5];
 const MIN_ZOOM = 25;
 const MAX_ZOOM = 800;
 const ZOOM_STEP = 25;
@@ -457,6 +459,7 @@ export default function Canvas() {
   const [loading, setLoading] = useState(false);
 
   const [tool, setTool] = useState("paint");
+  const [brushSize, setBrushSize] = useState(1);
   const [colorIndex, setColorIndex] = useState(1);
   const [showDiff, setShowDiff] = useState(false);
   const [painting, setPainting] = useState(false);
@@ -693,16 +696,18 @@ export default function Canvas() {
         return;
       }
 
-      const key = `${x},${y}`;
-      if (lastPaintRef.current === key) return;
-      lastPaintRef.current = key;
-
+      const last = lastPaintRef.current;
       setIndices((prev) => {
-        if (prev[y * 64 + x] === paintIndex) return prev;
-        return paintPixel(prev, x, y, paintIndex);
+        if (last) {
+          const [lx, ly] = last.split(",").map(Number);
+          if (lx === x && ly === y) return prev;
+          return paintBrushStroke(prev, lx, ly, x, y, paintIndex, brushSize);
+        }
+        return paintBrushAt(prev, x, y, paintIndex, brushSize);
       });
+      lastPaintRef.current = `${x},${y}`;
     },
-    [canEdit, tool, colorIndex, setIndices],
+    [canEdit, tool, colorIndex, brushSize, setIndices],
   );
 
   const onPointerDown = (e) => {
@@ -870,7 +875,23 @@ export default function Canvas() {
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Brush
               </p>
-              <p className="border border-ink bg-white px-2 py-1.5 text-xs text-ink/60">1px</p>
+              <div className="flex gap-1">
+                {BRUSH_SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setBrushSize(size)}
+                    disabled={tool === "fill"}
+                    className={`flex-1 border px-1 py-1.5 text-xs font-semibold transition-colors disabled:opacity-40 ${
+                      brushSize === size
+                        ? "border-signal bg-signal/10 text-signal"
+                        : "border-ink text-ink/70 hover:border-ink/60"
+                    }`}
+                  >
+                    {size}px
+                  </button>
+                ))}
+              </div>
             </div>
 
             {paletteColors.length > 0 && (

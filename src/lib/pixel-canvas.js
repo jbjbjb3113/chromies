@@ -100,6 +100,53 @@ export function paintPixel(indices, x, y, index, grid = GRID) {
   return out;
 }
 
+function stampBrushInPlace(out, cx, cy, index, size, grid = GRID) {
+  const half = Math.floor(size / 2);
+  for (let dy = 0; dy < size; dy++) {
+    for (let dx = 0; dx < size; dx++) {
+      const px = cx - half + dx;
+      const py = cy - half + dy;
+      if (px >= 0 && py >= 0 && px < grid && py < grid) {
+        out[py * grid + px] = index;
+      }
+    }
+  }
+}
+
+/** Stamp a square brush (size×size) centered on (cx, cy). */
+export function paintBrushAt(indices, cx, cy, index, size = 1, grid = GRID) {
+  const out = cloneIndices(indices);
+  stampBrushInPlace(out, cx, cy, index, size, grid);
+  return out;
+}
+
+/** Bresenham stroke stamping the same brush along a line. */
+export function paintBrushStroke(indices, x0, y0, x1, y1, index, size = 1, grid = GRID) {
+  const out = cloneIndices(indices);
+  let x = x0;
+  let y = y0;
+  const dx = Math.abs(x1 - x0);
+  const dy = Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let err = dx - dy;
+
+  while (true) {
+    stampBrushInPlace(out, x, y, index, size, grid);
+    if (x === x1 && y === y1) break;
+    const e2 = 2 * err;
+    if (e2 > -dy) {
+      err -= dy;
+      x += sx;
+    }
+    if (e2 < dx) {
+      err += dx;
+      y += sy;
+    }
+  }
+  return out;
+}
+
 export function drawIndicesToCanvas(
   canvas,
   indices,
