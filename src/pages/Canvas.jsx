@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { ROLES, getPaletteFromMetadata } from "../data/chromies-palettes.js";
@@ -29,6 +29,7 @@ const TOOLS = ["paint", "erase", "fill"];
 const MIN_ZOOM = 25;
 const MAX_ZOOM = 800;
 const ZOOM_STEP = 25;
+const WHEEL_ZOOM_STEP = 15;
 
 function clampZoom(value, fitZoom) {
   const min = Math.min(100, fitZoom);
@@ -156,11 +157,19 @@ export default function Canvas() {
   const viewportRef = useRef(null);
   const lastPaintRef = useRef(null);
   const zoomInitializedRef = useRef(false);
+  const wheelAnchorRef = useRef(null);
+  const zoomPercentRef = useRef(null);
+  const fitZoomRef = useRef(100);
 
   const paletteColors = palette?.colors ?? [];
 
   const effectiveZoom = zoomPercent ?? fitZoom;
   const displayPx = Math.round((DISPLAY_SIZE * effectiveZoom) / 100);
+
+  useEffect(() => {
+    zoomPercentRef.current = zoomPercent;
+    fitZoomRef.current = fitZoom;
+  }, [zoomPercent, fitZoom]);
 
   const traits = useMemo(() => metadata?.attributes ?? [], [metadata]);
 
@@ -246,6 +255,68 @@ export default function Canvas() {
   const handleFitZoom = useCallback(() => {
     setZoomPercent(fitZoom);
   }, [fitZoom]);
+
+  useLayoutEffect(() => {
+    const anchor = wheelAnchorRef.current;
+    if (!anchor) return;
+
+    const viewport = viewportRef.current;
+    const canvas = mainCanvasRef.current;
+    if (!viewport || !canvas) {
+      wheelAnchorRef.current = null;
+      return;
+    }
+
+    const viewportRect = viewport.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const canvasContentX = viewport.scrollLeft + (canvasRect.left - viewportRect.left);
+    const canvasContentY = viewport.scrollTop + (canvasRect.top - viewportRect.top);
+    const targetCanvasContentX = anchor.pointX - anchor.normX * displayPx;
+    const targetCanvasContentY = anchor.pointY - anchor.normY * displayPx;
+
+    viewport.scrollLeft += targetCanvasContentX - canvasContentX;
+    viewport.scrollTop += targetCanvasContentY - canvasContentY;
+    wheelAnchorRef.current = null;
+  }, [displayPx]);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return undefined;
+
+    const onWheel = (e) => {
+      if (zoomPercentRef.current === null) return;
+
+      const oldZoom = zoomPercentRef.current ?? fitZoomRef.current;
+      const delta = e.deltaY < 0 ? WHEEL_ZOOM_STEP : -WHEEL_ZOOM_STEP;
+      const nextZoom = clampZoom(oldZoom + delta, fitZoomRef.current);
+      if (nextZoom === oldZoom) return;
+
+      e.preventDefault();
+
+      const canvas = mainCanvasRef.current;
+      if (canvas) {
+        const viewportRect = viewport.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect();
+        if (canvasRect.width > 0 && canvasRect.height > 0) {
+          const normX = (e.clientX - canvasRect.left) / canvasRect.width;
+          const normY = (e.clientY - canvasRect.top) / canvasRect.height;
+          const canvasContentX = viewport.scrollLeft + (canvasRect.left - viewportRect.left);
+          const canvasContentY = viewport.scrollTop + (canvasRect.top - viewportRect.top);
+          wheelAnchorRef.current = {
+            normX,
+            normY,
+            pointX: canvasContentX + normX * canvasRect.width,
+            pointY: canvasContentY + normY * canvasRect.height,
+          };
+        }
+      }
+
+      setZoomPercent(nextZoom);
+    };
+
+    viewport.addEventListener("wheel", onWheel, { passive: false });
+    return () => viewport.removeEventListener("wheel", onWheel);
+  }, []);
 
   useEffect(() => {
     if (panMode) {
