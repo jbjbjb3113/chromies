@@ -1,6 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
+import { tokenPngUrl } from "../lib/chromie-token.js";
+
+const HEADER_TOKENS = [42, 139];
+
+const HEADER_TOKEN_SIZE = 96;
+
+function PixelPlaceholderIcon({ size = HEADER_TOKEN_SIZE }) {
+  return (
+    <svg
+      viewBox="0 0 64 64"
+      width={size}
+      height={size}
+      className="text-ink/25"
+      aria-hidden="true"
+    >
+      <rect width="64" height="64" fill="currentColor" opacity="0.08" />
+      <rect x="20" y="18" width="24" height="24" fill="currentColor" opacity="0.35" />
+      <rect x="24" y="44" width="16" height="6" fill="currentColor" opacity="0.25" />
+    </svg>
+  );
+}
+
+function FramedChromie({ tokenId, size, className = "" }) {
+  const [failed, setFailed] = useState(false);
+  const pad = size >= 96 ? 6 : 4;
+
+  return (
+    <div
+      className={`shrink-0 border border-ink bg-white ${className}`}
+      style={{ width: size + pad, height: size + pad, padding: pad / 2 }}
+    >
+      {failed ? (
+        <div className="flex h-full w-full items-center justify-center bg-paper">
+          <PixelPlaceholderIcon size={size} />
+        </div>
+      ) : (
+        <img
+          src={tokenPngUrl(tokenId)}
+          alt={`Chromie #${tokenId}`}
+          width={size}
+          height={size}
+          draggable={false}
+          loading="lazy"
+          className="pixelated block h-full w-full select-none"
+          onError={() => setFailed(true)}
+        />
+      )}
+    </div>
+  );
+}
 
 const FAQ_ITEMS = [
   {
@@ -78,11 +128,30 @@ export default function FAQ() {
 
       <section className="border-b border-ink px-6 pt-32 pb-16 text-center">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">FAQ</h1>
-          <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
-            Mutation tiers, Action Points, the Canvas, burn mechanics, and everything
-            else you need to know about Chromies.
-          </p>
+          <div className="flex items-center justify-center gap-5 sm:gap-8">
+            <FramedChromie
+              tokenId={HEADER_TOKENS[0]}
+              size={HEADER_TOKEN_SIZE}
+              className="hidden sm:block"
+            />
+            <div className="min-w-0">
+              <div className="mb-5 flex justify-center gap-3 sm:hidden">
+                {HEADER_TOKENS.map((id) => (
+                  <FramedChromie key={id} tokenId={id} size={64} />
+                ))}
+              </div>
+              <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">FAQ</h1>
+              <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
+                Mutation tiers, Action Points, the Canvas, burn mechanics, and everything
+                else you need to know about Chromies.
+              </p>
+            </div>
+            <FramedChromie
+              tokenId={HEADER_TOKENS[1]}
+              size={HEADER_TOKEN_SIZE}
+              className="hidden sm:block"
+            />
+          </div>
         </div>
       </section>
 
