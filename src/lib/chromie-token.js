@@ -1,5 +1,9 @@
+import { chromaAbi } from "../../abis/Chroma.ts";
+
 const GRID = 64;
 const TOKEN_MAX = 9999;
+
+const JSON_DATA_URI_PREFIX = "data:application/json;base64,";
 
 export function formatTokenId(id) {
   return String(id).padStart(4, "0");
@@ -23,6 +27,25 @@ export async function fetchChromieMetadata(id, signal) {
   const res = await fetch(tokenJsonUrl(id), { signal, headers: { Accept: "application/json" } });
   if (!res.ok) throw new Error(`Token #${id} metadata not found.`);
   return res.json();
+}
+
+/** Decode `data:application/json;base64,...` from on-chain tokenURI. */
+export function decodeTokenUriMetadata(tokenUri) {
+  if (!tokenUri?.startsWith(JSON_DATA_URI_PREFIX)) {
+    throw new Error("Unsupported tokenURI format.");
+  }
+  const json = atob(tokenUri.slice(JSON_DATA_URI_PREFIX.length));
+  return JSON.parse(json);
+}
+
+export async function fetchOnChainTokenMetadata(publicClient, chromaAddress, tokenId) {
+  const tokenUri = await publicClient.readContract({
+    address: chromaAddress,
+    abi: chromaAbi,
+    functionName: "tokenURI",
+    args: [BigInt(tokenId)],
+  });
+  return decodeTokenUriMetadata(tokenUri);
 }
 
 export function loadTokenImage(id) {

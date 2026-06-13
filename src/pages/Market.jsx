@@ -14,9 +14,14 @@ import {
   CANVAS_ADDRESS,
   DEFAULT_CHAIN,
   getCanvasAddress,
+  getChromaAddress,
   getMarketplaceAddress,
 } from "../lib/chroma-contract.js";
-import { tokenPngUrl } from "../lib/chromie-token.js";
+import {
+  fetchChromieMetadata,
+  fetchOnChainTokenMetadata,
+  tokenPngUrl,
+} from "../lib/chromie-token.js";
 
 /** PixelMarketplace deploy block on Sepolia — use as fromBlock for any event queries. */
 export const MARKETPLACE_DEPLOY_BLOCK = 11037727n;
@@ -36,6 +41,59 @@ const CONNECT_BTN_CLASS =
 
 const INPUT_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm text-ink outline-none transition-colors placeholder:text-ink/30 focus:border-signal";
+
+const TRAIT_ORDER = [
+  "Character",
+  "Palette",
+  "Hood",
+  "Shirt",
+  "Body",
+  "Bodytattoo",
+  "Necklace",
+  "Tattoo",
+  "Beard",
+  "Mustache",
+  "Eyes",
+  "Earrings",
+  "Glasses",
+  "Hair",
+  "Mutation",
+  "Drift",
+  "Level",
+  "Burns Absorbed",
+  "Customized",
+  "Pixels Edited",
+  "Total Pixels",
+];
+
+function orderTraits(attributes = []) {
+  const byType = new Map(attributes.map((attr) => [attr.trait_type, attr]));
+  const ordered = [];
+  for (const traitType of TRAIT_ORDER) {
+    const attr = byType.get(traitType);
+    if (attr) ordered.push(attr);
+  }
+  for (const attr of attributes) {
+    if (!TRAIT_ORDER.includes(attr.trait_type)) ordered.push(attr);
+  }
+  return ordered;
+}
+
+function formatTraitValue(attr) {
+  if (attr?.value === undefined || attr?.value === null) return "—";
+  return String(attr.value);
+}
+
+function listingPriceLabel(listing, isDemo) {
+  if (isDemo) {
+    return `${Number(listing.priceEth).toFixed(Number(listing.priceEth) < 0.01 ? 4 : 3)} ETH`;
+  }
+  return formatEthPrice(listing.price);
+}
+
+function listingApAmount(listing, isDemo) {
+  return isDemo ? listing.apAmount : listing.amount;
+}
 
 function shortenAddress(address) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -60,6 +118,210 @@ function formatEthPrice(wei) {
   if (value < 0.0001) return `${value.toFixed(6)} ETH`;
   if (value < 0.01) return `${value.toFixed(4)} ETH`;
   return `${value.toFixed(3)} ETH`;
+}
+
+function TraitBadge({ label, value }) {
+  return (
+    <div className="border border-ink/20 bg-white px-3 py-2.5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-ink/40">{label}</p>
+      <p className="mt-1 text-sm font-bold text-ink">{value}</p>
+    </div>
+  );
+}
+
+function TokenViewerModal({
+  open,
+  onClose,
+  listing,
+  isDemo = false,
+  collectionOverride,
+  chainId,
+  publicClient,
+  chromaAddress,
+}) {
+  const [metadata, setMetadata] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [imageFailed, setImageFailed] = useState(false);
+
+  const tokenId = listing ? Number(listing.tokenId) : null;
+  const collection =
+    collectionOverride ?? (listing ? collectionLabel(listing.canvas, chainId) : "CHROMIES");
+  const tokenLabel = collection === "NORMIES" ? "Normie" : "Chromie";
+  const priceLabel = listing ? listingPriceLabel(listing, isDemo) : "";
+  const apAmount = listing ? listingApAmount(listing, isDemo) : 0;
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKey = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  useEffect(() => {
+    if (!open || !listing || !Number.isFinite(tokenId) || tokenId < 1) {
+      setMetadata(null);
+      setError(null);
+      setLoading(false);
+      setImageFailed(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setMetadata(null);
+    setImageFailed(false);
+
+    (async () => {
+      try {
+        let data = null;
+        if (publicClient && chromaAddress) {
+          try {
+            data = await fetchOnChainTokenMetadata(publicClient, chromaAddress, tokenId);
+          } catch {
+            data = await fetchChromieMetadata(tokenId);
+          }
+        } else {
+          data = await fetchChromieMetadata(tokenId);
+        }
+        if (!cancelled) setMetadata(data);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err?.message ?? "Failed to load token metadata.");
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, listing, tokenId, publicClient, chromaAddress]);
+
+  if (!open || !listing) return null;
+
+  const traits = orderTraits(metadata?.attributes ?? []);
+  const imageSrc =
+    !imageFailed && metadata?.image ? metadata.image : tokenPngUrl(tokenId);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4"
+      role="presentation"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="token-viewer-title"
+        className="max-h-[92vh] w-full max-w-5xl overflow-y-auto border border-ink bg-paper shadow-lg"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-ink px-5 py-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+              {collection}
+              {isDemo && (
+                <span className="ml-2 border border-signal/40 bg-signal/10 px-1.5 py-0.5 text-signal">
+                  Demo
+                </span>
+              )}
+            </p>
+            <h2 id="token-viewer-title" className="mt-1 text-xl font-black tracking-tight text-ink">
+              {metadata?.name ?? `${tokenLabel} #${tokenId}`}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close token viewer"
+            className="shrink-0 border border-ink px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink/60 transition-colors hover:border-signal hover:text-signal"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="grid gap-6 p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+          <div>
+            <div className="overflow-hidden border border-ink bg-white">
+              <div className="aspect-square w-full bg-[linear-gradient(45deg,#ccc_25%,transparent_25%),linear-gradient(-45deg,#ccc_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#ccc_75%),linear-gradient(-45deg,transparent_75%,#ccc_75%)] bg-[length:16px_16px] bg-[position:0_0,0_8px,8px_-8px,-8px_0px] bg-paper">
+                {loading ? (
+                  <div className="flex h-full min-h-[280px] items-center justify-center text-xs uppercase tracking-widest text-ink/40">
+                    Loading…
+                  </div>
+                ) : (
+                  <img
+                    src={imageSrc}
+                    alt={metadata?.name ?? `${tokenLabel} #${tokenId}`}
+                    draggable={false}
+                    className="pixelated h-full w-full object-contain"
+                    onError={() => setImageFailed(true)}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="mt-4 border border-ink bg-white p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-signal">
+                Listing
+              </p>
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/40">AP</p>
+                  <p className="mt-0.5 font-symtext text-lg font-black text-ink">
+                    {apAmount.toString()}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/40">Price</p>
+                  <p className="mt-0.5 font-symtext text-lg font-black text-ink">{priceLabel}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-ink/40">Seller</p>
+                  <p className="mt-0.5 font-mono text-xs font-semibold text-ink">
+                    {shortenAddress(listing.seller)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+              Traits
+            </p>
+            {loading && (
+              <p className="text-xs uppercase tracking-widest text-ink/40">Loading traits…</p>
+            )}
+            {error && (
+              <p className="text-sm text-signal">{error}</p>
+            )}
+            {!loading && !error && traits.length === 0 && (
+              <p className="text-xs text-ink/50">No traits found in token metadata.</p>
+            )}
+            {!loading && traits.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {traits.map((attr) => (
+                  <TraitBadge
+                    key={attr.trait_type}
+                    label={attr.trait_type}
+                    value={formatTraitValue(attr)}
+                  />
+                ))}
+              </div>
+            )}
+            {metadata?.description && (
+              <p className="mt-4 text-xs leading-relaxed text-ink/60">{metadata.description}</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function PixelPlaceholderIcon() {
@@ -104,15 +366,14 @@ function ListingCard({
   busy,
   onBuy,
   onCancel,
+  onView,
   isDemo = false,
   collectionOverride,
 }) {
   const [buyerTokenId, setBuyerTokenId] = useState("");
   const collection = collectionOverride ?? collectionLabel(listing.canvas, chainId);
   const tokenLabel = collection === "NORMIES" ? "Normie" : "Chromie";
-  const priceLabel = isDemo
-    ? `${Number(listing.priceEth).toFixed(Number(listing.priceEth) < 0.01 ? 4 : 3)} ETH`
-    : formatEthPrice(listing.price);
+  const priceLabel = listingPriceLabel(listing, isDemo);
 
   return (
     <article className="relative flex flex-col overflow-hidden border border-ink bg-white transition-colors hover:border-signal/60">
@@ -121,21 +382,37 @@ function ListingCard({
           Demo
         </span>
       )}
-      <TokenThumbnail tokenId={listing.tokenId} />
+      <button
+        type="button"
+        onClick={() => onView?.(listing)}
+        className="block w-full text-left transition-opacity hover:opacity-95"
+        aria-label={`View ${tokenLabel} #${listing.tokenId.toString()}`}
+      >
+        <TokenThumbnail tokenId={listing.tokenId} />
+      </button>
 
       <div className="flex flex-1 flex-col gap-4 p-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-            {collection}
-          </p>
-          <h3 className="mt-1 text-base font-black tracking-tight text-ink">
-            {tokenLabel} #{listing.tokenId.toString()}
-          </h3>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+              {collection}
+            </p>
+            <h3 className="mt-1 text-base font-black tracking-tight text-ink">
+              {tokenLabel} #{listing.tokenId.toString()}
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={() => onView?.(listing)}
+            className="shrink-0 border border-ink px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-ink/70 transition-colors hover:border-signal hover:text-signal"
+          >
+            View
+          </button>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className="border border-ink/20 bg-paper px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-ink/60">
-            {(isDemo ? listing.apAmount : listing.amount).toString()} AP
+            {listingApAmount(listing, isDemo).toString()} AP
           </span>
         </div>
 
@@ -217,6 +494,17 @@ export default function Market() {
   const [pendingAction, setPendingAction] = useState(null); // "list" | "buy:<id>" | "cancel:<id>"
   const [txError, setTxError] = useState(null);
   const [txNotice, setTxNotice] = useState(null);
+  const [viewerState, setViewerState] = useState(null);
+
+  const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
+
+  const openViewer = useCallback((listing, { isDemo = false, collectionOverride } = {}) => {
+    setViewerState({ listing, isDemo, collectionOverride });
+  }, []);
+
+  const closeViewer = useCallback(() => {
+    setViewerState(null);
+  }, []);
 
   const fetchListings = useCallback(async () => {
     if (!publicClient || !marketplaceAddress) return;
@@ -488,6 +776,9 @@ export default function Market() {
                 chainId={chainId}
                 isOwn={false}
                 busy={false}
+                onView={(listing) =>
+                  openViewer(listing, { isDemo: true, collectionOverride: mock.collection })
+                }
               />
             ))}
             {listings.map((listing) => (
@@ -499,11 +790,23 @@ export default function Market() {
                 busy={pendingAction !== null}
                 onBuy={handleBuy}
                 onCancel={handleCancel}
+                onView={(item) => openViewer(item)}
               />
             ))}
           </div>
         </div>
       </section>
+
+      <TokenViewerModal
+        open={viewerState !== null}
+        onClose={closeViewer}
+        listing={viewerState?.listing ?? null}
+        isDemo={viewerState?.isDemo ?? false}
+        collectionOverride={viewerState?.collectionOverride}
+        chainId={chainId}
+        publicClient={publicClient}
+        chromaAddress={chromaAddress}
+      />
 
       <SiteFooter />
     </div>
