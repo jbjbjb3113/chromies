@@ -13,4 +13,6 @@ interface IChromaStorage {
     function getTraits(uint256 tokenId) external view returns (bytes memory);
 
     function updateTrait(uint256 tokenId, uint256 traitIndex, uint8 value) external;
+
+    function getTotalPixels(uint256 tokenId) external view returns (uint256);
 }

@@ -50,6 +50,7 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     mapping(uint256 tokenId => address) public pixelPointers;
     mapping(uint256 tokenId => address) public traitPointers;
+    mapping(uint256 tokenId => uint256 count) public totalPixels;
 
     constructor(address initialOwner, address initialWriter) Ownable(initialOwner) {
         writer = initialWriter;
@@ -71,6 +72,11 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
         pixelPointers[tokenId] = SSTORE2.write(pixels);
         traitPointers[tokenId] = SSTORE2.write(traits);
+        totalPixels[tokenId] = _countNonZeroPixels(pixels);
+    }
+
+    function getTotalPixels(uint256 tokenId) external view returns (uint256) {
+        return totalPixels[tokenId];
     }
 
     function revealTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external {
@@ -109,5 +115,15 @@ contract ChromaStorage is IChromaStorage, Ownable {
         bytes memory traits = SSTORE2.read(pointer);
         traits[traitIndex] = bytes1(value);
         traitPointers[tokenId] = SSTORE2.write(traits);
+    }
+
+    function _countNonZeroPixels(bytes calldata pixels) internal pure returns (uint256 count) {
+        for (uint256 i = 0; i < 4096; ++i) {
+            uint8 packed = uint8(pixels[i >> 1]);
+            uint8 idx = (i & 1) == 0 ? packed >> 4 : packed & 0x0f;
+            if (idx != 0) {
+                ++count;
+            }
+        }
     }
 }

@@ -124,6 +124,18 @@ contract ChromaCanvas is Ownable {
         return 0;
     }
 
+    function isCustomized(uint256) external pure returns (bool) {
+        return false;
+    }
+
+    function getPixelsEdited(uint256) external pure returns (uint256) {
+        return 0;
+    }
+
+    function getTotalPixels(uint256) external pure returns (uint256) {
+        return 0;
+    }
+
     function getCanvasInfo(address user, uint256 tokenId)
         external
         view

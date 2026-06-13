@@ -128,6 +128,9 @@ contract ChromaRenderer is Ownable {
             _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15]))),
             _levelAttribute(tokenId),
             _burnCountAttribute(tokenId),
+            _customizedAttribute(tokenId),
+            _pixelsEditedAttribute(tokenId),
+            _totalPixelsAttribute(tokenId),
             _statusAttribute(tokenId),
             ']}'
         );
@@ -212,6 +215,24 @@ contract ChromaRenderer is Ownable {
             burnValue = chromaCanvas.getBurnCount(tokenId);
         }
         return string(abi.encodePacked(",", _jsonNumberAttribute("Burns Absorbed", burnValue)));
+    }
+
+    function _customizedAttribute(uint256 tokenId) internal view returns (string memory) {
+        if (address(chromaCanvas) == address(0) || !chromaCanvas.isCustomized(tokenId)) return "";
+        return string(abi.encodePacked(",", _jsonAttribute("Customized", "Yes")));
+    }
+
+    function _pixelsEditedAttribute(uint256 tokenId) internal view returns (string memory) {
+        uint256 edited = 0;
+        if (address(chromaCanvas) != address(0)) {
+            edited = chromaCanvas.getPixelsEdited(tokenId);
+        }
+        if (edited == 0) return "";
+        return string(abi.encodePacked(",", _jsonNumberAttribute("Pixels Edited", edited)));
+    }
+
+    function _totalPixelsAttribute(uint256 tokenId) internal view returns (string memory) {
+        return string(abi.encodePacked(",", _jsonNumberAttribute("Total Pixels", chromaStorage.getTotalPixels(tokenId))));
     }
 
     function _jsonAttribute(string memory traitType, string memory value) internal pure returns (string memory) {

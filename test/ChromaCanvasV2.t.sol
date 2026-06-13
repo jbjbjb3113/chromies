@@ -268,6 +268,127 @@ contract ChromaCanvasV2Test is Test {
         assert(_contains(json, '{"display_type":"number","trait_type":"Burns Absorbed","value":1}'));
     }
 
+    // ========================================================================
+    // Customized + pixels edited + total pixels traits
+    // ========================================================================
+
+    function test_Customized_StartsFalse() external view {
+        assert(!canvas.isCustomized(ALICE_TOKEN));
+        assert(!canvas.customized(ALICE_TOKEN));
+    }
+
+    function test_Customized_TrueAfterApplyDiff() external {
+        canvas.earnAP(ALICE_TOKEN, 10);
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00000f");
+
+        assert(canvas.isCustomized(ALICE_TOKEN));
+        assert(canvas.customized(ALICE_TOKEN));
+    }
+
+    function test_Customized_TraitInTokenURI() external {
+        ChromaRenderer renderer = _setupRenderer();
+
+        canvas.earnAP(ALICE_TOKEN, 10);
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00000f");
+
+        string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
+        assert(_contains(json, '{"trait_type":"Customized","value":"Yes"}'));
+    }
+
+    function test_PixelsEdited_StartsZero() external view {
+        assert(canvas.getPixelsEdited(ALICE_TOKEN) == 0);
+        assert(canvas.pixelsEdited(ALICE_TOKEN) == 0);
+    }
+
+    function test_PixelsEdited_AccumulatesOnApplyDiff() external {
+        canvas.earnAP(ALICE_TOKEN, 10);
+
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00010f00020f");
+        assert(canvas.getPixelsEdited(ALICE_TOKEN) == 2);
+
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00030f00040f00050f");
+        assert(canvas.getPixelsEdited(ALICE_TOKEN) == 5);
+    }
+
+    function test_PixelsEdited_TraitInTokenURI() external {
+        ChromaRenderer renderer = _setupRenderer();
+
+        canvas.earnAP(ALICE_TOKEN, 10);
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00010f00020f");
+
+        string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
+        assert(_contains(json, '{"display_type":"number","trait_type":"Pixels Edited","value":2}'));
+    }
+
+    function test_TotalPixels_CalculatedOnMint() external {
+        uint256 tokenId = 20;
+        bytes memory pixels = _pixelsWithNonZeroCount(3);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, tokenId, pixels, traits);
+
+        assert(storageContract.getTotalPixels(tokenId) == 3);
+        assert(storageContract.totalPixels(tokenId) == 3);
+        assert(canvas.getTotalPixels(tokenId) == 3);
+    }
+
+    function test_TotalPixels_TraitInTokenURI() external {
+        ChromaRenderer renderer = _setupRenderer();
+
+        uint256 tokenId = 21;
+        bytes memory pixels = _pixelsWithNonZeroCount(4);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, tokenId, pixels, traits);
+
+        string memory json = _decodeTokenUri(renderer.tokenURI(tokenId));
+        assert(_contains(json, '{"display_type":"number","trait_type":"Total Pixels","value":4}'));
+    }
+
+    function test_TotalPixels_UnchangedByEdits() external {
+        uint256 tokenId = 22;
+        bytes memory pixels = _pixelsWithNonZeroCount(5);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, tokenId, pixels, traits);
+
+        uint256 before = storageContract.getTotalPixels(tokenId);
+        canvas.earnAP(tokenId, 10);
+        vm.prank(alice);
+        canvas.applyDiff(tokenId, hex"00000f00010f");
+
+        assert(storageContract.getTotalPixels(tokenId) == before);
+        assert(before == 5);
+        assert(canvas.getPixelsEdited(tokenId) == 2);
+    }
+
+    function _setupRenderer() internal returns (ChromaRenderer renderer) {
+        renderer = new ChromaRenderer(address(storageContract), address(this));
+        renderer.setCanvas(address(canvas));
+        renderer.setChroma(address(chroma));
+        chroma.setRenderer(address(renderer));
+    }
+
+    function _pixelsWithNonZeroCount(uint256 count) internal pure returns (bytes memory pixels) {
+        pixels = new bytes(2048);
+        for (uint256 i = 0; i < count; ++i) {
+            _setPixel(pixels, i, 0, 1);
+        }
+    }
+
+    function _setPixel(bytes memory packedPixels, uint256 x, uint256 y, uint8 value) internal pure {
+        uint256 flatIndex = y * 64 + x;
+        uint256 byteIndex = flatIndex >> 1;
+        uint8 current = uint8(packedPixels[byteIndex]);
+        if ((flatIndex & 1) == 0) {
+            packedPixels[byteIndex] = bytes1((current & 0x0f) | (value << 4));
+        } else {
+            packedPixels[byteIndex] = bytes1((current & 0xf0) | value);
+        }
+    }
+
     function _revealBurn(address user, uint256 receiver, uint256 burned, bytes memory diffData) internal {
         bytes32 salt = keccak256(abi.encodePacked("burn", receiver, burned, diffData));
         bytes32 commitment = keccak256(abi.encode(user, receiver, burned, diffData, salt));

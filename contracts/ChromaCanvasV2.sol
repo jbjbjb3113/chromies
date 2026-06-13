@@ -55,6 +55,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
     /// @inheritdoc IPixelCanvas
     mapping(uint256 tokenId => uint256 apSpent) public totalApSpent;
     mapping(uint256 tokenId => uint256 count) public burnCount;
+    mapping(uint256 tokenId => bool) public customized;
+    mapping(uint256 tokenId => uint256) public pixelsEdited;
 
     mapping(address user => PendingCommit) public pendingCommit;
     mapping(uint256 tokenId => CanvasEdit[]) internal tokenDiffs;
@@ -201,14 +203,26 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
         return burnCount[tokenId];
     }
 
+    function isCustomized(uint256 tokenId) external view returns (bool) {
+        return customized[tokenId];
+    }
+
+    function getPixelsEdited(uint256 tokenId) external view returns (uint256) {
+        return pixelsEdited[tokenId];
+    }
+
+    function getTotalPixels(uint256 tokenId) external view returns (uint256) {
+        return chromaStorage.getTotalPixels(tokenId);
+    }
+
     function getCanvasInfo(address user, uint256 tokenId)
         external
         view
-        returns (uint256 points, uint256 diffCount, bool customized, bool hasPendingCommit)
+        returns (uint256 points, uint256 diffCount, bool tokenCustomized, bool hasPendingCommit)
     {
         points = actionPoints[tokenId];
         diffCount = tokenDiffs[tokenId].length;
-        customized = diffCount > 0;
+        tokenCustomized = customized[tokenId];
         hasPendingCommit = pendingCommit[user].exists;
     }
 
@@ -263,6 +277,11 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
             if (pixelIndex >= GRID_PIXELS) revert PixelIndexOutOfRange();
             if (newColorIndex > 15) revert InvalidDiffEncoding();
             tokenDiffs[tokenId].push(CanvasEdit({pixelIndex: pixelIndex, newColorIndex: newColorIndex}));
+        }
+
+        if (entryCount > 0) {
+            customized[tokenId] = true;
+            pixelsEdited[tokenId] += entryCount;
         }
 
         _spendAP(tokenId, entryCount);
