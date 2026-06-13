@@ -14,6 +14,16 @@ export default function SiteHeader() {
         </Link>
         <div className="flex items-center gap-6">
           <NavLink
+            to="/faq"
+            className={({ isActive }) =>
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
+              }`
+            }
+          >
+            FAQ
+          </NavLink>
+          <NavLink
             to="/mint"
             className={({ isActive }) =>
               `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
@@ -34,16 +44,6 @@ export default function SiteHeader() {
             Action Point Market
           </NavLink>
           {/* Lab tab hidden for now — route still works at /lab */}
-          <NavLink
-            to="/faq"
-            className={({ isActive }) =>
-              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
-                isActive ? "text-signal" : "text-ink/70"
-              }`
-            }
-          >
-            FAQ
-          </NavLink>
           <NavLink
             to="/canvas"
             className={({ isActive }) =>
