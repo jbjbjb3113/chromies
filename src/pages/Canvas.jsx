@@ -34,7 +34,7 @@ import {
 
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
-const TOOLS = ["paint", "erase", "fill"];
+const TOOLS = ["paint", "erase", "fill", "eyedropper"];
 const BRUSH_SIZES = [1, 2, 3, 5, 8, 10];
 const MIN_ZOOM = 25;
 const MAX_ZOOM = 800;
@@ -474,6 +474,8 @@ export default function Canvas() {
   const [bgPickIndex, setBgPickIndex] = useState(null);
   const [bgTolerance, setBgTolerance] = useState(12);
   const [bgEyedropperActive, setBgEyedropperActive] = useState(false);
+  const [pickAndSwitchToPaint, setPickAndSwitchToPaint] = useState(true);
+  const [altEyedropper, setAltEyedropper] = useState(false);
 
   const empty = useMemo(() => new Uint8Array(64 * 64), []);
   const { indices, setIndices, resetHistory, undo, redo, canUndo, canRedo, historyTick } =
@@ -487,9 +489,11 @@ export default function Canvas() {
   const wheelAnchorRef = useRef(null);
   const zoomPercentRef = useRef(null);
   const fitZoomRef = useRef(100);
+  const altEyedropperRef = useRef(false);
 
   const paletteColors = palette?.colors ?? [];
   const canEdit = paletteColors.length > 0;
+  const isPaintColorPick = tool === "eyedropper" || altEyedropper;
   const exportLabel = loadedId ? formatTokenId(loadedId) : "import";
 
   const effectiveZoom = zoomPercent ?? fitZoom;
@@ -677,6 +681,18 @@ export default function Canvas() {
 
   useEffect(() => {
     const onKey = (e) => {
+      if (e.key === "Alt" || e.key === "AltLeft" || e.key === "AltRight") {
+        if (e.type === "keydown" && tool === "paint" && canEdit) {
+          e.preventDefault();
+          setAltEyedropper(true);
+          altEyedropperRef.current = true;
+        } else if (e.type === "keyup") {
+          setAltEyedropper(false);
+          altEyedropperRef.current = false;
+        }
+        return;
+      }
+
       if (!(e.ctrlKey || e.metaKey)) return;
       if (e.key === "z" && !e.shiftKey) {
         e.preventDefault();
@@ -686,9 +702,19 @@ export default function Canvas() {
         redo();
       }
     };
+    const clearAltPick = () => {
+      setAltEyedropper(false);
+      altEyedropperRef.current = false;
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [undo, redo]);
+    window.addEventListener("keyup", onKey);
+    window.addEventListener("blur", clearAltPick);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("keyup", onKey);
+      window.removeEventListener("blur", clearAltPick);
+    };
+  }, [undo, redo, tool, canEdit]);
 
   const handleImportApply = useCallback(
     ({ indices: imported, palette: importPalette }) => {
@@ -711,6 +737,17 @@ export default function Canvas() {
     setBgPickIndex(null);
     setBgEyedropperActive(false);
   }, [bgPreviewMask, bgRemovalCount, setIndices]);
+
+  const pickPaintColorAt = useCallback(
+    (x, y, { fromTool = false } = {}) => {
+      const picked = indices[y * 64 + x];
+      setColorIndex(picked);
+      if (fromTool && pickAndSwitchToPaint) {
+        setTool("paint");
+      }
+    },
+    [indices, pickAndSwitchToPaint],
+  );
 
   const applyAt = useCallback(
     (x, y) => {
@@ -749,6 +786,11 @@ export default function Canvas() {
       return;
     }
 
+    if (isPaintColorPick || altEyedropperRef.current) {
+      pickPaintColorAt(coords.x, coords.y, { fromTool: tool === "eyedropper" });
+      return;
+    }
+
     e.currentTarget.setPointerCapture(e.pointerId);
     setPainting(true);
     lastPaintRef.current = null;
@@ -761,7 +803,7 @@ export default function Canvas() {
   };
 
   const onPointerMove = (e) => {
-    if (!painting || tool === "fill" || panMode) return;
+    if (!painting || tool === "fill" || panMode || isPaintColorPick) return;
     const coords = canvasCoordsFromEvent(mainCanvasRef.current, e.clientX, e.clientY);
     if (!coords) return;
     applyAt(coords.x, coords.y);
@@ -904,6 +946,18 @@ export default function Canvas() {
                   </button>
                 ))}
               </div>
+              {tool === "eyedropper" && (
+                <label className="mt-2 flex cursor-pointer items-center gap-2 text-[10px] text-ink/60">
+                  <input
+                    type="checkbox"
+                    checked={pickAndSwitchToPaint}
+                    onChange={(e) => setPickAndSwitchToPaint(e.target.checked)}
+                    className="accent-signal"
+                  />
+                  Pick & switch to paint
+                </label>
+              )}
+              <p className="mt-1.5 text-[10px] text-ink/45">Hold Alt in paint mode to sample</p>
             </div>
 
             <div>
@@ -916,7 +970,7 @@ export default function Canvas() {
                     key={size}
                     type="button"
                     onClick={() => setBrushSize(size)}
-                    disabled={tool === "fill"}
+                    disabled={tool === "fill" || tool === "eyedropper"}
                     className={`border px-1 py-1.5 text-xs font-semibold transition-colors disabled:opacity-40 ${
                       brushSize === size
                         ? "border-signal bg-signal/10 text-signal"
@@ -1127,7 +1181,7 @@ export default function Canvas() {
                     className={`block ${
                       panMode
                         ? "pointer-events-none cursor-grab"
-                        : bgEyedropperActive
+                        : bgEyedropperActive || isPaintColorPick
                           ? "cursor-cell"
                           : canEdit
                             ? "cursor-crosshair"
