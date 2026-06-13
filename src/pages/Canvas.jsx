@@ -4,7 +4,6 @@ import SiteFooter from "../components/SiteFooter.jsx";
 import { ROLES, getPaletteFromMetadata } from "../data/chromies-palettes.js";
 import { useUndoRedo } from "../hooks/useUndoRedo.js";
 import {
-  CANVAS_SCALE,
   DISPLAY_SIZE,
   canvasCoordsFromEvent,
   cloneIndices,
@@ -214,178 +213,86 @@ export default function Canvas() {
     <div className="min-h-screen bg-paper text-ink">
       <SiteHeader />
 
-      <main className="flex min-h-screen flex-col pt-20">
-        <div className="border-b border-ink px-6 py-4">
-          <h1 className="text-2xl font-black tracking-tight">CANVAS</h1>
-          <p className="mt-1 text-sm text-ink/60">
+      <main className="flex min-h-screen flex-col pt-16">
+        <div className="border-b border-ink px-4 py-3 md:px-6">
+          <h1 className="text-xl font-black tracking-tight md:text-2xl">CANVAS</h1>
+          <p className="mt-0.5 text-xs text-ink/60 md:text-sm">
             Pixel editor preview — paint locally, no on-chain writes yet.
           </p>
         </div>
 
-        <div className="flex flex-1 flex-col lg:flex-row">
-          {/* Left — 30% */}
-          <aside className="flex w-full flex-col gap-5 border-b border-ink p-5 lg:w-[30%] lg:border-r lg:border-b-0">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && loadToken()}
-                placeholder="Token ID"
-                className="min-w-0 flex-1 border border-ink bg-white px-3 py-2 text-sm text-ink outline-none focus:border-signal"
-              />
-              <button
-                type="button"
-                onClick={loadToken}
-                disabled={loading}
-                className="border border-signal px-4 py-2 text-sm font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-50"
-              >
-                {loading ? "…" : "Load"}
-              </button>
+        <div className="flex flex-1 flex-col md:flex-row md:min-h-0">
+          {/* Tools sidebar — vertical on desktop, stacked toolbar on mobile */}
+          <aside className="flex w-full shrink-0 flex-col gap-4 border-b border-ink p-4 md:w-[200px] md:border-b-0 md:border-r md:overflow-y-auto">
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                Load Token
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={tokenInput}
+                  onChange={(e) => setTokenInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && loadToken()}
+                  placeholder="Token ID"
+                  className="min-w-0 flex-1 border border-ink bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-signal"
+                />
+                <button
+                  type="button"
+                  onClick={loadToken}
+                  disabled={loading}
+                  className="shrink-0 border border-signal px-3 py-1.5 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-50"
+                >
+                  {loading ? "…" : "Load"}
+                </button>
+              </div>
+              {loadError && <p className="mt-2 text-xs text-signal">{loadError}</p>}
             </div>
 
-            {loadError && (
-              <p className="text-sm text-signal">{loadError}</p>
-            )}
-
-            <div className="flex items-start gap-4">
+            <div className="flex items-center gap-3">
               <canvas
                 ref={thumbCanvasRef}
                 width={THUMB_SIZE}
                 height={THUMB_SIZE}
                 className="border border-ink bg-white"
-                style={{ imageRendering: "pixelated", width: THUMB_SIZE, height: THUMB_SIZE }}
+                style={{ imageRendering: "pixelated", width: 48, height: 48 }}
               />
               <div className="min-w-0 flex-1">
                 {loadedId ? (
                   <>
-                    <p className="font-bold text-ink">#{formatTokenId(loadedId)}</p>
-                    <p className="text-xs text-ink/50">{metadata?.name}</p>
+                    <p className="text-sm font-bold text-ink">#{formatTokenId(loadedId)}</p>
+                    <p className="truncate text-[10px] text-ink/50">{metadata?.name}</p>
                     {palette && (
-                      <p className="mt-1 text-xs text-ink/60">
-                        Palette: <span className="text-signal">{palette.name}</span>
+                      <p className="mt-0.5 text-[10px] text-ink/60">
+                        <span className="text-signal">{palette.name}</span>
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="text-sm text-ink/50">Load a token to begin.</p>
+                  <p className="text-xs text-ink/50">Load a token to begin.</p>
                 )}
               </div>
             </div>
 
-            {traits.length > 0 && (
-              <div className="max-h-48 overflow-y-auto border border-ink bg-white">
-                <ul className="divide-y divide-ink-line text-xs">
-                  {traits.map((t) => (
-                    <li key={t.trait_type} className="flex justify-between gap-2 px-3 py-1.5">
-                      <span className="text-ink/50">{t.trait_type}</span>
-                      <span className="truncate font-medium text-ink">{t.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="border border-ink bg-white px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-wider text-ink/50">
+            <div className="border border-ink bg-white px-3 py-2">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Action Points
               </p>
-              <p className="mt-1 text-2xl font-black text-signal">AP: 100</p>
+              <p className="text-lg font-black text-signal">AP: 100</p>
             </div>
 
-            <button
-              type="button"
-              disabled
-              title="On-chain save coming after mint"
-              className="w-full border border-ink px-4 py-3 text-sm font-bold uppercase tracking-wide text-ink/40"
-            >
-              Save Changes
-            </button>
-          </aside>
-
-          {/* Center — 50% */}
-          <section className="flex w-full flex-col items-center gap-4 p-5 lg:w-[50%]">
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={undo}
-                disabled={!canUndo}
-                className="border border-ink px-3 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
-              >
-                Undo
-              </button>
-              <button
-                type="button"
-                onClick={redo}
-                disabled={!canRedo}
-                className="border border-ink px-3 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
-              >
-                Redo
-              </button>
-              <span className="text-xs text-ink/45">Ctrl+Z / Ctrl+Y</span>
-              <button
-                type="button"
-                onClick={handleReset}
-                disabled={!loadedId || diffCount === 0}
-                className="border border-ink px-3 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
-              >
-                Reset
-              </button>
-            </div>
-
-            <div
-              className={`border-2 ${loadedId ? "border-ink" : "border-dashed border-ink"} bg-white`}
-            >
-              <canvas
-                ref={mainCanvasRef}
-                width={DISPLAY_SIZE}
-                height={DISPLAY_SIZE}
-                className={loadedId ? "cursor-crosshair" : "cursor-not-allowed"}
-                style={{ imageRendering: "pixelated", width: DISPLAY_SIZE, height: DISPLAY_SIZE }}
-                onPointerDown={onPointerDown}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                onPointerLeave={onPointerUp}
-              />
-            </div>
-
-            {paletteColors.length > 0 && (
-              <div className="w-full max-w-lg">
-                <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-ink/50">
-                  Palette
-                </p>
-                <div className="grid grid-cols-8 gap-1">
-                  {paletteColors.map((hex, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      title={`${i}: ${ROLES[i]}`}
-                      onClick={() => setColorIndex(i)}
-                      className={`aspect-square border-2 transition-transform hover:scale-105 ${
-                        colorIndex === i ? "border-signal" : "border-ink"
-                      }`}
-                      style={{ backgroundColor: hex }}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </section>
-
-          {/* Right — 20% */}
-          <aside className="flex w-full flex-col gap-5 border-t border-ink p-5 lg:w-[20%] lg:border-t-0 lg:border-l">
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink/50">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Tool
               </p>
-              <div className="flex flex-col gap-1">
+              <div className="flex gap-1 md:flex-col">
                 {TOOLS.map((t) => (
                   <button
                     key={t}
                     type="button"
                     onClick={() => setTool(t)}
-                    className={`border px-3 py-2 text-left text-sm font-semibold capitalize transition-colors ${
+                    className={`flex-1 border px-2 py-1.5 text-xs font-semibold capitalize transition-colors md:flex-none md:text-left md:text-sm ${
                       tool === t
                         ? "border-signal bg-signal/10 text-signal"
                         : "border-ink text-ink/70 hover:border-ink/60"
@@ -398,83 +305,173 @@ export default function Canvas() {
             </div>
 
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink/50">
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Brush
               </p>
-              <p className="border border-ink bg-white px-3 py-2 text-sm text-ink/60">
-                1px
-              </p>
+              <p className="border border-ink bg-white px-2 py-1.5 text-xs text-ink/60">1px</p>
             </div>
 
-            <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-ink/50">
-                Color
-              </p>
-              <div className="border border-ink bg-white p-3">
-                <div
-                  className="mb-2 h-10 w-full border border-ink"
-                  style={{ backgroundColor: selectedHex }}
-                />
-                <p className="text-xs text-ink/50">
-                  Index <span className="font-mono text-ink">{colorIndex}</span>
+            {paletteColors.length > 0 && (
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                  Palette
                 </p>
-                <p className="mt-1 font-mono text-sm text-signal">{selectedRole}</p>
-                <p className="mt-1 font-mono text-xs text-ink/50">{selectedHex}</p>
+                <div className="grid grid-cols-8 gap-0.5 md:grid-cols-4">
+                  {paletteColors.map((hex, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      title={`${i}: ${ROLES[i]}`}
+                      onClick={() => setColorIndex(i)}
+                      className={`aspect-square border transition-transform hover:scale-105 ${
+                        colorIndex === i ? "border-signal border-2" : "border-ink"
+                      }`}
+                      style={{ backgroundColor: hex }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-2 border border-ink bg-white p-2">
+                  <div
+                    className="mb-1.5 h-6 w-full border border-ink"
+                    style={{ backgroundColor: selectedHex }}
+                  />
+                  <p className="font-mono text-[10px] text-ink/50">
+                    {colorIndex} · {selectedRole}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
+                History
+              </p>
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  onClick={undo}
+                  disabled={!canUndo}
+                  className="flex-1 border border-ink px-2 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
+                >
+                  Undo
+                </button>
+                <button
+                  type="button"
+                  onClick={redo}
+                  disabled={!canRedo}
+                  className="flex-1 border border-ink px-2 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
+                >
+                  Redo
+                </button>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={!loadedId || diffCount === 0}
+                  className="flex-1 border border-ink px-2 py-1.5 text-xs font-semibold text-ink/70 hover:border-signal hover:text-signal disabled:opacity-40"
+                >
+                  Reset
+                </button>
+              </div>
+              <p className="mt-1 text-[10px] text-ink/40">Ctrl+Z / Ctrl+Y</p>
+            </div>
+
+            {traits.length > 0 && (
+              <div className="hidden max-h-36 overflow-y-auto border border-ink bg-white md:block">
+                <ul className="divide-y divide-ink-line text-[10px]">
+                  {traits.map((t) => (
+                    <li key={t.trait_type} className="flex justify-between gap-2 px-2 py-1">
+                      <span className="text-ink/50">{t.trait_type}</span>
+                      <span className="truncate font-medium text-ink">{t.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </aside>
+
+          {/* Main canvas + action bar */}
+          <section className="flex min-h-0 flex-1 flex-col">
+            <div className="flex flex-1 items-center justify-center bg-paper p-4 md:p-8">
+              <div
+                className={`border-2 shadow-sm ${
+                  loadedId ? "border-ink" : "border-dashed border-ink"
+                } bg-white`}
+              >
+                <canvas
+                  ref={mainCanvasRef}
+                  width={DISPLAY_SIZE}
+                  height={DISPLAY_SIZE}
+                  className={loadedId ? "cursor-crosshair" : "cursor-not-allowed"}
+                  style={{
+                    imageRendering: "pixelated",
+                    width: DISPLAY_SIZE,
+                    height: DISPLAY_SIZE,
+                  }}
+                  onPointerDown={onPointerDown}
+                  onPointerMove={onPointerMove}
+                  onPointerUp={onPointerUp}
+                  onPointerLeave={onPointerUp}
+                />
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={handleExportPng}
-                disabled={!loadedId}
-                className="w-full border border-signal px-4 py-3 text-sm font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
-              >
-                Export PNG
-              </button>
-              <button
-                type="button"
-                onClick={handleExportSvg}
-                disabled={!loadedId}
-                className="w-full border border-signal px-4 py-3 text-sm font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
-              >
-                Export SVG
-              </button>
-            </div>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink bg-paper px-4 py-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  disabled
+                  title="On-chain save coming after mint"
+                  className="border border-ink px-3 py-2 text-xs font-bold uppercase tracking-wide text-ink/40"
+                >
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportPng}
+                  disabled={!loadedId}
+                  className="border border-signal px-3 py-2 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
+                >
+                  Export PNG
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportSvg}
+                  disabled={!loadedId}
+                  className="border border-signal px-3 py-2 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
+                >
+                  Export SVG
+                </button>
+              </div>
 
-            <label className="flex cursor-pointer items-center gap-3 border border-ink bg-white px-3 py-3">
-              <input
-                type="checkbox"
-                checked={showDiff}
-                onChange={(e) => setShowDiff(e.target.checked)}
-                disabled={!loadedId}
-                className="accent-signal"
-              />
-              <span className="text-sm font-semibold">
-                Diff view
-                {diffCount > 0 && (
-                  <span className="ml-1 text-xs text-ink/50">({diffCount} px)</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="flex cursor-pointer items-center gap-2 border border-ink bg-white px-3 py-2">
+                  <input
+                    type="checkbox"
+                    checked={showDiff}
+                    onChange={(e) => setShowDiff(e.target.checked)}
+                    disabled={!loadedId}
+                    className="accent-signal"
+                  />
+                  <span className="text-xs font-semibold">
+                    Diff view
+                    {diffCount > 0 && (
+                      <span className="ml-1 text-ink/50">({diffCount} px)</span>
+                    )}
+                  </span>
+                </label>
+                {loadedId && (
+                  <a
+                    href={tokenPngUrl(loadedId)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs text-ink/50 underline hover:text-signal"
+                  >
+                    View original
+                  </a>
                 )}
-              </span>
-            </label>
-
-            {showDiff && (
-              <p className="text-xs text-ink/50">
-                Changed pixels highlighted in magenta against the original token.
-              </p>
-            )}
-
-            {loadedId && (
-              <a
-                href={tokenPngUrl(loadedId)}
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs text-ink/50 underline hover:text-signal"
-              >
-                View original PNG
-              </a>
-            )}
-          </aside>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
 
