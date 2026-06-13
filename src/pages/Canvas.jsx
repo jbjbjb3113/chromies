@@ -31,6 +31,25 @@ const MAX_ZOOM = 800;
 const ZOOM_STEP = 25;
 const WHEEL_ZOOM_STEP = 15;
 
+function viewportOverflows(viewport) {
+  return (
+    viewport.scrollWidth > viewport.clientWidth + 1 ||
+    viewport.scrollHeight > viewport.clientHeight + 1
+  );
+}
+
+function panViewport(viewport, e) {
+  if (e.shiftKey) {
+    viewport.scrollLeft += e.deltaY;
+    return;
+  }
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    viewport.scrollLeft += e.deltaX;
+  } else {
+    viewport.scrollTop += e.deltaY;
+  }
+}
+
 function clampZoom(value, fitZoom) {
   const min = Math.min(100, fitZoom);
   return Math.max(min, Math.min(MAX_ZOOM, Math.round(value)));
@@ -285,6 +304,12 @@ export default function Canvas() {
 
     const onWheel = (e) => {
       if (zoomPercentRef.current === null) return;
+
+      if (viewportOverflows(viewport)) {
+        e.preventDefault();
+        panViewport(viewport, e);
+        return;
+      }
 
       const oldZoom = zoomPercentRef.current ?? fitZoomRef.current;
       const delta = e.deltaY < 0 ? WHEEL_ZOOM_STEP : -WHEEL_ZOOM_STEP;
