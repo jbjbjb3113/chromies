@@ -19,6 +19,15 @@ export function tokenPngUrl(id) {
   return `/tokens/${formatTokenId(id)}.png`;
 }
 
+/** Map chromies.art reveal placeholders to local public assets when available. */
+export function resolveMetadataImageUrl(image) {
+  if (!image || typeof image !== "string") return image;
+  const match = image.match(/RevealImage(?:_([A-Za-z]))?\.png$/i);
+  if (!match) return image;
+  const suffix = match[1] ? `_${match[1].toUpperCase()}` : "";
+  return `/RevealImage${suffix}.png`;
+}
+
 export function tokenJsonUrl(id) {
   return `/tokens/${formatTokenId(id)}.json`;
 }

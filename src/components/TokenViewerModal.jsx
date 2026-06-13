@@ -3,6 +3,7 @@ import { formatEther } from "viem";
 import {
   fetchChromieMetadata,
   fetchOnChainTokenMetadata,
+  resolveMetadataImageUrl,
   tokenPngUrl,
 } from "../lib/chromie-token.js";
 
@@ -100,6 +101,7 @@ export default function TokenViewerModal({
   chromaAddress,
 }) {
   const [metadata, setMetadata] = useState(null);
+  const [metadataSource, setMetadataSource] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [imageFailed, setImageFailed] = useState(false);
@@ -123,6 +125,7 @@ export default function TokenViewerModal({
   useEffect(() => {
     if (!open || !Number.isFinite(numericTokenId) || numericTokenId < 1) {
       setMetadata(null);
+      setMetadataSource(null);
       setError(null);
       setLoading(false);
       setImageFailed(false);
@@ -133,21 +136,40 @@ export default function TokenViewerModal({
     setLoading(true);
     setError(null);
     setMetadata(null);
+    setMetadataSource(null);
     setImageFailed(false);
 
     (async () => {
       try {
         let data = null;
+        let source = null;
         if (publicClient && chromaAddress) {
           try {
             data = await fetchOnChainTokenMetadata(publicClient, chromaAddress, numericTokenId);
+            source = "onchain";
           } catch {
-            data = await fetchChromieMetadata(numericTokenId);
+            source = "onchain-failed";
+            try {
+              data = await fetchChromieMetadata(numericTokenId);
+            } catch {
+              data = null;
+            }
           }
         } else {
           data = await fetchChromieMetadata(numericTokenId);
+          source = "static";
         }
-        if (!cancelled) setMetadata(data);
+        if (!cancelled) {
+          setMetadata(data);
+          setMetadataSource(source);
+          console.log("[TokenViewerModal] decoded tokenURI metadata", {
+            tokenId: numericTokenId,
+            source,
+            name: data?.name ?? null,
+            image: data?.image ?? null,
+            resolvedImage: data?.image ? resolveMetadataImageUrl(data.image) : null,
+          });
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err?.message ?? "Failed to load token metadata.");
@@ -165,8 +187,21 @@ export default function TokenViewerModal({
   if (!open || resolvedTokenId == null) return null;
 
   const traits = orderTraits(metadata?.attributes ?? []);
-  const imageSrc =
-    !imageFailed && metadata?.image ? metadata.image : tokenPngUrl(numericTokenId);
+  const onChainImage =
+    metadataSource === "onchain" && metadata?.image
+      ? resolveMetadataImageUrl(metadata.image)
+      : null;
+  const imageSrc = (() => {
+    if (metadataSource === "onchain") {
+      if (onChainImage && !imageFailed) return onChainImage;
+      return tokenPngUrl(numericTokenId);
+    }
+    if (metadataSource === "onchain-failed") {
+      return tokenPngUrl(numericTokenId);
+    }
+    if (metadata?.image && !imageFailed) return metadata.image;
+    return tokenPngUrl(numericTokenId);
+  })();
 
   return (
     <div
