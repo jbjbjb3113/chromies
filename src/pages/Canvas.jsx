@@ -674,7 +674,7 @@ export default function Canvas() {
     ({ indices: imported, palette: importPalette }) => {
       setPalette(importPalette);
       setOriginal(cloneIndices(imported));
-      resetHistory(imported);
+      setIndices(cloneIndices(imported));
       setColorIndex(1);
       setShowDiff(false);
       setImportedActive(true);
@@ -682,7 +682,7 @@ export default function Canvas() {
       setMetadata(null);
       setLoadError(null);
     },
-    [resetHistory],
+    [setIndices],
   );
 
   const applyAt = useCallback(
