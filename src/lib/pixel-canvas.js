@@ -220,8 +220,16 @@ export function exportIndicesPng(indices, paletteColors) {
   if (!ctx) return Promise.resolve(null);
   const img = ctx.createImageData(GRID, GRID);
   for (let i = 0; i < GRID * GRID; i++) {
-    const [r, g, b] = hexToRgb(paletteColors[indices[i]] ?? paletteColors[0]);
+    const idx = indices[i];
     const j = i * 4;
+    if (idx === 0) {
+      img.data[j] = 0;
+      img.data[j + 1] = 0;
+      img.data[j + 2] = 0;
+      img.data[j + 3] = 0;
+      continue;
+    }
+    const [r, g, b] = hexToRgb(paletteColors[idx] ?? paletteColors[0]);
     img.data[j] = r;
     img.data[j + 1] = g;
     img.data[j + 2] = b;
