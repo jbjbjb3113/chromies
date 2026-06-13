@@ -120,6 +120,10 @@ contract ChromaCanvas is Ownable {
         }
     }
 
+    function getBurnCount(uint256) external pure returns (uint256) {
+        return 0;
+    }
+
     function getCanvasInfo(address user, uint256 tokenId)
         external
         view

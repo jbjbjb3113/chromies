@@ -127,6 +127,7 @@ contract ChromaRenderer is Ownable {
             ",",
             _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15]))),
             _levelAttribute(tokenId),
+            _burnCountAttribute(tokenId),
             _statusAttribute(tokenId),
             ']}'
         );
@@ -203,6 +204,14 @@ contract ChromaRenderer is Ownable {
             levelValue = chromaCanvas.level(tokenId);
         }
         return string(abi.encodePacked(",", _jsonNumberAttribute("Level", levelValue)));
+    }
+
+    function _burnCountAttribute(uint256 tokenId) internal view returns (string memory) {
+        uint256 burnValue = 0;
+        if (address(chromaCanvas) != address(0)) {
+            burnValue = chromaCanvas.getBurnCount(tokenId);
+        }
+        return string(abi.encodePacked(",", _jsonNumberAttribute("Burns Absorbed", burnValue)));
     }
 
     function _jsonAttribute(string memory traitType, string memory value) internal pure returns (string memory) {

@@ -5,8 +5,10 @@ import {Test} from "forge-std/Test.sol";
 
 import {Chroma} from "../contracts/Chroma.sol";
 import {ChromaCanvasV2} from "../contracts/ChromaCanvasV2.sol";
+import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract ChromaCanvasV2Test is Test {
     ChromaStorage internal storageContract;
@@ -218,5 +220,87 @@ contract ChromaCanvasV2Test is Test {
         vm.prank(bob);
         vm.expectRevert(PixelMarketplace.StaleListing.selector);
         marketplace.buy{value: 1 ether}(listingId, BOB_TOKEN);
+    }
+
+    // ========================================================================
+    // Recursive burn count
+    // ========================================================================
+
+    function test_BurnCount_StartsAtZero() external view {
+        assert(canvas.getBurnCount(ALICE_TOKEN) == 0);
+        assert(canvas.getBurnCount(BOB_TOKEN) == 0);
+    }
+
+    function test_BurnCount_IncrementsOnBurn() external {
+        uint256 fuelOne = 10;
+        uint256 fuelTwo = 11;
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, fuelOne, pixels, traits);
+        chroma.mint(alice, fuelTwo, pixels, traits);
+
+        vm.prank(alice);
+        chroma.setApprovalForAll(address(canvas), true);
+
+        _revealBurn(alice, ALICE_TOKEN, fuelOne, bytes(""));
+        assert(canvas.getBurnCount(ALICE_TOKEN) == 1);
+
+        _revealBurn(alice, ALICE_TOKEN, fuelTwo, bytes(""));
+        assert(canvas.getBurnCount(ALICE_TOKEN) == 2);
+    }
+
+    function test_BurnCount_TraitInTokenURI() external {
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        renderer.setCanvas(address(canvas));
+        renderer.setChroma(address(chroma));
+        chroma.setRenderer(address(renderer));
+
+        uint256 fuelToken = 12;
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, fuelToken, pixels, traits);
+
+        vm.prank(alice);
+        chroma.setApprovalForAll(address(canvas), true);
+        _revealBurn(alice, ALICE_TOKEN, fuelToken, bytes(""));
+
+        string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
+        assert(_contains(json, '{"display_type":"number","trait_type":"Burns Absorbed","value":1}'));
+    }
+
+    function _revealBurn(address user, uint256 receiver, uint256 burned, bytes memory diffData) internal {
+        bytes32 salt = keccak256(abi.encodePacked("burn", receiver, burned, diffData));
+        bytes32 commitment = keccak256(abi.encode(user, receiver, burned, diffData, salt));
+        vm.prank(user);
+        canvas.submitCommit(commitment);
+        vm.prank(user);
+        canvas.revealBurnAndApplyDiff(receiver, burned, salt, diffData);
+    }
+
+    function _decodeTokenUri(string memory uri) internal pure returns (string memory) {
+        bytes memory prefix = bytes("data:application/json;base64,");
+        bytes memory raw = bytes(uri);
+        bytes memory encoded = new bytes(raw.length - prefix.length);
+        for (uint256 i = 0; i < encoded.length; ++i) {
+            encoded[i] = raw[i + prefix.length];
+        }
+        return string(Base64.decode(string(encoded)));
+    }
+
+    function _contains(string memory haystack, string memory needle) internal pure returns (bool) {
+        bytes memory h = bytes(haystack);
+        bytes memory n = bytes(needle);
+        if (n.length == 0 || n.length > h.length) return false;
+        for (uint256 i = 0; i <= h.length - n.length; ++i) {
+            bool matchFound = true;
+            for (uint256 j = 0; j < n.length; ++j) {
+                if (h[i + j] != n[j]) {
+                    matchFound = false;
+                    break;
+                }
+            }
+            if (matchFound) return true;
+        }
+        return false;
     }
 }

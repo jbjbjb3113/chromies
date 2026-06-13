@@ -54,6 +54,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
     mapping(uint256 tokenId => uint256 points) public actionPoints;
     /// @inheritdoc IPixelCanvas
     mapping(uint256 tokenId => uint256 apSpent) public totalApSpent;
+    mapping(uint256 tokenId => uint256 count) public burnCount;
 
     mapping(address user => PendingCommit) public pendingCommit;
     mapping(uint256 tokenId => CanvasEdit[]) internal tokenDiffs;
@@ -150,6 +151,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
 
         uint256 burnYield = _burnYield(burnedTokenId);
         _earnAP(tokenId, burnYield);
+        burnCount[tokenId] += 1;
         emit BurnRevealed(msg.sender, burnedTokenId, tokenId, burnYield);
 
         if (chroma.isLocked(tokenId)) revert TokenLocked();
@@ -193,6 +195,10 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
             pixelIndexes[i] = edits[i].pixelIndex;
             newColorIndexes[i] = edits[i].newColorIndex;
         }
+    }
+
+    function getBurnCount(uint256 tokenId) external view returns (uint256) {
+        return burnCount[tokenId];
     }
 
     function getCanvasInfo(address user, uint256 tokenId)
