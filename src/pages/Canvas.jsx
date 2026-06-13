@@ -14,6 +14,7 @@ import {
   drawIndicesToCanvas,
   downloadIndicesSvg,
   exportIndicesPng,
+  fillTransparentCheckerboard,
   floodFill,
   imageDataToPreviewUrl,
   indicesToPreviewUrl,
@@ -467,8 +468,14 @@ function drawThumb(canvas, indices, paletteColors) {
   for (let y = 0; y < 64; y++) {
     for (let x = 0; x < 64; x++) {
       const idx = indices[y * 64 + x];
-      ctx.fillStyle = paletteColors[idx] ?? paletteColors[0];
-      ctx.fillRect(x * THUMB_SCALE, y * THUMB_SCALE, THUMB_SCALE, THUMB_SCALE);
+      const px = x * THUMB_SCALE;
+      const py = y * THUMB_SCALE;
+      if (idx === 0) {
+        fillTransparentCheckerboard(ctx, px, py, THUMB_SCALE, 2);
+      } else {
+        ctx.fillStyle = paletteColors[idx] ?? paletteColors[0];
+        ctx.fillRect(px, py, THUMB_SCALE, THUMB_SCALE);
+      }
     }
   }
 }

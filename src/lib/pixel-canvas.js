@@ -21,6 +21,20 @@ function colorDist2(r, g, b, hex) {
 }
 
 const MAX_RGB_DIST = 255 * Math.sqrt(3);
+const CHECKER_LIGHT = [255, 255, 255];
+const CHECKER_DARK = [204, 204, 204];
+
+/** Standard transparency checkerboard for editor canvas display (not export). */
+export function fillTransparentCheckerboard(ctx, px, py, size, tiles = 4) {
+  const tile = Math.max(1, Math.floor(size / tiles));
+  for (let ty = 0; ty < tiles; ty++) {
+    for (let tx = 0; tx < tiles; tx++) {
+      const [r, g, b] = (tx + ty) % 2 === 0 ? CHECKER_LIGHT : CHECKER_DARK;
+      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+      ctx.fillRect(px + tx * tile, py + ty * tile, tile, tile);
+    }
+  }
+}
 
 function rgbDist2(r, g, b, cr, cg, cb) {
   const dr = r - cr;
@@ -207,24 +221,38 @@ export function drawIndicesToCanvas(
     for (let x = 0; x < GRID; x++) {
       const i = y * GRID + x;
       const idx = indices[i];
-      const [r, g, b] = hexToRgb(paletteColors[idx] ?? paletteColors[0]);
+      const isTransparent = idx === 0;
+      const [r, g, b] = isTransparent
+        ? [0, 0, 0]
+        : hexToRgb(paletteColors[idx] ?? paletteColors[0]);
 
       const px = x * CANVAS_SCALE;
       const py = y * CANVAS_SCALE;
 
+      const fillCell = () => {
+        if (isTransparent) {
+          fillTransparentCheckerboard(ctx, px, py, CANVAS_SCALE);
+        } else {
+          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+          ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
+        }
+      };
+
       if (removalPreview && removalPreview[i]) {
-        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-        ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
+        fillCell();
         ctx.fillStyle = `rgba(${removeHighlight[0]}, ${removeHighlight[1]}, ${removeHighlight[2]}, 0.55)`;
         ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
       } else if (showDiff && original && indices[i] !== original[i]) {
         ctx.fillStyle = `rgb(${diffColor[0]}, ${diffColor[1]}, ${diffColor[2]})`;
         ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
-        ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.45)`;
-        ctx.fillRect(px + 1, py + 1, CANVAS_SCALE - 2, CANVAS_SCALE - 2);
+        if (isTransparent) {
+          fillTransparentCheckerboard(ctx, px + 1, py + 1, CANVAS_SCALE - 2, 2);
+        } else {
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.45)`;
+          ctx.fillRect(px + 1, py + 1, CANVAS_SCALE - 2, CANVAS_SCALE - 2);
+        }
       } else {
-        ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-        ctx.fillRect(px, py, CANVAS_SCALE, CANVAS_SCALE);
+        fillCell();
       }
     }
   }
