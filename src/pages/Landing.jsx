@@ -86,6 +86,13 @@ function FeaturedToken({ src, label }) {
   );
 }
 
+const MINT_BTN_CLASS =
+  "inline-flex border border-[#8a8780] bg-paper/80 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
+
+function FlowArrow() {
+  return <span className="text-ink/40">→</span>;
+}
+
 function TokenFrame({ src, size = 128 }) {
   return (
     <img
@@ -125,21 +132,31 @@ export default function Landing() {
             <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
               Quick Summary
             </h3>
-            <p className="mt-4 text-sm font-semibold tracking-wide text-ink">
-              Mint → Collect → Edit → Burn → Earn AP → Purify → Inscribe
-            </p>
-            <p className="mt-2 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
-            <p className="mt-2 text-sm font-semibold tracking-wide text-signal">
-              Mint → Hold Forever
-            </p>
-          </div>
-          <div className="mt-6 flex justify-center">
-            <Link
-              to="/mint"
-              className="border border-[#8a8780] bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95"
-            >
-              MINT →
-            </Link>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-semibold tracking-wide text-ink">
+              <Link to="/mint" className={MINT_BTN_CLASS}>
+                MINT →
+              </Link>
+              <FlowArrow />
+              <span>Collect</span>
+              <FlowArrow />
+              <span>Edit</span>
+              <FlowArrow />
+              <span>Burn</span>
+              <FlowArrow />
+              <span>Earn AP</span>
+              <FlowArrow />
+              <span>Purify</span>
+              <FlowArrow />
+              <span>Inscribe</span>
+            </div>
+            <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
+            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-semibold tracking-wide">
+              <Link to="/mint" className={MINT_BTN_CLASS}>
+                MINT →
+              </Link>
+              <FlowArrow />
+              <span className="text-signal">Hold Forever</span>
+            </div>
           </div>
         </div>
       </section>
