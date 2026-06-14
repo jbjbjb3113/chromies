@@ -23,7 +23,7 @@ function ThumbnailShell({ children }) {
   );
 }
 
-export default function TokenThumbnail({ tokenId, publicClient, chromaAddress }) {
+export default function TokenThumbnail({ tokenId, publicClient, chromaAddress, refreshKey = 0 }) {
   const [metadataSource, setMetadataSource] = useState(null);
   const [onChainImage, setOnChainImage] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,7 +72,7 @@ export default function TokenThumbnail({ tokenId, publicClient, chromaAddress })
     return () => {
       cancelled = true;
     };
-  }, [id, publicClient, chromaAddress]);
+  }, [id, publicClient, chromaAddress, refreshKey]);
 
   if (!Number.isFinite(id) || id < 1 || pngFallbackFailed) {
     return (

@@ -7,7 +7,7 @@ import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { DEFAULT_CHAIN, getChromaAddress } from "../lib/chroma-contract.js";
-import { fetchOwnedChromaTokenIds } from "../lib/chroma-ownership.js";
+import { fetchOwnedChromaTokenIds, fetchTokenRevealStatus } from "../lib/chroma-ownership.js";
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
@@ -70,6 +70,7 @@ export default function MyChromies() {
 
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [tokenIds, setTokenIds] = useState([]);
+  const [unrevealedCount, setUnrevealedCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
   const [viewerTokenId, setViewerTokenId] = useState(null);
@@ -77,6 +78,7 @@ export default function MyChromies() {
   const fetchOwned = useCallback(async () => {
     if (!publicClient || !chromaAddress || !address) {
       setTokenIds([]);
+      setUnrevealedCount(0);
       return;
     }
 
@@ -84,11 +86,15 @@ export default function MyChromies() {
     setLoadError(null);
     try {
       const ids = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
+      const revealed = await fetchTokenRevealStatus(publicClient, chromaAddress, ids);
+      const unrevealed = ids.filter((id) => revealed[id.toString()] !== true).length;
       setTokenIds(ids);
+      setUnrevealedCount(unrevealed);
     } catch (error) {
       console.error("Failed to load owned Chromies:", error);
       setLoadError(error?.shortMessage ?? error?.message ?? "Failed to load your Chromies.");
       setTokenIds([]);
+      setUnrevealedCount(0);
     } finally {
       setLoading(false);
     }
@@ -99,6 +105,7 @@ export default function MyChromies() {
       fetchOwned();
     } else {
       setTokenIds([]);
+      setUnrevealedCount(0);
       setLoadError(null);
     }
   }, [isConnected, onSepolia, fetchOwned]);
@@ -154,6 +161,25 @@ export default function MyChromies() {
           )}
 
           {loadError && <p className="mb-6 text-sm text-red-600">{loadError}</p>}
+
+          {isConnected && onSepolia && !loading && unrevealedCount > 0 && (
+            <div className="mb-6 flex flex-col gap-3 border border-amber-600/40 bg-amber-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-bold text-amber-900">
+                  {unrevealedCount} unrevealed Chromie{unrevealedCount === 1 ? "" : "s"}
+                </p>
+                <p className="mt-1 text-xs text-amber-800/80">
+                  Reveal placeholders to see your character and unlock burn AP.
+                </p>
+              </div>
+              <Link
+                to="/reveal"
+                className="shrink-0 border border-signal bg-signal px-5 py-2 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal"
+              >
+                Reveal now
+              </Link>
+            </div>
+          )}
 
           {isConnected && onSepolia && !loading && tokenIds.length === 0 && !loadError && (
             <div className="border border-ink bg-white px-6 py-12 text-center">
