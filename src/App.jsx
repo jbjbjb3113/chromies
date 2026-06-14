@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import ComingSoon from "./pages/ComingSoon.jsx";
 import Landing from "./pages/Landing.jsx";
 import Lab from "./pages/Lab.jsx";
@@ -15,14 +15,15 @@ import PixelChroma from "./PixelChroma.jsx";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<ComingSoon />} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/coming-soon" element={<ComingSoon />} />
+      <Route path="/landing" element={<Navigate to="/" replace />} />
       <Route path="/mint" element={<Mint />} />
       <Route path="/market" element={<Market />} />
       <Route path="/my-chromies" element={<MyChromies />} />
       <Route path="/burn" element={<Burn />} />
       <Route path="/inscribe" element={<Inscribe />} />
       <Route path="/faq" element={<FAQ />} />
-      <Route path="/landing" element={<Landing />} />
       <Route path="/lab" element={<Lab />} />
       <Route path="/canvas" element={<Canvas />} />
       <Route path="/pixel-chroma" element={<PixelChroma />} />
