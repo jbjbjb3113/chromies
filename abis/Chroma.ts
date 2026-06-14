@@ -129,6 +129,13 @@ export const chromaAbi = [
   },
   {
     type: "function",
+    name: "isLocked",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    type: "function",
     name: "reveal",
     stateMutability: "nonpayable",
     inputs: [

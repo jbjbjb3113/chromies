@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
+import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import { ROLES, PALETTES, getPaletteFromMetadata, resolvePalette } from "../data/chromies-palettes.js";
 import { useUndoRedo } from "../hooks/useUndoRedo.js";
 import {
@@ -32,6 +34,17 @@ import {
   parseTokenId,
   tokenPngUrl,
 } from "../lib/chromie-token.js";
+import {
+  chromaCanvasV2Abi,
+  DEFAULT_CHAIN,
+  getCanvasAddress,
+  getChromaAddress,
+} from "../lib/chroma-contract.js";
+import {
+  encodeCanvasDiff,
+  fetchCanvasEditState,
+  fetchTokenOwner,
+} from "../lib/chroma-canvas.js";
 
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
@@ -43,6 +56,92 @@ const ZOOM_STEP = 25;
 const WHEEL_ZOOM_STEP = 15;
 const PALETTE_OPTIONS = Object.keys(PALETTES);
 const IMPORT_PREVIEW_SIZE = 128;
+
+function errorMessage(error) {
+  const message = error?.shortMessage ?? error?.message ?? "Transaction failed";
+  return message.length > 200 ? `${message.slice(0, 200)}…` : message;
+}
+
+function ConfirmSaveModal({
+  open,
+  onClose,
+  onConfirm,
+  tokenId,
+  pixelCount,
+  apCost,
+  apAvailable,
+  busy,
+}) {
+  if (!open) return null;
+
+  const remaining = apAvailable - apCost;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4"
+      role="presentation"
+      onClick={busy ? undefined : onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="w-full max-w-lg border border-ink bg-paper shadow-lg"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="border-b border-ink px-5 py-4">
+          <h2 className="text-lg font-black uppercase tracking-tight text-ink">Save to chain</h2>
+          <p className="mt-2 text-sm text-ink/70">
+            Apply your pixel edits on-chain via ChromaCanvasV2. This spends Action Points and cannot
+            be undone.
+          </p>
+        </div>
+
+        <div className="space-y-3 px-5 py-4 text-sm">
+          <div className="flex justify-between gap-4">
+            <span className="text-ink/60">Chromie</span>
+            <span className="font-bold text-ink">#{formatTokenId(tokenId)}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-ink/60">Pixels changed</span>
+            <span className="font-bold text-ink">{pixelCount}</span>
+          </div>
+          <div className="flex justify-between gap-4">
+            <span className="text-ink/60">AP cost</span>
+            <span className="font-bold text-signal">{apCost} AP</span>
+          </div>
+          <div className="border border-ink bg-white p-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+              AP after save
+            </p>
+            <p className="mt-1 font-symtext text-2xl font-black text-ink">{remaining} AP</p>
+            <p className="mt-1 text-xs text-ink/50">
+              {apAvailable} available − {apCost} for this diff
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 border-t border-ink px-5 py-4 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onClose}
+            className="border border-ink bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide text-ink/70 transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onConfirm}
+            className="border border-signal bg-signal px-4 py-2 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {busy ? "Saving…" : "Confirm & save"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function isEditableField(target) {
   if (!(target instanceof HTMLElement)) return false;
@@ -481,6 +580,15 @@ function drawThumb(canvas, indices, paletteColors) {
 }
 
 export default function Canvas() {
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient();
+
+  const onSepolia = chainId === DEFAULT_CHAIN.id;
+  const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
+  const canvasAddress = onSepolia ? getCanvasAddress(chainId) : null;
+
   const [tokenInput, setTokenInput] = useState("42");
   const [loadedId, setLoadedId] = useState(null);
   const [metadata, setMetadata] = useState(null);
@@ -488,6 +596,16 @@ export default function Canvas() {
   const [original, setOriginal] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [actionPoints, setActionPoints] = useState(null);
+  const [isTokenLocked, setIsTokenLocked] = useState(false);
+  const [isTokenOwner, setIsTokenOwner] = useState(false);
+  const [chainStateLoading, setChainStateLoading] = useState(false);
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(null);
 
   const [tool, setTool] = useState("paint");
   const [brushSize, setBrushSize] = useState(1);
@@ -521,7 +639,8 @@ export default function Canvas() {
   const altEyedropperRef = useRef(false);
 
   const paletteColors = palette?.colors ?? [];
-  const canEdit = paletteColors.length > 0;
+  const canPaint = paletteColors.length > 0 && !isTokenLocked;
+  const canEdit = canPaint;
   const isPaintColorPick = tool === "eyedropper" || altEyedropper;
   const showBrushPreview =
     canEdit &&
@@ -551,6 +670,22 @@ export default function Canvas() {
     return countDiff(indices, original);
   }, [indices, original]);
 
+  const apAvailable = actionPoints != null ? Number(actionPoints) : null;
+  const exceedsAp = apAvailable != null && diffCount > apAvailable;
+  const canSaveOnChain =
+    Boolean(loadedId) &&
+    onSepolia &&
+    isConnected &&
+    isTokenOwner &&
+    !isTokenLocked &&
+    diffCount > 0 &&
+    !exceedsAp &&
+    !saving &&
+    walletClient &&
+    publicClient &&
+    chromaAddress &&
+    canvasAddress;
+
   const bgPreviewMask = useMemo(() => {
     if (bgPickIndex === null || !paletteColors.length) return null;
     return computeRemovalMask(indices, paletteColors, bgPickIndex, bgTolerance);
@@ -564,6 +699,38 @@ export default function Canvas() {
   const pickedBgHex =
     bgPickIndex !== null ? (paletteColors[bgPickIndex] ?? "#000000") : null;
 
+  const refreshChainState = useCallback(
+    async (tokenId) => {
+      if (!publicClient || !chromaAddress || !canvasAddress || !tokenId) {
+        setActionPoints(null);
+        setIsTokenLocked(false);
+        setIsTokenOwner(false);
+        return;
+      }
+
+      setChainStateLoading(true);
+      try {
+        const [{ actionPoints: ap, isLocked }, owner] = await Promise.all([
+          fetchCanvasEditState(publicClient, chromaAddress, canvasAddress, tokenId),
+          fetchTokenOwner(publicClient, chromaAddress, tokenId),
+        ]);
+        setActionPoints(ap);
+        setIsTokenLocked(isLocked);
+        setIsTokenOwner(
+          Boolean(address) && owner.toLowerCase() === address.toLowerCase(),
+        );
+      } catch (err) {
+        console.error("Failed to load canvas chain state:", err);
+        setActionPoints(null);
+        setIsTokenLocked(false);
+        setIsTokenOwner(false);
+      } finally {
+        setChainStateLoading(false);
+      }
+    },
+    [publicClient, chromaAddress, canvasAddress, address],
+  );
+
   const loadToken = useCallback(async () => {
     const id = parseTokenId(tokenInput);
     if (!id) {
@@ -572,6 +739,8 @@ export default function Canvas() {
     }
     setLoading(true);
     setLoadError(null);
+    setSaveError(null);
+    setSaveSuccess(null);
     try {
       const [meta, img] = await Promise.all([
         fetchChromieMetadata(id),
@@ -587,6 +756,14 @@ export default function Canvas() {
       setColorIndex(1);
       setShowDiff(false);
       setImportedActive(false);
+
+      if (onSepolia && chromaAddress && canvasAddress) {
+        await refreshChainState(id);
+      } else {
+        setActionPoints(null);
+        setIsTokenLocked(false);
+        setIsTokenOwner(false);
+      }
     } catch (err) {
       setLoadError(err?.message ?? "Failed to load token.");
       setLoadedId(null);
@@ -594,10 +771,27 @@ export default function Canvas() {
       setPalette(null);
       setOriginal(null);
       resetHistory(empty);
+      setActionPoints(null);
+      setIsTokenLocked(false);
+      setIsTokenOwner(false);
     } finally {
       setLoading(false);
     }
-  }, [tokenInput, resetHistory, empty]);
+  }, [
+    tokenInput,
+    resetHistory,
+    empty,
+    onSepolia,
+    chromaAddress,
+    canvasAddress,
+    refreshChainState,
+  ]);
+
+  useEffect(() => {
+    if (loadedId && onSepolia && chromaAddress && canvasAddress) {
+      refreshChainState(loadedId);
+    }
+  }, [address, loadedId, onSepolia, chromaAddress, canvasAddress, refreshChainState]);
 
   useEffect(() => {
     const canvas = mainCanvasRef.current;
@@ -795,6 +989,11 @@ export default function Canvas() {
       setLoadedId(null);
       setMetadata(null);
       setLoadError(null);
+      setActionPoints(null);
+      setIsTokenLocked(false);
+      setIsTokenOwner(false);
+      setSaveError(null);
+      setSaveSuccess(null);
     },
     [setIndices],
   );
@@ -906,7 +1105,7 @@ export default function Canvas() {
   };
 
   const handleExportPng = async () => {
-    if (!canEdit) return;
+    if (!paletteColors.length) return;
     const blob = await exportIndicesPng(indices, paletteColors);
     if (!blob) return;
     const url = URL.createObjectURL(blob);
@@ -918,8 +1117,54 @@ export default function Canvas() {
   };
 
   const handleExportSvg = () => {
-    if (!canEdit) return;
+    if (!paletteColors.length) return;
     downloadIndicesSvg(indices, paletteColors, `chromie-${exportLabel}.svg`);
+  };
+
+  const handleSaveClick = () => {
+    setSaveError(null);
+    setSaveSuccess(null);
+    if (!isConnected) {
+      setWalletModalOpen(true);
+      return;
+    }
+    if (!canSaveOnChain) return;
+    setConfirmSaveOpen(true);
+  };
+
+  const executeSaveToChain = async () => {
+    if (!canSaveOnChain || !loadedId || !walletClient || !publicClient || !canvasAddress) return;
+
+    setSaving(true);
+    setSaveError(null);
+    setSaveSuccess(null);
+
+    try {
+      const diffData = encodeCanvasDiff(indices, original);
+      const hash = await walletClient.writeContract({
+        address: canvasAddress,
+        abi: chromaCanvasV2Abi,
+        functionName: "applyDiff",
+        args: [BigInt(loadedId), diffData],
+        account: address,
+      });
+
+      await publicClient.waitForTransactionReceipt({ hash });
+
+      const synced = cloneIndices(indices);
+      setOriginal(synced);
+      resetHistory(synced);
+      await refreshChainState(loadedId);
+
+      setSaveSuccess(`Saved ${diffCount} pixel change${diffCount === 1 ? "" : "s"} on-chain.`);
+      setConfirmSaveOpen(false);
+    } catch (err) {
+      console.error("applyDiff failed:", err);
+      setSaveError(errorMessage(err));
+      setConfirmSaveOpen(false);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const selectedRole = ROLES[colorIndex] ?? `index_${colorIndex}`;
@@ -933,9 +1178,18 @@ export default function Canvas() {
         <div className="border-b border-ink px-4 py-3 md:px-6">
           <h1 className="text-xl font-black tracking-tight md:text-2xl">CANVAS</h1>
           <p className="mt-0.5 text-xs text-ink/60 md:text-sm">
-            Pixel editor preview — paint locally, no on-chain writes yet.
+            Edit Chromies locally, then save pixel changes on-chain with Action Points.
           </p>
         </div>
+
+        {isTokenLocked && loadedId && (
+          <div className="border-b border-amber-600/40 bg-amber-50 px-4 py-3 text-center md:px-6">
+            <p className="text-sm font-bold text-amber-900">
+              This Chromie is inscribed and permanently locked.
+            </p>
+            <p className="mt-1 text-xs text-amber-800/80">Canvas is view-only — edits cannot be saved.</p>
+          </div>
+        )}
 
         <div className="flex flex-1 flex-col md:flex-row md:min-h-0">
           {/* Tools sidebar — vertical on desktop, stacked toolbar on mobile */}
@@ -1009,7 +1263,34 @@ export default function Canvas() {
               <p className="text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Action Points
               </p>
-              <p className="text-lg font-black text-signal">AP: 100</p>
+              {chainStateLoading ? (
+                <p className="text-sm font-bold text-ink/50">Loading…</p>
+              ) : loadedId && onSepolia ? (
+                <>
+                  <p className="text-lg font-black text-signal">
+                    AP Available: {apAvailable ?? "—"}
+                  </p>
+                  {diffCount > 0 && apAvailable != null && (
+                    <p
+                      className={`mt-1 text-xs font-semibold ${
+                        exceedsAp ? "text-red-600" : "text-ink/70"
+                      }`}
+                    >
+                      Pixels changed: {diffCount} / AP available: {apAvailable}
+                    </p>
+                  )}
+                  {!isConnected && (
+                    <p className="mt-1 text-[10px] text-ink/50">Connect wallet to save on-chain</p>
+                  )}
+                  {isConnected && !isTokenOwner && (
+                    <p className="mt-1 text-[10px] text-amber-700">You do not own this Chromie</p>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm font-bold text-ink/40">
+                  {loadedId ? "Switch to Sepolia" : "Load a token"}
+                </p>
+              )}
             </div>
 
             <div>
@@ -1309,16 +1590,33 @@ export default function Canvas() {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  disabled
-                  title="On-chain save coming after mint"
-                  className="border border-ink px-3 py-2 text-xs font-bold uppercase tracking-wide text-ink/40"
+                  onClick={handleSaveClick}
+                  disabled={!loadedId || !onSepolia || isTokenLocked || diffCount === 0 || exceedsAp || saving}
+                  title={
+                    !loadedId
+                      ? "Load a Chromie token first"
+                      : !onSepolia
+                        ? "Switch to Sepolia"
+                        : isTokenLocked
+                          ? "Token is inscribed and locked"
+                          : diffCount === 0
+                            ? "No pixel changes to save"
+                            : exceedsAp
+                              ? "Not enough Action Points"
+                              : !isConnected
+                                ? "Connect wallet to save"
+                                : !isTokenOwner
+                                  ? "You must own this Chromie"
+                                  : "Save edits on-chain"
+                  }
+                  className="border border-signal bg-signal px-3 py-2 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40"
                 >
-                  Save Changes
+                  {saving ? "Saving…" : "Save to Chain"}
                 </button>
                 <button
                   type="button"
                   onClick={handleExportPng}
-                  disabled={!canEdit}
+                  disabled={!paletteColors.length}
                   className="border border-signal px-3 py-2 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
                 >
                   Export PNG
@@ -1326,7 +1624,7 @@ export default function Canvas() {
                 <button
                   type="button"
                   onClick={handleExportSvg}
-                  disabled={!canEdit}
+                  disabled={!paletteColors.length}
                   className="border border-signal px-3 py-2 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-40"
                 >
                   Export SVG
@@ -1334,6 +1632,16 @@ export default function Canvas() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
+                {saveSuccess && (
+                  <p className="text-xs font-semibold text-emerald-700">{saveSuccess}</p>
+                )}
+                {saveError && <p className="text-xs font-semibold text-red-600">{saveError}</p>}
+                {diffCount > 0 && !saveSuccess && (
+                  <p className={`text-xs font-semibold ${exceedsAp ? "text-red-600" : "text-ink/60"}`}>
+                    Unsaved: {diffCount} px
+                    {apAvailable != null ? ` · ${diffCount} AP` : ""}
+                  </p>
+                )}
                 <label className="flex cursor-pointer items-center gap-2 border border-ink bg-white px-3 py-2">
                   <input
                     type="checkbox"
@@ -1372,6 +1680,24 @@ export default function Canvas() {
         onClose={() => setImportOpen(false)}
         onApply={handleImportApply}
         initialPaletteName={palette?.name ?? "SIGNAL"}
+      />
+
+      <ConfirmSaveModal
+        open={confirmSaveOpen}
+        onClose={() => !saving && setConfirmSaveOpen(false)}
+        onConfirm={executeSaveToChain}
+        tokenId={loadedId}
+        pixelCount={diffCount}
+        apCost={diffCount}
+        apAvailable={apAvailable ?? 0}
+        busy={saving}
+      />
+
+      <WalletSelectModal
+        open={walletModalOpen}
+        onOpen={() => setWalletModalOpen(true)}
+        onClose={() => setWalletModalOpen(false)}
+        buttonClassName="hidden"
       />
     </div>
   );

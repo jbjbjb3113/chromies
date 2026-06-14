@@ -29,6 +29,31 @@ export const chromaCanvasV2Abi = [
   },
   {
     type: "function",
+    name: "applyDiff",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "tokenId", type: "uint256" },
+      { name: "diffData", type: "bytes" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "getCanvasInfo",
+    stateMutability: "view",
+    inputs: [
+      { name: "user", type: "address" },
+      { name: "tokenId", type: "uint256" },
+    ],
+    outputs: [
+      { name: "points", type: "uint256" },
+      { name: "diffCount", type: "uint256" },
+      { name: "tokenCustomized", type: "bool" },
+      { name: "hasPendingCommit", type: "bool" },
+    ],
+  },
+  {
+    type: "function",
     name: "submitCommit",
     stateMutability: "nonpayable",
     inputs: [{ name: "commitment", type: "bytes32" }],
