@@ -119,19 +119,19 @@ function FlowScrollRow({ children, className = "" }) {
   };
 
   return (
-    <div className="relative sm:static">
+    <div className="relative">
       <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-paper/80 to-transparent sm:hidden"
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-paper/80 to-transparent"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-paper/80 to-transparent sm:hidden"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-paper/80 to-transparent"
         aria-hidden
       />
       <button
         type="button"
         onClick={() => scrollByStep(-1)}
-        className="absolute top-1/2 left-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60 sm:hidden"
+        className="absolute top-1/2 left-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60"
         aria-label="Scroll flow left"
       >
         ‹
@@ -139,17 +139,17 @@ function FlowScrollRow({ children, className = "" }) {
       <button
         type="button"
         onClick={() => scrollByStep(1)}
-        className="absolute top-1/2 right-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60 sm:hidden"
+        className="absolute top-1/2 right-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60"
         aria-label="Scroll flow right"
       >
         ›
       </button>
       <div
         ref={scrollRef}
-        className="overflow-x-auto whitespace-nowrap px-5 [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:whitespace-normal sm:px-0"
+        className="overflow-x-auto whitespace-nowrap px-5 [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
       >
         <div
-          className={`flex flex-nowrap items-center justify-start gap-x-2 gap-y-2 text-sm font-semibold tracking-wide sm:flex-wrap sm:justify-center ${className}`}
+          className={`flex flex-nowrap items-center justify-start gap-x-2 gap-y-2 text-sm font-semibold tracking-wide ${className}`}
         >
           {children}
         </div>
