@@ -86,8 +86,16 @@ function FeaturedToken({ src, label }) {
   );
 }
 
-const MINT_BTN_CLASS =
+const FLOW_STEP_LINK_CLASS =
   "inline-flex border border-[#8a8780] bg-paper/80 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
+
+function FlowStepLink({ to, children }) {
+  return (
+    <Link to={to} className={FLOW_STEP_LINK_CLASS}>
+      {children} →
+    </Link>
+  );
+}
 
 function FlowArrow() {
   return <span className="text-ink/40">→</span>;
@@ -133,27 +141,23 @@ export default function Landing() {
               Quick Summary
             </h3>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-semibold tracking-wide text-ink">
-              <Link to="/mint" className={MINT_BTN_CLASS}>
-                MINT →
-              </Link>
+              <FlowStepLink to="/mint">MINT</FlowStepLink>
               <FlowArrow />
-              <span>Collect</span>
+              <FlowStepLink to="/my-chromies">Collect</FlowStepLink>
               <FlowArrow />
-              <span>Edit</span>
+              <FlowStepLink to="/canvas">Edit</FlowStepLink>
               <FlowArrow />
-              <span>Burn</span>
+              <FlowStepLink to="/burn">Burn</FlowStepLink>
               <FlowArrow />
-              <span>Earn AP</span>
+              <FlowStepLink to="/market">Earn AP</FlowStepLink>
               <FlowArrow />
-              <span>Purify</span>
+              <FlowStepLink to="/canvas">Purify</FlowStepLink>
               <FlowArrow />
-              <span>Inscribe</span>
+              <FlowStepLink to="/inscribe">Inscribe</FlowStepLink>
             </div>
             <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
             <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-semibold tracking-wide">
-              <Link to="/mint" className={MINT_BTN_CLASS}>
-                MINT →
-              </Link>
+              <FlowStepLink to="/mint">MINT</FlowStepLink>
               <FlowArrow />
               <span className="text-signal">Hold Forever</span>
             </div>
