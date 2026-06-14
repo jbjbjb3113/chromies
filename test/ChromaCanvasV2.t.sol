@@ -336,6 +336,52 @@ contract ChromaCanvasV2Test is Test {
         assert(canvas.getTotalPixels(tokenId) == 3);
     }
 
+    function test_Inscribe_PreservesCustomizedPixels() external {
+        chroma.setCanvas(address(canvas));
+        ChromaRenderer renderer = _setupRenderer();
+
+        canvas.earnAP(ALICE_TOKEN, 10);
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00000f");
+
+        bytes memory beforeInscribe = storageContract.getPixels(ALICE_TOKEN);
+        assert(_getPixel(beforeInscribe, 0) == 0);
+
+        bytes memory maliciousPixels = new bytes(2048);
+        _setPixel(maliciousPixels, 0, 0, 4);
+        bytes memory traits = storageContract.getTraits(ALICE_TOKEN);
+
+        vm.prank(alice);
+        chroma.inscribe(ALICE_TOKEN, maliciousPixels, traits, new bytes32[](0));
+
+        assert(chroma.isLocked(ALICE_TOKEN));
+
+        bytes memory baked = storageContract.getPixels(ALICE_TOKEN);
+        assert(_getPixel(baked, 0) == 15);
+        assert(_getPixel(baked, 0) != _getPixel(maliciousPixels, 0));
+
+        (uint16[] memory indexes,) = canvas.getDiff(ALICE_TOKEN);
+        assert(indexes.length == 0);
+
+        string memory svg = renderer.renderSVG(ALICE_TOKEN);
+        assert(_contains(svg, 'fill="#db5a91"'));
+    }
+
+    function test_Inscribe_LockOnly_PreservesCustomizedPixels() external {
+        chroma.setCanvas(address(canvas));
+
+        canvas.earnAP(ALICE_TOKEN, 10);
+        vm.prank(alice);
+        canvas.applyDiff(ALICE_TOKEN, hex"00000f");
+
+        vm.prank(alice);
+        chroma.inscribe(ALICE_TOKEN);
+
+        assert(chroma.isLocked(ALICE_TOKEN));
+        bytes memory baked = storageContract.getPixels(ALICE_TOKEN);
+        assert(_getPixel(baked, 0) == 15);
+    }
+
     function test_TotalPixels_TraitInTokenURI() external {
         ChromaRenderer renderer = _setupRenderer();
 
@@ -434,6 +480,15 @@ contract ChromaCanvasV2Test is Test {
         } else {
             packedPixels[byteIndex] = bytes1((current & 0xf0) | value);
         }
+    }
+
+    function _getPixel(bytes memory packedPixels, uint256 flatIndex) internal pure returns (uint8) {
+        uint256 byteIndex = flatIndex >> 1;
+        uint8 current = uint8(packedPixels[byteIndex]);
+        if ((flatIndex & 1) == 0) {
+            return current >> 4;
+        }
+        return current & 0x0f;
     }
 
     function _revealBurn(address user, uint256 receiver, uint256 burned, bytes memory diffData) internal {

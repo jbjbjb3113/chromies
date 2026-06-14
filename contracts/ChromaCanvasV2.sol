@@ -5,6 +5,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
 import {IChromaToken} from "./IChromaToken.sol";
 import {IPixelCanvas} from "./IPixelCanvas.sol";
+import {IChromaCanvasFinalize} from "./IChromaCanvasFinalize.sol";
 
 /// @title ChromaCanvasV2 — DRAFT
 /// @notice Refactor of ChromaCanvas with PER-TOKEN Action Points.
@@ -19,7 +20,7 @@ import {IPixelCanvas} from "./IPixelCanvas.sol";
 ///           owning that token.
 ///         - Implements IPixelCanvas: marketplace-driven transfers go through
 ///           `operatorTransferAP`, gated by owner-approved operator contracts.
-contract ChromaCanvasV2 is Ownable, IPixelCanvas {
+contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     error NotTokenOwner();
     error NotApprovedOperator();
     error InvalidDiffEncoding();
@@ -31,6 +32,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
     error InvalidMutationTier();
     error InvalidTransfer();
     error TokenLocked();
+    error UnauthorizedChromaCaller();
 
     uint256 internal constant GRID_PIXELS = 4096;
     uint256 internal constant TRAIT_MUTATION_INDEX = 15;
@@ -248,6 +250,22 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
         hasPendingCommit = pendingCommit[user].exists;
     }
 
+    /// @inheritdoc IChromaCanvasFinalize
+    function computeFinalPixels(uint256 tokenId) external view returns (bytes memory) {
+        bytes memory pixels = chromaStorage.getPixels(tokenId);
+        CanvasEdit[] storage edits = tokenDiffs[tokenId];
+        for (uint256 i = 0; i < edits.length; ++i) {
+            _setPackedPixel(pixels, edits[i].pixelIndex, edits[i].newColorIndex);
+        }
+        return pixels;
+    }
+
+    /// @inheritdoc IChromaCanvasFinalize
+    function clearDiffs(uint256 tokenId) external {
+        if (msg.sender != address(chroma)) revert UnauthorizedChromaCaller();
+        delete tokenDiffs[tokenId];
+    }
+
     // ========================================================================
     // Internals
     // ========================================================================
@@ -303,5 +321,15 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
 
         _spendAP(tokenId, entryCount);
         emit DiffApplied(user, tokenId, entryCount);
+    }
+
+    function _setPackedPixel(bytes memory pixels, uint256 flatIndex, uint8 value) internal pure {
+        uint256 byteIndex = flatIndex >> 1;
+        uint8 current = uint8(pixels[byteIndex]);
+        if ((flatIndex & 1) == 0) {
+            pixels[byteIndex] = bytes1((current & 0x0f) | (value << 4));
+        } else {
+            pixels[byteIndex] = bytes1((current & 0xf0) | value);
+        }
     }
 }

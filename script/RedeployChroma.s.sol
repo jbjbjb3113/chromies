@@ -8,7 +8,9 @@ import {ChromaCanvasV2} from "../contracts/ChromaCanvasV2.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
 
-contract DeployScript is Script {
+/// @notice Redeploy Chroma stack with inscribe bake + lock-only paths.
+///         Always deploys fresh ChromaStorage (requires rewritePixels for bake-on-lock).
+contract RedeployChromaScript is Script {
     uint96 internal constant ROYALTY_BPS = 500;
     bytes32 internal constant MERKLE_ROOT_ONE =
         0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39;
@@ -21,40 +23,37 @@ contract DeployScript is Script {
         bytes memory keyBytes = vm.envBytes("PRIVATE_KEY");
         uint256 deployerPrivateKey = uint256(bytes32(keyBytes));
         address deployer = vm.addr(deployerPrivateKey);
-
         bytes32 revealRoot = vm.parseBytes32(vm.trim(vm.readFile(REVEAL_ROOT_PATH)));
 
         vm.startBroadcast(deployerPrivateKey);
 
-        ChromaStorage chromaStorage = new ChromaStorage(deployer, address(0));
-        Chroma chroma = new Chroma(address(chromaStorage), deployer, deployer, ROYALTY_BPS);
-        chromaStorage.setWriter(address(chroma));
+        ChromaStorage storageContract = new ChromaStorage(deployer, address(0));
+        Chroma chroma = new Chroma(address(storageContract), deployer, deployer, ROYALTY_BPS);
+        storageContract.setWriter(address(chroma));
 
-        ChromaCanvasV2 chromaCanvas = new ChromaCanvasV2(address(chroma), address(chromaStorage), deployer);
-        chromaStorage.setTraitUpdater(address(chromaCanvas));
+        ChromaCanvasV2 canvas = new ChromaCanvasV2(address(chroma), address(storageContract), deployer);
+        storageContract.setTraitUpdater(address(canvas));
 
-        PixelMarketplace pixelMarketplace = new PixelMarketplace();
-        chromaCanvas.setOperatorApproval(address(pixelMarketplace), true);
+        PixelMarketplace marketplace = new PixelMarketplace();
+        canvas.setOperatorApproval(address(marketplace), true);
 
-        ChromaRenderer chromaRenderer = new ChromaRenderer(address(chromaStorage), deployer);
-        chromaRenderer.setCanvas(address(chromaCanvas));
-        chromaRenderer.setChroma(address(chroma));
-        chroma.setRenderer(address(chromaRenderer));
-        chroma.setCanvas(address(chromaCanvas));
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), deployer);
+        renderer.setCanvas(address(canvas));
+        renderer.setChroma(address(chroma));
 
+        chroma.setRenderer(address(renderer));
+        chroma.setCanvas(address(canvas));
         chroma.setMerkleRootOne(MERKLE_ROOT_ONE);
         chroma.setMerkleRootTwo(MERKLE_ROOT_TWO);
         chroma.setRevealRoot(revealRoot);
 
         vm.stopBroadcast();
 
-        console2.log("ChromaStorage:", address(chromaStorage));
+        console2.log("ChromaStorage:", address(storageContract));
         console2.log("Chroma:", address(chroma));
-        console2.log("ChromaCanvasV2:", address(chromaCanvas));
-        console2.log("ChromaRenderer:", address(chromaRenderer));
-        console2.log("PixelMarketplace:", address(pixelMarketplace));
-        console2.log("MerkleRootOne:", vm.toString(MERKLE_ROOT_ONE));
-        console2.log("MerkleRootTwo:", vm.toString(MERKLE_ROOT_TWO));
+        console2.log("ChromaCanvasV2:", address(canvas));
+        console2.log("ChromaRenderer:", address(renderer));
+        console2.log("PixelMarketplace:", address(marketplace));
         console2.log("RevealRoot:", vm.toString(revealRoot));
     }
 }

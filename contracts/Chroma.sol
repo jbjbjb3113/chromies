@@ -9,6 +9,7 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import {IChromaRenderer} from "./IChromaRenderer.sol";
 import {ChromaStorage} from "./ChromaStorage.sol";
+import {IChromaCanvasFinalize} from "./IChromaCanvasFinalize.sol";
 
 contract Chroma is ERC721, ERC2981, Ownable {
     using Strings for uint256;
@@ -32,6 +33,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error AlreadyRevealed();
     error NotTokenOwner();
     error AlreadyLocked();
+    error NotRevealed();
 
     uint256 public constant MAX_SUPPLY = 5150;
     uint256 public constant MINT_PRICE = 0.006 ether;
@@ -55,6 +57,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
 
     ChromaStorage public immutable chromaStorage;
     IChromaRenderer public renderer;
+    IChromaCanvasFinalize public canvas;
     uint256 private _totalSupply;
 
     constructor(
@@ -106,20 +109,36 @@ contract Chroma is ERC721, ERC2981, Ownable {
         emit TokenRevealed(tokenId);
     }
 
+    function inscribe(uint256 tokenId) external {
+        if (ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
+        if (locked[tokenId]) revert AlreadyLocked();
+        if (!revealed[tokenId]) revert NotRevealed();
+
+        _bakeCanvasEdits(tokenId);
+        locked[tokenId] = true;
+        emit TokenLocked(tokenId);
+    }
+
+    /// @notice Reveal+lock (unrevealed) or lock-only (already revealed). Never overwrites
+    ///         revealed pixel data with the supplied mint payload.
     function inscribe(uint256 tokenId, bytes calldata pixels, bytes calldata traits, bytes32[] calldata proof)
         external
     {
         if (ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
         if (locked[tokenId]) revert AlreadyLocked();
 
+        if (revealed[tokenId]) {
+            _bakeCanvasEdits(tokenId);
+            locked[tokenId] = true;
+            emit TokenLocked(tokenId);
+            return;
+        }
+
         bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
         if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
 
-        if (!revealed[tokenId]) {
-            chromaStorage.writeTokenData(tokenId, pixels, traits);
-            revealed[tokenId] = true;
-        }
-
+        chromaStorage.writeTokenData(tokenId, pixels, traits);
+        revealed[tokenId] = true;
         locked[tokenId] = true;
         emit TokenLocked(tokenId);
     }
@@ -158,6 +177,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
 
     function setRenderer(address rendererAddress) external onlyOwner {
         renderer = IChromaRenderer(rendererAddress);
+    }
+
+    function setCanvas(address canvasAddress) external onlyOwner {
+        canvas = IChromaCanvasFinalize(canvasAddress);
     }
 
     function setDefaultRoyalty(address receiver, uint96 feeNumerator) external onlyOwner {
@@ -232,6 +255,15 @@ contract Chroma is ERC721, ERC2981, Ownable {
     function _verifyAllowlist(address account, bytes32[] calldata proof, bytes32 root) internal pure returns (bool) {
         bytes32 leaf = keccak256(abi.encodePacked(account));
         return MerkleProof.verify(proof, root, leaf);
+    }
+
+    function _bakeCanvasEdits(uint256 tokenId) internal {
+        if (address(canvas) == address(0)) return;
+        if (!canvas.isCustomized(tokenId)) return;
+
+        bytes memory pixels = canvas.computeFinalPixels(tokenId);
+        chromaStorage.rewritePixels(tokenId, pixels);
+        canvas.clearDiffs(tokenId);
     }
 
     function _unrevealedURI(uint256 tokenId) internal pure returns (string memory) {

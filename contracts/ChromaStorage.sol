@@ -117,6 +117,16 @@ contract ChromaStorage is IChromaStorage, Ownable {
         traitPointers[tokenId] = SSTORE2.write(traits);
     }
 
+    /// @notice Replace on-chain pixels after canvas edits are baked in at inscribe time.
+    function rewritePixels(uint256 tokenId, bytes calldata pixels) external {
+        if (msg.sender != writer) revert UnauthorizedWriter();
+        if (pixels.length != PIXELS_LENGTH) revert InvalidPixelsLength();
+        if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
+
+        pixelPointers[tokenId] = SSTORE2.write(pixels);
+        totalPixels[tokenId] = _countNonZeroPixels(pixels);
+    }
+
     function _countNonZeroPixels(bytes calldata pixels) internal pure returns (uint256 count) {
         for (uint256 i = 0; i < 4096; ++i) {
             uint8 packed = uint8(pixels[i >> 1]);

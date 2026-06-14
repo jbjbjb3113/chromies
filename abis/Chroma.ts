@@ -150,6 +150,13 @@ export const chromaAbi = [
     type: "function",
     name: "inscribe",
     stateMutability: "nonpayable",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "inscribe",
+    stateMutability: "nonpayable",
     inputs: [
       { name: "tokenId", type: "uint256" },
       { name: "pixels", type: "bytes" },

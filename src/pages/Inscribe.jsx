@@ -7,7 +7,7 @@ import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { chromaAbi, DEFAULT_CHAIN, getCanvasAddress, getChromaAddress } from "../lib/chroma-contract.js";
-import { getInscribePayload, preloadRevealData } from "../lib/chroma-inscribe.js";
+import { inscribeRevealedArgs } from "../lib/chroma-inscribe.js";
 import {
   fetchOwnedChromaTokenIds,
   fetchTokenCanvasStats,
@@ -234,8 +234,6 @@ export default function Inscribe() {
   const [canvasStatsByTokenId, setCanvasStatsByTokenId] = useState({});
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
-  const [dataLoading, setDataLoading] = useState(false);
-  const [dataError, setDataError] = useState(null);
 
   const [confirmTokenId, setConfirmTokenId] = useState(null);
   const [inscribingTokenId, setInscribingTokenId] = useState(null);
@@ -294,33 +292,8 @@ export default function Inscribe() {
       setLockedByTokenId({});
       setCanvasStatsByTokenId({});
       setLoadError(null);
-      setDataError(null);
     }
   }, [isConnected, onSepolia, fetchOwned]);
-
-  useEffect(() => {
-    if (!isConnected || !onSepolia || inscribableTokenIds.length === 0) {
-      setDataLoading(false);
-      return undefined;
-    }
-
-    let cancelled = false;
-    setDataLoading(true);
-    setDataError(null);
-
-    preloadRevealData()
-      .catch((error) => {
-        console.error("Failed to preload inscribe data:", error);
-        if (!cancelled) setDataError(error?.message ?? "Failed to load inscribe data.");
-      })
-      .finally(() => {
-        if (!cancelled) setDataLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [isConnected, onSepolia, inscribableTokenIds.length]);
 
   const handleInscribeClick = (tokenId) => {
     if (!isConnected) {
@@ -347,14 +320,14 @@ export default function Inscribe() {
     setProgressStep(`Preparing Chromie #${id}…`);
 
     try {
-      const { pixelsHex, traitsHex, proof } = await getInscribePayload(tokenId);
+      const { functionName, args } = inscribeRevealedArgs(tokenId);
 
       setProgressStep(`Confirm inscribe for Chromie #${id}…`);
       const hash = await walletClient.writeContract({
         address: chromaAddress,
         abi: chromaAbi,
-        functionName: "inscribe",
-        args: [tokenId, pixelsHex, traitsHex, proof],
+        functionName,
+        args,
         account: address,
       });
 
@@ -430,14 +403,6 @@ export default function Inscribe() {
           )}
 
           {loadError && <p className="mb-6 text-sm text-red-600">{loadError}</p>}
-          {dataError && <p className="mb-6 text-sm text-red-600">{dataError}</p>}
-
-          {dataLoading && inscribableTokenIds.length > 0 && (
-            <p className="mb-6 text-xs uppercase tracking-widest text-ink/45">
-              Loading inscribe merkle data…
-            </p>
-          )}
-
           {progressStep && (
             <div className="mb-6 border border-signal/40 bg-white px-4 py-3 text-sm text-ink">
               <p className="font-bold uppercase tracking-wide text-signal">{progressStep}</p>
