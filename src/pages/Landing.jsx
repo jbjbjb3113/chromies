@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import SiteHeader from "../components/SiteHeader.jsx";
 import TokenGridBackground from "../components/TokenGridBackground.jsx";
@@ -98,17 +98,56 @@ function FlowStepLink({ to, children }) {
 }
 
 function FlowArrow() {
-  return <span className="shrink-0 text-ink/40">→</span>;
+  return (
+    <span
+      className="inline-flex shrink-0 items-center text-xl leading-none text-signal"
+      aria-hidden
+    >
+      →
+    </span>
+  );
 }
 
 function FlowScrollRow({ children, className = "" }) {
+  const scrollRef = useRef(null);
+
+  const scrollByStep = (direction) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const step = Math.max(140, Math.round(el.clientWidth * 0.45));
+    el.scrollBy({ left: direction * step, behavior: "smooth" });
+  };
+
   return (
     <div className="relative sm:static">
+      <div
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-paper/80 to-transparent sm:hidden"
+        aria-hidden
+      />
       <div
         className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-paper/80 to-transparent sm:hidden"
         aria-hidden
       />
-      <div className="overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:whitespace-normal">
+      <button
+        type="button"
+        onClick={() => scrollByStep(-1)}
+        className="absolute top-1/2 left-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60 sm:hidden"
+        aria-label="Scroll flow left"
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        onClick={() => scrollByStep(1)}
+        className="absolute top-1/2 right-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60 sm:hidden"
+        aria-label="Scroll flow right"
+      >
+        ›
+      </button>
+      <div
+        ref={scrollRef}
+        className="overflow-x-auto whitespace-nowrap px-5 [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:whitespace-normal sm:px-0"
+      >
         <div
           className={`flex flex-nowrap items-center justify-start gap-x-2 gap-y-2 text-sm font-semibold tracking-wide sm:flex-wrap sm:justify-center ${className}`}
         >
