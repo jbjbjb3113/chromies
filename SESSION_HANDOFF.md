@@ -9,7 +9,7 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 | ChromaStorage | `0x9aa5a81cDadC7dE1a7A6924fA424dB217c27Cc7d` |
 | Chroma | `0xDF9Cfc30B513abb252b5D48417a3A7E6F55Af6b9` |
 | ChromaCanvasV2 | `0x3830948Be12b8e8F86e60F0971308e69eE33C666` |
-| ChromaRenderer | `0xe623652069DB71F9C1644Dce9051fe56C244B150` |
+| ChromaRenderer | `0x747F600DC57278cE2c38cfDfB797664c64cdF7CC` |
 | PixelMarketplace | `0x490dcBEBcE8ed4C6E03c7DF3bEbbcdfb495A8751` |
 
 ## Merkle Roots

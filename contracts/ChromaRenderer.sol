@@ -7,6 +7,7 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IChromaCanvas} from "./IChromaCanvas.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
 import {IChromaToken} from "./IChromaToken.sol";
+import {ChromaRendererSvgLib} from "./ChromaRendererSvgLib.sol";
 
 contract ChromaRenderer is Ownable {
     using Strings for uint256;
@@ -14,8 +15,6 @@ contract ChromaRenderer is Ownable {
     IChromaStorage public immutable chromaStorage;
     IChromaCanvas public chromaCanvas;
     IChromaToken public chroma;
-    uint256 internal constant GRID = 64;
-    uint256 internal constant CELL = 16;
 
     constructor(address storageAddress, address initialOwner) Ownable(initialOwner) {
         chromaStorage = IChromaStorage(storageAddress);
@@ -30,73 +29,38 @@ contract ChromaRenderer is Ownable {
     }
 
     function renderSVG(uint256 tokenId) public view returns (string memory) {
-        bytes memory pixels = chromaStorage.getPixels(tokenId);
+        ChromaRendererSvgLib.SvgRenderContext memory ctx = _loadSvgContext(tokenId);
+        bytes memory body = ChromaRendererSvgLib.buildBody(ctx);
+        return ChromaRendererSvgLib.wrapSvg(ctx.palette[0], body);
+    }
+
+    function _loadSvgContext(uint256 tokenId)
+        internal
+        view
+        returns (ChromaRendererSvgLib.SvgRenderContext memory ctx)
+    {
+        ctx.tokenId = tokenId;
         bytes memory traits = chromaStorage.getTraits(tokenId);
-        string[16] memory palette = _paletteForToken(traits);
-        (uint16[] memory diffIndexes, uint8[] memory diffColors) = _getDiff(tokenId);
-        uint8 mutationTier = uint8(traits[15]);
-
-        bytes memory body;
-        for (uint256 y = 0; y < GRID; ++y) {
-            uint256 x = 0;
-            while (x < GRID) {
-                uint256 flatIndex = y * GRID + x;
-                uint8 idx = _getCompositePixelIndex(pixels, x, y, diffIndexes, diffColors);
-                if (mutationTier != 0) {
-                    idx = _mutatePixelIndex(tokenId, flatIndex, idx, mutationTier);
-                }
-
-                uint256 run = 1;
-                while (x + run < GRID) {
-                    uint256 nextFlat = y * GRID + x + run;
-                    uint8 nextIdx = _getCompositePixelIndex(pixels, x + run, y, diffIndexes, diffColors);
-                    if (mutationTier != 0) {
-                        nextIdx = _mutatePixelIndex(tokenId, nextFlat, nextIdx, mutationTier);
-                    }
-                    if (nextIdx != idx) break;
-                    ++run;
-                }
-
-                if (idx != 0) {
-                    body = abi.encodePacked(
-                        body,
-                        '<rect x="',
-                        (x * CELL).toString(),
-                        '" y="',
-                        (y * CELL).toString(),
-                        '" width="',
-                        (run * CELL).toString(),
-                        '" height="16" fill="',
-                        palette[idx],
-                        '"/>'
-                    );
-                }
-                x += run;
-            }
-        }
-
-        return string(
-            abi.encodePacked(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges"><rect width="1024" height="1024" fill="',
-                palette[0],
-                '"/>',
-                body,
-                "</svg>"
-            )
-        );
+        ctx.pixels = chromaStorage.getPixels(tokenId);
+        ctx.palette = _paletteForToken(traits);
+        (ctx.diffIndexes, ctx.diffColors) = _getDiff(tokenId);
+        ctx.mutationTier = uint8(traits[15]);
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         bytes memory traits = chromaStorage.getTraits(tokenId);
         string memory svg = renderSVG(tokenId);
-        string memory image = string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(bytes(svg))));
+        bytes memory json = _encodeTokenJson(tokenId, traits, svg);
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+    }
 
-        bytes memory json = abi.encodePacked(
-            '{"name":"Chroma #',
-            tokenId.toString(),
-            '","description":"Chroma is a fully on-chain 64x64 indexed-color NFT.","image":"',
-            image,
-            '","attributes":[',
+    function _encodeTokenJson(uint256 tokenId, bytes memory traits, string memory svg)
+        internal
+        view
+        returns (bytes memory)
+    {
+        string memory image = string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(bytes(svg))));
+        bytes memory coreTraits = abi.encodePacked(
             _jsonAttribute("Character", _characterLabel(uint8(traits[0]))),
             ",",
             _jsonAttribute("Palette", _paletteName(uint8(traits[1]))),
@@ -111,7 +75,9 @@ contract ChromaRenderer is Ownable {
             ",",
             _jsonAttribute("Necklace", _necklaceLabel(uint8(traits[6]))),
             ",",
-            _jsonAttribute("Tattoo", _tattooLabel(uint8(traits[7]))),
+            _jsonAttribute("Tattoo", _tattooLabel(uint8(traits[7])))
+        );
+        bytes memory faceTraits = abi.encodePacked(
             ",",
             _jsonAttribute("Beard", _beardLabel(uint8(traits[9]))),
             ",",
@@ -125,7 +91,17 @@ contract ChromaRenderer is Ownable {
             ",",
             _jsonAttribute("Hair", _hairLabel(uint8(traits[14]))),
             ",",
-            _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15]))),
+            _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15])))
+        );
+
+        return abi.encodePacked(
+            '{"name":"Chroma #',
+            tokenId.toString(),
+            '","description":"Chroma is a fully on-chain 64x64 indexed-color NFT.","image":"',
+            image,
+            '","attributes":[',
+            coreTraits,
+            faceTraits,
             _levelAttribute(tokenId),
             _burnCountAttribute(tokenId),
             _customizedAttribute(tokenId),
@@ -134,61 +110,6 @@ contract ChromaRenderer is Ownable {
             _statusAttribute(tokenId),
             ']}'
         );
-
-        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
-    }
-
-    function _getPixelIndex(bytes memory pixels, uint256 x, uint256 y) internal pure returns (uint8) {
-        uint256 flatIndex = y * GRID + x;
-        uint8 packed = uint8(pixels[flatIndex >> 1]);
-        if ((flatIndex & 1) == 0) return packed >> 4;
-        return packed & 0x0f;
-    }
-
-    function _getCompositePixelIndex(
-        bytes memory pixels,
-        uint256 x,
-        uint256 y,
-        uint16[] memory diffIndexes,
-        uint8[] memory diffColors
-    ) internal pure returns (uint8) {
-        uint16 flatIndex = uint16(y * GRID + x);
-        for (uint256 i = diffIndexes.length; i > 0; --i) {
-            uint256 idx = i - 1;
-            if (diffIndexes[idx] == flatIndex) return diffColors[idx];
-        }
-        return _getPixelIndex(pixels, x, y);
-    }
-
-    function _mutationSwapThreshold(uint8 tier) internal pure returns (uint8) {
-        if (tier == 1) return 5;
-        if (tier == 2) return 10;
-        if (tier == 3) return 20;
-        return 0;
-    }
-
-    function _mutatePixelIndex(uint256 tokenId, uint256 pixelIndex, uint8 paletteIndex, uint8 tier)
-        internal
-        pure
-        returns (uint8)
-    {
-        if (tier == 0 || paletteIndex == 0) return paletteIndex;
-
-        uint8 threshold = _mutationSwapThreshold(tier);
-        if (threshold == 0) return paletteIndex;
-
-        uint256 seed = uint256(keccak256(abi.encodePacked(tokenId, pixelIndex, "mutation")));
-        if (seed % 100 >= threshold) return paletteIndex;
-
-        if (paletteIndex >= 4 && paletteIndex <= 8) {
-            uint256 familyPos = paletteIndex - 4;
-            return uint8(4 + ((familyPos + seed) % 5));
-        }
-        if (paletteIndex >= 13 && paletteIndex <= 15) {
-            uint256 familyPos = paletteIndex - 13;
-            return uint8(13 + ((familyPos + seed) % 3));
-        }
-        return paletteIndex;
     }
 
     function _getDiff(uint256 tokenId) internal view returns (uint16[] memory diffIndexes, uint8[] memory diffColors) {
