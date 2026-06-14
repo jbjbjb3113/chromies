@@ -5,6 +5,7 @@ import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
+import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { chromaAbi, DEFAULT_CHAIN, getChromaAddress } from "../lib/chroma-contract.js";
 import { fetchOnChainTokenMetadata } from "../lib/chromie-token.js";
 import { fetchOwnedChromaTokenIds, fetchTokenRevealStatus } from "../lib/chroma-ownership.js";
@@ -28,6 +29,7 @@ function RevealTokenCard({
   isRevealed,
   revealing,
   onReveal,
+  onView,
   publicClient,
   chromaAddress,
   refreshKey,
@@ -83,19 +85,46 @@ function RevealTokenCard({
         </div>
       )}
 
-      <div className="pointer-events-none">
-        <TokenThumbnail
-          tokenId={tokenId}
-          publicClient={publicClient}
-          chromaAddress={chromaAddress}
-          refreshKey={refreshKey}
-        />
+      <div className={isRevealed ? "" : "pointer-events-none"}>
+        {isRevealed ? (
+          <button
+            type="button"
+            onClick={() => onView(tokenId)}
+            className="block w-full text-left transition-opacity hover:opacity-95"
+            aria-label={`View Chromie #${id}`}
+          >
+            <TokenThumbnail
+              tokenId={tokenId}
+              publicClient={publicClient}
+              chromaAddress={chromaAddress}
+              refreshKey={refreshKey}
+            />
+          </button>
+        ) : (
+          <TokenThumbnail
+            tokenId={tokenId}
+            publicClient={publicClient}
+            chromaAddress={chromaAddress}
+            refreshKey={refreshKey}
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 border-t border-ink/10 p-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">CHROMIES</p>
-          <h3 className="mt-0.5 text-sm font-black tracking-tight text-ink">Chromie #{id}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">CHROMIES</p>
+            <h3 className="mt-0.5 text-sm font-black tracking-tight text-ink">Chromie #{id}</h3>
+          </div>
+          {isRevealed && (
+            <button
+              type="button"
+              onClick={() => onView(tokenId)}
+              className="shrink-0 border border-ink px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-ink/70 transition-colors hover:border-signal hover:text-signal"
+            >
+              View
+            </button>
+          )}
         </div>
 
         {isRevealed && traitsLoading && (
@@ -150,6 +179,7 @@ export default function Reveal() {
   const [txError, setTxError] = useState(null);
   const [successTokenId, setSuccessTokenId] = useState(null);
   const [thumbnailRefresh, setThumbnailRefresh] = useState(0);
+  const [viewerTokenId, setViewerTokenId] = useState(null);
 
   const unrevealedTokenIds = tokenIds.filter((id) => revealedByTokenId[id.toString()] !== true);
   const revealedOwnedCount = tokenIds.length - unrevealedTokenIds.length;
@@ -362,6 +392,7 @@ export default function Reveal() {
                   isRevealed={revealedByTokenId[tokenId.toString()] === true}
                   revealing={revealingTokenId === tokenId}
                   onReveal={handleReveal}
+                  onView={setViewerTokenId}
                   publicClient={publicClient}
                   chromaAddress={chromaAddress}
                   refreshKey={thumbnailRefresh}
@@ -385,6 +416,7 @@ export default function Reveal() {
                       isRevealed
                       revealing={false}
                       onReveal={handleReveal}
+                      onView={setViewerTokenId}
                       publicClient={publicClient}
                       chromaAddress={chromaAddress}
                       refreshKey={thumbnailRefresh}
@@ -395,6 +427,14 @@ export default function Reveal() {
           )}
         </div>
       </section>
+
+      <TokenViewerModal
+        open={viewerTokenId !== null}
+        onClose={() => setViewerTokenId(null)}
+        tokenId={viewerTokenId}
+        publicClient={publicClient}
+        chromaAddress={chromaAddress}
+      />
 
       <SiteFooter />
     </div>
