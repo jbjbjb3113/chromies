@@ -1,4 +1,5 @@
 import { chromaAbi } from "../../abis/Chroma.ts";
+import { chromaCanvasV2Abi } from "../../abis/ChromaCanvasV2.ts";
 
 const OWNER_SCAN_BATCH = 64;
 
@@ -69,6 +70,52 @@ export async function fetchTokenRevealStatus(publicClient, chromaAddress, tokenI
         args: [tokenId],
       });
       return [tokenId.toString(), revealed];
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}
+
+/** Map tokenId string -> isLocked from Chroma.isLocked(). */
+export async function fetchTokenLockStatus(publicClient, chromaAddress, tokenIds) {
+  if (!publicClient || !chromaAddress || tokenIds.length === 0) return {};
+
+  const entries = await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      const locked = await publicClient.readContract({
+        address: chromaAddress,
+        abi: chromaAbi,
+        functionName: "isLocked",
+        args: [tokenId],
+      });
+      return [tokenId.toString(), locked];
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}
+
+/** Per-token canvas customization stats from ChromaCanvasV2. */
+export async function fetchTokenCanvasStats(publicClient, canvasAddress, tokenIds) {
+  if (!publicClient || !canvasAddress || tokenIds.length === 0) return {};
+
+  const entries = await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      const [customized, pixelsEdited] = await Promise.all([
+        publicClient.readContract({
+          address: canvasAddress,
+          abi: chromaCanvasV2Abi,
+          functionName: "isCustomized",
+          args: [tokenId],
+        }),
+        publicClient.readContract({
+          address: canvasAddress,
+          abi: chromaCanvasV2Abi,
+          functionName: "getPixelsEdited",
+          args: [tokenId],
+        }),
+      ]);
+      return [tokenId.toString(), { customized, pixelsEdited }];
     }),
   );
 

@@ -7,7 +7,11 @@ import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { DEFAULT_CHAIN, getChromaAddress } from "../lib/chroma-contract.js";
-import { fetchOwnedChromaTokenIds, fetchTokenRevealStatus } from "../lib/chroma-ownership.js";
+import {
+  fetchOwnedChromaTokenIds,
+  fetchTokenLockStatus,
+  fetchTokenRevealStatus,
+} from "../lib/chroma-ownership.js";
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
@@ -71,6 +75,7 @@ export default function MyChromies() {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [tokenIds, setTokenIds] = useState([]);
   const [unrevealedCount, setUnrevealedCount] = useState(0);
+  const [inscribableCount, setInscribableCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
   const [viewerTokenId, setViewerTokenId] = useState(null);
@@ -79,6 +84,7 @@ export default function MyChromies() {
     if (!publicClient || !chromaAddress || !address) {
       setTokenIds([]);
       setUnrevealedCount(0);
+      setInscribableCount(0);
       return;
     }
 
@@ -86,15 +92,23 @@ export default function MyChromies() {
     setLoadError(null);
     try {
       const ids = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
-      const revealed = await fetchTokenRevealStatus(publicClient, chromaAddress, ids);
+      const [revealed, locked] = await Promise.all([
+        fetchTokenRevealStatus(publicClient, chromaAddress, ids),
+        fetchTokenLockStatus(publicClient, chromaAddress, ids),
+      ]);
       const unrevealed = ids.filter((id) => revealed[id.toString()] !== true).length;
+      const inscribable = ids.filter(
+        (id) => revealed[id.toString()] === true && locked[id.toString()] !== true,
+      ).length;
       setTokenIds(ids);
       setUnrevealedCount(unrevealed);
+      setInscribableCount(inscribable);
     } catch (error) {
       console.error("Failed to load owned Chromies:", error);
       setLoadError(error?.shortMessage ?? error?.message ?? "Failed to load your Chromies.");
       setTokenIds([]);
       setUnrevealedCount(0);
+      setInscribableCount(0);
     } finally {
       setLoading(false);
     }
@@ -106,6 +120,7 @@ export default function MyChromies() {
     } else {
       setTokenIds([]);
       setUnrevealedCount(0);
+      setInscribableCount(0);
       setLoadError(null);
     }
   }, [isConnected, onSepolia, fetchOwned]);
@@ -177,6 +192,25 @@ export default function MyChromies() {
                 className="shrink-0 border border-signal bg-signal px-5 py-2 text-xs font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal"
               >
                 Reveal now
+              </Link>
+            </div>
+          )}
+
+          {isConnected && onSepolia && !loading && inscribableCount > 0 && (
+            <div className="mb-6 flex flex-col gap-3 border border-ink/40 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-bold text-ink">
+                  {inscribableCount} Chromie{inscribableCount === 1 ? "" : "s"} ready to inscribe
+                </p>
+                <p className="mt-1 text-xs text-ink/60">
+                  Permanently lock on-chain pixel data — canvas edits will be disabled forever.
+                </p>
+              </div>
+              <Link
+                to="/inscribe"
+                className="shrink-0 border border-ink bg-ink px-5 py-2 text-xs font-bold uppercase tracking-wide text-paper transition-colors hover:bg-transparent hover:text-ink"
+              >
+                Inscribe
               </Link>
             </div>
           )}

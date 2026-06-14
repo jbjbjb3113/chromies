@@ -79,6 +79,20 @@ export const chromaCanvasV2Abi = [
     outputs: [{ name: "", type: "uint256" }],
   },
   {
+    type: "function",
+    name: "isCustomized",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "getPixelsEdited",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
     type: "event",
     name: "BurnRevealed",
     anonymous: false,

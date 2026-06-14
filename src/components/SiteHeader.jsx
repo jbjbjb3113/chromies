@@ -64,6 +64,16 @@ export default function SiteHeader() {
             Reveal
           </NavLink>
           <NavLink
+            to="/inscribe"
+            className={({ isActive }) =>
+              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
+                isActive ? "text-signal" : "text-ink/70"
+              }`
+            }
+          >
+            Inscribe
+          </NavLink>
+          <NavLink
             to="/burn"
             className={({ isActive }) =>
               `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
