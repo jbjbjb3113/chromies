@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import WalletSelectModal from "../components/WalletSelectModal.jsx";
+import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import { ROLES, PALETTES, getPaletteFromMetadata, resolvePalette } from "../data/chromies-palettes.js";
 import { useUndoRedo } from "../hooks/useUndoRedo.js";
 import {
@@ -45,6 +47,7 @@ import {
   fetchCanvasEditState,
   fetchTokenOwner,
 } from "../lib/chroma-canvas.js";
+import { fetchOwnedChromaTokenIds } from "../lib/chroma-ownership.js";
 
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
@@ -590,6 +593,9 @@ export default function Canvas() {
   const canvasAddress = onSepolia ? getCanvasAddress(chainId) : null;
 
   const [tokenInput, setTokenInput] = useState("42");
+  const [manualIdOpen, setManualIdOpen] = useState(false);
+  const [ownedTokenIds, setOwnedTokenIds] = useState([]);
+  const [ownedLoading, setOwnedLoading] = useState(false);
   const [loadedId, setLoadedId] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [palette, setPalette] = useState(null);
@@ -731,61 +737,82 @@ export default function Canvas() {
     [publicClient, chromaAddress, canvasAddress, address],
   );
 
-  const loadToken = useCallback(async () => {
-    const id = parseTokenId(tokenInput);
-    if (!id) {
-      setLoadError("Enter a valid token ID (1–9999).");
-      return;
-    }
-    setLoading(true);
-    setLoadError(null);
-    setSaveError(null);
-    setSaveSuccess(null);
-    try {
-      const [meta, img] = await Promise.all([
-        fetchChromieMetadata(id),
-        loadTokenImage(id),
-      ]);
-      const pal = getPaletteFromMetadata(meta);
-      const pix = loadTokenPixelIndices(img, pal.colors);
-      setLoadedId(id);
-      setMetadata(meta);
-      setPalette(pal);
-      setOriginal(cloneIndices(pix));
-      resetHistory(pix);
-      setColorIndex(1);
-      setShowDiff(false);
-      setImportedActive(false);
+  const loadTokenById = useCallback(
+    async (rawId) => {
+      const id = typeof rawId === "number" ? rawId : parseTokenId(rawId);
+      if (!id) {
+        setLoadError("Enter a valid token ID (1–9999).");
+        return;
+      }
+      setTokenInput(String(id));
+      setLoading(true);
+      setLoadError(null);
+      setSaveError(null);
+      setSaveSuccess(null);
+      try {
+        const [meta, img] = await Promise.all([fetchChromieMetadata(id), loadTokenImage(id)]);
+        const pal = getPaletteFromMetadata(meta);
+        const pix = loadTokenPixelIndices(img, pal.colors);
+        setLoadedId(id);
+        setMetadata(meta);
+        setPalette(pal);
+        setOriginal(cloneIndices(pix));
+        resetHistory(pix);
+        setColorIndex(1);
+        setShowDiff(false);
+        setImportedActive(false);
 
-      if (onSepolia && chromaAddress && canvasAddress) {
-        await refreshChainState(id);
-      } else {
+        if (onSepolia && chromaAddress && canvasAddress) {
+          await refreshChainState(id);
+        } else {
+          setActionPoints(null);
+          setIsTokenLocked(false);
+          setIsTokenOwner(false);
+        }
+      } catch (err) {
+        setLoadError(err?.message ?? "Failed to load token.");
+        setLoadedId(null);
+        setMetadata(null);
+        setPalette(null);
+        setOriginal(null);
+        resetHistory(empty);
         setActionPoints(null);
         setIsTokenLocked(false);
         setIsTokenOwner(false);
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setLoadError(err?.message ?? "Failed to load token.");
-      setLoadedId(null);
-      setMetadata(null);
-      setPalette(null);
-      setOriginal(null);
-      resetHistory(empty);
-      setActionPoints(null);
-      setIsTokenLocked(false);
-      setIsTokenOwner(false);
-    } finally {
-      setLoading(false);
+    },
+    [resetHistory, empty, onSepolia, chromaAddress, canvasAddress, refreshChainState],
+  );
+
+  const loadToken = useCallback(() => loadTokenById(tokenInput), [loadTokenById, tokenInput]);
+
+  const fetchOwned = useCallback(async () => {
+    if (!publicClient || !chromaAddress || !address || !onSepolia) {
+      setOwnedTokenIds([]);
+      return;
     }
-  }, [
-    tokenInput,
-    resetHistory,
-    empty,
-    onSepolia,
-    chromaAddress,
-    canvasAddress,
-    refreshChainState,
-  ]);
+
+    setOwnedLoading(true);
+    try {
+      const ids = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
+      setOwnedTokenIds(ids);
+    } catch (error) {
+      console.error("Failed to load owned Chromies:", error);
+      setOwnedTokenIds([]);
+    } finally {
+      setOwnedLoading(false);
+    }
+  }, [publicClient, chromaAddress, address, onSepolia]);
+
+  useEffect(() => {
+    if (isConnected && onSepolia) {
+      fetchOwned();
+    } else {
+      setOwnedTokenIds([]);
+    }
+  }, [isConnected, onSepolia, fetchOwned]);
 
   useEffect(() => {
     if (loadedId && onSepolia && chromaAddress && canvasAddress) {
@@ -1198,25 +1225,97 @@ export default function Canvas() {
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-ink/50">
                 Load Token
               </p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={tokenInput}
-                  onChange={(e) => setTokenInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && loadToken()}
-                  placeholder="Token ID"
-                  className="min-w-0 flex-1 border border-ink bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-signal"
-                />
-                <button
-                  type="button"
-                  onClick={loadToken}
-                  disabled={loading}
-                  className="shrink-0 border border-signal px-3 py-1.5 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-50"
-                >
-                  {loading ? "…" : "Load"}
-                </button>
-              </div>
+
+              {!isConnected && (
+                <p className="mb-2 text-xs text-ink/60">
+                  Connect your wallet to pick from owned Chromies.
+                </p>
+              )}
+
+              {isConnected && !onSepolia && (
+                <p className="mb-2 text-xs text-signal">Switch to Sepolia to load your Chromies.</p>
+              )}
+
+              {isConnected && onSepolia && ownedLoading && (
+                <p className="mb-2 text-xs uppercase tracking-wider text-ink/45">Loading yours…</p>
+              )}
+
+              {isConnected && onSepolia && !ownedLoading && ownedTokenIds.length === 0 && (
+                <div className="mb-2 border border-ink/20 bg-white px-3 py-2.5 text-xs text-ink/70">
+                  <p className="font-semibold text-ink">You don&apos;t own any Chromies yet</p>
+                  <Link
+                    to="/mint"
+                    className="mt-1 inline-block font-bold uppercase tracking-wide text-signal transition-colors hover:text-ink"
+                  >
+                    Mint a Chromie →
+                  </Link>
+                </div>
+              )}
+
+              {isConnected && onSepolia && ownedTokenIds.length > 0 && (
+                <div className="-mx-1 mb-2 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]">
+                  {ownedTokenIds.map((tokenId) => {
+                    const id = Number(tokenId);
+                    const isSelected = loadedId === id;
+                    return (
+                      <button
+                        key={tokenId.toString()}
+                        type="button"
+                        disabled={loading}
+                        onClick={() => loadTokenById(id)}
+                        title={`Load Chromie #${formatTokenId(id)}`}
+                        className={`shrink-0 overflow-hidden border-2 bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                          isSelected
+                            ? "border-signal ring-1 ring-signal/30"
+                            : "border-ink/15 hover:border-signal/60"
+                        }`}
+                        style={{ width: 56 }}
+                      >
+                        <TokenThumbnail
+                          tokenId={tokenId}
+                          publicClient={publicClient}
+                          chromaAddress={chromaAddress}
+                          refreshKey={isSelected ? loadedId : 0}
+                        />
+                        <p className="border-t border-ink/10 py-0.5 text-center text-[9px] font-bold text-ink/70">
+                          #{formatTokenId(id)}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setManualIdOpen((open) => !open)}
+                className="text-[10px] font-bold uppercase tracking-wider text-ink/45 transition-colors hover:text-signal"
+              >
+                {manualIdOpen ? "Hide manual entry" : "Enter token ID manually"}
+              </button>
+
+              {manualIdOpen && (
+                <div className="mt-2 flex gap-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={tokenInput}
+                    onChange={(e) => setTokenInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && loadToken()}
+                    placeholder="Token ID"
+                    className="min-w-0 flex-1 border border-ink bg-white px-2 py-1.5 text-sm text-ink outline-none focus:border-signal"
+                  />
+                  <button
+                    type="button"
+                    onClick={loadToken}
+                    disabled={loading}
+                    className="shrink-0 border border-signal px-3 py-1.5 text-xs font-bold text-signal transition-colors hover:bg-signal hover:text-ink disabled:opacity-50"
+                  >
+                    {loading ? "…" : "Load"}
+                  </button>
+                </div>
+              )}
+
               <button
                 type="button"
                 onClick={() => setImportOpen(true)}
