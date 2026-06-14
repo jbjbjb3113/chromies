@@ -3,18 +3,18 @@ import { chromaAbi, PHASE } from "../../abis/Chroma.ts";
 import { chromaCanvasV2Abi } from "../../abis/ChromaCanvasV2.ts";
 
 export const CHROMA_ADDRESS = {
-  [sepolia.id]: "0x649022E37C7426faf01343AbBeB15e4A417Dc3Bf",
+  [sepolia.id]: "0xDF9Cfc30B513abb252b5D48417a3A7E6F55Af6b9",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 /** ChromaCanvasV2 — per-token AP system. The `canvas` param for marketplace listings. */
 export const CANVAS_ADDRESS = {
-  [sepolia.id]: "0x7914e25ffb4a1870ef2069291c18D4d0960353ca",
+  [sepolia.id]: "0x3830948Be12b8e8F86e60F0971308e69eE33C666",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 export const MARKETPLACE_ADDRESS = {
-  [sepolia.id]: "0xcf06e1A49583131e773104B3BeA377524460bC53",
+  [sepolia.id]: "0x490dcBEBcE8ed4C6E03c7DF3bEbbcdfb495A8751",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 

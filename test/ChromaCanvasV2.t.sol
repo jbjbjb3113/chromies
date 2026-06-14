@@ -364,6 +364,53 @@ contract ChromaCanvasV2Test is Test {
         assert(canvas.getPixelsEdited(tokenId) == 2);
     }
 
+    // ========================================================================
+    // Tiered burn AP
+    // ========================================================================
+
+    function test_CalculateBurnAP_LowPixelCount() external {
+        uint256 tokenId = 30;
+        bytes memory pixels = _pixelsWithNonZeroCount(100);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, tokenId, pixels, traits);
+
+        assert(canvas.calculateBurnAP(tokenId) == 1);
+    }
+
+    function test_CalculateBurnAP_MidPixelCount() external {
+        uint256 tokenId = 31;
+        bytes memory pixels = _pixelsWithNonZeroCount(500);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, tokenId, pixels, traits);
+
+        assert(canvas.calculateBurnAP(tokenId) == 10);
+    }
+
+    function test_CalculateBurnAP_HighPixelCount() external {
+        uint256 tokenId = 32;
+        bytes memory pixels = _pixelsWithNonZeroCount(900);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, tokenId, pixels, traits);
+
+        assert(canvas.calculateBurnAP(tokenId) == 27);
+    }
+
+    function test_RevealBurn_CreditsCalculatedAP() external {
+        uint256 fuelToken = 33;
+        bytes memory pixels = _pixelsWithNonZeroCount(500);
+        bytes memory traits = new bytes(32);
+        chroma.mint(alice, fuelToken, pixels, traits);
+
+        vm.prank(alice);
+        chroma.setApprovalForAll(address(canvas), true);
+
+        assert(canvas.actionPoints(ALICE_TOKEN) == 0);
+        _revealBurn(alice, ALICE_TOKEN, fuelToken, bytes(""));
+
+        assert(canvas.actionPoints(ALICE_TOKEN) == 10);
+        assert(canvas.getBurnCount(ALICE_TOKEN) == 1);
+    }
+
     function _setupRenderer() internal returns (ChromaRenderer renderer) {
         renderer = new ChromaRenderer(address(storageContract), address(this));
         renderer.setCanvas(address(canvas));

@@ -1,9 +1,23 @@
 export const chromaCanvasV2Abi = [
   {
     type: "function",
-    name: "ACTION_POINTS_PER_BURN",
+    name: "TIER1_THRESHOLD",
     stateMutability: "view",
     inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "TIER2_THRESHOLD",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "calculateBurnAP",
+    stateMutability: "view",
+    inputs: [{ name: "burnTokenId", type: "uint256" }],
     outputs: [{ name: "", type: "uint256" }],
   },
   {
@@ -51,5 +65,3 @@ export const chromaCanvasV2Abi = [
     ],
   },
 ] as const;
-
-export const ACTION_POINTS_PER_BURN = 100n;

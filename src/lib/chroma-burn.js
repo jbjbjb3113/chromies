@@ -1,12 +1,12 @@
-import { encodeAbiParameters, keccak256, toHex } from "viem";
-import { ACTION_POINTS_PER_BURN } from "../../abis/ChromaCanvasV2.ts";
+import { encodeAbiParameters, keccak256 } from "viem";
+import { chromaCanvasV2Abi } from "../../abis/ChromaCanvasV2.ts";
 
 const EMPTY_DIFF = "0x";
 
 function randomBytes32() {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
-  return toHex(bytes, { size: 32 });
+  return `0x${Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
 
 /**
@@ -30,6 +30,20 @@ export function generateBurnCommitment(userAddress, receiverTokenId, burnTokenId
   return { salt, commitment, diffData };
 }
 
-export function estimateBurnAp(burnCount) {
-  return BigInt(burnCount) * ACTION_POINTS_PER_BURN;
+/** Sum on-chain calculateBurnAP for each token slated to burn. */
+export async function fetchBurnApEstimates(publicClient, canvasAddress, burnTokenIds) {
+  if (!publicClient || !canvasAddress || burnTokenIds.length === 0) return 0n;
+
+  const amounts = await Promise.all(
+    burnTokenIds.map((tokenId) =>
+      publicClient.readContract({
+        address: canvasAddress,
+        abi: chromaCanvasV2Abi,
+        functionName: "calculateBurnAP",
+        args: [tokenId],
+      }),
+    ),
+  );
+
+  return amounts.reduce((sum, ap) => sum + ap, 0n);
 }

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi";
 import SiteHeader from "../components/SiteHeader.jsx";
@@ -12,7 +12,7 @@ import {
   getCanvasAddress,
   getChromaAddress,
 } from "../lib/chroma-contract.js";
-import { estimateBurnAp, generateBurnCommitment } from "../lib/chroma-burn.js";
+import { fetchBurnApEstimates, generateBurnCommitment } from "../lib/chroma-burn.js";
 import { fetchOwnedChromaTokenIds } from "../lib/chroma-ownership.js";
 
 const CONNECT_BTN_CLASS =
@@ -156,7 +156,9 @@ function ConfirmBurnModal({
             <p className="mt-1 font-symtext text-2xl font-black text-signal">
               +{estimatedAp.toString()} AP
             </p>
-            <p className="mt-1 text-xs text-ink/50">100 AP per burned token (base yield)</p>
+            <p className="mt-1 text-xs text-ink/50">
+              Based on each token&apos;s on-chain pixel count (tiered 1–3% yield)
+            </p>
           </div>
         </div>
 
@@ -207,9 +209,10 @@ export default function Burn() {
   const [progressDetail, setProgressDetail] = useState("");
   const [txError, setTxError] = useState(null);
   const [successResult, setSuccessResult] = useState(null);
+  const [estimatedAp, setEstimatedAp] = useState(0n);
+  const [estimateLoading, setEstimateLoading] = useState(false);
 
   const burnCount = burnTokenIds.length;
-  const estimatedAp = useMemo(() => estimateBurnAp(burnCount), [burnCount]);
 
   const canExecute =
     isConnected &&
@@ -254,6 +257,32 @@ export default function Burn() {
       setBurnTokenIds([]);
     }
   }, [isConnected, onSepolia, fetchOwned]);
+
+  useEffect(() => {
+    if (!publicClient || !canvasAddress || burnTokenIds.length === 0) {
+      setEstimatedAp(0n);
+      setEstimateLoading(false);
+      return undefined;
+    }
+
+    let cancelled = false;
+    setEstimateLoading(true);
+    fetchBurnApEstimates(publicClient, canvasAddress, burnTokenIds)
+      .then((total) => {
+        if (!cancelled) setEstimatedAp(total);
+      })
+      .catch((error) => {
+        console.error("Failed to estimate burn AP:", error);
+        if (!cancelled) setEstimatedAp(0n);
+      })
+      .finally(() => {
+        if (!cancelled) setEstimateLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [publicClient, canvasAddress, burnTokenIds]);
 
   const handleSelectReceiver = (tokenId) => {
     setReceiverTokenId(tokenId);
@@ -485,7 +514,7 @@ export default function Burn() {
                     Burning {burnCount} token{burnCount === 1 ? "" : "s"} into Chromie #
                     {receiverTokenId.toString()} will earn{" "}
                     <span className="font-symtext font-black text-signal">
-                      +{estimatedAp.toString()} AP
+                      {estimateLoading ? "…" : `+${estimatedAp.toString()} AP`}
                     </span>
                   </p>
                 </div>

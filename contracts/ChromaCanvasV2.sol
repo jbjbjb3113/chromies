@@ -34,7 +34,12 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
 
     uint256 internal constant GRID_PIXELS = 4096;
     uint256 internal constant TRAIT_MUTATION_INDEX = 15;
-    uint256 public constant ACTION_POINTS_PER_BURN = 100;
+    uint256 public constant TIER1_THRESHOLD = 490;
+    uint256 public constant TIER2_THRESHOLD = 890;
+    uint256 public constant TIER1_MIN_PERCENT = 1;
+    uint256 public constant TIER2_MIN_PERCENT = 2;
+    uint256 public constant TIER3_MIN_PERCENT = 3;
+    uint256 public constant MAX_BURN_PERCENT = 4;
     address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     struct PendingCommit {
@@ -151,7 +156,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
         if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
         chroma.transferFrom(msg.sender, DEAD_ADDRESS, burnedTokenId);
 
-        uint256 burnYield = _burnYield(burnedTokenId);
+        uint256 burnYield = calculateBurnAP(burnedTokenId);
         _earnAP(tokenId, burnYield);
         burnCount[tokenId] += 1;
         emit BurnRevealed(msg.sender, burnedTokenId, tokenId, burnYield);
@@ -215,6 +220,23 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
         return chromaStorage.getTotalPixels(tokenId);
     }
 
+    /// @notice Tiered burn yield from the sacrificed token's on-chain pixel count.
+    function calculateBurnAP(uint256 burnTokenId) public view returns (uint256) {
+        uint256 pixels = chromaStorage.getTotalPixels(burnTokenId);
+        uint256 percent;
+        if (pixels < TIER1_THRESHOLD) {
+            percent = TIER1_MIN_PERCENT;
+        } else if (pixels < TIER2_THRESHOLD) {
+            percent = TIER2_MIN_PERCENT;
+        } else {
+            percent = TIER3_MIN_PERCENT;
+        }
+
+        uint256 ap = (pixels * percent) / 100;
+        uint256 maxAp = (pixels * MAX_BURN_PERCENT) / 100;
+        return ap > maxAp ? maxAp : ap;
+    }
+
     function getCanvasInfo(address user, uint256 tokenId)
         external
         view
@@ -250,11 +272,6 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas {
         actionPoints[fromTokenId] -= amount;
         actionPoints[toTokenId] += amount;
         emit APTransferred(fromTokenId, toTokenId, amount);
-    }
-
-    function _burnYield(uint256 tokenId) internal view returns (uint256) {
-        uint256 bonus = tokenDiffs[tokenId].length / 10;
-        return ACTION_POINTS_PER_BURN + bonus;
     }
 
     function _mutationShiftCost(uint8 currentTier, uint8 newTier) internal pure returns (uint256) {
