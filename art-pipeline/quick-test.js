@@ -20,6 +20,7 @@ const {
   pickPalette,
   compositeChromie,
   renderPNG,
+  upscalePNG,
   buildPhase3Effects,
   getMutationTier,
 } = require("./generate");
@@ -202,13 +203,16 @@ function main() {
 
   const outName = buildOutputName(character, paletteKey, picks);
   const outPath = path.join(QUICK_DIR, outName);
+  const outPath1024 = path.join(QUICK_DIR, outName.replace(/\.png$/, "_1024.png"));
 
   fs.writeFileSync(outPath, pngBuf);
+  fs.writeFileSync(outPath1024, upscalePNG(pngBuf, 16));
 
   console.log(`\n  drift:    ${tier.name}`);
   console.log(`  mutation: ${mTier.name}`);
   console.log(`  render:   ${renderMs.toFixed(1)} ms`);
   console.log(`  wrote:    quick/${outName}`);
+  console.log(`  wrote:    quick/${path.basename(outPath1024)}`);
 
   if (missing.length > 0) {
     console.log(`\n  ⚠ ${missing.length} missing component file(s) — preview may be incomplete`);
