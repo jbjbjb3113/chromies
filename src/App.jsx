@@ -1,7 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import ComingSoon from "./pages/ComingSoon.jsx";
-import PasswordGate from "./components/PasswordGate.jsx";
 import Landing from "./pages/Landing.jsx";
 import Lab from "./pages/Lab.jsx";
 import Mint from "./pages/Mint.jsx";
@@ -17,62 +16,13 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<ComingSoon />} />
-      <Route
-        path="/mint"
-        element={
-          <PasswordGate>
-            <Mint />
-          </PasswordGate>
-        }
-      />
-      <Route
-        path="/market"
-        element={
-          <PasswordGate>
-            <Market />
-          </PasswordGate>
-        }
-      />
-      <Route
-        path="/my-chromies"
-        element={
-          <PasswordGate>
-            <MyChromies />
-          </PasswordGate>
-        }
-      />
-      <Route
-        path="/burn"
-        element={
-          <PasswordGate>
-            <Burn />
-          </PasswordGate>
-        }
-      />
-      <Route
-        path="/inscribe"
-        element={
-          <PasswordGate>
-            <Inscribe />
-          </PasswordGate>
-        }
-      />
-      <Route
-        path="/faq"
-        element={
-          <PasswordGate>
-            <FAQ />
-          </PasswordGate>
-        }
-      />
-      <Route
-        path="/landing"
-        element={
-          <PasswordGate>
-            <Landing />
-          </PasswordGate>
-        }
-      />
+      <Route path="/mint" element={<Mint />} />
+      <Route path="/market" element={<Market />} />
+      <Route path="/my-chromies" element={<MyChromies />} />
+      <Route path="/burn" element={<Burn />} />
+      <Route path="/inscribe" element={<Inscribe />} />
+      <Route path="/faq" element={<FAQ />} />
+      <Route path="/landing" element={<Landing />} />
       <Route path="/lab" element={<Lab />} />
       <Route path="/canvas" element={<Canvas />} />
       <Route path="/pixel-chroma" element={<PixelChroma />} />
