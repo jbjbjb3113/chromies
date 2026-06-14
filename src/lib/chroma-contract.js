@@ -1,5 +1,6 @@
 import { sepolia, mainnet } from "wagmi/chains";
 import { chromaAbi, PHASE } from "../../abis/Chroma.ts";
+import { chromaCanvasV2Abi } from "../../abis/ChromaCanvasV2.ts";
 
 export const CHROMA_ADDRESS = {
   [sepolia.id]: "0x649022E37C7426faf01343AbBeB15e4A417Dc3Bf",
@@ -21,7 +22,7 @@ export const SUPPORTED_CHAINS = [sepolia, mainnet];
 
 export const DEFAULT_CHAIN = sepolia;
 
-export { chromaAbi, PHASE };
+export { chromaAbi, chromaCanvasV2Abi, PHASE };
 
 export function getChromaAddress(chainId) {
   return CHROMA_ADDRESS[chainId] ?? null;
