@@ -55,3 +55,22 @@ export async function fetchOwnedChromaTokenIds(publicClient, chromaAddress, owne
 
   return owned.sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
 }
+
+/** Map tokenId string -> revealed flag from Chroma.revealed(). */
+export async function fetchTokenRevealStatus(publicClient, chromaAddress, tokenIds) {
+  if (!publicClient || !chromaAddress || tokenIds.length === 0) return {};
+
+  const entries = await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      const revealed = await publicClient.readContract({
+        address: chromaAddress,
+        abi: chromaAbi,
+        functionName: "revealed",
+        args: [tokenId],
+      });
+      return [tokenId.toString(), revealed];
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}

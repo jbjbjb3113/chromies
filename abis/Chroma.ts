@@ -122,6 +122,13 @@ export const chromaAbi = [
   },
   {
     type: "function",
+    name: "revealed",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
+  {
+    type: "function",
     name: "tokenURI",
     stateMutability: "view",
     inputs: [{ name: "tokenId", type: "uint256" }],

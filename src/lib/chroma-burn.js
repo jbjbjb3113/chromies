@@ -30,9 +30,11 @@ export function generateBurnCommitment(userAddress, receiverTokenId, burnTokenId
   return { salt, commitment, diffData };
 }
 
-/** Sum on-chain calculateBurnAP for each token slated to burn. */
+/** Per-token and total on-chain calculateBurnAP for tokens slated to burn. */
 export async function fetchBurnApEstimates(publicClient, canvasAddress, burnTokenIds) {
-  if (!publicClient || !canvasAddress || burnTokenIds.length === 0) return 0n;
+  if (!publicClient || !canvasAddress || burnTokenIds.length === 0) {
+    return { total: 0n, byTokenId: {} };
+  }
 
   const amounts = await Promise.all(
     burnTokenIds.map((tokenId) =>
@@ -45,5 +47,13 @@ export async function fetchBurnApEstimates(publicClient, canvasAddress, burnToke
     ),
   );
 
-  return amounts.reduce((sum, ap) => sum + ap, 0n);
+  const byTokenId = {};
+  let total = 0n;
+  burnTokenIds.forEach((tokenId, index) => {
+    const ap = amounts[index];
+    byTokenId[tokenId.toString()] = ap;
+    total += ap;
+  });
+
+  return { total, byTokenId };
 }

@@ -13,7 +13,7 @@ import {
   getChromaAddress,
 } from "../lib/chroma-contract.js";
 import { fetchBurnApEstimates, generateBurnCommitment } from "../lib/chroma-burn.js";
-import { fetchOwnedChromaTokenIds } from "../lib/chroma-ownership.js";
+import { fetchOwnedChromaTokenIds, fetchTokenRevealStatus } from "../lib/chroma-ownership.js";
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
@@ -30,6 +30,7 @@ function BurnTokenCard({
   tokenId,
   role,
   disabled,
+  isRevealed,
   onSelectReceiver,
   onToggleBurn,
   publicClient,
@@ -38,6 +39,7 @@ function BurnTokenCard({
   const id = tokenId.toString();
   const isReceiver = role === "receiver";
   const isBurn = role === "burn";
+  const burnDisabled = disabled || isReceiver || !isRevealed;
 
   const borderClass = isReceiver
     ? "border-emerald-600 ring-2 ring-emerald-600/30"
@@ -63,17 +65,29 @@ function BurnTokenCard({
           />
           Keep
         </label>
-        <label className="flex cursor-pointer items-center gap-1.5 border border-red-600/40 bg-white/95 px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-red-700">
+        <label
+          className={`flex items-center gap-1.5 border px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${
+            burnDisabled
+              ? "cursor-not-allowed border-ink/20 bg-white/95 text-ink/35"
+              : "cursor-pointer border-red-600/40 bg-white/95 text-red-700"
+          }`}
+        >
           <input
             type="checkbox"
             checked={isBurn}
-            disabled={disabled || isReceiver}
+            disabled={burnDisabled}
             onChange={() => onToggleBurn(tokenId)}
             className="accent-red-600"
           />
           Burn
         </label>
       </div>
+
+      {!isRevealed && (
+        <div className="absolute right-2 top-2 z-10 max-w-[9rem] border border-amber-600/50 bg-amber-50 px-2 py-1 text-[8px] font-bold uppercase leading-tight tracking-wide text-amber-800">
+          Unrevealed — reveal first to earn AP
+        </div>
+      )}
 
       <div className="pointer-events-none">
         <TokenThumbnail
@@ -94,6 +108,11 @@ function BurnTokenCard({
         {isBurn && (
           <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-red-700">
             Marked for burn
+          </p>
+        )}
+        {!isRevealed && (
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-amber-700">
+            Cannot burn until revealed
           </p>
         )}
       </div>
@@ -197,6 +216,7 @@ export default function Burn() {
 
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [tokenIds, setTokenIds] = useState([]);
+  const [revealedByTokenId, setRevealedByTokenId] = useState({});
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
@@ -210,15 +230,22 @@ export default function Burn() {
   const [txError, setTxError] = useState(null);
   const [successResult, setSuccessResult] = useState(null);
   const [estimatedAp, setEstimatedAp] = useState(0n);
+  const [burnApByTokenId, setBurnApByTokenId] = useState({});
   const [estimateLoading, setEstimateLoading] = useState(false);
 
   const burnCount = burnTokenIds.length;
+  const hasZeroApBurn =
+    burnCount > 0 &&
+    !estimateLoading &&
+    Object.values(burnApByTokenId).some((ap) => ap === 0n);
 
   const canExecute =
     isConnected &&
     onSepolia &&
     receiverTokenId != null &&
     burnCount > 0 &&
+    estimatedAp > 0n &&
+    !estimateLoading &&
     !executing &&
     walletClient &&
     publicClient &&
@@ -228,6 +255,7 @@ export default function Burn() {
   const fetchOwned = useCallback(async () => {
     if (!publicClient || !chromaAddress || !address) {
       setTokenIds([]);
+      setRevealedByTokenId({});
       return;
     }
 
@@ -235,13 +263,18 @@ export default function Burn() {
     setLoadError(null);
     try {
       const ids = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
+      const revealed = await fetchTokenRevealStatus(publicClient, chromaAddress, ids);
       setTokenIds(ids);
+      setRevealedByTokenId(revealed);
       setReceiverTokenId((prev) => (prev && ids.some((id) => id === prev) ? prev : null));
-      setBurnTokenIds((prev) => prev.filter((id) => ids.some((owned) => owned === id)));
+      setBurnTokenIds((prev) =>
+        prev.filter((id) => ids.some((owned) => owned === id) && revealed[id.toString()] === true),
+      );
     } catch (error) {
       console.error("Failed to load owned Chromies:", error);
       setLoadError(error?.shortMessage ?? error?.message ?? "Failed to load your Chromies.");
       setTokenIds([]);
+      setRevealedByTokenId({});
     } finally {
       setLoading(false);
     }
@@ -252,6 +285,7 @@ export default function Burn() {
       fetchOwned();
     } else {
       setTokenIds([]);
+      setRevealedByTokenId({});
       setLoadError(null);
       setReceiverTokenId(null);
       setBurnTokenIds([]);
@@ -261,6 +295,7 @@ export default function Burn() {
   useEffect(() => {
     if (!publicClient || !canvasAddress || burnTokenIds.length === 0) {
       setEstimatedAp(0n);
+      setBurnApByTokenId({});
       setEstimateLoading(false);
       return undefined;
     }
@@ -268,12 +303,18 @@ export default function Burn() {
     let cancelled = false;
     setEstimateLoading(true);
     fetchBurnApEstimates(publicClient, canvasAddress, burnTokenIds)
-      .then((total) => {
-        if (!cancelled) setEstimatedAp(total);
+      .then(({ total, byTokenId }) => {
+        if (!cancelled) {
+          setEstimatedAp(total);
+          setBurnApByTokenId(byTokenId);
+        }
       })
       .catch((error) => {
         console.error("Failed to estimate burn AP:", error);
-        if (!cancelled) setEstimatedAp(0n);
+        if (!cancelled) {
+          setEstimatedAp(0n);
+          setBurnApByTokenId({});
+        }
       })
       .finally(() => {
         if (!cancelled) setEstimateLoading(false);
@@ -293,6 +334,7 @@ export default function Burn() {
 
   const handleToggleBurn = (tokenId) => {
     if (receiverTokenId === tokenId) return;
+    if (!revealedByTokenId[tokenId.toString()]) return;
     setBurnTokenIds((prev) => {
       const exists = prev.some((id) => id === tokenId);
       return exists ? prev.filter((id) => id !== tokenId) : [...prev, tokenId];
@@ -501,11 +543,15 @@ export default function Burn() {
                     (radio) — it keeps living and earns AP
                   </li>
                   <li>
-                    Mark one or more tokens to <span className="font-bold text-red-700">burn</span>{" "}
-                    (checkbox) — they are sacrificed permanently
+                    Mark one or more <span className="font-bold text-red-700">revealed</span> tokens
+                    to burn — unrevealed placeholders earn 0 AP
                   </li>
                   <li>Confirm and execute the on-chain commit-reveal burn sequence</li>
                 </ol>
+                <p className="mt-3 text-xs text-ink/50">
+                  Reveal is not yet available in the site UI — use on-chain scripts for now. A
+                  reveal page is needed before burns can earn AP on freshly minted tokens.
+                </p>
               </div>
 
               {showPreview && (
@@ -517,6 +563,11 @@ export default function Burn() {
                       {estimateLoading ? "…" : `+${estimatedAp.toString()} AP`}
                     </span>
                   </p>
+                  {hasZeroApBurn && (
+                    <p className="mt-2 text-sm font-semibold text-amber-800">
+                      Selected token(s) haven&apos;t been revealed and would earn 0 AP.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -526,6 +577,7 @@ export default function Burn() {
                     key={tokenId.toString()}
                     tokenId={tokenId}
                     role={getTokenRole(tokenId)}
+                    isRevealed={revealedByTokenId[tokenId.toString()] === true}
                     disabled={executing}
                     onSelectReceiver={handleSelectReceiver}
                     onToggleBurn={handleToggleBurn}
