@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import SiteHeader from "../components/SiteHeader.jsx";
 import TokenGridBackground from "../components/TokenGridBackground.jsx";
@@ -108,68 +108,17 @@ function FlowArrow() {
   );
 }
 
+const FLOW_CHEVRON_BTN_CLASS =
+  "absolute top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-sm text-xl leading-none text-signal/50 transition-colors hover:text-signal active:text-signal sm:h-9 sm:w-9 sm:border sm:border-ink/20 sm:bg-paper/90 sm:text-2xl sm:text-signal/75 sm:hover:border-signal/40 sm:hover:bg-paper";
+
 function FlowScrollRow({ children, className = "" }) {
   const scrollRef = useRef(null);
-  const dragStateRef = useRef({ active: false, startX: 0, startScrollLeft: 0 });
 
   const scrollByStep = (direction) => {
     const el = scrollRef.current;
     if (!el) return;
     const step = Math.max(140, Math.round(el.clientWidth * 0.45));
     el.scrollBy({ left: direction * step, behavior: "smooth" });
-  };
-
-  const handleWheel = useCallback((e) => {
-    if (e.deltaY === 0) return;
-    const el = e.currentTarget;
-    if (el.scrollWidth <= el.clientWidth + 1) return;
-    el.scrollLeft += e.deltaY;
-    e.preventDefault();
-  }, []);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return undefined;
-    el.addEventListener("wheel", handleWheel, { passive: false });
-    return () => el.removeEventListener("wheel", handleWheel);
-  }, [handleWheel]);
-
-  const endDrag = useCallback(() => {
-    const el = scrollRef.current;
-    dragStateRef.current.active = false;
-    if (el) {
-      el.classList.remove("cursor-grabbing");
-      el.classList.add("cursor-grab");
-    }
-  }, []);
-
-  const handleMouseDown = (e) => {
-    const el = scrollRef.current;
-    if (!el || e.button !== 0 || el.scrollWidth <= el.clientWidth + 1) return;
-    if (e.target.closest("a, button")) return;
-
-    dragStateRef.current = {
-      active: true,
-      startX: e.pageX,
-      startScrollLeft: el.scrollLeft,
-    };
-    el.classList.remove("cursor-grab");
-    el.classList.add("cursor-grabbing");
-
-    const handleMouseMove = (moveEvent) => {
-      if (!dragStateRef.current.active) return;
-      const dx = moveEvent.pageX - dragStateRef.current.startX;
-      el.scrollLeft = dragStateRef.current.startScrollLeft - dx;
-    };
-
-    const handleMouseUp = () => {
-      endDrag();
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
@@ -185,7 +134,7 @@ function FlowScrollRow({ children, className = "" }) {
       <button
         type="button"
         onClick={() => scrollByStep(-1)}
-        className="absolute top-1/2 left-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60"
+        className={`left-0 ${FLOW_CHEVRON_BTN_CLASS}`}
         aria-label="Scroll flow left"
       >
         ‹
@@ -193,7 +142,7 @@ function FlowScrollRow({ children, className = "" }) {
       <button
         type="button"
         onClick={() => scrollByStep(1)}
-        className="absolute top-1/2 right-0 z-20 -translate-y-1/2 px-0.5 text-lg leading-none text-signal/35 transition-colors hover:text-signal/60"
+        className={`right-0 ${FLOW_CHEVRON_BTN_CLASS}`}
         aria-label="Scroll flow right"
       >
         ›
@@ -202,8 +151,7 @@ function FlowScrollRow({ children, className = "" }) {
         ref={scrollRef}
         role="region"
         aria-label="Chromie flow steps"
-        onMouseDown={handleMouseDown}
-        className="cursor-grab overflow-x-auto whitespace-nowrap px-5 [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
+        className="overflow-x-auto whitespace-nowrap px-5 [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
       >
         <div
           className={`flex flex-nowrap items-center justify-start gap-x-2 gap-y-2 text-sm font-semibold tracking-wide ${className}`}
