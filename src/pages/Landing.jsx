@@ -87,7 +87,7 @@ function FeaturedToken({ src, label }) {
 }
 
 const FLOW_STEP_LINK_CLASS =
-  "inline-flex border border-[#8a8780] bg-paper/80 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
+  "inline-flex shrink-0 border border-[#8a8780] bg-paper/80 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
 
 function FlowStepLink({ to, children }) {
   return (
@@ -98,7 +98,25 @@ function FlowStepLink({ to, children }) {
 }
 
 function FlowArrow() {
-  return <span className="text-ink/40">→</span>;
+  return <span className="shrink-0 text-ink/40">→</span>;
+}
+
+function FlowScrollRow({ children, className = "" }) {
+  return (
+    <div className="relative sm:static">
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-paper/80 to-transparent sm:hidden"
+        aria-hidden
+      />
+      <div className="overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:whitespace-normal">
+        <div
+          className={`flex flex-nowrap items-center justify-start gap-x-2 gap-y-2 text-sm font-semibold tracking-wide sm:flex-wrap sm:justify-center ${className}`}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function TokenFrame({ src, size = 128 }) {
@@ -140,7 +158,7 @@ export default function Landing() {
             <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
               Quick Summary
             </h3>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-semibold tracking-wide text-ink">
+            <FlowScrollRow className="mt-4 text-ink">
               <FlowStepLink to="/mint">MINT</FlowStepLink>
               <FlowArrow />
               <FlowStepLink to="/my-chromies">Collect</FlowStepLink>
@@ -154,13 +172,13 @@ export default function Landing() {
               <FlowStepLink to="/canvas">Purify</FlowStepLink>
               <FlowArrow />
               <FlowStepLink to="/inscribe">Inscribe</FlowStepLink>
-            </div>
+            </FlowScrollRow>
             <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
-            <div className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm font-semibold tracking-wide">
+            <FlowScrollRow className="mt-3">
               <FlowStepLink to="/mint">MINT</FlowStepLink>
               <FlowArrow />
-              <span className="text-signal">Hold Forever</span>
-            </div>
+              <span className="shrink-0 text-signal">Hold Forever</span>
+            </FlowScrollRow>
           </div>
         </div>
       </section>
