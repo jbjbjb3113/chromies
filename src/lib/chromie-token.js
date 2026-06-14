@@ -4,6 +4,7 @@ const GRID = 64;
 const TOKEN_MAX = 9999;
 
 const JSON_DATA_URI_PREFIX = "data:application/json;base64,";
+const SVG_DATA_URI_PREFIX = "data:image/svg+xml;base64,";
 
 export function formatTokenId(id) {
   return String(id).padStart(4, "0");
@@ -26,6 +27,31 @@ export function resolveMetadataImageUrl(image) {
   if (!match) return image;
   const suffix = match[1] ? `_${match[1].toUpperCase()}` : "";
   return `/RevealImage${suffix}.png`;
+}
+
+/** Decode embedded on-chain SVG from token metadata image field. */
+export function decodeSvgFromMetadataImage(image) {
+  if (!image?.startsWith(SVG_DATA_URI_PREFIX)) return null;
+  try {
+    return atob(image.slice(SVG_DATA_URI_PREFIX.length));
+  } catch {
+    return null;
+  }
+}
+
+/** Create a blob URL for decoded SVG markup (caller must revoke). */
+export function createSvgBlobUrl(svgString) {
+  if (!svgString) return null;
+  const blob = new Blob([svgString], { type: "image/svg+xml" });
+  return URL.createObjectURL(blob);
+}
+
+export function revokeObjectUrl(url) {
+  if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
+}
+
+export function isOnChainSvgImage(image) {
+  return typeof image === "string" && image.startsWith(SVG_DATA_URI_PREFIX);
 }
 
 export function tokenJsonUrl(id) {

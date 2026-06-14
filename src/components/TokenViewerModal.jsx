@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { formatEther } from "viem";
-import {
-  fetchChromieMetadata,
-  fetchOnChainTokenMetadata,
-  resolveMetadataImageUrl,
-  tokenPngUrl,
-} from "../lib/chromie-token.js";
+import { fetchChromieMetadata, fetchOnChainTokenMetadata, tokenPngUrl } from "../lib/chromie-token.js";
 import { fetchTokenActionPoints } from "../lib/chroma-ownership.js";
 import { getCanvasAddress } from "../lib/chroma-contract.js";
+import { chromaAbi } from "../../abis/Chroma.ts";
+import {
+  resolveOnChainDisplayImage,
+  logRevealedSvgLoadError,
+} from "../lib/token-display-image.js";
 import { useChainId } from "wagmi";
-
 const TRAIT_ORDER = [
   "Character",
   "Palette",
@@ -116,10 +115,11 @@ export default function TokenViewerModal({
   const [metadata, setMetadata] = useState(null);
   const [metadataSource, setMetadataSource] = useState(null);
   const [apBalance, setApBalance] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [imageKind, setImageKind] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [imageFailed, setImageFailed] = useState(false);
-
   const resolvedTokenId = tokenId ?? listing?.tokenId ?? null;
   const numericTokenId = resolvedTokenId != null ? Number(resolvedTokenId) : null;
   const tokenLabel = collection === "NORMIES" ? "Normie" : "Chromie";
@@ -141,6 +141,8 @@ export default function TokenViewerModal({
       setMetadata(null);
       setMetadataSource(null);
       setApBalance(null);
+      setImageSrc(null);
+      setImageKind(null);
       setError(null);
       setLoading(false);
       setImageFailed(false);
@@ -148,43 +150,70 @@ export default function TokenViewerModal({
     }
 
     let cancelled = false;
+    let cleanupImage = () => {};
+
     setLoading(true);
     setError(null);
     setMetadata(null);
     setMetadataSource(null);
     setApBalance(null);
+    setImageSrc(null);
+    setImageKind(null);
     setImageFailed(false);
 
     (async () => {
       try {
         let data = null;
         let source = null;
+        let nextImageSrc = null;
+        let nextImageKind = null;
+
         if (publicClient && chromaAddress) {
           try {
-            data = await fetchOnChainTokenMetadata(publicClient, chromaAddress, numericTokenId);
+            const [onChainData, revealed] = await Promise.all([
+              fetchOnChainTokenMetadata(publicClient, chromaAddress, numericTokenId),
+              publicClient.readContract({
+                address: chromaAddress,
+                abi: chromaAbi,
+                functionName: "revealed",
+                args: [BigInt(numericTokenId)],
+              }),
+            ]);
+            data = onChainData;
             source = "onchain";
-          } catch {
+
+            if (!cancelled) {
+              const display = resolveOnChainDisplayImage(onChainData, revealed, numericTokenId);
+              cleanupImage = display.cleanup;
+              nextImageSrc = display.src;
+              nextImageKind = display.kind;
+            }
+          } catch (fetchError) {
             source = "onchain-failed";
+            console.warn("[TokenViewerModal] On-chain fetch failed, using static PNG", {
+              tokenId: numericTokenId,
+              error: fetchError?.message ?? fetchError,
+            });
             try {
               data = await fetchChromieMetadata(numericTokenId);
             } catch {
               data = null;
             }
+            nextImageSrc = tokenPngUrl(numericTokenId);
+            nextImageKind = "static-png-fallback";
           }
         } else {
           data = await fetchChromieMetadata(numericTokenId);
           source = "static";
+          nextImageSrc = data?.image ?? tokenPngUrl(numericTokenId);
+          nextImageKind = "static-metadata";
         }
+
         if (!cancelled) {
           setMetadata(data);
           setMetadataSource(source);
-          console.log("[TokenViewerModal] decoded tokenURI metadata", {
-            tokenId: numericTokenId,
-            source,
-            name: data?.name ?? null,
-            image: data?.image ?? null,
-            resolvedImage: data?.image ? resolveMetadataImageUrl(data.image) : null,
-          });
+          setImageSrc(nextImageSrc);
+          setImageKind(nextImageKind);
         }
 
         if (!cancelled && publicClient && canvasAddress) {
@@ -206,30 +235,14 @@ export default function TokenViewerModal({
 
     return () => {
       cancelled = true;
+      cleanupImage();
     };
   }, [open, numericTokenId, publicClient, chromaAddress, canvasAddress]);
-
   if (!open || resolvedTokenId == null) return null;
 
   const traits = orderTraits(metadata?.attributes ?? [], apBalance);
-  const onChainImage =
-    metadataSource === "onchain" && metadata?.image
-      ? resolveMetadataImageUrl(metadata.image)
-      : null;
-  const imageSrc = (() => {
-    if (metadataSource === "onchain") {
-      if (onChainImage && !imageFailed) return onChainImage;
-      return tokenPngUrl(numericTokenId);
-    }
-    if (metadataSource === "onchain-failed") {
-      return tokenPngUrl(numericTokenId);
-    }
-    if (metadata?.image && !imageFailed) return metadata.image;
-    return tokenPngUrl(numericTokenId);
-  })();
 
-  return (
-    <div
+  return (    <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4"
       role="presentation"
       onClick={onClose}
@@ -273,16 +286,30 @@ export default function TokenViewerModal({
                   <div className="flex h-full min-h-[280px] items-center justify-center text-xs uppercase tracking-widest text-ink/40">
                     Loading…
                   </div>
+                ) : imageFailed || !imageSrc ? (
+                  <div className="flex h-full min-h-[280px] items-center justify-center text-xs uppercase tracking-widest text-ink/40">
+                    Image unavailable
+                  </div>
                 ) : (
                   <img
                     src={imageSrc}
                     alt={metadata?.name ?? `${tokenLabel} #${numericTokenId}`}
                     draggable={false}
                     className="pixelated h-full w-full object-contain"
-                    onError={() => setImageFailed(true)}
+                    onError={() => {
+                      if (imageKind === "onchain-svg-blob") {
+                        logRevealedSvgLoadError(numericTokenId, imageKind);
+                      } else {
+                        console.warn("[TokenViewerModal] Image failed to load", {
+                          tokenId: numericTokenId,
+                          imageKind,
+                          metadataSource,
+                        });
+                      }
+                      setImageFailed(true);
+                    }}
                   />
-                )}
-              </div>
+                )}              </div>
             </div>
 
             {showListing && (

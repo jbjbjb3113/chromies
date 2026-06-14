@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { tokenPngUrl } from "../lib/chromie-token.js";
 import {
-  fetchOnChainTokenMetadata,
-  resolveMetadataImageUrl,
-  tokenPngUrl,
-} from "../lib/chromie-token.js";
+  loadTokenDisplayImage,
+  logRevealedSvgLoadError,
+} from "../lib/token-display-image.js";
 
 function PixelPlaceholderIcon() {
   return (
@@ -24,57 +24,60 @@ function ThumbnailShell({ children }) {
 }
 
 export default function TokenThumbnail({ tokenId, publicClient, chromaAddress, refreshKey = 0 }) {
-  const [metadataSource, setMetadataSource] = useState(null);
-  const [onChainImage, setOnChainImage] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [imageKind, setImageKind] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [imageFailed, setImageFailed] = useState(false);
-  const [pngFallbackFailed, setPngFallbackFailed] = useState(false);
+  const [displayFailed, setDisplayFailed] = useState(false);
 
   const id = Number(tokenId);
 
   useEffect(() => {
     if (!Number.isFinite(id) || id < 1) {
-      setMetadataSource(null);
-      setOnChainImage(null);
+      setImageSrc(null);
+      setImageKind(null);
       setLoading(false);
-      setImageFailed(false);
-      setPngFallbackFailed(false);
+      setDisplayFailed(false);
       return undefined;
     }
 
     let cancelled = false;
-    setLoading(true);
-    setMetadataSource(null);
-    setOnChainImage(null);
-    setImageFailed(false);
-    setPngFallbackFailed(false);
+    let cleanupImage = () => {};
 
-    (async () => {
-      try {
-        if (publicClient && chromaAddress) {
-          try {
-            const data = await fetchOnChainTokenMetadata(publicClient, chromaAddress, id);
-            if (!cancelled) {
-              setMetadataSource("onchain");
-              setOnChainImage(data?.image ? resolveMetadataImageUrl(data.image) : null);
-            }
-          } catch {
-            if (!cancelled) setMetadataSource("onchain-failed");
-          }
-        } else if (!cancelled) {
-          setMetadataSource("static");
+    setLoading(true);
+    setImageSrc(null);
+    setImageKind(null);
+    setDisplayFailed(false);
+
+    loadTokenDisplayImage({ publicClient, chromaAddress, tokenId: id })
+      .then((result) => {
+        if (cancelled) {
+          result.cleanup();
+          return;
         }
-      } finally {
+        cleanupImage = result.cleanup;
+        setImageSrc(result.src);
+        setImageKind(result.kind);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.warn("[TokenThumbnail] Failed to load display image", {
+          tokenId: id,
+          error: error?.message ?? error,
+        });
+        setImageSrc(tokenPngUrl(id));
+        setImageKind("static-png-fallback");
+      })
+      .finally(() => {
         if (!cancelled) setLoading(false);
-      }
-    })();
+      });
 
     return () => {
       cancelled = true;
+      cleanupImage();
     };
   }, [id, publicClient, chromaAddress, refreshKey]);
 
-  if (!Number.isFinite(id) || id < 1 || pngFallbackFailed) {
+  if (!Number.isFinite(id) || id < 1) {
     return (
       <ThumbnailShell>
         <div className="flex h-full w-full items-center justify-center">
@@ -84,13 +87,15 @@ export default function TokenThumbnail({ tokenId, publicClient, chromaAddress, r
     );
   }
 
-  const imageSrc = (() => {
-    if (metadataSource === "onchain") {
-      if (onChainImage && !imageFailed) return onChainImage;
-      return tokenPngUrl(id);
-    }
-    return tokenPngUrl(id);
-  })();
+  if (!loading && (displayFailed || !imageSrc)) {
+    return (
+      <ThumbnailShell>
+        <div className="flex h-full w-full items-center justify-center">
+          <PixelPlaceholderIcon />
+        </div>
+      </ThumbnailShell>
+    );
+  }
 
   return (
     <ThumbnailShell>
@@ -103,11 +108,18 @@ export default function TokenThumbnail({ tokenId, publicClient, chromaAddress, r
           draggable={false}
           className="pixelated h-full w-full object-cover"
           onError={() => {
-            if (metadataSource === "onchain" && onChainImage && !imageFailed) {
-              setImageFailed(true);
-            } else {
-              setPngFallbackFailed(true);
+            if (imageKind === "onchain-svg-blob") {
+              logRevealedSvgLoadError(id, imageKind);
+              setDisplayFailed(true);
+              return;
             }
+            if (imageKind === "unrevealed-placeholder") {
+              console.warn("[TokenThumbnail] Reveal placeholder failed to load", { tokenId: id });
+              setDisplayFailed(true);
+              return;
+            }
+            console.warn("[TokenThumbnail] Static PNG fallback failed to load", { tokenId: id });
+            setDisplayFailed(true);
           }}
         />
       )}
