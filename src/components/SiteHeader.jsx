@@ -54,16 +54,6 @@ export default function SiteHeader() {
             My Chromies
           </NavLink>
           <NavLink
-            to="/reveal"
-            className={({ isActive }) =>
-              `text-xs uppercase tracking-widest transition-colors hover:text-signal ${
-                isActive ? "text-signal" : "text-ink/70"
-              }`
-            }
-          >
-            Reveal
-          </NavLink>
-          <NavLink
             to="/inscribe"
             className={({ isActive }) =>
               `text-xs uppercase tracking-widest transition-colors hover:text-signal ${

@@ -479,14 +479,13 @@ export default function Inscribe() {
                     ? "All your revealed Chromies are inscribed"
                     : "Reveal your Chromies before inscribing"}
                 </p>
-                {inscribedCount === 0 && (
-                  <Link
-                    to="/reveal"
-                    className="mt-4 inline-block text-xs font-bold uppercase tracking-wider text-ink/60 transition-colors hover:text-signal"
-                  >
-                    Go to Reveal →
-                  </Link>
-                )}
+                <p className="mt-4 text-xs text-ink/60">
+                  Reveal your Chromies on{" "}
+                  <Link to="/my-chromies" className="font-bold text-ink transition-colors hover:text-signal">
+                    My Chromies
+                  </Link>{" "}
+                  before inscribing.
+                </p>
               </div>
             )}
 
