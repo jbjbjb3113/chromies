@@ -6,6 +6,9 @@ import {
   resolveMetadataImageUrl,
   tokenPngUrl,
 } from "../lib/chromie-token.js";
+import { fetchTokenActionPoints } from "../lib/chroma-ownership.js";
+import { getCanvasAddress } from "../lib/chroma-contract.js";
+import { useChainId } from "wagmi";
 
 const TRAIT_ORDER = [
   "Character",
@@ -26,15 +29,22 @@ const TRAIT_ORDER = [
   "Drift",
   "Level",
   "Burns Absorbed",
+  "AP Balance",
   "Customized",
   "Pixels Edited",
   "Total Pixels",
 ];
 
-function orderTraits(attributes = []) {
+function orderTraits(attributes = [], apBalance = null) {
   const byType = new Map(attributes.map((attr) => [attr.trait_type, attr]));
   const ordered = [];
   for (const traitType of TRAIT_ORDER) {
+    if (traitType === "AP Balance") {
+      if (apBalance != null) {
+        ordered.push({ trait_type: "AP Balance", value: apBalance.toString() });
+      }
+      continue;
+    }
     const attr = byType.get(traitType);
     if (attr) ordered.push(attr);
   }
@@ -100,8 +110,12 @@ export default function TokenViewerModal({
   publicClient,
   chromaAddress,
 }) {
+  const chainId = useChainId();
+  const canvasAddress = getCanvasAddress(chainId);
+
   const [metadata, setMetadata] = useState(null);
   const [metadataSource, setMetadataSource] = useState(null);
+  const [apBalance, setApBalance] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [imageFailed, setImageFailed] = useState(false);
@@ -126,6 +140,7 @@ export default function TokenViewerModal({
     if (!open || !Number.isFinite(numericTokenId) || numericTokenId < 1) {
       setMetadata(null);
       setMetadataSource(null);
+      setApBalance(null);
       setError(null);
       setLoading(false);
       setImageFailed(false);
@@ -137,6 +152,7 @@ export default function TokenViewerModal({
     setError(null);
     setMetadata(null);
     setMetadataSource(null);
+    setApBalance(null);
     setImageFailed(false);
 
     (async () => {
@@ -170,6 +186,15 @@ export default function TokenViewerModal({
             resolvedImage: data?.image ? resolveMetadataImageUrl(data.image) : null,
           });
         }
+
+        if (!cancelled && publicClient && canvasAddress) {
+          try {
+            const ap = await fetchTokenActionPoints(publicClient, canvasAddress, numericTokenId);
+            if (!cancelled) setApBalance(ap);
+          } catch {
+            if (!cancelled) setApBalance(null);
+          }
+        }
       } catch (err) {
         if (!cancelled) {
           setError(err?.message ?? "Failed to load token metadata.");
@@ -182,11 +207,11 @@ export default function TokenViewerModal({
     return () => {
       cancelled = true;
     };
-  }, [open, numericTokenId, publicClient, chromaAddress]);
+  }, [open, numericTokenId, publicClient, chromaAddress, canvasAddress]);
 
   if (!open || resolvedTokenId == null) return null;
 
-  const traits = orderTraits(metadata?.attributes ?? []);
+  const traits = orderTraits(metadata?.attributes ?? [], apBalance);
   const onChainImage =
     metadataSource === "onchain" && metadata?.image
       ? resolveMetadataImageUrl(metadata.image)

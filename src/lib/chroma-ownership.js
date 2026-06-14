@@ -101,7 +101,7 @@ export async function fetchTokenCanvasStats(publicClient, canvasAddress, tokenId
 
   const entries = await Promise.all(
     tokenIds.map(async (tokenId) => {
-      const [customized, pixelsEdited] = await Promise.all([
+      const [customized, pixelsEdited, actionPoints] = await Promise.all([
         publicClient.readContract({
           address: canvasAddress,
           abi: chromaCanvasV2Abi,
@@ -114,10 +114,28 @@ export async function fetchTokenCanvasStats(publicClient, canvasAddress, tokenId
           functionName: "getPixelsEdited",
           args: [tokenId],
         }),
+        publicClient.readContract({
+          address: canvasAddress,
+          abi: chromaCanvasV2Abi,
+          functionName: "actionPoints",
+          args: [tokenId],
+        }),
       ]);
-      return [tokenId.toString(), { customized, pixelsEdited }];
+      return [tokenId.toString(), { customized, pixelsEdited, actionPoints }];
     }),
   );
 
   return Object.fromEntries(entries);
+}
+
+/** Live spendable AP for one token (not in tokenURI). */
+export async function fetchTokenActionPoints(publicClient, canvasAddress, tokenId) {
+  if (!publicClient || !canvasAddress || tokenId == null) return null;
+
+  return publicClient.readContract({
+    address: canvasAddress,
+    abi: chromaCanvasV2Abi,
+    functionName: "actionPoints",
+    args: [BigInt(tokenId)],
+  });
 }
