@@ -1,8 +1,10 @@
 // ============================================================================
 // pixel-mutation.js
-// Per-token pixel mutation. Two effects:
+// Per-token pixel mutation. Effects:
 //   A. paletteSwap — swap drawn pixels with siblings in same role family
 //   B. edge multi-pass — silhouette wobbles via N passes of erode+dilate
+//   C. stray scatter — edge pixels relocate 1–2px (OffKilter+, capped per layer)
+//   D. pixel scatter — wider-radius edge teleport (legacy tier.scatter)
 //
 // Optional `mutationScale` (per variant, from traits.json) multiplies the
 // tier's per-pixel probabilities. 1.0 = baseline. Higher values give larger
@@ -161,6 +163,98 @@ function applyEdgeMutation(buf, tokenId, slot, erodeProb, dilateProb, passes) {
   return cur;
 }
 
+// Stray scatter: after heavy edge passes, peel edge pixels into nearby gaps.
+// Relocations stay inside the layer bounding box; total strays capped at 8%
+// of opaque pixels so silhouettes stay recognizable.
+function applyStrayPixelScatter(buf, tokenId, slot, strayChance, maxStrayRatio = 0.08) {
+  if (strayChance <= 0) return buf;
+
+  let opaqueCount = 0;
+  let minX = GRID;
+  let minY = GRID;
+  let maxX = 0;
+  let maxY = 0;
+  const edges = [];
+
+  for (let y = 0; y < GRID; y++) {
+    for (let x = 0; x < GRID; x++) {
+      const idx = y * GRID + x;
+      const cur = buf[idx];
+      if (cur === 0) continue;
+
+      opaqueCount++;
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+
+      let isEdge = false;
+      for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || nx >= GRID || ny < 0 || ny >= GRID) continue;
+        if (buf[ny * GRID + nx] === 0) {
+          isEdge = true;
+          break;
+        }
+      }
+      if (isEdge) edges.push(idx);
+    }
+  }
+
+  if (opaqueCount === 0 || edges.length === 0) return buf;
+
+  const maxStrays = Math.floor(opaqueCount * maxStrayRatio);
+  if (maxStrays <= 0) return buf;
+
+  const offsets = [];
+  for (let dy = -2; dy <= 2; dy++) {
+    for (let dx = -2; dx <= 2; dx++) {
+      if (dx === 0 && dy === 0) continue;
+      const dist = Math.max(Math.abs(dx), Math.abs(dy));
+      if (dist >= 1 && dist <= 2) offsets.push([dx, dy]);
+    }
+  }
+
+  const out = new Uint8Array(buf);
+  const rng = mulberry32(seedFromStr(`${tokenId}:stray:${slot}`));
+
+  for (let i = edges.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = edges[i];
+    edges[i] = edges[j];
+    edges[j] = tmp;
+  }
+
+  let applied = 0;
+  for (const idx of edges) {
+    if (applied >= maxStrays) break;
+    if (rng() >= strayChance) continue;
+
+    const color = out[idx];
+    if (color === 0) continue;
+
+    const x = idx % GRID;
+    const y = Math.floor(idx / GRID);
+
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const [dx, dy] = offsets[Math.floor(rng() * offsets.length)];
+      const tx = x + dx;
+      const ty = y + dy;
+      if (tx < minX || tx > maxX || ty < minY || ty > maxY) continue;
+      if (tx < 0 || tx >= GRID || ty < 0 || ty >= GRID) continue;
+      const tIdx = ty * GRID + tx;
+      if (out[tIdx] !== 0) continue;
+      out[tIdx] = color;
+      out[idx] = 0;
+      applied++;
+      break;
+    }
+  }
+
+  return out;
+}
+
 // Variant-aware mutation: scale probabilities and pass count by the variant's
 // mutationScale (defaults to 1.0). Bigger floppy shapes can take more deviation.
 function mutateLayer(buf, tokenId, slot, tier, mutationScale = 1.0) {
@@ -181,6 +275,10 @@ function mutateLayer(buf, tokenId, slot, tier, mutationScale = 1.0) {
   let out = buf;
   out = applyPaletteSwap(out, tokenId, slot, swap);
   out = applyEdgeMutation(out, tokenId, slot, erode, dilate, passes);
+  const strayChance = Math.min(1.0, (tier.strayChance || 0) * scale);
+  if (passes >= 2 && strayChance > 0) {
+    out = applyStrayPixelScatter(out, tokenId, slot, strayChance);
+  }
   out = applyPixelScatter(out, tokenId, slot, 0, tier.scatter || 0, tier.scatterRadius || 0);
   return out;
 }

@@ -742,10 +742,10 @@ const PHASE3 = {
 const PIXEL_MUTATION = {
   enabled: true,
   tiers: [
-    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, scatter: 0.00, scatterRadius: 0, weight: 2  },
-    { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, scatter: 0.02, scatterRadius: 2, weight: 30 },
-    { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, scatter: 0.05, scatterRadius: 3, weight: 50 },
-    { name: "OffKilter", paletteSwap: 0.35, edgeErode: 0.18, edgeDilate: 0.15, edgePasses: 3, scatter: 0.12, scatterRadius: 5, weight: 17 },
+    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, scatter: 0.00, scatterRadius: 0, strayChance: 0.00, weight: 2  },
+    { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, scatter: 0.02, scatterRadius: 2, strayChance: 0.00, weight: 30 },
+    { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, scatter: 0.05, scatterRadius: 3, strayChance: 0.00, weight: 50 },
+    { name: "OffKilter", paletteSwap: 0.35, edgeErode: 0.18, edgeDilate: 0.15, edgePasses: 3, scatter: 0.12, scatterRadius: 5, strayChance: 0.12, weight: 17 },
   ],
   mutableSlots: ["hair", "head", "neck", "body", "shirt", "hood", "glasses", "necklace"],
   paletteFamilies: {
