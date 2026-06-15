@@ -745,9 +745,9 @@ const PIXEL_MUTATION = {
     { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, scatter: 0.00, scatterRadius: 0, weight: 2  },
     { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, scatter: 0.02, scatterRadius: 2, weight: 30 },
     { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, scatter: 0.05, scatterRadius: 3, weight: 50 },
-    { name: "OffKilter", paletteSwap: 0.20, edgeErode: 0.10, edgeDilate: 0.08, edgePasses: 2, scatter: 0.12, scatterRadius: 5, weight: 17 },
+    { name: "OffKilter", paletteSwap: 0.35, edgeErode: 0.18, edgeDilate: 0.15, edgePasses: 3, scatter: 0.12, scatterRadius: 5, weight: 17 },
   ],
-  mutableSlots: ["hair", "head", "neck", "body"],
+  mutableSlots: ["hair", "head", "neck", "body", "shirt", "hood", "glasses", "necklace"],
   paletteFamilies: {
     "hair": [13, 14, 15],   // hair_dark, hair_mid, hair_bright
     "head": [4, 5, 6, 7, 8],
@@ -756,6 +756,7 @@ const PIXEL_MUTATION = {
     "shirt": [9],
     "hood":  [9],
     "glasses": [1, 3],
+    "necklace": [1, 3],
   },
 };
 
@@ -899,6 +900,7 @@ const CHARACTERS = [
         SP_Surfer_Female: 13,
         SP_Pompadour_Female: 15,
         SP_FadeRight_Female: 7,
+        SP_AZVet_Female: 7,
         None: 5,
       },
       beard: ["None"],
