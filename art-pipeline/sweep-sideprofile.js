@@ -6,6 +6,7 @@
 // USAGE:
 //   node sweep-sideprofile.js
 //   node sweep-sideprofile.js --gender Male --hair SP_Mohawk,SP_Afro --palette SIGNAL
+//   node sweep-sideprofile.js --mtier OffKilter
 //   node sweep-sideprofile.js --dry-run
 // ============================================================================
 
@@ -113,6 +114,7 @@ function parseArgs() {
     genders: [...DEFAULT_GENDERS],
     hairs: null,
     palettes: [...DEFAULT_PALETTES],
+    mtier: "Pristine",
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -122,6 +124,7 @@ function parseArgs() {
     else if (a === "--gender") result.genders = splitList(args[++i]);
     else if (a === "--hair") result.hairs = splitList(args[++i]);
     else if (a === "--palette") result.palettes = splitList(args[++i]).map((p) => p.toUpperCase());
+    else if (a === "--mtier") result.mtier = args[++i];
     else {
       console.error(`Unknown argument: ${a}`);
       result.help = true;
@@ -145,6 +148,7 @@ Axes:
   --gender <Male,Female>     Default: Male,Female
   --hair <variant,...>       Default: SP_HAIR_* files present in components/
   --palette <SIGNAL,...>     Default: SIGNAL,ACID,CYAN,GHOST,BLOOD,MOSS
+  --mtier <name>             Mutation tier override (default: Pristine)
 
 Options:
   --dry-run                  Print combo plan only
@@ -292,7 +296,7 @@ function renderCombo(ctx, combo) {
   applySlotOverride(picks, ctx.traits, "hair", combo.hair);
   loadPickBuffersCached(picks, ctx.traits, ctx.bufferCache);
 
-  const mTier = getMutationTier(FIXED_TOKEN_ID, null);
+  const mTier = getMutationTier(FIXED_TOKEN_ID, ctx.mtier);
   const { driftMap, strays } = buildPhase3Effects(
     FIXED_TOKEN_ID,
     picks,
@@ -401,7 +405,7 @@ function main() {
   const plannedCombos = buildCombos(opts.genders, hairByGender, opts.palettes, opts.hairs);
   const attempted = plannedCombos.length;
 
-  console.log(`SideProfile sweep | token #${FIXED_TOKEN_ID} | output/quick/sideprofile-sweep.png`);
+  console.log(`SideProfile sweep | token #${FIXED_TOKEN_ID} | mtier=${opts.mtier} | output/quick/sideprofile-sweep.png`);
   for (const gender of opts.genders) {
     console.log(`  ${gender} hair files: ${(hairByGender[gender] || []).join(", ") || "(none)"}`);
   }
@@ -427,7 +431,7 @@ function main() {
     opts.genders.map((gender) => [gender, resolveCharacter(gender)]),
   );
   const bufferCache = new Map();
-  const ctx = { traits, characterByGender, bufferCache };
+  const ctx = { traits, characterByGender, bufferCache, mtier: opts.mtier };
 
   const skipped = [];
   const rendered = [];
