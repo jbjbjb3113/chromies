@@ -22,6 +22,12 @@ export default function ComingSoon() {
   }));
 
   useEffect(() => {
+    if (sessionStorage.getItem("chromies_access") === "true") {
+      navigate("/landing", { replace: true });
+    }
+  }, [navigate]);
+
+  useEffect(() => {
     const onResize = () => setDims({ w: window.innerWidth, h: window.innerHeight });
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
