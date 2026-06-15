@@ -87,11 +87,11 @@ function FeaturedToken({ src, label }) {
 }
 
 const MINT_BTN_CLASS =
-  "border border-[#8a8780] bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
+  "inline-block border border-[#8a8780] bg-paper px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal shadow-sm transition-colors hover:border-ink hover:bg-paper/95";
 
 function FlowArrow() {
   return (
-    <span className="mx-1.5 text-ink/30" aria-hidden>
+    <span className="mx-1.5 text-ink/55" aria-hidden>
       →
     </span>
   );
@@ -100,9 +100,9 @@ function FlowArrow() {
 function FlowTextRow({ children, className = "" }) {
   return (
     <div
-      className={`overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden ${className}`}
+      className={`overflow-x-auto whitespace-nowrap rounded-sm bg-paper/92 px-4 py-2 shadow-sm backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden ${className}`}
     >
-      <p className="inline text-[9px] uppercase tracking-[0.2em] text-ink/40 sm:text-[10px]">
+      <p className="inline text-[10px] font-medium uppercase tracking-[0.18em] text-ink/85 sm:text-xs">
         {children}
       </p>
     </div>
@@ -159,8 +159,14 @@ export default function Landing() {
           <FlowTextRow className="mx-auto mt-2 max-w-3xl">
             or Mint
             <FlowArrow />
-            <span className="text-ink/50">Hold Forever</span>
+            <span className="text-ink/75">Hold Forever</span>
           </FlowTextRow>
+        </div>
+
+        <div className="relative z-20 mt-auto shrink-0 px-5 pb-10 pt-8 text-center sm:px-6 sm:pb-12">
+          <Link to="/mint" className={MINT_BTN_CLASS}>
+            MINT →
+          </Link>
         </div>
       </section>
 

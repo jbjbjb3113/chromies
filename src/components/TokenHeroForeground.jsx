@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FOREGROUND_MANIFEST_URL } from "../data/tokens.js";
 
-const CELL_PX = 766; // 851px tiles scaled down 10%
+const CELL_PX = 689; // 766px reduced 10% (original 851px tiles)
 const SCROLL_DURATION_S = 128;
 
 function buildStripTiles(images, count, offset = 23) {
@@ -84,7 +84,7 @@ export default function TokenHeroForeground({ opacity = 0.95 }) {
     <div
       ref={wrapRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 overflow-hidden select-none"
+      className="pointer-events-none absolute inset-x-0 z-[1] overflow-hidden select-none"
       style={{ top: "0%", height: "100%", opacity }}
     >
       <div className="flex h-full items-center">
