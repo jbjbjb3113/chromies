@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   useAccount,
   useChainId,
@@ -19,6 +20,12 @@ import {
   getChromaAddress,
   getMarketplaceAddress,
 } from "../lib/chroma-contract.js";
+import { formatTokenId } from "../lib/chromie-token.js";
+import {
+  fetchOwnedChromaTokenIds,
+  fetchTokenCanvasStats,
+  fetchTokenRevealStatus,
+} from "../lib/chroma-ownership.js";
 
 /** PixelMarketplace deploy block on Sepolia — use as fromBlock for any event queries. */
 export const MARKETPLACE_DEPLOY_BLOCK = 11061367n;
@@ -212,6 +219,10 @@ export default function Market() {
   const [listTokenId, setListTokenId] = useState("");
   const [listAmount, setListAmount] = useState("");
   const [listPrice, setListPrice] = useState("");
+  const [listAdvancedOpen, setListAdvancedOpen] = useState(false);
+  const [listableTokenIds, setListableTokenIds] = useState([]);
+  const [apByTokenId, setApByTokenId] = useState({});
+  const [ownedLoading, setOwnedLoading] = useState(false);
 
   const [pendingAction, setPendingAction] = useState(null); // "list" | "buy:<id>" | "cancel:<id>"
   const [txError, setTxError] = useState(null);
@@ -285,6 +296,54 @@ export default function Market() {
     fetchListings();
   }, [fetchListings]);
 
+  const fetchListableTokens = useCallback(async () => {
+    if (!publicClient || !chromaAddress || !canvasAddress || !address || !onSepolia) {
+      setListableTokenIds([]);
+      setApByTokenId({});
+      return;
+    }
+
+    setOwnedLoading(true);
+    try {
+      const owned = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
+      const revealed = await fetchTokenRevealStatus(publicClient, chromaAddress, owned);
+      const revealedIds = owned.filter((id) => revealed[id.toString()] === true);
+      const stats = await fetchTokenCanvasStats(publicClient, canvasAddress, revealedIds);
+      const eligible = revealedIds.filter(
+        (id) => (stats[id.toString()]?.actionPoints ?? 0n) > 0n,
+      );
+
+      const apMap = Object.fromEntries(
+        eligible.map((id) => [id.toString(), stats[id.toString()]?.actionPoints ?? 0n]),
+      );
+
+      setListableTokenIds(eligible);
+      setApByTokenId(apMap);
+
+      setListTokenId((prev) => {
+        if (prev && eligible.some((id) => id.toString() === prev)) return prev;
+        return eligible[0]?.toString() ?? "";
+      });
+    } catch (error) {
+      console.error("Failed to load listable Chromies:", error);
+      setListableTokenIds([]);
+      setApByTokenId({});
+    } finally {
+      setOwnedLoading(false);
+    }
+  }, [publicClient, chromaAddress, canvasAddress, address, onSepolia]);
+
+  useEffect(() => {
+    if (isConnected && onSepolia) {
+      fetchListableTokens();
+    } else {
+      setListableTokenIds([]);
+      setApByTokenId({});
+    }
+  }, [isConnected, onSepolia, fetchListableTokens]);
+
+  const selectedListAp = listTokenId ? apByTokenId[listTokenId] : null;
+
   const runTx = useCallback(
     async (actionKey, buildRequest, successNotice) => {
       if (!walletClient || !publicClient) return;
@@ -296,6 +355,7 @@ export default function Market() {
         await publicClient.waitForTransactionReceipt({ hash });
         setTxNotice(successNotice);
         await fetchListings();
+        await fetchListableTokens();
       } catch (error) {
         console.error("Marketplace transaction failed:", error);
         setTxError(errorMessage(error));
@@ -303,7 +363,7 @@ export default function Market() {
         setPendingAction(null);
       }
     },
-    [walletClient, publicClient, fetchListings],
+    [walletClient, publicClient, fetchListings, fetchListableTokens],
   );
 
   const handleList = (event) => {
@@ -359,11 +419,15 @@ export default function Market() {
   const listFormValid = useMemo(() => {
     if (!listTokenId || !listAmount || !listPrice) return false;
     try {
-      return BigInt(listTokenId) > 0n && BigInt(listAmount) > 0n && parseEther(listPrice) > 0n;
+      const amount = BigInt(listAmount);
+      const tokenId = BigInt(listTokenId);
+      if (tokenId <= 0n || amount <= 0n || parseEther(listPrice) <= 0n) return false;
+      if (selectedListAp != null && amount > selectedListAp) return false;
+      return true;
     } catch {
       return false;
     }
-  }, [listTokenId, listAmount, listPrice]);
+  }, [listTokenId, listAmount, listPrice, selectedListAp]);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -406,54 +470,135 @@ export default function Market() {
             </h2>
             <form
               onSubmit={handleList}
-              className="mx-auto mt-8 flex max-w-xl flex-col gap-4 border border-ink bg-white px-6 py-6 sm:flex-row sm:items-end"
+              className="mx-auto mt-8 max-w-xl border border-ink bg-white px-6 py-6"
             >
-              <label className="flex-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-                  Your token #
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  value={listTokenId}
-                  onChange={(event) => setListTokenId(event.target.value)}
-                  placeholder="1"
-                  className={`${INPUT_CLASS} mt-1`}
-                />
-              </label>
-              <label className="flex-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-                  AP amount
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  value={listAmount}
-                  onChange={(event) => setListAmount(event.target.value)}
-                  placeholder="100"
-                  className={`${INPUT_CLASS} mt-1`}
-                />
-              </label>
-              <label className="flex-1">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
-                  Price (ETH)
-                </span>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={listPrice}
-                  onChange={(event) => setListPrice(event.target.value)}
-                  placeholder="0.01"
-                  className={`${INPUT_CLASS} mt-1`}
-                />
-              </label>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+                Your Chromie
+              </p>
+
+              {ownedLoading && (
+                <p className="mt-3 text-xs uppercase tracking-wider text-ink/45">Loading yours…</p>
+              )}
+
+              {!ownedLoading && listableTokenIds.length === 0 && (
+                <div className="mt-3 border border-ink/20 bg-paper px-3 py-2.5 text-xs text-ink/70">
+                  <p className="font-semibold text-ink">
+                    You need a revealed Chromie with AP to create a listing
+                  </p>
+                  <Link
+                    to="/my-chromies"
+                    className="mt-1 inline-block font-bold uppercase tracking-wide text-signal transition-colors hover:text-ink"
+                  >
+                    Go to My Chromies →
+                  </Link>
+                </div>
+              )}
+
+              {!ownedLoading && listableTokenIds.length > 0 && (
+                <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]">
+                  {listableTokenIds.map((tokenId) => {
+                    const id = Number(tokenId);
+                    const isSelected = listTokenId === tokenId.toString();
+                    const ap = apByTokenId[tokenId.toString()];
+                    return (
+                      <button
+                        key={tokenId.toString()}
+                        type="button"
+                        onClick={() => setListTokenId(tokenId.toString())}
+                        title={`List AP from Chromie #${formatTokenId(id)}`}
+                        className={`shrink-0 overflow-hidden border-2 bg-white transition-colors ${
+                          isSelected
+                            ? "border-signal ring-1 ring-signal/30"
+                            : "border-ink/15 hover:border-signal/60"
+                        }`}
+                        style={{ width: 56 }}
+                      >
+                        <TokenThumbnail
+                          tokenId={tokenId}
+                          publicClient={publicClient}
+                          chromaAddress={chromaAddress}
+                        />
+                        <p className="border-t border-ink/10 py-0.5 text-center text-[9px] font-bold text-ink/70">
+                          #{formatTokenId(id)}
+                        </p>
+                        {ap != null && (
+                          <p className="border-t border-ink/10 py-0.5 text-center text-[8px] font-bold text-signal">
+                            {ap.toString()} AP
+                          </p>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {listTokenId && selectedListAp != null && (
+                <p className="mt-3 text-sm font-bold text-ink">
+                  AP available on #{formatTokenId(Number(listTokenId))}:{" "}
+                  <span className="text-signal">{selectedListAp.toString()}</span>
+                </p>
+              )}
+
               <button
-                type="submit"
-                disabled={!listFormValid || pendingAction !== null}
-                className="border border-signal bg-signal px-6 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:hover:bg-ink/10"
+                type="button"
+                onClick={() => setListAdvancedOpen((open) => !open)}
+                className="mt-4 text-[10px] font-bold uppercase tracking-wider text-ink/45 transition-colors hover:text-signal"
               >
-                {pendingAction === "list" ? "Listing…" : "List"}
+                {listAdvancedOpen ? "Hide advanced" : "Advanced"}
               </button>
+
+              {listAdvancedOpen && (
+                <label className="mt-2 block">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+                    Token ID (manual)
+                  </span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={listTokenId}
+                    onChange={(event) => setListTokenId(event.target.value)}
+                    placeholder="1"
+                    className={`${INPUT_CLASS} mt-1`}
+                  />
+                </label>
+              )}
+
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-end">
+                <label className="flex-1">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+                    AP amount
+                  </span>
+                  <input
+                    type="number"
+                    min="1"
+                    max={selectedListAp != null ? Number(selectedListAp) : undefined}
+                    value={listAmount}
+                    onChange={(event) => setListAmount(event.target.value)}
+                    placeholder="100"
+                    className={`${INPUT_CLASS} mt-1`}
+                  />
+                </label>
+                <label className="flex-1">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
+                    Price (ETH)
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={listPrice}
+                    onChange={(event) => setListPrice(event.target.value)}
+                    placeholder="0.01"
+                    className={`${INPUT_CLASS} mt-1`}
+                  />
+                </label>
+                <button
+                  type="submit"
+                  disabled={!listFormValid || pendingAction !== null}
+                  className="border border-signal bg-signal px-6 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/10 disabled:text-ink/40 disabled:hover:bg-ink/10"
+                >
+                  {pendingAction === "list" ? "Listing…" : "List"}
+                </button>
+              </div>
             </form>
           </div>
         </section>
