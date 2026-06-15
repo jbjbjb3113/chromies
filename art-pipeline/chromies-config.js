@@ -869,7 +869,7 @@ const CHARACTERS = [
     },
     slotVariantPool: {
       // Object form: weights REPLACE traits.json weights (SP_ variants are weight 0 there)
-      hair: { SP_Mohawk: 25, SP_Afro: 50, None: 25 }, // pending: Pompadour, MrT, Dreads, Surfer, FadeRight
+      hair: { SP_Mohawk: 22, SP_Afro: 45, SP_MrT: 10, None: 23 },
       beard: ["None"],        // pending: SP_Full, SP_Goat
       glasses: ["None"],      // pending: SP_Shades, SP_Neo
       mustache: ["None"],        // no SP mustache asset yet — front-view would misalign
@@ -900,9 +900,10 @@ const CHARACTERS = [
         SP_Afro_Female: 20,
         SP_Dreads_Female: 10,
         SP_Surfer_Female: 13,
+        SP_MrT_Female: 10,
         SP_FadeRight_Female: 7,
         SP_AZVet_Female: 7,
-        None: 20,           // includes weight from pending SP_Pompadour_Female
+        None: 10,
       },
       beard: ["None"],
       mustache: ["None"],

@@ -952,8 +952,20 @@
           "mutationScale": 1.0
         },
         {
+          "name": "SP_MrT_Female",
+          "file": "SP_HAIR_MrT_Female.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
           "name": "SP_FadeRight_Female",
           "file": "SP_HAIR_FadeRight_Female.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "SP_AZVet_Female",
+          "file": "SP_HAIR_AZVet_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
