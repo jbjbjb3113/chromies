@@ -4,8 +4,8 @@
 // Writes to output/quick/ (no master.json/csv side effects).
 //
 // USAGE:
-//   node quick-test.js --gender Male --shirt Crew --hood None --hair Mohawk --palette SIGNAL
-//   node quick-test.js --character SideProfile --gender Female --shirt SP_Crew_Female --hair SP_Afro_Female
+//   node quick-test.js --gender Male --shirt Crew --hood None --hair Mohawk --glasses Shades --palette SIGNAL
+//   node quick-test.js --character SideProfile --gender Female --shirt SP_Crew_Female --hair SP_Afro_Female --glasses SP_Shades
 //   node quick-test.js --palette ACID --mtier Pristine --tier None
 // ============================================================================
 
@@ -29,6 +29,25 @@ const { overlayStrayPixels } = require("./phase3-variance");
 const FIXED_TOKEN_ID = 1;
 const QUICK_DIR = path.join(SETTINGS.outputDir, "quick");
 
+/** Per-slot CLI overrides applied after token seed picks. */
+const SLOT_OVERRIDE_FLAGS = [
+  "hair",
+  "hood",
+  "shirt",
+  "glasses",
+  "beard",
+  "mustache",
+  "tattoo",
+  "bodytattoo",
+  "necklace",
+  "earrings",
+  "mask",
+];
+
+function emptySlotOverrides() {
+  return Object.fromEntries(SLOT_OVERRIDE_FLAGS.map((slot) => [slot, null]));
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
   const result = {
@@ -38,9 +57,7 @@ function parseArgs() {
     skip: new Set(),
     character: null,
     gender: null,
-    hair: null,
-    hood: null,
-    shirt: null,
+    ...emptySlotOverrides(),
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -52,9 +69,7 @@ function parseArgs() {
     else if (a === "--mtier") result.mtier = args[++i];
     else if (a === "--character") result.character = args[++i];
     else if (a === "--gender") result.gender = args[++i];
-    else if (a === "--hair") result.hair = args[++i];
-    else if (a === "--hood") result.hood = args[++i];
-    else if (a === "--shirt") result.shirt = args[++i];
+    else if (SLOT_OVERRIDE_FLAGS.includes(a.slice(2))) result[a.slice(2)] = args[++i];
     else if (a === "--skip") args[++i].split(",").forEach((s) => result.skip.add(s.trim().toLowerCase()));
     else if (a.startsWith("--skip=")) a.slice(7).split(",").forEach((s) => result.skip.add(s.trim().toLowerCase()));
     else {
@@ -72,17 +87,33 @@ function printHelp() {
 Flags:
   --character <name>   Character type (e.g. HeroA, SideProfile, Alien)
   --gender <Male|Female>
-  --shirt <variant>    Shirt variant name from traits.json
-  --hood <variant>     Hood variant name
-  --hair <variant>     Hair variant name
   --palette, -p <name> Palette family (SIGNAL, ACID, ...)
   --mtier <name>       Mutation tier override
   --tier <name>        Drift tier override
   --skip <slots>       Comma-separated slots to skip
 
+Slot overrides (variant name from traits.json):
+  --hair <variant>
+  --hood <variant>
+  --shirt <variant>
+  --glasses <variant>     e.g. Shades, Neo, VR, None, SP_Shades, SP_Neo
+  --beard <variant>
+  --mustache <variant>
+  --tattoo <variant>
+  --bodytattoo <variant>
+  --necklace <variant>
+  --earrings <variant>
+  --mask <variant>
+
 Examples:
-  node quick-test.js --gender Male --shirt Crew --hood None --hair Mohawk --palette SIGNAL
-  node quick-test.js --character SideProfile --gender Female --shirt SP_Crew_Female --hair SP_Afro_Female`);
+  node quick-test.js --gender Male --shirt Crew --hood None --hair Mohawk --glasses Shades --palette SIGNAL
+  node quick-test.js --character SideProfile --gender Female --shirt SP_Crew_Female --hair SP_Afro_Female --glasses None`);
+}
+
+function applySlotOverrides(picks, traits, opts) {
+  for (const slot of SLOT_OVERRIDE_FLAGS) {
+    applySlotOverride(picks, traits, slot, opts[slot]);
+  }
 }
 
 function slugPart(value) {
@@ -168,11 +199,13 @@ function main() {
     : "rolled";
   console.log(`Quick preview #${tokenId} | palette: ${paletteKey} | character: ${charLabel}`);
   if (opts.skip.size > 0) console.log(`  skip: ${[...opts.skip].join(", ")}`);
+  const activeOverrides = SLOT_OVERRIDE_FLAGS.filter((slot) => opts[slot]).map(
+    (slot) => `${slot}=${opts[slot]}`,
+  );
+  if (activeOverrides.length > 0) console.log(`  overrides: ${activeOverrides.join(", ")}`);
 
   const picks = pickTokenVariants(tokenId, traits, opts.skip, character, false);
-  applySlotOverride(picks, traits, "hair", opts.hair);
-  applySlotOverride(picks, traits, "hood", opts.hood);
-  applySlotOverride(picks, traits, "shirt", opts.shirt);
+  applySlotOverrides(picks, traits, opts);
 
   loadPickBuffers(picks, traits);
   const renderPicks = applyCoverageRules(picks, traits, character);
@@ -185,7 +218,7 @@ function main() {
     character,
   );
 
-  const missing = collectMissingFiles(picks);
+  const missing = collectMissingFiles(renderPicks);
   if (missing.length > 0) {
     console.log("\n  [MISSING FILE]");
     for (const item of missing) {
