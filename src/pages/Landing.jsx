@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import SiteHeader from "../components/SiteHeader.jsx";
 import TokenGridBackground from "../components/TokenGridBackground.jsx";
@@ -86,79 +86,25 @@ function FeaturedToken({ src, label }) {
   );
 }
 
-const FLOW_STEP_LINK_CLASS =
-  "inline-flex shrink-0 border border-[#8a8780] bg-paper/80 px-4 py-1.5 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
-
-function FlowStepLink({ to, children }) {
-  return (
-    <Link to={to} className={FLOW_STEP_LINK_CLASS}>
-      {children} →
-    </Link>
-  );
-}
+const MINT_BTN_CLASS =
+  "border border-[#8a8780] bg-paper/80 px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal backdrop-blur-sm transition-colors hover:border-ink hover:bg-paper/95";
 
 function FlowArrow() {
   return (
-    <span
-      className="inline-flex shrink-0 items-center text-xl leading-none text-signal"
-      aria-hidden
-    >
+    <span className="mx-1.5 text-ink/30" aria-hidden>
       →
     </span>
   );
 }
 
-const FLOW_CHEVRON_BTN_CLASS =
-  "absolute top-1/2 z-20 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-sm text-xl leading-none text-signal/50 transition-colors hover:text-signal active:text-signal sm:h-9 sm:w-9 sm:border sm:border-ink/20 sm:bg-paper/90 sm:text-2xl sm:text-signal/75 sm:hover:border-signal/40 sm:hover:bg-paper";
-
-function FlowScrollRow({ children, className = "" }) {
-  const scrollRef = useRef(null);
-
-  const scrollByStep = (direction) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const step = Math.max(140, Math.round(el.clientWidth * 0.45));
-    el.scrollBy({ left: direction * step, behavior: "smooth" });
-  };
-
+function FlowTextRow({ children, className = "" }) {
   return (
-    <div className="relative">
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-paper/80 to-transparent"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-paper/80 to-transparent"
-        aria-hidden
-      />
-      <button
-        type="button"
-        onClick={() => scrollByStep(-1)}
-        className={`left-0 ${FLOW_CHEVRON_BTN_CLASS}`}
-        aria-label="Scroll flow left"
-      >
-        ‹
-      </button>
-      <button
-        type="button"
-        onClick={() => scrollByStep(1)}
-        className={`right-0 ${FLOW_CHEVRON_BTN_CLASS}`}
-        aria-label="Scroll flow right"
-      >
-        ›
-      </button>
-      <div
-        ref={scrollRef}
-        role="region"
-        aria-label="Chromie flow steps"
-        className="overflow-x-auto whitespace-nowrap px-5 [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden"
-      >
-        <div
-          className={`flex flex-nowrap items-center justify-start gap-x-2 gap-y-2 text-sm font-semibold tracking-wide ${className}`}
-        >
-          {children}
-        </div>
-      </div>
+    <div
+      className={`overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden ${className}`}
+    >
+      <p className="inline text-[9px] uppercase tracking-[0.2em] text-ink/40 sm:text-[10px]">
+        {children}
+      </p>
     </div>
   );
 }
@@ -183,7 +129,7 @@ export default function Landing() {
     <div className="landing-mono min-h-screen bg-paper text-ink">
       <SiteHeader />
 
-      {/* 1. Hero — logo top, Quick Summary + MINT at bottom */}
+      {/* 1. Hero — logo and flow text at top, character scroll below */}
       <section className="relative flex min-h-screen flex-col overflow-hidden border-b border-ink">
         <TokenGridBackground opacity={0.08} animate />
         <TokenHeroForeground opacity={0.95} />
@@ -195,35 +141,26 @@ export default function Landing() {
           <p className="mt-4 text-[10px] tracking-[0.3em] text-ink/60 sm:text-xs">
             ON-CHAIN GENERATIVE IDENTITIES IN COLOR
           </p>
-        </div>
-
-        <div className="relative z-10 mt-auto px-5 pb-10 pt-8 text-center sm:px-6 sm:pb-12">
-          <div className="mx-auto max-w-3xl border border-ink bg-paper/80 px-6 py-8 text-center backdrop-blur-sm">
-            <h3 className="text-xs font-extrabold uppercase tracking-[0.2em] text-ink/50">
-              Quick Summary
-            </h3>
-            <FlowScrollRow className="mt-4 text-ink">
-              <FlowStepLink to="/mint">MINT</FlowStepLink>
-              <FlowArrow />
-              <FlowStepLink to="/my-chromies">Collect</FlowStepLink>
-              <FlowArrow />
-              <FlowStepLink to="/canvas">Edit</FlowStepLink>
-              <FlowArrow />
-              <FlowStepLink to="/burn">Burn</FlowStepLink>
-              <FlowArrow />
-              <FlowStepLink to="/market">Earn AP</FlowStepLink>
-              <FlowArrow />
-              <FlowStepLink to="/canvas">Purify</FlowStepLink>
-              <FlowArrow />
-              <FlowStepLink to="/inscribe">Inscribe</FlowStepLink>
-            </FlowScrollRow>
-            <p className="mt-3 text-xs uppercase tracking-[0.2em] text-ink/40">or</p>
-            <FlowScrollRow className="mt-3">
-              <FlowStepLink to="/mint">MINT</FlowStepLink>
-              <FlowArrow />
-              <span className="shrink-0 text-signal">Hold Forever</span>
-            </FlowScrollRow>
-          </div>
+          <FlowTextRow className="mx-auto mt-4 max-w-3xl">
+            Mint
+            <FlowArrow />
+            Collect
+            <FlowArrow />
+            Edit
+            <FlowArrow />
+            Burn
+            <FlowArrow />
+            Earn AP
+            <FlowArrow />
+            Purify
+            <FlowArrow />
+            Inscribe
+          </FlowTextRow>
+          <FlowTextRow className="mx-auto mt-2 max-w-3xl">
+            or Mint
+            <FlowArrow />
+            <span className="text-ink/50">Hold Forever</span>
+          </FlowTextRow>
         </div>
       </section>
 
@@ -254,6 +191,11 @@ export default function Landing() {
               />
             ))}
           </div>
+        </div>
+        <div className="mt-10 flex justify-center">
+          <Link to="/mint" className={MINT_BTN_CLASS}>
+            MINT →
+          </Link>
         </div>
       </SectionShell>
 
