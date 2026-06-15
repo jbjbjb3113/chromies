@@ -31,11 +31,14 @@ import {
 } from "../lib/pixel-canvas.js";
 import {
   fetchChromieMetadata,
+  fetchOnChainTokenMetadata,
   formatTokenId,
   loadTokenImage,
   parseTokenId,
+  resolveMetadataImageUrl,
   tokenPngUrl,
 } from "../lib/chromie-token.js";
+import { chromaAbi } from "../../abis/Chroma.ts";
 import {
   chromaCanvasV2Abi,
   DEFAULT_CHAIN,
@@ -47,7 +50,7 @@ import {
   fetchCanvasEditState,
   fetchTokenOwner,
 } from "../lib/chroma-canvas.js";
-import { fetchOwnedChromaTokenIds } from "../lib/chroma-ownership.js";
+import { fetchOwnedChromaTokenIds, fetchTokenRevealStatus } from "../lib/chroma-ownership.js";
 
 const THUMB_SCALE = 4;
 const THUMB_SIZE = 64 * THUMB_SCALE;
@@ -596,7 +599,10 @@ export default function Canvas() {
   const [manualIdOpen, setManualIdOpen] = useState(false);
   const [ownedTokenIds, setOwnedTokenIds] = useState([]);
   const [ownedLoading, setOwnedLoading] = useState(false);
+  const [revealedByTokenId, setRevealedByTokenId] = useState({});
   const [loadedId, setLoadedId] = useState(null);
+  const [isTokenUnrevealed, setIsTokenUnrevealed] = useState(false);
+  const [unrevealedPlaceholderSrc, setUnrevealedPlaceholderSrc] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [palette, setPalette] = useState(null);
   const [original, setOriginal] = useState(null);
@@ -645,7 +651,7 @@ export default function Canvas() {
   const altEyedropperRef = useRef(false);
 
   const paletteColors = palette?.colors ?? [];
-  const canPaint = paletteColors.length > 0 && !isTokenLocked;
+  const canPaint = paletteColors.length > 0 && !isTokenLocked && !isTokenUnrevealed;
   const canEdit = canPaint;
   const isPaintColorPick = tool === "eyedropper" || altEyedropper;
   const showBrushPreview =
@@ -680,6 +686,7 @@ export default function Canvas() {
   const exceedsAp = apAvailable != null && diffCount > apAvailable;
   const canSaveOnChain =
     Boolean(loadedId) &&
+    !isTokenUnrevealed &&
     onSepolia &&
     isConnected &&
     isTokenOwner &&
@@ -749,7 +756,36 @@ export default function Canvas() {
       setLoadError(null);
       setSaveError(null);
       setSaveSuccess(null);
+      setIsTokenUnrevealed(false);
+      setUnrevealedPlaceholderSrc(null);
       try {
+        if (onSepolia && chromaAddress && publicClient) {
+          const revealed = await publicClient.readContract({
+            address: chromaAddress,
+            abi: chromaAbi,
+            functionName: "revealed",
+            args: [BigInt(id)],
+          });
+
+          if (!revealed) {
+            const meta = await fetchOnChainTokenMetadata(publicClient, chromaAddress, id);
+            const placeholderSrc =
+              resolveMetadataImageUrl(meta?.image) ?? "/RevealImage.png";
+            setLoadedId(id);
+            setMetadata(meta);
+            setIsTokenUnrevealed(true);
+            setUnrevealedPlaceholderSrc(placeholderSrc);
+            setPalette(null);
+            setOriginal(null);
+            resetHistory(empty);
+            setColorIndex(1);
+            setShowDiff(false);
+            setImportedActive(false);
+            await refreshChainState(id);
+            return;
+          }
+        }
+
         const [meta, img] = await Promise.all([fetchChromieMetadata(id), loadTokenImage(id)]);
         const pal = getPaletteFromMetadata(meta);
         const pix = loadTokenPixelIndices(img, pal.colors);
@@ -775,6 +811,8 @@ export default function Canvas() {
         setMetadata(null);
         setPalette(null);
         setOriginal(null);
+        setIsTokenUnrevealed(false);
+        setUnrevealedPlaceholderSrc(null);
         resetHistory(empty);
         setActionPoints(null);
         setIsTokenLocked(false);
@@ -783,7 +821,15 @@ export default function Canvas() {
         setLoading(false);
       }
     },
-    [resetHistory, empty, onSepolia, chromaAddress, canvasAddress, refreshChainState],
+    [
+      resetHistory,
+      empty,
+      onSepolia,
+      chromaAddress,
+      canvasAddress,
+      publicClient,
+      refreshChainState,
+    ],
   );
 
   const loadToken = useCallback(() => loadTokenById(tokenInput), [loadTokenById, tokenInput]);
@@ -791,16 +837,20 @@ export default function Canvas() {
   const fetchOwned = useCallback(async () => {
     if (!publicClient || !chromaAddress || !address || !onSepolia) {
       setOwnedTokenIds([]);
+      setRevealedByTokenId({});
       return;
     }
 
     setOwnedLoading(true);
     try {
       const ids = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
+      const revealed = await fetchTokenRevealStatus(publicClient, chromaAddress, ids);
       setOwnedTokenIds(ids);
+      setRevealedByTokenId(revealed);
     } catch (error) {
       console.error("Failed to load owned Chromies:", error);
       setOwnedTokenIds([]);
+      setRevealedByTokenId({});
     } finally {
       setOwnedLoading(false);
     }
@@ -811,6 +861,7 @@ export default function Canvas() {
       fetchOwned();
     } else {
       setOwnedTokenIds([]);
+      setRevealedByTokenId({});
     }
   }, [isConnected, onSepolia, fetchOwned]);
 
@@ -1015,6 +1066,8 @@ export default function Canvas() {
       setImportedActive(true);
       setLoadedId(null);
       setMetadata(null);
+      setIsTokenUnrevealed(false);
+      setUnrevealedPlaceholderSrc(null);
       setLoadError(null);
       setActionPoints(null);
       setIsTokenLocked(false);
@@ -1218,6 +1271,20 @@ export default function Canvas() {
           </div>
         )}
 
+        {isTokenUnrevealed && loadedId && (
+          <div className="border-b border-amber-600/40 bg-amber-50 px-4 py-3 text-center md:px-6">
+            <p className="text-sm font-bold text-amber-900">
+              This Chromie is unrevealed — reveal it on My Chromies before editing.
+            </p>
+            <Link
+              to="/my-chromies"
+              className="mt-2 inline-block text-xs font-bold uppercase tracking-wide text-signal transition-colors hover:text-ink"
+            >
+              Go to My Chromies →
+            </Link>
+          </div>
+        )}
+
         <div className="flex flex-1 flex-col md:flex-row md:min-h-0">
           {/* Tools sidebar — vertical on desktop, stacked toolbar on mobile */}
           <aside className="flex w-full shrink-0 flex-col gap-4 border-b border-ink p-4 md:w-[200px] md:border-b-0 md:border-r md:overflow-y-auto">
@@ -1257,6 +1324,7 @@ export default function Canvas() {
                   {ownedTokenIds.map((tokenId) => {
                     const id = Number(tokenId);
                     const isSelected = loadedId === id;
+                    const isUnrevealed = revealedByTokenId[tokenId.toString()] === false;
                     return (
                       <button
                         key={tokenId.toString()}
@@ -1264,13 +1332,18 @@ export default function Canvas() {
                         disabled={loading}
                         onClick={() => loadTokenById(id)}
                         title={`Load Chromie #${formatTokenId(id)}`}
-                        className={`shrink-0 overflow-hidden border-2 bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                        className={`relative shrink-0 overflow-hidden border-2 bg-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                           isSelected
                             ? "border-signal ring-1 ring-signal/30"
                             : "border-ink/15 hover:border-signal/60"
                         }`}
                         style={{ width: 56 }}
                       >
+                        {isUnrevealed && (
+                          <div className="pointer-events-none absolute inset-x-0 top-0 z-10 border-b border-amber-600/50 bg-amber-50/95 px-0.5 py-0.5 text-center text-[7px] font-bold uppercase leading-tight tracking-wide text-amber-800">
+                            Unrevealed
+                          </div>
+                        )}
                         <TokenThumbnail
                           tokenId={tokenId}
                           publicClient={publicClient}
@@ -1339,10 +1412,16 @@ export default function Canvas() {
                   <>
                     <p className="text-sm font-bold text-ink">#{formatTokenId(loadedId)}</p>
                     <p className="truncate text-[10px] text-ink/50">{metadata?.name}</p>
-                    {palette && (
-                      <p className="mt-0.5 text-[10px] text-ink/60">
-                        <span className="text-signal">{palette.name}</span>
+                    {isTokenUnrevealed ? (
+                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                        Unrevealed
                       </p>
+                    ) : (
+                      palette && (
+                        <p className="mt-0.5 text-[10px] text-ink/60">
+                          <span className="text-signal">{palette.name}</span>
+                        </p>
+                      )
                     )}
                   </>
                 ) : importedActive ? (
@@ -1365,26 +1444,30 @@ export default function Canvas() {
               {chainStateLoading ? (
                 <p className="text-sm font-bold text-ink/50">Loading…</p>
               ) : loadedId && onSepolia ? (
-                <>
-                  <p className="text-lg font-black text-signal">
-                    AP Available: {apAvailable ?? "—"}
-                  </p>
-                  {diffCount > 0 && apAvailable != null && (
-                    <p
-                      className={`mt-1 text-xs font-semibold ${
-                        exceedsAp ? "text-red-600" : "text-ink/70"
-                      }`}
-                    >
-                      Pixels changed: {diffCount} / AP available: {apAvailable}
+                isTokenUnrevealed ? (
+                  <p className="text-sm font-bold text-amber-700">Reveal on My Chromies first</p>
+                ) : (
+                  <>
+                    <p className="text-lg font-black text-signal">
+                      AP Available: {apAvailable ?? "—"}
                     </p>
-                  )}
-                  {!isConnected && (
-                    <p className="mt-1 text-[10px] text-ink/50">Connect wallet to save on-chain</p>
-                  )}
-                  {isConnected && !isTokenOwner && (
-                    <p className="mt-1 text-[10px] text-amber-700">You do not own this Chromie</p>
-                  )}
-                </>
+                    {diffCount > 0 && apAvailable != null && (
+                      <p
+                        className={`mt-1 text-xs font-semibold ${
+                          exceedsAp ? "text-red-600" : "text-ink/70"
+                        }`}
+                      >
+                        Pixels changed: {diffCount} / AP available: {apAvailable}
+                      </p>
+                    )}
+                    {!isConnected && (
+                      <p className="mt-1 text-[10px] text-ink/50">Connect wallet to save on-chain</p>
+                    )}
+                    {isConnected && !isTokenOwner && (
+                      <p className="mt-1 text-[10px] text-amber-700">You do not own this Chromie</p>
+                    )}
+                  </>
+                )
               ) : (
                 <p className="text-sm font-bold text-ink/40">
                   {loadedId ? "Switch to Sepolia" : "Load a token"}
@@ -1643,30 +1726,44 @@ export default function Canvas() {
                   } bg-white`}
                 >
                   <div className="relative">
-                    <canvas
-                      ref={mainCanvasRef}
-                      width={DISPLAY_SIZE}
-                      height={DISPLAY_SIZE}
-                      className={`block ${
-                        panMode
-                          ? "pointer-events-none cursor-grab"
-                          : bgEyedropperActive || isPaintColorPick
-                            ? "cursor-cell"
-                            : canEdit
-                              ? "cursor-crosshair"
-                              : "cursor-not-allowed"
-                      }`}
-                      style={{
-                        imageRendering: "pixelated",
-                        width: displayPx,
-                        height: displayPx,
-                        touchAction: "none",
-                      }}
-                      onPointerDown={onPointerDown}
-                      onPointerMove={onPointerMove}
-                      onPointerUp={onPointerUp}
-                      onPointerLeave={onPointerLeave}
-                    />
+                    {isTokenUnrevealed && unrevealedPlaceholderSrc ? (
+                      <img
+                        src={unrevealedPlaceholderSrc}
+                        alt={`Unrevealed Chromie #${formatTokenId(loadedId)}`}
+                        draggable={false}
+                        className="block cursor-not-allowed"
+                        style={{
+                          imageRendering: "pixelated",
+                          width: displayPx,
+                          height: displayPx,
+                        }}
+                      />
+                    ) : (
+                      <canvas
+                        ref={mainCanvasRef}
+                        width={DISPLAY_SIZE}
+                        height={DISPLAY_SIZE}
+                        className={`block ${
+                          panMode
+                            ? "pointer-events-none cursor-grab"
+                            : bgEyedropperActive || isPaintColorPick
+                              ? "cursor-cell"
+                              : canEdit
+                                ? "cursor-crosshair"
+                                : "cursor-not-allowed"
+                        }`}
+                        style={{
+                          imageRendering: "pixelated",
+                          width: displayPx,
+                          height: displayPx,
+                          touchAction: "none",
+                        }}
+                        onPointerDown={onPointerDown}
+                        onPointerMove={onPointerMove}
+                        onPointerUp={onPointerUp}
+                        onPointerLeave={onPointerLeave}
+                      />
+                    )}
                     {brushPreviewStyle && (
                       <div
                         aria-hidden
@@ -1690,11 +1787,21 @@ export default function Canvas() {
                 <button
                   type="button"
                   onClick={handleSaveClick}
-                  disabled={!loadedId || !onSepolia || isTokenLocked || diffCount === 0 || exceedsAp || saving}
+                  disabled={
+                    !loadedId ||
+                    isTokenUnrevealed ||
+                    !onSepolia ||
+                    isTokenLocked ||
+                    diffCount === 0 ||
+                    exceedsAp ||
+                    saving
+                  }
                   title={
                     !loadedId
                       ? "Load a Chromie token first"
-                      : !onSepolia
+                      : isTokenUnrevealed
+                        ? "Reveal this Chromie on My Chromies before editing"
+                        : !onSepolia
                         ? "Switch to Sepolia"
                         : isTokenLocked
                           ? "Token is inscribed and locked"
@@ -1758,12 +1865,16 @@ export default function Canvas() {
                 </label>
                 {loadedId && (
                   <a
-                    href={tokenPngUrl(loadedId)}
+                    href={
+                      isTokenUnrevealed && unrevealedPlaceholderSrc
+                        ? unrevealedPlaceholderSrc
+                        : tokenPngUrl(loadedId)
+                    }
                     target="_blank"
                     rel="noreferrer"
                     className="text-xs text-ink/50 underline hover:text-signal"
                   >
-                    View original
+                    {isTokenUnrevealed ? "View placeholder" : "View original"}
                   </a>
                 )}
               </div>
