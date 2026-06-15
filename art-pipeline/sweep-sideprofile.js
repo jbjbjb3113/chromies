@@ -7,6 +7,7 @@
 //   node sweep-sideprofile.js
 //   node sweep-sideprofile.js --gender Male --hair SP_Mohawk,SP_Afro --palette SIGNAL
 //   node sweep-sideprofile.js --mtier OffKilter
+//   node sweep-sideprofile.js --hood SP_Classic
 //   node sweep-sideprofile.js --dry-run
 // ============================================================================
 
@@ -115,6 +116,7 @@ function parseArgs() {
     hairs: null,
     palettes: [...DEFAULT_PALETTES],
     mtier: "Pristine",
+    hood: "None",
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -125,6 +127,7 @@ function parseArgs() {
     else if (a === "--hair") result.hairs = splitList(args[++i]);
     else if (a === "--palette") result.palettes = splitList(args[++i]).map((p) => p.toUpperCase());
     else if (a === "--mtier") result.mtier = args[++i];
+    else if (a === "--hood") result.hood = args[++i];
     else {
       console.error(`Unknown argument: ${a}`);
       result.help = true;
@@ -149,6 +152,7 @@ Axes:
   --hair <variant,...>       Default: SP_HAIR_* files present in components/
   --palette <SIGNAL,...>     Default: SIGNAL,ACID,CYAN,GHOST,BLOOD,MOSS
   --mtier <name>             Mutation tier override (default: Pristine)
+  --hood <variant>           Hood override (default: None; e.g. SP_Classic)
 
 Options:
   --dry-run                  Print combo plan only
@@ -200,6 +204,70 @@ function discoverHairVariants(traits, genderFilter) {
   });
 
   return gendered.sort();
+}
+
+function discoverSpHoodFiles() {
+  return fs
+    .readdirSync(SETTINGS.componentsDir)
+    .filter((name) => /^SP_HOOD_.*\.png$/i.test(name))
+    .sort();
+}
+
+function hoodVariantDef(traits, variantName) {
+  return traits.slots.hood.variants.find((v) => v.name === variantName) || null;
+}
+
+/** Prefer gender-specific SP hood file when present (e.g. SP_HOOD_Classic_Female.png). */
+function hoodFileForGender(traits, variantName, gender) {
+  const variant = hoodVariantDef(traits, variantName);
+  if (!variant) return null;
+  if (!variant.name.startsWith("SP_") || gender !== "Female") return variant.file;
+
+  const femaleFile = variant.file.replace(/\.png$/i, "_Female.png");
+  const femalePath = path.join(SETTINGS.componentsDir, femaleFile);
+  if (fs.existsSync(femalePath)) return femaleFile;
+  return variant.file;
+}
+
+function hoodAssetExists(traits, variantName, gender) {
+  const file = hoodFileForGender(traits, variantName, gender);
+  if (!file) return false;
+  return fs.existsSync(path.join(SETTINGS.componentsDir, file));
+}
+
+function summarizeSpHoodAssetCoverage(genders) {
+  const spFiles = discoverSpHoodFiles();
+  if (spFiles.length === 0) {
+    return "SideProfile hoodie assets: none on disk";
+  }
+
+  const femaleOnly = spFiles.filter((f) => /_Female\.png$/i.test(f));
+  const sharedOrMale = spFiles.filter((f) => !/_Female\.png$/i.test(f));
+  const hasFemaleSpecific = femaleOnly.length > 0;
+  const hasShared = sharedOrMale.length > 0;
+
+  if (hasFemaleSpecific && !hasShared) {
+    return `SideProfile hoodie assets: Female only (${femaleOnly.join(", ")})`;
+  }
+  if (hasShared && !hasFemaleSpecific) {
+    return `SideProfile hoodie assets: shared for Male and Female (${sharedOrMale.join(", ")})`;
+  }
+  if (hasShared && hasFemaleSpecific) {
+    return `SideProfile hoodie assets: Male/shared (${sharedOrMale.join(", ")}), Female (${femaleOnly.join(", ")})`;
+  }
+  return `SideProfile hoodie assets: ${spFiles.join(", ")}`;
+}
+
+function validateHoodForGender(traits, hood, gender) {
+  const variant = hoodVariantDef(traits, hood);
+  if (!variant) {
+    return { ok: false, reason: `unknown hood variant "${hood}"` };
+  }
+  if (!hoodAssetExists(traits, hood, gender)) {
+    const file = hoodFileForGender(traits, hood, gender);
+    return { ok: false, reason: `missing hood file ${file} for ${gender}` };
+  }
+  return { ok: true };
 }
 
 function cartesianProduct(lists) {
@@ -256,23 +324,31 @@ function collectMissingFiles(picks) {
     .map(([slot, pick]) => ({ slot, file: pick.file, variant: pick.variant.name }));
 }
 
-function buildRenderPicks({ traits, character, gender, hair, bufferCache }) {
+function buildRenderPicks({ traits, character, gender, hair, hood, bufferCache }) {
   const picks = pickTokenVariants(FIXED_TOKEN_ID, traits, new Set(), character, false);
   const fixed = FIXED_SLOT_OVERRIDES[gender] || {};
   for (const [slot, variantName] of Object.entries(fixed)) {
+    if (slot === "hood") continue;
     applySlotOverride(picks, traits, slot, variantName);
   }
   applySlotOverride(picks, traits, "hair", hair);
+  applySlotOverride(picks, traits, "hood", hood);
   loadPickBuffersCached(picks, traits, bufferCache);
   return applyCoverageRules(picks, traits, character);
 }
 
 function validateComboFiles(ctx, combo) {
+  const hoodCheck = validateHoodForGender(ctx.traits, ctx.hood, combo.gender);
+  if (!hoodCheck.ok) {
+    return [{ slot: "hood", file: hoodFileForGender(ctx.traits, ctx.hood, combo.gender), variant: ctx.hood, reason: hoodCheck.reason }];
+  }
+
   const renderPicks = buildRenderPicks({
     traits: ctx.traits,
     character: ctx.characterByGender[combo.gender],
     gender: combo.gender,
     hair: combo.hair,
+    hood: ctx.hood,
     bufferCache: ctx.bufferCache,
   });
   return collectMissingFiles(renderPicks);
@@ -286,14 +362,17 @@ function renderCombo(ctx, combo) {
     character,
     gender: combo.gender,
     hair: combo.hair,
+    hood: ctx.hood,
     bufferCache: ctx.bufferCache,
   });
 
   const picks = pickTokenVariants(FIXED_TOKEN_ID, ctx.traits, new Set(), character, false);
   for (const [slot, variantName] of Object.entries(FIXED_SLOT_OVERRIDES[combo.gender] || {})) {
+    if (slot === "hood") continue;
     applySlotOverride(picks, ctx.traits, slot, variantName);
   }
   applySlotOverride(picks, ctx.traits, "hair", combo.hair);
+  applySlotOverride(picks, ctx.traits, "hood", ctx.hood);
   loadPickBuffersCached(picks, ctx.traits, ctx.bufferCache);
 
   const mTier = getMutationTier(FIXED_TOKEN_ID, ctx.mtier);
@@ -388,6 +467,11 @@ function main() {
 
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
 
+  if (!hoodVariantDef(traits, opts.hood)) {
+    console.error(`hood variant "${opts.hood}" not found in traits.json`);
+    process.exit(1);
+  }
+
   for (const paletteKey of opts.palettes) {
     const palette = PALETTES[paletteKey];
     if (!palette || !palette.colors) {
@@ -405,7 +489,8 @@ function main() {
   const plannedCombos = buildCombos(opts.genders, hairByGender, opts.palettes, opts.hairs);
   const attempted = plannedCombos.length;
 
-  console.log(`SideProfile sweep | token #${FIXED_TOKEN_ID} | mtier=${opts.mtier} | output/quick/sideprofile-sweep.png`);
+  console.log(`SideProfile sweep | token #${FIXED_TOKEN_ID} | mtier=${opts.mtier} | hood=${opts.hood} | output/quick/sideprofile-sweep.png`);
+  console.log(`  ${summarizeSpHoodAssetCoverage(opts.genders)}`);
   for (const gender of opts.genders) {
     console.log(`  ${gender} hair files: ${(hairByGender[gender] || []).join(", ") || "(none)"}`);
   }
@@ -431,7 +516,7 @@ function main() {
     opts.genders.map((gender) => [gender, resolveCharacter(gender)]),
   );
   const bufferCache = new Map();
-  const ctx = { traits, characterByGender, bufferCache, mtier: opts.mtier };
+  const ctx = { traits, characterByGender, bufferCache, mtier: opts.mtier, hood: opts.hood };
 
   const skipped = [];
   const rendered = [];
@@ -489,7 +574,9 @@ function main() {
     console.log("\nSkipped combos:");
     for (const entry of skipped) {
       const label = comboLabel(entry.combo);
-      const details = entry.missing.map((m) => `${m.slot}:${m.file}`).join(", ");
+      const details = entry.missing
+        .map((m) => (m.reason ? `${m.slot}:${m.reason}` : `${m.slot}:${m.file}`))
+        .join(", ");
       console.log(`  ${label} — ${entry.reason} (${details})`);
     }
     process.exitCode = 1;
