@@ -865,12 +865,13 @@ const CHARACTERS = [
       body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
       eyes: "None",        // eyes baked into SP head art
       bodytattoo: "None",  // positioned for front-facing body
+      glasses: "None",     // SP_GLASSES_* assets not ready yet
     },
     slotVariantPool: {
       // Object form: weights REPLACE traits.json weights (SP_ variants are weight 0 there)
-      hair: { SP_Mohawk: 15, SP_Pompadour: 15, SP_MrT: 10, SP_Afro: 25, SP_Dreads: 10, SP_Surfer: 13, SP_FadeRight: 7, None: 5 },
-      beard: { SP_Full: 20, SP_Goat: 20, None: 60 },
-      glasses: { SP_Shades: 25, SP_Neo: 25, None: 50 },
+      hair: { SP_Mohawk: 25, SP_Afro: 50, None: 25 }, // pending: Pompadour, MrT, Dreads, Surfer, FadeRight
+      beard: ["None"],        // pending: SP_Full, SP_Goat
+      glasses: ["None"],      // pending: SP_Shades, SP_Neo
       mustache: ["None"],        // no SP mustache asset yet — front-view would misalign
       necklace: ["None"],        // hidden from side view
       earrings: ["None"],        // hidden from side view
@@ -891,6 +892,7 @@ const CHARACTERS = [
       body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
       eyes: "None",        // eyes baked into SP head art
       bodytattoo: "None",  // positioned for front-facing body
+      glasses: "None",     // SP_GLASSES_Neo.png / SP_GLASSES_Shades.png not ready yet
     },
     slotVariantPool: {
       hair: {
@@ -898,22 +900,20 @@ const CHARACTERS = [
         SP_Afro_Female: 20,
         SP_Dreads_Female: 10,
         SP_Surfer_Female: 13,
-        SP_Pompadour_Female: 15,
         SP_FadeRight_Female: 7,
         SP_AZVet_Female: 7,
-        None: 5,
+        None: 20,           // includes weight from pending SP_Pompadour_Female
       },
       beard: ["None"],
       mustache: ["None"],
-      glasses: { SP_Shades: 25, SP_Neo: 25, None: 50 },
+      glasses: ["None"],    // pending: SP_Shades, SP_Neo
       necklace: ["None"],
       earrings: ["None"],
       tattoo: ["None"],
       shirt: {
         SP_Crew_Female: 40,
-        SP_Tank_Female: 20,
         SP_Flannel_Female: 20,
-        None: 20,
+        None: 40,           // includes weight from pending SP_Tank_Female
       },
       hood: { SP_Classic: 20, None: 80 },
     },
