@@ -1,13 +1,20 @@
 {
-  // Production hosting is Cloudflare Pages (chromies.art), not a Worker.
-  // Build: npm run build  →  output: dist/
-  // Configure build command in the Cloudflare Pages dashboard (not here).
+  // Local dev / wrangler CLI reference only — NOT the production Pages build source of truth.
+  //
+  // Do NOT add "pages_build_output_dir" here. When that key is present, Cloudflare Pages
+  // switches to Wrangler-based configuration and ignores dashboard build env vars
+  // (e.g. VITE_WALLET_CONNECT_PROJECT_ID, VITE_ALCHEMY_KEY). See:
+  // https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+  //
+  // Production (chromies.art) is Cloudflare Pages, not a Worker:
+  //   Build command:  npm run build
+  //   Output dir:     dist
+  //   Env vars:       Pages dashboard → Settings → Environment variables (Production + Preview)
   //
   // Do NOT add "assets" or "main" — that is Workers format and would duplicate Pages.
   // If GitHub shows a failing "Workers Builds: chromies" check, disconnect that
   // Workers Builds project in Cloudflare (Workers & Pages → Workers Builds).
   // Express API (api/server.ts) is not deployed to Cloudflare Workers.
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "chromies",
-  "pages_build_output_dir": "dist"
+  "name": "chromies"
 }
