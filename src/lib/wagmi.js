@@ -14,11 +14,16 @@ function alchemyRpc(chainSlug) {
 
 function createInjectedWalletConnector(walletId) {
   const { name, getProvider } = INJECTED_WALLETS[walletId];
+  // Static target keeps connector.id stable (e.g. "metaMask"). A target() function
+  // falls back to id "injected" when the provider is momentarily unavailable,
+  // which breaks useConnectors() lookups by wallet id.
   return injected({
-    target() {
-      const provider = getProvider();
-      if (!provider) return undefined;
-      return { id: walletId, name, provider };
+    target: {
+      id: walletId,
+      name,
+      provider() {
+        return getProvider();
+      },
     },
     shimDisconnect: true,
   });
@@ -50,6 +55,18 @@ const injectedConnectors = [
   rabbyConnector,
   braveConnector,
 ];
+
+/** Registered connector factories keyed by wallet id (for connect() without id lookup). */
+export const WALLET_CONNECTOR_BY_ID = {
+  metaMask: metaMaskConnector,
+  phantom: phantomConnector,
+  trust: trustConnector,
+  coinbase: coinbaseConnector,
+  rainbow: rainbowConnector,
+  okx: okxConnector,
+  rabby: rabbyConnector,
+  brave: braveConnector,
+};
 
 const connectors = walletConnectConnector
   ? [...injectedConnectors, walletConnectConnector]

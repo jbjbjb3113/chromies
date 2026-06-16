@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useConnect, useConnectors } from "wagmi";
-import { projectId } from "../lib/wagmi.js";
+import { projectId, WALLET_CONNECTOR_BY_ID, walletConnectConnector } from "../lib/wagmi.js";
 import { detectWalletAvailability, INJECTED_WALLETS } from "../lib/wallet-providers.js";
 
 const CONNECT_TIMEOUT_MS = 30_000;
@@ -293,13 +293,11 @@ export default function WalletSelectModal({
   }, [availability.walletConnect]);
 
   const resolveConnector = (walletId) => {
-    if (INJECTED_WALLETS[walletId]) {
-      return connectorById.get(walletId) ?? null;
-    }
     if (walletId === "ledger" || walletId === "walletConnect") {
-      return walletConnectConnector;
+      return walletConnectConnector ?? connectorById.get("walletConnect") ?? null;
     }
-    return null;
+    // Prefer registered factory from wagmi config (stable id); fallback to live instance.
+    return WALLET_CONNECTOR_BY_ID[walletId] ?? connectorById.get(walletId) ?? null;
   };
 
   const handleConnectError = (error) => {
