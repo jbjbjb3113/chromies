@@ -9,7 +9,7 @@ import {
 import { formatEther, parseEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import WalletSelectModal from "../components/WalletSelectModal.jsx";
+import WalletButton from "../components/WalletButton.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import NormiesCrossCollectionPanel from "../components/NormiesCrossCollectionPanel.jsx";
@@ -212,7 +212,6 @@ export default function Market() {
   const marketplaceAddress = onSepolia ? getMarketplaceAddress(chainId) : null;
   const canvasAddress = onSepolia ? getCanvasAddress(chainId) : null;
 
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [listings, setListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(false);
   const [loadError, setLoadError] = useState(null);
@@ -446,12 +445,7 @@ export default function Market() {
 
           {!isConnected && (
             <div className="mt-10 flex justify-center">
-              <WalletSelectModal
-                open={walletModalOpen}
-                onOpen={() => setWalletModalOpen(true)}
-                onClose={() => setWalletModalOpen(false)}
-                buttonClassName={CONNECT_BTN_CLASS}
-              />
+              <WalletButton connectClassName={CONNECT_BTN_CLASS} />
             </div>
           )}
 

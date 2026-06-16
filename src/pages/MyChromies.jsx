@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import WalletSelectModal from "../components/WalletSelectModal.jsx";
+import WalletButton from "../components/WalletButton.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { chromaAbi, DEFAULT_CHAIN, getChromaAddress } from "../lib/chroma-contract.js";
@@ -174,7 +174,6 @@ export default function MyChromies() {
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
 
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [tokenIds, setTokenIds] = useState([]);
   const [revealedByTokenId, setRevealedByTokenId] = useState({});
   const [inscribableCount, setInscribableCount] = useState(0);
@@ -321,12 +320,7 @@ export default function MyChromies() {
 
           {!isConnected && (
             <div className="mt-10 flex justify-center">
-              <WalletSelectModal
-                open={walletModalOpen}
-                onOpen={() => setWalletModalOpen(true)}
-                onClose={() => setWalletModalOpen(false)}
-                buttonClassName={CONNECT_BTN_CLASS}
-              />
+              <WalletButton connectClassName={CONNECT_BTN_CLASS} />
             </div>
           )}
 

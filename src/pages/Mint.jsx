@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useChainId,
-  useDisconnect,
   usePublicClient,
   useReadContracts,
   useWalletClient,
@@ -11,7 +10,6 @@ import { decodeEventLog, formatEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import WalletButton from "../components/WalletButton.jsx";
-import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import {
   chromaAbi,
   DEFAULT_CHAIN,
@@ -28,10 +26,6 @@ const FEATURED_TOKEN = "/alien-134.png";
 
 const MINT_CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
-
-function shortenAddress(address) {
-  return `${address.slice(0, 6)}…${address.slice(-4)}`;
-}
 
 function formatEth(wei) {
   if (wei === undefined || wei === null) return "—";
@@ -190,8 +184,6 @@ function QuantitySelector({ quantity, maxQuantity, onChange, disabled }) {
 export default function Mint() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const { disconnect } = useDisconnect();
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const { data: walletClient } = useWalletClient();
@@ -502,32 +494,10 @@ export default function Mint() {
           )}
 
           <div className="mt-10 flex w-full max-w-sm flex-col items-center gap-4 sm:max-w-none sm:gap-6">
-            {isConnected && address && onSepolia ? (
-              <div className="flex flex-col items-center gap-3 sm:flex-row">
-                <span className="text-xs font-semibold tabular-nums text-ink/80">
-                  {shortenAddress(address)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => disconnect()}
-                  className={MINT_CONNECT_BTN_CLASS}
-                >
-                  Disconnect
-                </button>
-              </div>
-            ) : !isConnected ? (
-              <WalletSelectModal
-                open={walletModalOpen}
-                onOpen={() => setWalletModalOpen(true)}
-                onClose={() => setWalletModalOpen(false)}
-                buttonClassName={MINT_CONNECT_BTN_CLASS}
-              />
-            ) : (
-              <WalletButton
-                className="w-full sm:w-auto"
-                connectClassName={MINT_CONNECT_BTN_CLASS}
-              />
-            )}
+            <WalletButton
+              className="w-full sm:w-auto"
+              connectClassName={MINT_CONNECT_BTN_CLASS}
+            />
 
             {showQuantity && (
               <QuantitySelector

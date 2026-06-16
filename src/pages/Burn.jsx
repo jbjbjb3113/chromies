@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
-import WalletSelectModal from "../components/WalletSelectModal.jsx";
+import WalletButton from "../components/WalletButton.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import {
   chromaAbi,
@@ -214,7 +214,6 @@ export default function Burn() {
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
   const canvasAddress = onSepolia ? getCanvasAddress(chainId) : null;
 
-  const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [tokenIds, setTokenIds] = useState([]);
   const [revealedByTokenId, setRevealedByTokenId] = useState({});
   const [loading, setLoading] = useState(false);
@@ -447,12 +446,7 @@ export default function Burn() {
 
           {!isConnected && (
             <div className="mt-10 flex justify-center">
-              <WalletSelectModal
-                open={walletModalOpen}
-                onOpen={() => setWalletModalOpen(true)}
-                onClose={() => setWalletModalOpen(false)}
-                buttonClassName={CONNECT_BTN_CLASS}
-              />
+              <WalletButton connectClassName={CONNECT_BTN_CLASS} />
             </div>
           )}
 

@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   useAccount,
   useChainId,
-  useConnect,
   useDisconnect,
   useSwitchChain,
 } from "wagmi";
-import { injectedConnector } from "../lib/wagmi.js";
 import { DEFAULT_CHAIN } from "../lib/chroma-contract.js";
+import WalletSelectModal from "./WalletSelectModal.jsx";
 
 function shortenAddress(address) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`;
@@ -23,26 +22,21 @@ export default function WalletButton({
 }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const { connect, isPending: isConnecting, error: connectError } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
 
   const onWrongNetwork = isConnected && chainId !== DEFAULT_CHAIN.id;
 
   if (!isConnected) {
     return (
       <div className={className}>
-        <button
-          type="button"
-          onClick={() => connect({ connector: injectedConnector })}
-          disabled={isConnecting}
-          className={connectClassName}
-        >
-          {isConnecting ? "Connecting…" : "Connect Wallet"}
-        </button>
-        {connectError && (
-          <p className="mt-2 text-xs text-red-600">{connectError.message}</p>
-        )}
+        <WalletSelectModal
+          open={walletModalOpen}
+          onOpen={() => setWalletModalOpen(true)}
+          onClose={() => setWalletModalOpen(false)}
+          buttonClassName={connectClassName}
+        />
       </div>
     );
   }

@@ -4,11 +4,30 @@ import { BrowserRouter } from "react-router-dom";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App.jsx";
-import { wagmiConfig } from "./lib/wagmi.js";
+import { projectId, wagmiConfig } from "./lib/wagmi.js";
 import "./index.css";
 
-// Temporary: verify WalletConnect projectId is present in the deployed build
-console.log("WC ID:", import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID);
+const alchemyKey = import.meta.env.VITE_ALCHEMY_KEY?.trim();
+
+if (import.meta.env.PROD) {
+  console.info("[Chromies] build env:", {
+    walletConnectProjectId: projectId ? `${projectId.slice(0, 8)}…` : "MISSING",
+    alchemyKey: alchemyKey ? "set" : "MISSING",
+  });
+  if (!projectId) {
+    console.warn(
+      "[Chromies] VITE_WALLET_CONNECT_PROJECT_ID is not set — WalletConnect / Ledger QR will not work. Add it in Cloudflare Pages → Settings → Environment variables.",
+    );
+  }
+  if (!alchemyKey) {
+    console.warn(
+      "[Chromies] VITE_ALCHEMY_KEY is not set — RPC will fall back to public endpoints. Add it in Cloudflare Pages build env for reliable reads.",
+    );
+  }
+} else {
+  console.log("WC ID:", projectId ?? "(not set)");
+  console.log("Alchemy:", alchemyKey ? "set" : "(not set)");
+}
 
 const queryClient = new QueryClient();
 

@@ -1907,7 +1907,7 @@ export default function Canvas() {
         open={walletModalOpen}
         onOpen={() => setWalletModalOpen(true)}
         onClose={() => setWalletModalOpen(false)}
-        buttonClassName="hidden"
+        hideTrigger
       />
     </div>
   );

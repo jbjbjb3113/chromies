@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useConnect, useConnectors } from "wagmi";
-import { injected } from "wagmi/connectors";
 import { projectId } from "../lib/wagmi.js";
+import { detectWalletAvailability, INJECTED_WALLETS } from "../lib/wallet-providers.js";
+
+const CONNECT_TIMEOUT_MS = 30_000;
 
 const WALLET_BTN_CLASS =
   "flex w-full items-center gap-3 border border-ink bg-white px-4 py-3 text-left text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:bg-ink/5 disabled:text-ink/35 disabled:hover:border-ink/20 disabled:hover:text-ink/35";
@@ -125,103 +127,6 @@ function WalletConnectIcon() {
   );
 }
 
-// Trust Wallet injects itself as window.ethereum and can hijack generic
-// requests, so every wallet must resolve its own specific provider.
-function getMetaMaskProvider() {
-  if (typeof window === "undefined") return null;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isMetaMask && !provider.isTrust) ?? null;
-  }
-  return eth.isMetaMask && !eth.isTrust ? eth : null;
-}
-
-function getTrustProvider() {
-  if (typeof window === "undefined") return null;
-  if (window.trustwallet?.ethereum) return window.trustwallet.ethereum;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isTrust) ?? null;
-  }
-  return eth.isTrust ? eth : null;
-}
-
-function getPhantomProvider() {
-  if (typeof window === "undefined") return null;
-  return window.phantom?.ethereum ?? null;
-}
-
-function getCoinbaseProvider() {
-  if (typeof window === "undefined") return null;
-  if (window.coinbaseWalletExtension) return window.coinbaseWalletExtension;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isCoinbaseWallet) ?? null;
-  }
-  return eth.isCoinbaseWallet ? eth : null;
-}
-
-function getRainbowProvider() {
-  if (typeof window === "undefined") return null;
-  if (window.rainbow) return window.rainbow;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isRainbow) ?? null;
-  }
-  return eth.isRainbow ? eth : null;
-}
-
-function getOKXProvider() {
-  if (typeof window === "undefined") return null;
-  if (window.okxwallet) return window.okxwallet;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isOKExWallet || provider.isOKX) ?? null;
-  }
-  return eth.isOKExWallet || eth.isOKX ? eth : null;
-}
-
-function getRabbyProvider() {
-  if (typeof window === "undefined") return null;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.isRabby) return eth;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isRabby) ?? null;
-  }
-  return null;
-}
-
-function getBraveProvider() {
-  if (typeof window === "undefined") return null;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.isBraveWallet) return eth;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isBraveWallet) ?? null;
-  }
-  return null;
-}
-
-function detectWalletAvailability() {
-  const availability = { walletConnect: false };
-  for (const walletId of Object.keys(INJECTED_WALLETS)) {
-    availability[walletId] = false;
-  }
-  if (typeof window === "undefined") return availability;
-
-  for (const [walletId, { getProvider }] of Object.entries(INJECTED_WALLETS)) {
-    availability[walletId] = Boolean(getProvider());
-  }
-  availability.walletConnect = Boolean(projectId);
-  return availability;
-}
-
 const WALLET_OPTIONS = [
   {
     id: "metaMask",
@@ -303,27 +208,19 @@ const WALLET_OPTIONS = [
   },
 ];
 
-const INJECTED_WALLETS = {
-  metaMask: { name: "MetaMask", getProvider: getMetaMaskProvider },
-  phantom: { name: "Phantom", getProvider: getPhantomProvider },
-  trust: { name: "Trust Wallet", getProvider: getTrustProvider },
-  coinbase: { name: "Coinbase Wallet", getProvider: getCoinbaseProvider },
-  rainbow: { name: "Rainbow", getProvider: getRainbowProvider },
-  okx: { name: "OKX Wallet", getProvider: getOKXProvider },
-  rabby: { name: "Rabby", getProvider: getRabbyProvider },
-  brave: { name: "Brave Wallet", getProvider: getBraveProvider },
-};
-
-function createInjectedConnector(walletId) {
-  const { name, getProvider } = INJECTED_WALLETS[walletId];
-  return injected({
-    target() {
-      const provider = getProvider();
-      if (!provider) return undefined;
-      return { id: walletId, name, provider };
-    },
-    shimDisconnect: true,
-  });
+function formatConnectError(error) {
+  if (!error) return null;
+  const message = error.shortMessage || error.message || String(error);
+  if (message.includes("User rejected") || message.includes("user rejected")) {
+    return "Connection cancelled in wallet.";
+  }
+  if (message.includes("ProviderNotFound")) {
+    return "Wallet extension not found. Install it or try another wallet.";
+  }
+  if (message.includes("ConnectorAlreadyConnected")) {
+    return "Already connected — refresh the page if the UI looks wrong.";
+  }
+  return message.length > 200 ? `${message.slice(0, 200)}…` : message;
 }
 
 export default function WalletSelectModal({
@@ -332,59 +229,133 @@ export default function WalletSelectModal({
   onClose,
   buttonClassName,
   connectButtonLabel = "Connect Wallet",
+  hideTrigger = false,
 }) {
   const connectors = useConnectors();
-  const { connect, isPending, error: connectError } = useConnect();
-  const [availability, setAvailability] = useState(detectWalletAvailability);
+  const { connect, isPending, error: connectError, reset } = useConnect();
+  const [availability, setAvailability] = useState(() => detectWalletAvailability(projectId));
   const [connectingWalletId, setConnectingWalletId] = useState(null);
+  const [localError, setLocalError] = useState(null);
+  const pendingStartedAt = useRef(null);
 
-  const walletConnectConnector = useMemo(
-    () => connectors.find((connector) => connector.id === "walletConnect") ?? null,
-    [connectors],
-  );
+  const connectorById = useMemo(() => {
+    const map = new Map();
+    for (const connector of connectors) {
+      map.set(connector.id, connector);
+    }
+    return map;
+  }, [connectors]);
+
+  const walletConnectConnector = connectorById.get("walletConnect") ?? null;
+
+  const displayedError = localError || formatConnectError(connectError);
+
+  const clearConnectState = useCallback(() => {
+    setConnectingWalletId(null);
+    reset();
+  }, [reset]);
 
   useEffect(() => {
     if (!open) return;
-    setAvailability(detectWalletAvailability());
-  }, [open]);
+    setAvailability(detectWalletAvailability(projectId));
+    setLocalError(null);
+    clearConnectState();
+  }, [open, clearConnectState]);
+
+  useEffect(() => {
+    if (isPending) {
+      pendingStartedAt.current = Date.now();
+      return;
+    }
+    pendingStartedAt.current = null;
+  }, [isPending]);
+
+  useEffect(() => {
+    if (!isPending) return undefined;
+
+    const timer = window.setTimeout(() => {
+      if (!pendingStartedAt.current) return;
+      if (Date.now() - pendingStartedAt.current < CONNECT_TIMEOUT_MS) return;
+      clearConnectState();
+      setLocalError("Connection timed out. Check your wallet and try again.");
+    }, CONNECT_TIMEOUT_MS + 50);
+
+    return () => window.clearTimeout(timer);
+  }, [isPending, clearConnectState]);
 
   const visibleOptions = useMemo(() => {
     return WALLET_OPTIONS.filter((option) => {
       if (option.kind === "walletConnect") {
-        // Ledger stays visible (dimmed) even when projectId is missing
         return option.id === "ledger" || availability.walletConnect;
       }
       return true;
     });
   }, [availability.walletConnect]);
 
-  const handleWalletSelect = (walletId) => {
-    if (isPending) return;
-
+  const resolveConnector = (walletId) => {
     if (INJECTED_WALLETS[walletId]) {
-      const provider = INJECTED_WALLETS[walletId].getProvider();
-      if (provider) {
-        setConnectingWalletId(walletId);
-        connect(
-          { connector: createInjectedConnector(walletId) },
-          {
-            onSuccess: () => {
-              setConnectingWalletId(null);
-              onClose();
-            },
-            onError: () => setConnectingWalletId(null),
-          },
-        );
-      } else {
-        const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
-        if (option?.installUrl) {
-          window.open(option.installUrl, "_blank", "noopener,noreferrer");
-        }
-      }
+      return connectorById.get(walletId) ?? null;
+    }
+    if (walletId === "ledger" || walletId === "walletConnect") {
+      return walletConnectConnector;
+    }
+    return null;
+  };
+
+  const handleConnectError = (error) => {
+    setConnectingWalletId(null);
+    setLocalError(formatConnectError(error) ?? "Could not connect wallet.");
+  };
+
+  const handleWalletSelect = (walletId) => {
+    if (isPending) {
+      setLocalError("Connection already in progress…");
       return;
     }
 
-    if (!walletConnectConnector) return;
+    setLocalError(null);
+
+    if (INJECTED_WALLETS[walletId]) {
+      const provider = INJECTED_WALLETS[walletId].getProvider();
+      if (!provider) {
+        const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
+        if (option?.installUrl) {
+          window.open(option.installUrl, "_blank", "noopener,noreferrer");
+        } else {
+          setLocalError(`${INJECTED_WALLETS[walletId].name} is not installed.`);
+        }
+        return;
+      }
+
+      const connector = resolveConnector(walletId);
+      if (!connector) {
+        setLocalError(
+          `${INJECTED_WALLETS[walletId].name} connector missing from config — refresh and try again.`,
+        );
+        return;
+      }
+
+      setConnectingWalletId(walletId);
+      connect(
+        { connector },
+        {
+          onSuccess: () => {
+            setConnectingWalletId(null);
+            setLocalError(null);
+            onClose();
+          },
+          onError: handleConnectError,
+        },
+      );
+      return;
+    }
+
+    if (!walletConnectConnector) {
+      setLocalError(
+        "WalletConnect is not configured. Set VITE_WALLET_CONNECT_PROJECT_ID in the Cloudflare Pages build environment.",
+      );
+      return;
+    }
 
     setConnectingWalletId(walletId);
     connect(
@@ -392,23 +363,26 @@ export default function WalletSelectModal({
       {
         onSuccess: () => {
           setConnectingWalletId(null);
+          setLocalError(null);
           onClose();
         },
-        onError: () => setConnectingWalletId(null),
+        onError: handleConnectError,
       },
     );
   };
 
   return (
     <>
-      <button
-        type="button"
-        onClick={onOpen}
-        disabled={isPending}
-        className={buttonClassName}
-      >
-        {isPending ? "Connecting…" : connectButtonLabel}
-      </button>
+      {!hideTrigger && (
+        <button
+          type="button"
+          onClick={onOpen}
+          disabled={isPending}
+          className={buttonClassName}
+        >
+          {isPending ? "Connecting…" : connectButtonLabel}
+        </button>
+      )}
 
       {open && (
         <div
@@ -432,7 +406,7 @@ export default function WalletSelectModal({
                   Connect Wallet
                 </h2>
                 <p className="mt-2 text-xs text-ink/60">
-                  Choose a wallet to mint on Sepolia testnet.
+                  Choose a wallet to connect on Sepolia testnet.
                 </p>
               </div>
               <button
@@ -483,8 +457,10 @@ export default function WalletSelectModal({
               })}
             </div>
 
-            {connectError && (
-              <p className="mt-4 text-xs text-red-600">{connectError.message}</p>
+            {displayedError && (
+              <p className="mt-4 rounded-sm border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                {displayedError}
+              </p>
             )}
           </div>
         </div>
