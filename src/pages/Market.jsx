@@ -12,6 +12,7 @@ import SiteFooter from "../components/SiteFooter.jsx";
 import WalletSelectModal from "../components/WalletSelectModal.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
+import NormiesCrossCollectionPanel from "../components/NormiesCrossCollectionPanel.jsx";
 import { pixelMarketplaceAbi } from "../../abis/PixelMarketplace.ts";
 import {
   CANVAS_ADDRESS,
@@ -461,6 +462,8 @@ export default function Market() {
           )}
         </div>
       </section>
+
+      <NormiesCrossCollectionPanel address={address} isConnected={isConnected} />
 
       {isConnected && onSepolia && (
         <section className="border-b border-ink px-6 py-14">
