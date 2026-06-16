@@ -52,7 +52,7 @@ const gasReportAbi = [
 ] as const;
 
 const CHROMA_ADDRESS = (process.env.CHROMA_ADDRESS ??
-  "0x422A47Ee8e555CA62FAa38c26E26ae772F75B3fc") as `0x${string}`;
+  "0xba4c3797a18958877f895b69ca4a67b914949f5d") as `0x${string}`;
 
 const EXPECTED = {
   mint: 115_000,

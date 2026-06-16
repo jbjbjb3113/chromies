@@ -6,16 +6,16 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 ## Latest Sepolia Contracts
 | Contract | Address |
 |----------|---------|
-| ChromaStorage | `0x60C887aED8178D59A9D114d288dBCF809a6480D9` |
-| Chroma | `0x422A47Ee8e555CA62FAa38c26E26ae772F75B3fc` |
-| ChromaCanvasV2 | `0x70Bffc256134d0f1078A0907552EC79EF9E346c1` |
-| ChromaRenderer | `0x87b1b8C5dc3eb6A5fEb37c922823fE5dFcb201f4` |
-| PixelMarketplace | `0x7110BFC19394062E8d5DFA77f13aF9b5d14F95F2` |
+| ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
+| Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
+| ChromaCanvasV2 | `0x731c47cceabc4bfbddd4621e0167580dd2614e05` |
+| ChromaRenderer | `0x5b92421d7a440a72388869403934436fe7eee6e6` |
+| PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
 
 ## Merkle Roots
 - Tier 1 (Normies): `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
 - Tier 2 (Brain Rots): `0xd582654aae27faf95fbd5d648a9bb2fc5b0d4f7b5154e419cfb59b6d154bb2ac`
-- Reveal Root: `0x470a9c1fc5b8ae47d4e425b313351a7258770da69a3083644ee7493fb1d749c3`
+- Reveal Root: `0x8ac55bc03bceefcbf5c389513f695101d2b27504c3ef02486c2a45f9557c7d54`
 
 ## Recent Work (This Session)
 - Added 42 shirt palette variants (6 base × 7 shirt colors) — slot 9 repurposed as shirt/hood color
@@ -57,10 +57,11 @@ node trait-breakdown.js
 ```powershell
 $env:PRIVATE_KEY = (Get-Content .env | Select-String "PRIVATE_KEY").ToString().Split("=",2)[1]
 $env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToString().Split("=",2)[1]
-$env:CHROMA_ADDRESS = "0x422A47Ee8e555CA62FAa38c26E26ae772F75B3fc"
-$env:CHROMA_STORAGE_ADDRESS = "0x60C887aED8178D59A9D114d288dBCF809a6480D9"
-$env:CANVAS_ADDRESS = "0x70Bffc256134d0f1078A0907552EC79EF9E346c1"
-$env:MARKETPLACE_ADDRESS = "0x7110BFC19394062E8d5DFA77f13aF9b5d14F95F2"
+$env:CHROMA_ADDRESS = "0xba4c3797a18958877f895b69ca4a67b914949f5d"
+$env:CHROMA_STORAGE_ADDRESS = "0x78ee267c09be83eee64050e21ecc2ffe8296ae38"
+$env:CANVAS_ADDRESS = "0x731c47cceabc4bfbddd4621e0167580dd2614e05"
+$env:CHROMA_RENDERER_ADDRESS = "0x5b92421d7a440a72388869403934436fe7eee6e6"
+$env:MARKETPLACE_ADDRESS = "0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d"
 ```
 
 ## Foundry

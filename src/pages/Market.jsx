@@ -29,7 +29,7 @@ import {
 } from "../lib/chroma-ownership.js";
 
 /** PixelMarketplace deploy block on Sepolia — use as fromBlock for any event queries. */
-export const MARKETPLACE_DEPLOY_BLOCK = 11061367n;
+export const MARKETPLACE_DEPLOY_BLOCK = 11074666n;
 
 /** Temporary mock listings for layout/design testing — remove before launch. */
 const MOCK_LISTINGS = [
