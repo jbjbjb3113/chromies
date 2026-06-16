@@ -8,6 +8,7 @@ import {ChromaCanvasV2} from "../contracts/ChromaCanvasV2.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
+import {TraitFixtures} from "./Chroma.t.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract ChromaCanvasV2Test is Test {
@@ -37,7 +38,7 @@ contract ChromaCanvasV2Test is Test {
         canvas.setOperatorApproval(address(marketplace), true);
 
         bytes memory pixels = new bytes(2048);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.zeroTraits();
         chroma.mint(alice, ALICE_TOKEN, pixels, traits);
         chroma.mint(bob, BOB_TOKEN, pixels, traits);
     }
@@ -235,7 +236,7 @@ contract ChromaCanvasV2Test is Test {
         uint256 fuelOne = 10;
         uint256 fuelTwo = 11;
         bytes memory pixels = new bytes(2048);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.zeroTraits();
         chroma.mint(alice, fuelOne, pixels, traits);
         chroma.mint(alice, fuelTwo, pixels, traits);
 
@@ -257,7 +258,7 @@ contract ChromaCanvasV2Test is Test {
 
         uint256 fuelToken = 12;
         bytes memory pixels = new bytes(2048);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.zeroTraits();
         chroma.mint(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);
@@ -328,7 +329,7 @@ contract ChromaCanvasV2Test is Test {
     function test_TotalPixels_CalculatedOnMint() external {
         uint256 tokenId = 20;
         bytes memory pixels = _pixelsWithNonZeroCount(3);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(3);
         chroma.mint(alice, tokenId, pixels, traits);
 
         assert(storageContract.getTotalPixels(tokenId) == 3);
@@ -387,7 +388,7 @@ contract ChromaCanvasV2Test is Test {
 
         uint256 tokenId = 21;
         bytes memory pixels = _pixelsWithNonZeroCount(4);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(4);
         chroma.mint(alice, tokenId, pixels, traits);
 
         string memory json = _decodeTokenUri(renderer.tokenURI(tokenId));
@@ -397,7 +398,7 @@ contract ChromaCanvasV2Test is Test {
     function test_TotalPixels_UnchangedByEdits() external {
         uint256 tokenId = 22;
         bytes memory pixels = _pixelsWithNonZeroCount(5);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(5);
         chroma.mint(alice, tokenId, pixels, traits);
 
         uint256 before = storageContract.getTotalPixels(tokenId);
@@ -417,7 +418,7 @@ contract ChromaCanvasV2Test is Test {
     function test_CalculateBurnAP_LowPixelCount() external {
         uint256 tokenId = 30;
         bytes memory pixels = _pixelsWithNonZeroCount(100);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(100);
         chroma.mint(alice, tokenId, pixels, traits);
 
         assert(canvas.calculateBurnAP(tokenId) == 1);
@@ -426,7 +427,7 @@ contract ChromaCanvasV2Test is Test {
     function test_CalculateBurnAP_MidPixelCount() external {
         uint256 tokenId = 31;
         bytes memory pixels = _pixelsWithNonZeroCount(500);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(500);
         chroma.mint(alice, tokenId, pixels, traits);
 
         assert(canvas.calculateBurnAP(tokenId) == 10);
@@ -435,7 +436,7 @@ contract ChromaCanvasV2Test is Test {
     function test_CalculateBurnAP_HighPixelCount() external {
         uint256 tokenId = 32;
         bytes memory pixels = _pixelsWithNonZeroCount(900);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(900);
         chroma.mint(alice, tokenId, pixels, traits);
 
         assert(canvas.calculateBurnAP(tokenId) == 27);
@@ -444,7 +445,7 @@ contract ChromaCanvasV2Test is Test {
     function test_RevealBurn_CreditsCalculatedAP() external {
         uint256 fuelToken = 33;
         bytes memory pixels = _pixelsWithNonZeroCount(500);
-        bytes memory traits = new bytes(32);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(500);
         chroma.mint(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);

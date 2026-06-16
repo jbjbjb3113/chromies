@@ -151,6 +151,24 @@ function pickValue(picks, slot, fallback = "None") {
   return picks[slot].variant.name;
 }
 
+function packTotalPixels(traitBytes, count) {
+  if (count > 4096) {
+    throw new Error(`totalPixels ${count} exceeds uint16 max 4096`);
+  }
+  traitBytes[17] = (count >> 8) & 0xff;
+  traitBytes[18] = count & 0xff;
+}
+
+function countNonZeroNibbles(packed) {
+  let count = 0;
+  for (let i = 0; i < PX; i++) {
+    const byteIndex = i >> 1;
+    const nibble = (i & 1) === 0 ? (packed[byteIndex] >> 4) & 0x0f : packed[byteIndex] & 0x0f;
+    if (nibble !== 0) count++;
+  }
+  return count;
+}
+
 function packPixels(buf) {
   if (buf.length !== PX) {
     throw new Error(`expected ${PX} pixel indices, got ${buf.length}`);
@@ -220,6 +238,7 @@ function buildMintRecord(tokenId, traitsJson, warnings) {
     driftTier,
     warnings,
   });
+  packTotalPixels(traitsPacked, countNonZeroNibbles(pixelsPacked));
 
   return {
     tokenId,
@@ -400,5 +419,7 @@ module.exports = {
   encodeTraits,
   buildMintRecord,
   characterKey,
+  countNonZeroNibbles,
+  packTotalPixels,
   TRAIT_SLOTS,
 };

@@ -19,7 +19,13 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 library TraitFixtures {
     function zeroTraits() internal pure returns (bytes memory) {
-        return hex"0000000000000000000000000000000000000000000000000000000000000000";
+        return traitsWithTotalPixels(0);
+    }
+
+    function traitsWithTotalPixels(uint16 count) internal pure returns (bytes memory traits) {
+        traits = new bytes(32);
+        traits[17] = bytes1(uint8(count >> 8));
+        traits[18] = bytes1(uint8(count));
     }
 }
 
@@ -255,7 +261,7 @@ contract ChromaRendererTest {
 
 
 
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(6);
 
         writer.write(storageContract, 42, pixels, traits);
 
@@ -289,7 +295,7 @@ contract ChromaRendererTest {
 
         _setPixel(pixels, 0, 0, 15);
 
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
 
         writer.write(storageContract, 1, pixels, traits);
 
@@ -335,11 +341,9 @@ contract ChromaRendererTest {
 
 
 
-        bytes memory pristineTraits = TraitFixtures.zeroTraits();
-
+        bytes memory pristineTraits = TraitFixtures.traitsWithTotalPixels(64);
         bytes memory offKilterTraits =
-
-            hex"0000000000000000000000000000000300000000000000000000000000000000";
+            hex"0000000000000000000000000000000300000000000000000040000000000000";
 
 
 
@@ -407,7 +411,7 @@ contract ChromaTokenTest is Test {
 
         _setPixel(pixels, 0, 0, 12);
 
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
 
         address recipient = address(0xBEEF);
 
@@ -553,7 +557,7 @@ contract ChromaTokenTest is Test {
 
 
 
-        vm.store(address(chroma), bytes32(uint256(18)), bytes32(uint256(5149)));
+        vm.store(address(chroma), bytes32(uint256(19)), bytes32(uint256(5149)));
 
         assert(chroma.totalSupply() == 5149);
 
@@ -1124,7 +1128,7 @@ contract ChromaPhaseMintTest is Test {
 
         _setPixel(pixels, 0, 0, 4);
 
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
 
 
 
@@ -1162,7 +1166,7 @@ contract ChromaPhaseMintTest is Test {
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 0, 0, 4);
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
 
         bytes32 leaf = _revealLeaf(1, pixels, traits);
         chroma.setRevealRoot(leaf);
@@ -1208,7 +1212,7 @@ contract ChromaPhaseMintTest is Test {
 
         _setPixel(pixels, 0, 0, 4);
 
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
 
 
 

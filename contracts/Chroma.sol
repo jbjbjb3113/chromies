@@ -261,8 +261,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
         if (address(canvas) == address(0)) return;
         if (!canvas.isCustomized(tokenId)) return;
 
-        bytes memory pixels = canvas.computeFinalPixels(tokenId);
-        chromaStorage.rewritePixels(tokenId, pixels);
+        bytes memory pixels;
+        uint16 totalPixelCount;
+        (pixels, totalPixelCount) = canvas.computeFinalPixels(tokenId);
+        chromaStorage.rewritePixels(tokenId, pixels, totalPixelCount);
         canvas.clearDiffs(tokenId);
     }
 

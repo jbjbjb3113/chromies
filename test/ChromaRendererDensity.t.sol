@@ -25,7 +25,7 @@ contract ChromaRendererDensityTest {
         ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
 
         bytes memory pixels = _pixelsWithNonZeroCount(1641);
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1641);
         writer.write(storageContract, 42, pixels, traits);
 
         string memory svg = renderer.renderSVG(42);
@@ -40,7 +40,7 @@ contract ChromaRendererDensityTest {
         ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
 
         bytes memory pixels = _pixelsWithNonZeroCount(pixelCount);
-        bytes memory traits = TraitFixtures.zeroTraits();
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(uint16(pixelCount));
         writer.write(storageContract, tokenId, pixels, traits);
 
         string memory uri = renderer.tokenURI(tokenId);

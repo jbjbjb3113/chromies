@@ -251,13 +251,13 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     }
 
     /// @inheritdoc IChromaCanvasFinalize
-    function computeFinalPixels(uint256 tokenId) external view returns (bytes memory) {
-        bytes memory pixels = chromaStorage.getPixels(tokenId);
+    function computeFinalPixels(uint256 tokenId) external view returns (bytes memory pixels, uint16 totalPixelCount) {
+        pixels = chromaStorage.getPixels(tokenId);
         CanvasEdit[] storage edits = tokenDiffs[tokenId];
         for (uint256 i = 0; i < edits.length; ++i) {
             _setPackedPixel(pixels, edits[i].pixelIndex, edits[i].newColorIndex);
         }
-        return pixels;
+        totalPixelCount = uint16(_countNonZeroPixels(pixels));
     }
 
     /// @inheritdoc IChromaCanvasFinalize
@@ -330,6 +330,17 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
             pixels[byteIndex] = bytes1((current & 0x0f) | (value << 4));
         } else {
             pixels[byteIndex] = bytes1((current & 0xf0) | value);
+        }
+    }
+
+    /// @dev Count loop lives on canvas bake path only (customized inscribe), not on reveal.
+    function _countNonZeroPixels(bytes memory pixels) internal pure returns (uint256 count) {
+        for (uint256 i = 0; i < GRID_PIXELS; ++i) {
+            uint8 packed = uint8(pixels[i >> 1]);
+            uint8 idx = (i & 1) == 0 ? packed >> 4 : packed & 0x0f;
+            if (idx != 0) {
+                ++count;
+            }
         }
     }
 }
