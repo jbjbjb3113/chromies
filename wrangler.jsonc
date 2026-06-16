@@ -1,4 +1,12 @@
 {
+  // Production hosting is Cloudflare Pages (chromies.art), not a Worker.
+  // Build: npm run build  →  output: dist/
+  // Configure build command in the Cloudflare Pages dashboard (not here).
+  //
+  // Do NOT add "assets" or "main" — that is Workers format and would duplicate Pages.
+  // If GitHub shows a failing "Workers Builds: chromies" check, disconnect that
+  // Workers Builds project in Cloudflare (Workers & Pages → Workers Builds).
+  // Express API (api/server.ts) is not deployed to Cloudflare Workers.
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "chromies",
   "pages_build_output_dir": "dist"
