@@ -266,6 +266,30 @@ function applyCoverageRules(picks, traits, character = null) {
     };
   };
 
+  const promoteToNamed = (slot, slotDef, variantName) => {
+    if (!slotDef) return;
+    const variant = slotDef.variants.find(v => v.name === variantName);
+    if (!variant) return;
+    const filePath = path.join(SETTINGS.componentsDir, variant.file);
+    out[slot] = {
+      variant,
+      file: variant.file,
+      buffer: extractToBuffer(filePath, slotDef.drawColors),
+    };
+  };
+
+  const pickSideProfileDefaultShirt = () => {
+    const candidates = character?.gender === "Female"
+      ? ["SP_Crew_Female"]
+      : ["SP_Crew", "Crew"];
+    for (const name of candidates) {
+      const variant = shirtSlotDef.variants.find(v => v.name === name);
+      if (!variant) continue;
+      if (fs.existsSync(path.join(SETTINGS.componentsDir, variant.file))) return name;
+    }
+    return null;
+  };
+
   const bodyTattooSlotDef = traits.slots.bodytattoo;
   const bodyVisible = () => {
     const b = out.body ? out.body.variant.name : null;
@@ -299,6 +323,16 @@ function applyCoverageRules(picks, traits, character = null) {
                             (finalShirt === "None" || finalShirt === "Tank_Female" || finalBody === "Tank" || finalBody === "Female_Tank");
     if (!necklaceVisible) {
       suppressTo("necklace", necklaceSlotDef);
+    }
+  }
+
+  // SideProfile — never render shirtless when hood is also off (body slot is None).
+  if (character && character.name === "SideProfile") {
+    const finalHood = out.hood ? out.hood.variant.name : null;
+    const finalShirt = out.shirt ? out.shirt.variant.name : null;
+    if (finalHood === "None" && finalShirt === "None") {
+      const defaultShirt = pickSideProfileDefaultShirt();
+      if (defaultShirt) promoteToNamed("shirt", shirtSlotDef, defaultShirt);
     }
   }
 
