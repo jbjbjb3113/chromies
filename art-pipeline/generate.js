@@ -336,6 +336,11 @@ function applyCoverageRules(picks, traits, character = null) {
     }
   }
 
+  // Chubby — stocky build; neck is baked into HEAD_Chubby (no separate neck layer).
+  if (character && character.name === "Chubby") {
+    delete out.neck;
+  }
+
   return out;
 }
 

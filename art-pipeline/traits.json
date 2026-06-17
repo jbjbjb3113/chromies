@@ -413,6 +413,12 @@
           "name": "None",
           "file": "BODY_None.png",
           "weight": 0
+        },
+        {
+          "name": "Chubby",
+          "file": "BODY_Chubby.png",
+          "weight": 0,
+          "_comment": "Pending asset — character-gated via CHARACTERS.Chubby"
         }
       ]
     },
@@ -594,6 +600,12 @@
           "name": "SP_HeroA_Female",
           "file": "SP_HEAD_HeroA_Female.png",
           "weight": 0
+        },
+        {
+          "name": "Chubby",
+          "file": "HEAD_Chubby.png",
+          "weight": 0,
+          "_comment": "Pending asset — character-gated via CHARACTERS.Chubby"
         }
       ]
     },

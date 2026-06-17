@@ -771,11 +771,26 @@ const CHARACTERS = [
   {
     name: "HeroA",
     gender: "Male",
-    weight: 538,
+    weight: 440,
     palettePool: null,
     forcedSlots: {
       head: "HeroA",
       neck: "HeroA",
+    },
+    slotWeightOverrides: {},
+    slotVariantPool: {
+      necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
+    },
+  },
+  {
+    name: "Chubby",
+    gender: "Male",
+    weight: 136,
+    palettePool: null,
+    // Assets pending: BODY_Chubby.png (neck is baked into HEAD — no separate neck layer)
+    forcedSlots: {
+      head: "Chubby",
+      body: "Chubby",
     },
     slotWeightOverrides: {},
     slotVariantPool: {
