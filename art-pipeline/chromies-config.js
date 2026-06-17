@@ -787,7 +787,7 @@ const CHARACTERS = [
     gender: "Male",
     weight: 136,
     palettePool: null,
-    // Assets pending: BODY_Chubby.png (neck is baked into HEAD — no separate neck layer)
+    // Torso+crew shirt combined in BODY_Chubby.png; no separate neck or shirt layer
     forcedSlots: {
       head: "Chubby",
       body: "Chubby",

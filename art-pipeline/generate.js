@@ -336,9 +336,15 @@ function applyCoverageRules(picks, traits, character = null) {
     }
   }
 
-  // Chubby — stocky build; neck is baked into HEAD_Chubby (no separate neck layer).
+  // Chubby — neck baked into HEAD; torso+crew shirt in body slot (z9, below head).
+  // Shirt slot suppressed (no separate shirt layer). Restore body after hood coverage.
   if (character && character.name === "Chubby") {
     delete out.neck;
+    suppressTo("shirt", shirtSlotDef);
+    const finalBody = out.body ? out.body.variant.name : null;
+    if (finalBody === "None" || !out.body) {
+      promoteToNamed("body", bodySlotDef, "Chubby");
+    }
   }
 
   return out;
