@@ -296,6 +296,17 @@ function applyCoverageRules(picks, traits, character = null) {
     return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien";
   };
 
+  // Chubby — skip all general body/shirt coverage; torso is always BODY_Chubby.png.
+  if (character && character.name === "Chubby") {
+    delete out.neck;
+    suppressTo("shirt", shirtSlotDef);
+    promoteToNamed("body", bodySlotDef, "Chubby");
+    suppressTo("bodytattoo", bodyTattooSlotDef);
+    const necklaceSlotDef = traits.slots.necklace;
+    if (necklaceSlotDef) suppressTo("necklace", necklaceSlotDef);
+    return out;
+  }
+
   if (hoodPick === "Classic") {
     suppressTo("shirt", shirtSlotDef);
     suppressTo("body",  bodySlotDef);
@@ -333,17 +344,6 @@ function applyCoverageRules(picks, traits, character = null) {
     if (finalHood === "None" && finalShirt === "None") {
       const defaultShirt = pickSideProfileDefaultShirt();
       if (defaultShirt) promoteToNamed("shirt", shirtSlotDef, defaultShirt);
-    }
-  }
-
-  // Chubby — neck baked into HEAD; torso+crew shirt in body slot (z9, below head).
-  // Shirt slot suppressed (no separate shirt layer). Restore body after hood coverage.
-  if (character && character.name === "Chubby") {
-    delete out.neck;
-    suppressTo("shirt", shirtSlotDef);
-    const finalBody = out.body ? out.body.variant.name : null;
-    if (finalBody === "None" || !out.body) {
-      promoteToNamed("body", bodySlotDef, "Chubby");
     }
   }
 
