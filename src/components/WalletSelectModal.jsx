@@ -3,9 +3,11 @@ import { createPortal } from "react-dom";
 import { useConnect, useConnectors } from "wagmi";
 import { projectId, WALLET_CONNECTOR_BY_ID, walletConnectConnector } from "../lib/wagmi.js";
 import {
+  debugMetaMaskProviderDetection,
   detectWalletAvailability,
   INJECTED_WALLETS,
   isWalletInstalled,
+  refreshEip6963Discovery,
 } from "../lib/wallet-providers.js";
 
 const CONNECT_TIMEOUT_MS = 30_000;
@@ -268,9 +270,22 @@ export default function WalletSelectModal({
 
   useEffect(() => {
     if (!open) return;
+    refreshEip6963Discovery();
     setAvailability(detectWalletAvailability(projectId));
     setLocalError(null);
     clearConnectState();
+
+    const refreshAvailability = () => {
+      setAvailability(detectWalletAvailability(projectId));
+    };
+
+    window.addEventListener("eip6963:announceProvider", refreshAvailability);
+    const timer = window.setTimeout(refreshAvailability, 300);
+
+    return () => {
+      window.removeEventListener("eip6963:announceProvider", refreshAvailability);
+      window.clearTimeout(timer);
+    };
   }, [open, clearConnectState]);
 
   useEffect(() => {
@@ -325,6 +340,10 @@ export default function WalletSelectModal({
     setLocalError(null);
 
     if (INJECTED_WALLETS[walletId]) {
+      if (walletId === "metaMask" && import.meta.env.DEV) {
+        debugMetaMaskProviderDetection();
+      }
+
       const connector = resolveConnector(walletId);
       if (!connector) {
         setLocalError(
@@ -333,28 +352,41 @@ export default function WalletSelectModal({
         return;
       }
 
-      setConnectingWalletId(walletId);
-      connect(
-        { connector },
-        {
-          onSuccess: () => {
-            setConnectingWalletId(null);
-            setLocalError(null);
-            onClose();
-          },
-          onError: (error) => {
-            setConnectingWalletId(null);
-            if (isProviderNotFoundError(error) && !isWalletInstalled(walletId)) {
-              const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
-              if (option?.installUrl) {
-                window.open(option.installUrl, "_blank", "noopener,noreferrer");
-                return;
+      const runConnect = () => {
+        setConnectingWalletId(walletId);
+        connect(
+          { connector },
+          {
+            onSuccess: () => {
+              setConnectingWalletId(null);
+              setLocalError(null);
+              onClose();
+            },
+            onError: (error) => {
+              setConnectingWalletId(null);
+              if (isProviderNotFoundError(error) && !isWalletInstalled(walletId)) {
+                const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
+                if (option?.installUrl) {
+                  window.open(option.installUrl, "_blank", "noopener,noreferrer");
+                  return;
+                }
               }
-            }
-            handleConnectError(error);
+              handleConnectError(error);
+            },
           },
-        },
-      );
+        );
+      };
+
+      if (walletId === "metaMask" && !isWalletInstalled("metaMask")) {
+        refreshEip6963Discovery();
+        window.setTimeout(() => {
+          if (import.meta.env.DEV) debugMetaMaskProviderDetection();
+          runConnect();
+        }, 150);
+        return;
+      }
+
+      runConnect();
       return;
     }
 

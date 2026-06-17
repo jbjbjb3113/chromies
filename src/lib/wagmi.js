@@ -12,7 +12,7 @@ function alchemyRpc(chainSlug) {
   return `https://${chainSlug}.g.alchemy.com/v2/${alchemyKey}`;
 }
 
-function createInjectedWalletConnector(walletId) {
+function createInjectedWalletConnector(walletId, injectedOptions = {}) {
   const { name, getProvider } = INJECTED_WALLETS[walletId];
   // Static target keeps connector.id stable (e.g. "metaMask"). A target() function
   // falls back to id "injected" when the provider is momentarily unavailable,
@@ -26,10 +26,14 @@ function createInjectedWalletConnector(walletId) {
       },
     },
     shimDisconnect: true,
+    ...injectedOptions,
   });
 }
 
-export const metaMaskConnector = createInjectedWalletConnector("metaMask");
+export const metaMaskConnector = createInjectedWalletConnector("metaMask", {
+  // MetaMask may inject asynchronously when other wallets own window.ethereum.
+  unstable_shimAsyncInject: 1_000,
+});
 export const phantomConnector = createInjectedWalletConnector("phantom");
 export const trustConnector = createInjectedWalletConnector("trust");
 export const coinbaseConnector = createInjectedWalletConnector("coinbase");
