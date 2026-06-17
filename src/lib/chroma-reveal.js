@@ -1,3 +1,5 @@
+import { computeRevealLeaf, verifyMerkleProof } from "./reveal-merkle.js";
+
 const MINT_DATA_URL = "/data/mint-data.json";
 const PROOFS_URL = "/data/reveal-merkle-proofs.json";
 
@@ -49,10 +51,22 @@ export async function getRevealPayload(tokenId) {
     throw new Error(`No merkle proof for Chromie #${id}`);
   }
 
+  const root = proofs.root;
+  if (!root) {
+    throw new Error("Reveal proofs missing merkle root");
+  }
+
+  const leaf = computeRevealLeaf(id, entry.pixelsHex, entry.traitsHex);
+  if (!verifyMerkleProof(proof, root, leaf)) {
+    const msg = `mint data out of sync with proofs for Chromie #${id}`;
+    console.error(msg, { leaf, root, tokenId: id });
+    throw new Error(msg);
+  }
+
   return {
     pixelsHex: entry.pixelsHex,
     traitsHex: entry.traitsHex,
     proof,
-    root: proofs.root,
+    root,
   };
 }
