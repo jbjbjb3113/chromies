@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useConnect, useConnectors } from "wagmi";
 import { projectId, WALLET_CONNECTOR_BY_ID, walletConnectConnector } from "../lib/wagmi.js";
-import { detectWalletAvailability, INJECTED_WALLETS } from "../lib/wallet-providers.js";
+import {
+  detectWalletAvailability,
+  INJECTED_WALLETS,
+  isWalletInstalled,
+} from "../lib/wallet-providers.js";
 
 const CONNECT_TIMEOUT_MS = 30_000;
 
@@ -223,6 +228,12 @@ function formatConnectError(error) {
   return message.length > 200 ? `${message.slice(0, 200)}…` : message;
 }
 
+function isProviderNotFoundError(error) {
+  if (!error) return false;
+  const message = error.shortMessage || error.message || String(error);
+  return error.name === "ProviderNotFoundError" || message.includes("ProviderNotFound");
+}
+
 export default function WalletSelectModal({
   open,
   onOpen,
@@ -314,17 +325,6 @@ export default function WalletSelectModal({
     setLocalError(null);
 
     if (INJECTED_WALLETS[walletId]) {
-      const provider = INJECTED_WALLETS[walletId].getProvider();
-      if (!provider) {
-        const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
-        if (option?.installUrl) {
-          window.open(option.installUrl, "_blank", "noopener,noreferrer");
-        } else {
-          setLocalError(`${INJECTED_WALLETS[walletId].name} is not installed.`);
-        }
-        return;
-      }
-
       const connector = resolveConnector(walletId);
       if (!connector) {
         setLocalError(
@@ -342,13 +342,24 @@ export default function WalletSelectModal({
             setLocalError(null);
             onClose();
           },
-          onError: handleConnectError,
+          onError: (error) => {
+            setConnectingWalletId(null);
+            if (isProviderNotFoundError(error) && !isWalletInstalled(walletId)) {
+              const option = WALLET_OPTIONS.find((entry) => entry.id === walletId);
+              if (option?.installUrl) {
+                window.open(option.installUrl, "_blank", "noopener,noreferrer");
+                return;
+              }
+            }
+            handleConnectError(error);
+          },
         },
       );
       return;
     }
 
-    if (!walletConnectConnector) {
+    const wcConnector = walletConnectConnector ?? connectorById.get("walletConnect") ?? null;
+    if (!wcConnector) {
       setLocalError(
         "WalletConnect is not configured. Set VITE_WALLET_CONNECT_PROJECT_ID in the Cloudflare Pages build environment.",
       );
@@ -357,7 +368,7 @@ export default function WalletSelectModal({
 
     setConnectingWalletId(walletId);
     connect(
-      { connector: walletConnectConnector },
+      { connector: wcConnector },
       {
         onSuccess: () => {
           setConnectingWalletId(null);
@@ -368,6 +379,88 @@ export default function WalletSelectModal({
       },
     );
   };
+
+  const modalOverlay = open ? (
+    <div
+      className="fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-ink/50 p-4 sm:items-center"
+      role="presentation"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="wallet-select-title"
+        className="my-4 w-full max-w-sm max-h-[min(90dvh,calc(100vh-2rem))] overflow-y-auto border border-ink bg-paper p-6 shadow-none sm:my-auto"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2
+              id="wallet-select-title"
+              className="text-sm font-black uppercase tracking-[0.2em] text-ink"
+            >
+              Connect Wallet
+            </h2>
+            <p className="mt-2 text-xs text-ink/60">
+              Choose a wallet to connect on Sepolia testnet.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close wallet picker"
+            className="border border-ink px-2 py-1 text-xs font-bold uppercase tracking-wide text-ink/60 transition-colors hover:border-signal hover:text-signal"
+          >
+            Close
+          </button>
+        </div>
+
+        <div className="mt-5 flex flex-col gap-2">
+          {visibleOptions.map((option) => {
+            const Icon = option.icon;
+            const installed =
+              option.kind === "injected"
+                ? availability[option.id]
+                : availability.walletConnect;
+            const connecting = connectingWalletId === option.id;
+
+            return (
+              <button
+                key={option.id}
+                type="button"
+                disabled={isPending}
+                onClick={() => handleWalletSelect(option.id)}
+                className={`${WALLET_BTN_CLASS} ${installed ? "" : "opacity-80"}`}
+              >
+                <Icon />
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span>{option.label}</span>
+                  <span className="text-[10px] font-semibold normal-case tracking-normal text-ink/50">
+                    {installed
+                      ? option.hint
+                      : option.installUrl
+                        ? "Install extension"
+                        : "WalletConnect QR"}
+                  </span>
+                </span>
+                {connecting && (
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-signal">
+                    …
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {displayedError && (
+          <p className="mt-4 rounded-sm border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+            {displayedError}
+          </p>
+        )}
+      </div>
+    </div>
+  ) : null;
 
   return (
     <>
@@ -382,87 +475,7 @@ export default function WalletSelectModal({
         </button>
       )}
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4"
-          role="presentation"
-          onClick={onClose}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="wallet-select-title"
-            className="w-full max-w-sm border border-ink bg-paper p-6 shadow-none"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2
-                  id="wallet-select-title"
-                  className="text-sm font-black uppercase tracking-[0.2em] text-ink"
-                >
-                  Connect Wallet
-                </h2>
-                <p className="mt-2 text-xs text-ink/60">
-                  Choose a wallet to connect on Sepolia testnet.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close wallet picker"
-                className="border border-ink px-2 py-1 text-xs font-bold uppercase tracking-wide text-ink/60 transition-colors hover:border-signal hover:text-signal"
-              >
-                Close
-              </button>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-2">
-              {visibleOptions.map((option) => {
-                const Icon = option.icon;
-                const installed =
-                  option.kind === "injected"
-                    ? availability[option.id]
-                    : availability.walletConnect;
-                const connecting = connectingWalletId === option.id;
-
-                return (
-                  <button
-                    key={option.id}
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => handleWalletSelect(option.id)}
-                    className={`${WALLET_BTN_CLASS} ${installed ? "" : "opacity-80"}`}
-                  >
-                    <Icon />
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span>{option.label}</span>
-                      <span className="text-[10px] font-semibold normal-case tracking-normal text-ink/50">
-                        {installed
-                          ? option.hint
-                          : option.installUrl
-                            ? "Install extension"
-                            : "WalletConnect QR"}
-                      </span>
-                    </span>
-                    {connecting && (
-                      <span className="text-[10px] font-bold uppercase tracking-wide text-signal">
-                        …
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {displayedError && (
-              <p className="mt-4 rounded-sm border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
-                {displayedError}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+      {typeof document !== "undefined" ? createPortal(modalOverlay, document.body) : null}
     </>
   );
 }

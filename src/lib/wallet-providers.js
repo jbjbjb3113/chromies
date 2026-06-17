@@ -1,84 +1,70 @@
 /** Shared injected-wallet provider detection (used by wagmi config + connect modal). */
 
-export function getMetaMaskProvider() {
+function getEthereum() {
   if (typeof window === "undefined") return null;
-  const eth = window.ethereum;
+  return window.ethereum ?? null;
+}
+
+function findEthereumProvider(predicate) {
+  const eth = getEthereum();
   if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isMetaMask && !provider.isTrust) ?? null;
+
+  if (Array.isArray(eth.providers) && eth.providers.length > 0) {
+    const match = eth.providers.find(predicate);
+    if (match) return match;
   }
-  return eth.isMetaMask && !eth.isTrust ? eth : null;
+
+  return predicate(eth) ? eth : null;
+}
+
+export function getMetaMaskProvider() {
+  return findEthereumProvider(
+    (provider) =>
+      Boolean(provider?.isMetaMask) &&
+      !provider?.isTrust &&
+      !provider?.isRabby &&
+      !provider?.isBraveWallet,
+  );
 }
 
 export function getTrustProvider() {
   if (typeof window === "undefined") return null;
   if (window.trustwallet?.ethereum) return window.trustwallet.ethereum;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isTrust) ?? null;
-  }
-  return eth.isTrust ? eth : null;
+  return findEthereumProvider((provider) => Boolean(provider?.isTrust));
 }
 
 export function getPhantomProvider() {
   if (typeof window === "undefined") return null;
-  return window.phantom?.ethereum ?? null;
+  if (window.phantom?.ethereum) return window.phantom.ethereum;
+  return findEthereumProvider((provider) => Boolean(provider?.isPhantom));
 }
 
 export function getCoinbaseProvider() {
   if (typeof window === "undefined") return null;
   if (window.coinbaseWalletExtension) return window.coinbaseWalletExtension;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isCoinbaseWallet) ?? null;
-  }
-  return eth.isCoinbaseWallet ? eth : null;
+  return findEthereumProvider((provider) => Boolean(provider?.isCoinbaseWallet));
 }
 
 export function getRainbowProvider() {
   if (typeof window === "undefined") return null;
   if (window.rainbow) return window.rainbow;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isRainbow) ?? null;
-  }
-  return eth.isRainbow ? eth : null;
+  return findEthereumProvider((provider) => Boolean(provider?.isRainbow));
 }
 
 export function getOKXProvider() {
   if (typeof window === "undefined") return null;
   if (window.okxwallet) return window.okxwallet;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isOKExWallet || provider.isOKX) ?? null;
-  }
-  return eth.isOKExWallet || eth.isOKX ? eth : null;
+  return findEthereumProvider(
+    (provider) => Boolean(provider?.isOKExWallet || provider?.isOKX),
+  );
 }
 
 export function getRabbyProvider() {
-  if (typeof window === "undefined") return null;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.isRabby) return eth;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isRabby) ?? null;
-  }
-  return null;
+  return findEthereumProvider((provider) => Boolean(provider?.isRabby));
 }
 
 export function getBraveProvider() {
-  if (typeof window === "undefined") return null;
-  const eth = window.ethereum;
-  if (!eth) return null;
-  if (eth.isBraveWallet) return eth;
-  if (eth.providers?.length) {
-    return eth.providers.find((provider) => provider.isBraveWallet) ?? null;
-  }
-  return null;
+  return findEthereumProvider((provider) => Boolean(provider?.isBraveWallet));
 }
 
 /** Wallet ids that map 1:1 to injected connectors registered in wagmi config. */
@@ -103,6 +89,12 @@ export const INJECTED_WALLETS = {
   rabby: { name: "Rabby", getProvider: getRabbyProvider },
   brave: { name: "Brave Wallet", getProvider: getBraveProvider },
 };
+
+export function isWalletInstalled(walletId) {
+  const wallet = INJECTED_WALLETS[walletId];
+  if (!wallet) return false;
+  return Boolean(wallet.getProvider());
+}
 
 export function detectWalletAvailability(projectId) {
   const availability = { walletConnect: false };
