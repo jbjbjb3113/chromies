@@ -307,6 +307,23 @@ function applyCoverageRules(picks, traits, character = null) {
     return out;
   }
 
+  // SideProfile — body slot always None; shirt is SP crew (or rolled SP variant), never naked default.
+  if (character && character.name === "SideProfile") {
+    suppressTo("body", bodySlotDef);
+    suppressTo("bodytattoo", bodyTattooSlotDef);
+    const finalHood = out.hood ? out.hood.variant.name : null;
+    const finalShirt = out.shirt ? out.shirt.variant.name : null;
+    if (finalHood === "Classic" || finalHood === "SP_Classic") {
+      suppressTo("shirt", shirtSlotDef);
+    } else if (finalHood === "None" && finalShirt === "None") {
+      const defaultShirt = pickSideProfileDefaultShirt();
+      if (defaultShirt) promoteToNamed("shirt", shirtSlotDef, defaultShirt);
+    }
+    const necklaceSlotDef = traits.slots.necklace;
+    if (necklaceSlotDef) suppressTo("necklace", necklaceSlotDef);
+    return out;
+  }
+
   if (hoodPick === "Classic") {
     suppressTo("shirt", shirtSlotDef);
     suppressTo("body",  bodySlotDef);
@@ -334,16 +351,6 @@ function applyCoverageRules(picks, traits, character = null) {
                             (finalShirt === "None" || finalShirt === "Tank_Female" || finalBody === "Tank" || finalBody === "Female_Tank");
     if (!necklaceVisible) {
       suppressTo("necklace", necklaceSlotDef);
-    }
-  }
-
-  // SideProfile — never render shirtless when hood is also off (body slot is None).
-  if (character && character.name === "SideProfile") {
-    const finalHood = out.hood ? out.hood.variant.name : null;
-    const finalShirt = out.shirt ? out.shirt.variant.name : null;
-    if (finalHood === "None" && finalShirt === "None") {
-      const defaultShirt = pickSideProfileDefaultShirt();
-      if (defaultShirt) promoteToNamed("shirt", shirtSlotDef, defaultShirt);
     }
   }
 
