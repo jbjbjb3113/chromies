@@ -426,26 +426,26 @@ contract ChromaCanvasV2Test is Test {
 
     function test_CalculateBurnAP_MidPixelCount() external {
         uint256 tokenId = 31;
-        bytes memory pixels = _pixelsWithNonZeroCount(500);
-        bytes memory traits = TraitFixtures.traitsWithTotalPixels(500);
+        bytes memory pixels = _pixelsWithNonZeroCount(1750);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1750);
         chroma.mint(alice, tokenId, pixels, traits);
 
-        assert(canvas.calculateBurnAP(tokenId) == 10);
+        assert(canvas.calculateBurnAP(tokenId) == 35);
     }
 
     function test_CalculateBurnAP_HighPixelCount() external {
         uint256 tokenId = 32;
-        bytes memory pixels = _pixelsWithNonZeroCount(900);
-        bytes memory traits = TraitFixtures.traitsWithTotalPixels(900);
+        bytes memory pixels = _pixelsWithNonZeroCount(2100);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(2100);
         chroma.mint(alice, tokenId, pixels, traits);
 
-        assert(canvas.calculateBurnAP(tokenId) == 27);
+        assert(canvas.calculateBurnAP(tokenId) == 63);
     }
 
     function test_RevealBurn_CreditsCalculatedAP() external {
         uint256 fuelToken = 33;
-        bytes memory pixels = _pixelsWithNonZeroCount(500);
-        bytes memory traits = TraitFixtures.traitsWithTotalPixels(500);
+        bytes memory pixels = _pixelsWithNonZeroCount(1750);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1750);
         chroma.mint(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);
@@ -454,7 +454,7 @@ contract ChromaCanvasV2Test is Test {
         assert(canvas.actionPoints(ALICE_TOKEN) == 0);
         _revealBurn(alice, ALICE_TOKEN, fuelToken, bytes(""));
 
-        assert(canvas.actionPoints(ALICE_TOKEN) == 10);
+        assert(canvas.actionPoints(ALICE_TOKEN) == 35);
         assert(canvas.getBurnCount(ALICE_TOKEN) == 1);
     }
 
@@ -518,8 +518,8 @@ contract ChromaCanvasV2Test is Test {
 
     function test_GetLevel_SurvivesSpendAndBurnCredit() external {
         uint256 fuelToken = 41;
-        bytes memory pixels = _pixelsWithNonZeroCount(500);
-        bytes memory traits = TraitFixtures.traitsWithTotalPixels(500);
+        bytes memory pixels = _pixelsWithNonZeroCount(1750);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1750);
         chroma.mint(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);
@@ -527,16 +527,16 @@ contract ChromaCanvasV2Test is Test {
 
         _revealBurn(alice, ALICE_TOKEN, fuelToken, bytes(""));
 
-        assert(canvas.totalApEarned(ALICE_TOKEN) == 10);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 35);
         assert(canvas.getLevel(ALICE_TOKEN) == 0);
 
-        canvas.earnAP(ALICE_TOKEN, 40);
+        canvas.earnAP(ALICE_TOKEN, 25);
         assert(canvas.getLevel(ALICE_TOKEN) == 1);
 
         vm.prank(alice);
         canvas.spendAP(ALICE_TOKEN, 30);
         assert(canvas.getLevel(ALICE_TOKEN) == 1);
-        assert(canvas.totalApEarned(ALICE_TOKEN) == 50);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 60);
     }
 
     function test_GetLevel_InTokenURI() external {

@@ -8,7 +8,7 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 |----------|---------|
 | ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
 | Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
-| ChromaCanvasV2 | `0xb40533013E0510EEa876d61b430ea7E7385CE8b2` |
+| ChromaCanvasV2 | `0x684b85535eDFA1C14a16987c6Da20FEf63378c9a` |
 | ChromaRenderer | `0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30` |
 | PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
 
@@ -18,10 +18,10 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 - Reveal Root: `0x8ac55bc03bceefcbf5c389513f695101d2b27504c3ef02486c2a45f9557c7d54`
 
 ## Recent Work (This Session)
-- Redeployed ChromaCanvasV2 + ChromaRenderer with earn-based Level (`totalApEarned` + `getLevel()` sqrt curve)
-- Redeploy script now reads `chromaStorage` from `Chroma.chromaStorage()` (not env) to avoid storage mismatch
-- Clean slate for testnet AP/levels on new canvas (no migration)
-- Level 1 verified on-chain: token #12 earned 59 AP from burn, `getLevel()` returns 1
+- Recalibrated `calculateBurnAP` thresholds: TIER1=1500, TIER2=2000 (was 490/890)
+- Canvas-only Sepolia redeploy with new thresholds; renderer unchanged
+- Burn AP spread: 7.3% / 52.4% / 40.2% across yield tiers (5,150 token distribution)
+- Verified on-chain: token #16 Level 1 after burn (#17 → 68 AP at 3% tier)
 
 ## In Progress
 - Shirt palette system just wired — gallery not yet run/reviewed
@@ -56,7 +56,7 @@ $env:PRIVATE_KEY = (Get-Content .env | Select-String "PRIVATE_KEY").ToString().S
 $env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToString().Split("=",2)[1]
 $env:CHROMA_ADDRESS = "0xba4c3797a18958877f895b69ca4a67b914949f5d"
 $env:CHROMA_STORAGE_ADDRESS = "0x78ee267c09be83eee64050e21ecc2ffe8296ae38"
-$env:CANVAS_ADDRESS = "0xb40533013E0510EEa876d61b430ea7E7385CE8b2"
+$env:CANVAS_ADDRESS = "0x684b85535eDFA1C14a16987c6Da20FEf63378c9a"
 $env:CHROMA_RENDERER_ADDRESS = "0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30"
 $env:MARKETPLACE_ADDRESS = "0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d"
 ```

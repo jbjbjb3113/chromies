@@ -14,7 +14,7 @@ export const CHROMA_ADDRESS = {
 
 /** ChromaCanvasV2 — per-token AP system. The `canvas` param for marketplace listings. */
 export const CANVAS_ADDRESS = {
-  [sepolia.id]: "0xb40533013E0510EEa876d61b430ea7E7385CE8b2",
+  [sepolia.id]: "0x684b85535eDFA1C14a16987c6Da20FEf63378c9a",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 

@@ -37,8 +37,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
 
     uint256 internal constant GRID_PIXELS = 4096;
     uint256 internal constant TRAIT_MUTATION_INDEX = 15;
-    uint256 public constant TIER1_THRESHOLD = 490;
-    uint256 public constant TIER2_THRESHOLD = 890;
+    uint256 public constant TIER1_THRESHOLD = 1500;
+    uint256 public constant TIER2_THRESHOLD = 2000;
     uint256 public constant TIER1_MIN_PERCENT = 1;
     uint256 public constant TIER2_MIN_PERCENT = 2;
     uint256 public constant TIER3_MIN_PERCENT = 3;
