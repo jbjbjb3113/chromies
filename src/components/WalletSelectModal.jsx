@@ -5,9 +5,11 @@ import { projectId, WALLET_CONNECTOR_BY_ID, walletConnectConnector } from "../li
 import {
   debugMetaMaskProviderDetection,
   detectWalletAvailability,
+  INJECTED_WALLET_IDS,
   INJECTED_WALLETS,
   isWalletInstalled,
   refreshEip6963Discovery,
+  subscribeWalletAvailability,
 } from "../lib/wallet-providers.js";
 
 const CONNECT_TIMEOUT_MS = 30_000;
@@ -236,6 +238,13 @@ function isProviderNotFoundError(error) {
   return error.name === "ProviderNotFoundError" || message.includes("ProviderNotFound");
 }
 
+function mergeAvailability(prev, next) {
+  if (!prev) return next;
+  const sameWalletConnect = prev.walletConnect === next.walletConnect;
+  const sameWallets = INJECTED_WALLET_IDS.every((id) => prev[id] === next[id]);
+  return sameWalletConnect && sameWallets ? prev : next;
+}
+
 export default function WalletSelectModal({
   open,
   onOpen,
@@ -269,24 +278,27 @@ export default function WalletSelectModal({
   }, [reset]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
+
+    setLocalError(null);
+    setConnectingWalletId(null);
+    reset();
     refreshEip6963Discovery();
     setAvailability(detectWalletAvailability(projectId));
-    setLocalError(null);
-    clearConnectState();
 
-    const refreshAvailability = () => {
-      setAvailability(detectWalletAvailability(projectId));
-    };
+    const unsubscribe = subscribeWalletAvailability(projectId, (next) => {
+      setAvailability((prev) => mergeAvailability(prev, next));
+    });
 
-    window.addEventListener("eip6963:announceProvider", refreshAvailability);
-    const timer = window.setTimeout(refreshAvailability, 300);
+    const timer = window.setTimeout(() => {
+      setAvailability((prev) => mergeAvailability(prev, detectWalletAvailability(projectId)));
+    }, 300);
 
     return () => {
-      window.removeEventListener("eip6963:announceProvider", refreshAvailability);
+      unsubscribe();
       window.clearTimeout(timer);
     };
-  }, [open, clearConnectState]);
+  }, [open, reset]);
 
   useEffect(() => {
     if (isPending) {
@@ -414,17 +426,21 @@ export default function WalletSelectModal({
 
   const modalOverlay = open ? (
     <div
-      className="fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto bg-ink/50 p-4 sm:items-center"
+      className="fixed inset-0 z-[200] overflow-y-auto p-4"
       role="presentation"
-      onClick={onClose}
     >
       <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="wallet-select-title"
-        className="my-4 w-full max-w-sm max-h-[min(90dvh,calc(100vh-2rem))] overflow-y-auto border border-ink bg-paper p-6 shadow-none sm:my-auto"
-        onClick={(event) => event.stopPropagation()}
-      >
+        className="fixed inset-0 z-0 bg-ink/50"
+        aria-hidden="true"
+        onClick={onClose}
+      />
+      <div className="relative z-10 flex min-h-full items-start justify-center sm:items-center">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="wallet-select-title"
+          className="my-4 w-full max-w-sm max-h-[min(90dvh,calc(100vh-2rem))] overflow-y-auto border border-ink bg-paper p-6 shadow-none sm:my-auto"
+        >
         <div className="flex items-start justify-between gap-4">
           <div>
             <h2
@@ -490,6 +506,7 @@ export default function WalletSelectModal({
             {displayedError}
           </p>
         )}
+        </div>
       </div>
     </div>
   ) : null;

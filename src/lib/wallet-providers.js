@@ -187,13 +187,25 @@ export function detectWalletAvailability(projectId) {
   }
   if (typeof window === "undefined") return availability;
 
-  refreshEip6963Discovery();
-
   for (const [walletId, { getProvider }] of Object.entries(INJECTED_WALLETS)) {
     availability[walletId] = Boolean(getProvider());
   }
   availability.walletConnect = Boolean(projectId);
   return availability;
+}
+
+/** Subscribe to EIP-6963 announcements without re-dispatching requestProvider. */
+export function subscribeWalletAvailability(projectId, onChange) {
+  if (typeof window === "undefined") return () => {};
+
+  const emitIfChanged = () => {
+    onChange(detectWalletAvailability(projectId));
+  };
+
+  window.addEventListener("eip6963:announceProvider", emitIfChanged);
+  return () => {
+    window.removeEventListener("eip6963:announceProvider", emitIfChanged);
+  };
 }
 
 /** Dev-only: log provider state when MetaMask detection is ambiguous. */
