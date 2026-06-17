@@ -79,7 +79,7 @@ node generate-reveal-merkle.js
 - `output/brainrots-holders.json` — 2,070 unique Brain Rots addresses
 - `output/merkle-tier1-root.txt` — `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
 - `output/merkle-tier2-root.txt` — `0xd582654aae27faf95fbd5d648a9bb2fc5b0d4f7b5154e419cfb59b6d154bb2ac`
-- `output/reveal-merkle-root.txt` — `0x3e956533997abafdcca2253c98299f18c0db09ad130debfd827e41b03c0e77b7`
+- `output/reveal-merkle-root.txt` — `0x8ac55bc03bceefcbf5c389513f695101d2b27504c3ef02486c2a45f9557c7d54` (post gas-optimization layout)
 
 ---
 
@@ -165,7 +165,9 @@ CAT=0 (character-gated), ALIEN=0 (character-gated)
 | Alien | 6 | 33 | 0.6% |
 | Agent | 4 | 26 | 0.5% |
 
-**Cat weight is 18 (locked).**
+**Cat weight is 18 (locked).** Planned replacement: **Zombie** character (weight=18 unchanged, assets not yet ready). Distinct from the already-filed "Zombie layer effect" idea in Post-Launch.
+
+**Planned:** new heavier-build human character (name, weight, and assets undecided; will reuse existing palette pool).
 
 ### Per-character rules
 
@@ -222,6 +224,8 @@ CAT=0 (character-gated), ALIEN=0 (character-gated)
 ### Pending
 - HEAD_Agent.png / NECK_Agent.png
 - NECK_Cat.png (Cat borrows NECK_HeroA temp)
+- **Zombie character** — planned Cat replacement (weight=18, assets TBD)
+- **Heavier-build human** — new character (name/weight/assets TBD, reuses palette pool)
 - Fat head variant (HeroA)
 - New glasses styles
 - New beard styles
@@ -275,17 +279,31 @@ PHASE3 drift stays zeroed. Pixel mutation only.
 
 ### Architecture
 ```
-Chroma (ERC721) -> ChromaStorage (SSTORE2) + ChromaRenderer -> IChromaCanvas.getDiff()
-ChromaCanvas -> burn tokens -> AP economy
+Chroma (ERC721) -> ChromaStorage (SSTORE2) + ChromaRenderer -> ChromaCanvasV2.getDiff()
+ChromaCanvasV2 -> per-token AP economy, burn yield, Level stat
+PixelMarketplace -> AP listings between tokens
 ```
 
 ### Contract addresses (Sepolia testnet — current)
 | Contract | Address |
 |----------|---------|
-| ChromaStorage | `0x8C0693bBc2e5377bC39D57DA57a75EDCB28eC2F6` |
-| Chroma | `0xd328B64ed99fbfE39cFAE80B46Db28553bcD35D9` |
-| ChromaCanvas | `0x43B9059027B28baCFB1357577FeE4b08a9Dcdcc2` |
-| ChromaRenderer | `0xc999AbEA1E5115a6146AD5D06a69A42553cAeAe9` |
+| ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
+| Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
+| ChromaCanvasV2 | `0x684b85535eDFA1C14a16987c6Da20FEf63378c9a` |
+| ChromaRenderer | `0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30` |
+| PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
+
+### Deprecated Sepolia addresses (do not use)
+| Contract | Address | Notes |
+|----------|---------|-------|
+| ChromaStorage | `0x8C0693bBc2e5377bC39D57DA57a75EDCB28eC2F6` | Pre–gas-opt stack |
+| Chroma | `0xd328B64ed99fbfE39cFAE80B46Db28553bcD35D9` | Pre–gas-opt stack |
+| ChromaCanvas | `0x43B9059027B28baCFB1357577FeE4b08a9Dcdcc2` | V1 canvas |
+| ChromaCanvasV2 | `0x731c47cceabc4bfbddd4621e0167580dd2614e05` | Gas-opt redeploy (original canvas) |
+| ChromaCanvasV2 | `0xb40533013E0510EEa876d61b430ea7E7385CE8b2` | Level-feature redeploy (old thresholds) |
+| ChromaRenderer | `0xc999AbEA1E5115a6146AD5D06a69A42553cAeAe9` | Pre–gas-opt stack |
+| ChromaRenderer | `0x5b92421d7a440a72388869403934436fe7eee6e6` | Gas-opt redeploy |
+| ChromaRenderer | `0x3b46FC635E5346A045304904A0Cea4f2B3764D19` | Aborted redeploy (wrong storage wiring) |
 
 ### Key contract values
 - MAX_SUPPLY: 5,150
@@ -301,13 +319,20 @@ ChromaCanvas -> burn tokens -> AP economy
 ### Merkle roots (locked)
 - Tier 1 (Normies): `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
 - Tier 2 (Brain Rots): `0xd582654aae27faf95fbd5d648a9bb2fc5b0d4f7b5154e419cfb59b6d154bb2ac`
-- Reveal root: `0x3e956533997abafdcca2253c98299f18c0db09ad130debfd827e41b03c0e77b7`
+- Reveal root: `0x8ac55bc03bceefcbf5c389513f695101d2b27504c3ef02486c2a45f9557c7d54` (post gas-optimization layout)
 
 ### Test results
-28/28 tests passing.
-Run: `C:\Foundry\foundry_nightly_win32_amd64\forge.exe test -vv` from `X:\Cursor\Homies\`
+37/37 ChromaCanvasV2 tests passing (full suite includes Chroma.t.sol).
+Run: `X:\Cursor\Homies\.tools\foundry\forge.exe test -vv` from `X:\Cursor\Homies\`
 
-### Gas (at 15 gwei mainnet)
+### Gas (validated Sepolia)
+| Operation | Gas used | vs budget |
+|-----------|----------|-----------|
+| `mint(1)` | 116,008 | ~100.9% of ~115k budget |
+| `reveal()` | 599,334 | ~97.3% of ~616k budget (down from 1,357,161 pre-optimization) |
+| `inscribe` lock-only | 58,528 | — |
+
+### Gas (at 15 gwei mainnet — estimates)
 - Mint: ~115k gas (~$2.50)
 - Reveal/Inscribe: ~616k gas (~$13.40) — paid by holder, optional
 - Deploy: ~8-9M gas total
@@ -321,12 +346,54 @@ $env:CHROMA_ADDRESS = (Get-Content .env | Select-String "CHROMA_ADDRESS").ToStri
 
 ---
 
-## AP Economy (Locked)
+## AP Economy (ChromaCanvasV2)
 
-- Burn yield: 100 AP base + tokenDiffs.length/10 bonus (recursive)
-- Mutation tier costs: OffKilter->Drifted=500, Drifted->Standard=1500, Standard->Pristine=5000
-- AP transfer function available for marketplace
-- Inscribed/locked tokens cannot earn or spend AP
+### Burn yield (`calculateBurnAP`)
+Tiered yield from sacrificed token's on-chain `totalPixels` count. Percent constants: 1% / 2% / 3% (capped at 4% max).
+
+**Pixel thresholds (recalibrated Mar 2026):**
+| Constant | Old | New |
+|----------|-----|-----|
+| `TIER1_THRESHOLD` | 490 | **1500** |
+| `TIER2_THRESHOLD` | 890 | **2000** |
+
+Recalibration based on real `mint-data.json` distribution across 5,150 tokens (min 728, max 2,377, median 1,959 pixels). Old thresholds put 98.1% of tokens in the top yield bracket.
+
+**New bracket distribution:**
+| Bracket | Yield | % of collection |
+|---------|-------|-----------------|
+| < 1,500 px | 1% | 7.3% |
+| 1,500–1,999 px | 2% | 52.4% |
+| ≥ 2,000 px | 3% | 40.2% |
+
+**Accepted tradeoff:** burn yield now primarily reflects **character type** (Cat/Alien skew high AP, Female HeroA/Agent skew low) rather than mutation tier. Mutation tiers still control palette swap / edge erode aesthetics; they do not meaningfully separate pixel counts today.
+
+### Mutation tier shift costs (AP spend)
+- OffKilter → Drifted: 500 AP
+- Drifted → Standard: 1,500 AP
+- Standard → Pristine: 5,000 AP
+- Full journey: 7,000 AP, ~70 burns
+
+### Other rules
+- AP is per-token (travels with the NFT on sale)
+- AP transfer via `PixelMarketplace` operator flow
+- Inscribed/locked tokens cannot earn or spend AP via burn (burn into locked receiver reverts)
+
+---
+
+## Level Stat (ChromaCanvasV2)
+
+Uncapped, earn-based activity level — separate from mutation tier (Pristine/Standard/Drifted/OffKilter).
+
+| Field | Description |
+|-------|-------------|
+| `totalApEarned[tokenId]` | Lifetime AP earned on this token; incremented on burn credit and `earnAP`; never decremented on spend |
+| `getLevel(tokenId)` | `floor(sqrt(totalApEarned / 50))` — Level N requires N² × 50 lifetime AP (e.g. 50→L1, 200→L2, 5000→L10) |
+
+- Displayed in on-chain metadata (`"Level"` trait via ChromaRenderer) **alongside** mutation tier, not replacing it
+- Shown on `/my-chromies` as `Tier: {Mutation} · Level {N}`
+- Inspired by Normies' activity-based leveling; kept separate from the tier/Pristine narrative
+- Clean slate on each canvas redeploy (no AP migration on testnet)
 
 ---
 
@@ -364,8 +431,10 @@ $env:CHROMA_ADDRESS = (Get-Content .env | Select-String "CHROMA_ADDRESS").ToStri
 4. Regenerate merkle trees with fresh snapshot
 5. Informal contract review (ask Serc)
 6. Agent assets (HEAD_Agent, NECK_Agent)
-7. Cat neck asset (NECK_Cat)
-8. Fat head, new glasses, new beards
+7. Cat neck asset (NECK_Cat) — Cat slated for Zombie replacement
+8. Zombie character assets (Cat replacement, weight=18)
+9. Heavier-build human character (TBD)
+10. Fat head, new glasses, new beards
 
 ---
 
