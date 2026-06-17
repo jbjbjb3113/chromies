@@ -139,3 +139,22 @@ export async function fetchTokenActionPoints(publicClient, canvasAddress, tokenI
     args: [BigInt(tokenId)],
   });
 }
+
+/** Earn-based level per token (sqrt lifetime AP curve). */
+export async function fetchTokenLevels(publicClient, canvasAddress, tokenIds) {
+  if (!publicClient || !canvasAddress || tokenIds.length === 0) return {};
+
+  const entries = await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      const level = await publicClient.readContract({
+        address: canvasAddress,
+        abi: chromaCanvasV2Abi,
+        functionName: "getLevel",
+        args: [tokenId],
+      });
+      return [tokenId.toString(), Number(level)];
+    }),
+  );
+
+  return Object.fromEntries(entries);
+}

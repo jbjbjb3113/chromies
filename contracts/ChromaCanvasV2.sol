@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
 import {IChromaToken} from "./IChromaToken.sol";
 import {IPixelCanvas} from "./IPixelCanvas.sol";
@@ -42,6 +43,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     uint256 public constant TIER2_MIN_PERCENT = 2;
     uint256 public constant TIER3_MIN_PERCENT = 3;
     uint256 public constant MAX_BURN_PERCENT = 4;
+    /// @notice AP earned per level² unit in `getLevel()` (Level N requires N² × divisor lifetime AP).
+    uint256 public constant LEVEL_AP_DIVISOR = 50;
     address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
     struct PendingCommit {
@@ -61,6 +64,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     mapping(uint256 tokenId => uint256 points) public actionPoints;
     /// @inheritdoc IPixelCanvas
     mapping(uint256 tokenId => uint256 apSpent) public totalApSpent;
+    /// @notice Lifetime AP ever earned per token (never decremented on spend or transfer).
+    mapping(uint256 tokenId => uint256 earned) public totalApEarned;
     mapping(uint256 tokenId => uint256 count) public burnCount;
     mapping(uint256 tokenId => bool) public customized;
     mapping(uint256 tokenId => uint256) public pixelsEdited;
@@ -222,6 +227,13 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         return chromaStorage.getTotalPixels(tokenId);
     }
 
+    /// @notice Uncapped activity level from lifetime AP earned (sqrt curve, separate from mutation tier).
+    function getLevel(uint256 tokenId) public view returns (uint256) {
+        uint256 earned = totalApEarned[tokenId];
+        if (earned == 0) return 0;
+        return Math.sqrt(earned / LEVEL_AP_DIVISOR);
+    }
+
     /// @notice Tiered burn yield from the sacrificed token's on-chain pixel count.
     function calculateBurnAP(uint256 burnTokenId) public view returns (uint256) {
         uint256 pixels = chromaStorage.getTotalPixels(burnTokenId);
@@ -272,6 +284,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
 
     function _earnAP(uint256 tokenId, uint256 amount) internal {
         actionPoints[tokenId] += amount;
+        totalApEarned[tokenId] += amount;
         emit APEarned(tokenId, amount);
     }
 

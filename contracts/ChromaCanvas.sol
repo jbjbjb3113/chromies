@@ -101,6 +101,15 @@ contract ChromaCanvas is Ownable {
         return totalApSpent[tokenId] / 100 + 1;
     }
 
+    /// @dev V1 legacy canvas — earn-based level lives on ChromaCanvasV2.
+    function getLevel(uint256) external pure returns (uint256) {
+        return 0;
+    }
+
+    function totalApEarned(uint256) external pure returns (uint256) {
+        return 0;
+    }
+
     function transferActionPoints(address to, uint256 amount) external {
         if (to == address(0)) revert InvalidTransfer();
         if (actionPoints[msg.sender] < amount) revert InsufficientActionPoints();

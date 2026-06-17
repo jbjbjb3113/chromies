@@ -6,10 +6,11 @@ import SiteFooter from "../components/SiteFooter.jsx";
 import WalletButton from "../components/WalletButton.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
-import { chromaAbi, DEFAULT_CHAIN, getChromaAddress } from "../lib/chroma-contract.js";
+import { chromaAbi, DEFAULT_CHAIN, getCanvasAddress, getChromaAddress } from "../lib/chroma-contract.js";
 import { fetchOnChainTokenMetadata } from "../lib/chromie-token.js";
 import {
   fetchOwnedChromaTokenIds,
+  fetchTokenLevels,
   fetchTokenLockStatus,
   fetchTokenRevealStatus,
 } from "../lib/chroma-ownership.js";
@@ -37,6 +38,8 @@ function OwnedChromieCard({
   publicClient,
   chromaAddress,
   refreshKey,
+  level,
+  mutationTier,
 }) {
   const id = tokenId.toString();
   const [traits, setTraits] = useState([]);
@@ -114,6 +117,13 @@ function OwnedChromieCard({
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">CHROMIES</p>
             <h3 className="mt-1 text-base font-black tracking-tight text-ink">Chromie #{id}</h3>
+            {isRevealed && (mutationTier || level != null) && (
+              <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-ink/55">
+                {mutationTier ? `Tier: ${mutationTier}` : null}
+                {mutationTier && level != null ? " · " : null}
+                {level != null ? `Level ${level}` : null}
+              </p>
+            )}
           </div>
           {isRevealed ? (
             <button
@@ -173,9 +183,12 @@ export default function MyChromies() {
 
   const onSepolia = chainId === DEFAULT_CHAIN.id;
   const chromaAddress = onSepolia ? getChromaAddress(chainId) : null;
+  const canvasAddress = onSepolia ? getCanvasAddress(chainId) : null;
 
   const [tokenIds, setTokenIds] = useState([]);
   const [revealedByTokenId, setRevealedByTokenId] = useState({});
+  const [levelByTokenId, setLevelByTokenId] = useState({});
+  const [mutationByTokenId, setMutationByTokenId] = useState({});
   const [inscribableCount, setInscribableCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
@@ -195,6 +208,8 @@ export default function MyChromies() {
     if (!publicClient || !chromaAddress || !address) {
       setTokenIds([]);
       setRevealedByTokenId({});
+      setLevelByTokenId({});
+      setMutationByTokenId({});
       setInscribableCount(0);
       return;
     }
@@ -203,26 +218,57 @@ export default function MyChromies() {
     setLoadError(null);
     try {
       const ids = await fetchOwnedChromaTokenIds(publicClient, chromaAddress, address);
-      const [revealed, locked] = await Promise.all([
+      const [revealed, locked, levels] = await Promise.all([
         fetchTokenRevealStatus(publicClient, chromaAddress, ids),
         fetchTokenLockStatus(publicClient, chromaAddress, ids),
+        canvasAddress != null
+          ? fetchTokenLevels(publicClient, canvasAddress, ids)
+          : Promise.resolve({}),
       ]);
+
+      const mutations = {};
+      if (ids.length > 0) {
+        const metaResults = await Promise.all(
+          ids.map(async (tokenId) => {
+            if (!revealed[tokenId.toString()]) return [tokenId.toString(), null];
+            try {
+              const metadata = await fetchOnChainTokenMetadata(
+                publicClient,
+                chromaAddress,
+                Number(tokenId),
+              );
+              const mutation = metadata?.attributes?.find((a) => a.trait_type === "Mutation");
+              return [tokenId.toString(), mutation?.value != null ? String(mutation.value) : null];
+            } catch {
+              return [tokenId.toString(), null];
+            }
+          }),
+        );
+        for (const [id, tier] of metaResults) {
+          mutations[id] = tier;
+        }
+      }
+
       const inscribable = ids.filter(
         (id) => revealed[id.toString()] === true && locked[id.toString()] !== true,
       ).length;
       setTokenIds(ids);
       setRevealedByTokenId(revealed);
+      setLevelByTokenId(levels);
+      setMutationByTokenId(mutations);
       setInscribableCount(inscribable);
     } catch (error) {
       console.error("Failed to load owned Chromies:", error);
       setLoadError(error?.shortMessage ?? error?.message ?? "Failed to load your Chromies.");
       setTokenIds([]);
       setRevealedByTokenId({});
+      setLevelByTokenId({});
+      setMutationByTokenId({});
       setInscribableCount(0);
     } finally {
       setLoading(false);
     }
-  }, [publicClient, chromaAddress, address]);
+  }, [publicClient, chromaAddress, canvasAddress, address]);
 
   useEffect(() => {
     if (isConnected && onSepolia) {
@@ -230,6 +276,8 @@ export default function MyChromies() {
     } else {
       setTokenIds([]);
       setRevealedByTokenId({});
+      setLevelByTokenId({});
+      setMutationByTokenId({});
       setInscribableCount(0);
       setLoadError(null);
       setDataError(null);
@@ -423,6 +471,8 @@ export default function MyChromies() {
                   publicClient={publicClient}
                   chromaAddress={chromaAddress}
                   refreshKey={thumbnailRefresh}
+                  level={levelByTokenId[tokenId.toString()]}
+                  mutationTier={mutationByTokenId[tokenId.toString()]}
                 />
               ))}
             </div>

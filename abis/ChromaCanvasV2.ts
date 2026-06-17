@@ -29,6 +29,27 @@ export const chromaCanvasV2Abi = [
   },
   {
     type: "function",
+    name: "totalApEarned",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "getLevel",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "LEVEL_AP_DIVISOR",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    type: "function",
     name: "applyDiff",
     stateMutability: "nonpayable",
     inputs: [

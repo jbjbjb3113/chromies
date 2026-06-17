@@ -123,9 +123,9 @@ contract ChromaRenderer is Ownable {
     }
 
     function _levelAttribute(uint256 tokenId) internal view returns (string memory) {
-        uint256 levelValue = 1;
+        uint256 levelValue = 0;
         if (address(chromaCanvas) != address(0)) {
-            levelValue = chromaCanvas.level(tokenId);
+            levelValue = chromaCanvas.getLevel(tokenId);
         }
         return string(abi.encodePacked(",", _jsonNumberAttribute("Level", levelValue)));
     }

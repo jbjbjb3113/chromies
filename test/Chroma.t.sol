@@ -973,7 +973,7 @@ contract ChromaCanvasTest is Test {
         canvas.applyDiff(703, diffData);
 
         string memory json = _decodeTokenUri(renderer.tokenURI(703));
-        assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":2}'));
+        assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":0}'));
     }
 
     function _decodeTokenUri(string memory uri) internal pure returns (string memory) {

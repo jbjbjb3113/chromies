@@ -458,6 +458,96 @@ contract ChromaCanvasV2Test is Test {
         assert(canvas.getBurnCount(ALICE_TOKEN) == 1);
     }
 
+    // ========================================================================
+    // Earn-based Level (totalApEarned / sqrt curve)
+    // ========================================================================
+
+    function test_TotalApEarned_IncrementsOnEarnOnly() external {
+        canvas.earnAP(ALICE_TOKEN, 250);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 250);
+
+        vm.prank(alice);
+        canvas.spendAP(ALICE_TOKEN, 100);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 250);
+        assert(canvas.actionPoints(ALICE_TOKEN) == 150);
+
+        bytes memory traits =
+            hex"0000000000000000000000000000000300000000000000000000000000000000";
+        uint256 shiftToken = 40;
+        chroma.mint(alice, shiftToken, new bytes(2048), traits);
+        canvas.earnAP(shiftToken, 500);
+
+        vm.prank(alice);
+        canvas.shiftMutationTier(shiftToken, 2);
+        assert(canvas.totalApEarned(shiftToken) == 500);
+        assert(canvas.actionPoints(shiftToken) == 0);
+    }
+
+    function test_TotalApEarned_NotCreditedOnTransfer() external {
+        canvas.earnAP(ALICE_TOKEN, 200);
+
+        vm.prank(alice);
+        canvas.transferAP(ALICE_TOKEN, BOB_TOKEN, 75);
+
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 200);
+        assert(canvas.totalApEarned(BOB_TOKEN) == 0);
+    }
+
+    function test_GetLevel_Thresholds() external {
+        assert(canvas.getLevel(ALICE_TOKEN) == 0);
+
+        canvas.earnAP(ALICE_TOKEN, 49);
+        assert(canvas.getLevel(ALICE_TOKEN) == 0);
+
+        canvas.earnAP(ALICE_TOKEN, 1);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 50);
+        assert(canvas.getLevel(ALICE_TOKEN) == 1);
+
+        canvas.earnAP(ALICE_TOKEN, 149);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 199);
+        assert(canvas.getLevel(ALICE_TOKEN) == 1);
+
+        canvas.earnAP(ALICE_TOKEN, 1);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 200);
+        assert(canvas.getLevel(ALICE_TOKEN) == 2);
+
+        canvas.earnAP(ALICE_TOKEN, 4800);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 5000);
+        assert(canvas.getLevel(ALICE_TOKEN) == 10);
+    }
+
+    function test_GetLevel_SurvivesSpendAndBurnCredit() external {
+        uint256 fuelToken = 41;
+        bytes memory pixels = _pixelsWithNonZeroCount(500);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(500);
+        chroma.mint(alice, fuelToken, pixels, traits);
+
+        vm.prank(alice);
+        chroma.setApprovalForAll(address(canvas), true);
+
+        _revealBurn(alice, ALICE_TOKEN, fuelToken, bytes(""));
+
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 10);
+        assert(canvas.getLevel(ALICE_TOKEN) == 0);
+
+        canvas.earnAP(ALICE_TOKEN, 40);
+        assert(canvas.getLevel(ALICE_TOKEN) == 1);
+
+        vm.prank(alice);
+        canvas.spendAP(ALICE_TOKEN, 30);
+        assert(canvas.getLevel(ALICE_TOKEN) == 1);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 50);
+    }
+
+    function test_GetLevel_InTokenURI() external {
+        ChromaRenderer renderer = _setupRenderer();
+
+        canvas.earnAP(ALICE_TOKEN, 200);
+        string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
+        assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":2}'));
+        assert(_contains(json, '"trait_type":"Mutation"'));
+    }
+
     function _setupRenderer() internal returns (ChromaRenderer renderer) {
         renderer = new ChromaRenderer(address(storageContract), address(this));
         renderer.setCanvas(address(canvas));
