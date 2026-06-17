@@ -15,12 +15,13 @@ contract RedeployCanvasAndRendererScript is Script {
         address deployer = vm.addr(deployerPrivateKey);
 
         address chromaAddress = vm.envAddress("CHROMA_ADDRESS");
-        address storageAddress = vm.envAddress("CHROMA_STORAGE_ADDRESS");
         address marketplaceAddress = vm.envAddress("MARKETPLACE_ADDRESS");
+
+        Chroma chroma = Chroma(payable(chromaAddress));
+        address storageAddress = address(chroma.chromaStorage());
 
         vm.startBroadcast(deployerPrivateKey);
 
-        Chroma chroma = Chroma(payable(chromaAddress));
         ChromaStorage chromaStorage = ChromaStorage(storageAddress);
 
         ChromaCanvasV2 canvas = new ChromaCanvasV2(chromaAddress, storageAddress, deployer);

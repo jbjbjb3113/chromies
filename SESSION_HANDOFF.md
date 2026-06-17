@@ -8,8 +8,8 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 |----------|---------|
 | ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
 | Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
-| ChromaCanvasV2 | `0x731c47cceabc4bfbddd4621e0167580dd2614e05` |
-| ChromaRenderer | `0x5b92421d7a440a72388869403934436fe7eee6e6` |
+| ChromaCanvasV2 | `0xb40533013E0510EEa876d61b430ea7E7385CE8b2` |
+| ChromaRenderer | `0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30` |
 | PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
 
 ## Merkle Roots
@@ -18,13 +18,10 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 - Reveal Root: `0x8ac55bc03bceefcbf5c389513f695101d2b27504c3ef02486c2a45f9557c7d54`
 
 ## Recent Work (This Session)
-- Added 42 shirt palette variants (6 base × 7 shirt colors) — slot 9 repurposed as shirt/hood color
-- Shirt colors per family defined (SIGNAL: Red/Purple/Orange/Olive/Green/Gold/Blue)
-- Pixel scatter effect added to mutation system (scatter/scatterRadius per tier)
-- 4 new glasses variants: PiratePatch, 3DGlasses, DFrame, DFrameFilled
-- Wallet selection modal added to mint page (MetaMask, Phantom, Trust, Ledger, Other)
-- Level system live (totalApSpent/100 + 1, shown as numeric trait in tokenURI)
-- 31/31 tests passing
+- Redeployed ChromaCanvasV2 + ChromaRenderer with earn-based Level (`totalApEarned` + `getLevel()` sqrt curve)
+- Redeploy script now reads `chromaStorage` from `Chroma.chromaStorage()` (not env) to avoid storage mismatch
+- Clean slate for testnet AP/levels on new canvas (no migration)
+- Level 1 verified on-chain: token #12 earned 59 AP from burn, `getLevel()` returns 1
 
 ## In Progress
 - Shirt palette system just wired — gallery not yet run/reviewed
@@ -59,8 +56,8 @@ $env:PRIVATE_KEY = (Get-Content .env | Select-String "PRIVATE_KEY").ToString().S
 $env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToString().Split("=",2)[1]
 $env:CHROMA_ADDRESS = "0xba4c3797a18958877f895b69ca4a67b914949f5d"
 $env:CHROMA_STORAGE_ADDRESS = "0x78ee267c09be83eee64050e21ecc2ffe8296ae38"
-$env:CANVAS_ADDRESS = "0x731c47cceabc4bfbddd4621e0167580dd2614e05"
-$env:CHROMA_RENDERER_ADDRESS = "0x5b92421d7a440a72388869403934436fe7eee6e6"
+$env:CANVAS_ADDRESS = "0xb40533013E0510EEa876d61b430ea7E7385CE8b2"
+$env:CHROMA_RENDERER_ADDRESS = "0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30"
 $env:MARKETPLACE_ADDRESS = "0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d"
 ```
 
