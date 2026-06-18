@@ -3,31 +3,31 @@
   "palettes": [
     {
       "name": "SIGNAL",
-      "weight": 50
+      "weight": 30
     },
     {
       "name": "ACID",
-      "weight": 12
+      "weight": 16
     },
     {
       "name": "CYAN",
-      "weight": 12
+      "weight": 16
     },
     {
       "name": "GHOST",
-      "weight": 10
+      "weight": 14
     },
     {
       "name": "BLOOD",
-      "weight": 10
+      "weight": 14
     },
     {
       "name": "MOSS",
-      "weight": 6
+      "weight": 10
     },
     {
       "name": "SIGNAL_BLONDE",
-      "weight": 15
+      "weight": 25
     },
     {
       "name": "SIGNAL_GREY",
@@ -39,7 +39,7 @@
     },
     {
       "name": "ACID_BLONDE",
-      "weight": 4
+      "weight": 8
     },
     {
       "name": "ACID_GREY",
@@ -51,7 +51,7 @@
     },
     {
       "name": "CYAN_BLONDE",
-      "weight": 4
+      "weight": 8
     },
     {
       "name": "CYAN_GREY",
@@ -63,7 +63,7 @@
     },
     {
       "name": "GHOST_BLONDE",
-      "weight": 3
+      "weight": 7
     },
     {
       "name": "GHOST_GREY",
@@ -75,7 +75,7 @@
     },
     {
       "name": "BLOOD_BLONDE",
-      "weight": 3
+      "weight": 7
     },
     {
       "name": "BLOOD_GREY",
@@ -87,7 +87,7 @@
     },
     {
       "name": "MOSS_BLONDE",
-      "weight": 2
+      "weight": 5
     },
     {
       "name": "MOSS_GREY",
