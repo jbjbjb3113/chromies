@@ -34,6 +34,8 @@ const { overlayStrayPixels } = require("./phase3-variance");
 const AGENT_DIR = path.resolve(__dirname, SETTINGS.outputDir, "agent");
 const SAVED_DIR = path.join(AGENT_DIR, "saved");
 const META_KEYS = new Set(["character", "gender", "palette", "rationale", "mtier", "tier"]);
+/** Slots always set by character forcedSlots — never agent-pickable. */
+const AGENT_EXCLUDED_SLOTS = new Set(["neck", "head", "body", "eyes"]);
 const CLAUDE_MODEL = "claude-sonnet-4-6";
 const FIXED_TOKEN_ID = 1;
 
@@ -44,6 +46,7 @@ function loadTraits() {
 function buildCatalog(traits = loadTraits()) {
   const slots = {};
   for (const [slot, def] of Object.entries(traits.slots)) {
+    if (AGENT_EXCLUDED_SLOTS.has(slot)) continue;
     slots[slot] = {
       zOrder: def.zOrder,
       variants: def.variants.map((v) => ({
@@ -78,6 +81,8 @@ function buildSystemPrompt(catalog) {
 Each Chromie is composited from named slots (layers) sorted by z-order (low = behind). You pick one variant per slot from the catalog. Variant names must match exactly.
 
 Key z-order (low → high): hood(5), shirt(6), bodytattoo(7), neck(8), body(9), head(10), necklace(12), tattoo(15), mask(20), beard(25), mustache(26), eyes(30), expression(31), earrings(32), glasses(35), hair(40).
+
+Never specify values for neck, head, body, or eyes — these are automatically determined by the character and cannot be overridden.
 
 ## Characters
 - HeroA (Male/Female): default human, full palette pool, all slots.
@@ -189,6 +194,7 @@ function validateAgentTraits(raw, traits, catalog) {
 
   for (const [key, value] of Object.entries(raw)) {
     if (META_KEYS.has(key)) continue;
+    if (AGENT_EXCLUDED_SLOTS.has(key)) continue;
     const slotDef = traits.slots[key];
     if (!slotDef) {
       errors.push(`Unknown slot "${key}"`);
@@ -231,7 +237,7 @@ function resolveCharacter(meta, tokenId = FIXED_TOKEN_ID) {
 
 function applyAgentOverrides(picks, traits, agentTraits) {
   for (const [slot, variantName] of Object.entries(agentTraits)) {
-    if (META_KEYS.has(slot)) continue;
+    if (META_KEYS.has(slot) || AGENT_EXCLUDED_SLOTS.has(slot)) continue;
     const slotDef = traits.slots[slot];
     if (!slotDef) continue;
     const found = slotDef.variants.find((v) => v.name === variantName);
@@ -352,6 +358,7 @@ if (require.main === module) main();
 module.exports = {
   AGENT_DIR,
   SAVED_DIR,
+  AGENT_EXCLUDED_SLOTS,
   buildCatalog,
   buildSystemPrompt,
   validateAgentTraits,
