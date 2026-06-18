@@ -210,11 +210,18 @@
       }
     }
 
+    function previewFilename(filename) {
+      if (!filename) return filename;
+      if (filename.endsWith("_1024.png")) return filename;
+      return filename.replace(/\.png$/, "_1024.png");
+    }
+
     function showImage(filename) {
+      const preview = previewFilename(filename);
       const img = document.createElement("img");
-      img.src = `${API}/image/${encodeURIComponent(filename)}?t=${Date.now()}`;
+      img.src = `${API}/image/${encodeURIComponent(preview)}?t=${Date.now()}`;
       img.alt = "Chromie render";
-      img.onerror = () => setStatus(`Failed to load image: ${API}/image/${filename}`, true);
+      img.onerror = () => setStatus(`Failed to load image: ${API}/image/${preview}`, true);
       $("preview").innerHTML = "";
       $("preview").appendChild(img);
       $("postActions").style.display = "flex";
@@ -236,7 +243,7 @@
 
         lastTraits = data.traits;
         lastFilename = data.imageFilename;
-        showImage(data.image1024Filename || data.imageFilename);
+        showImage(data.imageFilename);
         renderTraits(data);
         $("refineBtn").disabled = false;
         setStatus(`Done — ${data.imageFilename}`);
