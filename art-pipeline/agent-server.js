@@ -16,10 +16,7 @@ requireFromRoot("dotenv").config({ path: path.resolve(repoRoot, ".env") });
 requireFromRoot("dotenv").config({ path: path.resolve(repoRoot, ".env.local") });
 
 const express = requireFromRoot("express");
-const { SETTINGS } = require("./chromies-config");
 const { AGENT_DIR, SAVED_DIR, runAgent, saveAgentImage } = require("./chromie-agent");
-
-const AGENT_OUTPUT_DIR = path.resolve(__dirname, SETTINGS.outputDir, "agent");
 
 const PORT = Number(process.env.AGENT_PORT || 3456);
 const app = express();
@@ -84,14 +81,18 @@ app.get("/image/:filename", (req, res) => {
   if (!/^agent_[\w-]+(_1024)?\.png$/.test(filename)) {
     return res.status(400).json({ error: "Invalid image name" });
   }
-  const filePath = path.join(AGENT_OUTPUT_DIR, filename);
-  if (!fs.existsSync(filePath)) return res.status(404).json({ error: "Not found" });
+  const filePath = path.join(AGENT_DIR, filename);
+  if (!fs.existsSync(filePath)) {
+    console.warn(`[/image] not found: ${filePath}`);
+    return res.status(404).json({ error: "Not found", path: filePath });
+  }
   res.setHeader("Content-Type", "image/png");
   res.send(fs.readFileSync(filePath));
 });
 
 app.listen(PORT, () => {
   console.log(`Chromie Agent server: http://localhost:${PORT}/`);
+  console.log(`  Agent images:  ${AGENT_DIR}`);
   console.log(`  POST /generate  { description, previousTraits? }`);
   console.log(`  GET  /health`);
   console.log(`  GET  /image/:filename`);
@@ -99,4 +100,11 @@ app.listen(PORT, () => {
   if (!process.env.ANTHROPIC_API_KEY?.trim()) {
     console.warn("  WARN: ANTHROPIC_API_KEY not set — generation will fail until configured");
   }
+}).on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(`Port ${PORT} already in use — kill the stale agent-server.js process and restart.`);
+  } else {
+    console.error(err);
+  }
+  process.exit(1);
 });
