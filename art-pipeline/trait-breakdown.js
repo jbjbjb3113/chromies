@@ -6,10 +6,11 @@
 
 const fs = require("fs");
 const path = require("path");
+const { buildCharacterDecoderTable } = require("./on-chain-character-bytes");
 
 const MINT_DATA_PATH = path.resolve("output/mint-data.json");
 
-const CHARACTER  = ["HeroA_Male","HeroA_Female","Alien","Cat","Agent"];
+const CHARACTER  = buildCharacterDecoderTable();
 const PALETTE    = ["SIGNAL","ACID","CYAN","GHOST","BLOOD","MOSS","SIGNAL_BLONDE","SIGNAL_GREY","SIGNAL_RED","ACID_BLONDE","ACID_GREY","ACID_RED","CYAN_BLONDE","CYAN_GREY","CYAN_RED","GHOST_BLONDE","GHOST_GREY","GHOST_RED","BLOOD_BLONDE","BLOOD_GREY","BLOOD_RED","MOSS_BLONDE","MOSS_GREY","MOSS_RED","CAT","ALIEN"];
 const HOOD       = ["None","Classic"];
 const SHIRT      = ["None","Crew","Tank","Tank_Female"];

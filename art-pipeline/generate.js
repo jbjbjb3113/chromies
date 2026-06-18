@@ -324,6 +324,12 @@ function applyCoverageRules(picks, traits, character = null) {
     return out;
   }
 
+  // Alien — forced body slot always Alien; skip tank-shirt group / shirtless promotion rules.
+  if (character && character.name === "Alien") {
+    promoteToNamed("body", bodySlotDef, "Alien");
+    return out;
+  }
+
   if (hoodPick === "Classic") {
     suppressTo("shirt", shirtSlotDef);
     suppressTo("body",  bodySlotDef);
@@ -430,6 +436,7 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
   for (const group of activeGroups) {
     for (const [slot, def] of Object.entries(traits.slots)) {
       if (skipSet.has(slot.toLowerCase())) continue;
+      if (character?.forcedSlots?.[slot] !== undefined) continue;
       if (picks[slot] && picks[slot].variant.group === group) continue;
       const grouped = def.variants.find(v => v.group === group);
       if (grouped) {

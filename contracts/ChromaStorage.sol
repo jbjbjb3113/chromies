@@ -38,7 +38,9 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     // Trait encoding (32 bytes):
 
-    // [0]  Character: 0=HeroA_Male, 1=HeroA_Female, 2=Alien, 3=Cat, 4=Agent
+    // [0]  Character: 0=HeroA_Male, 1=HeroA_Female, 2=Alien, 3=Cat, 4=Agent,
+    //              5=SideProfile_Male, 6=SideProfile_Female, 7=Chubby_Male
+    //              (8 reserved: Zombie — planned Cat replacement)
 
     // [1]  Palette: 0=SIGNAL, 1=ACID, 2=CYAN, 3=GHOST, 4=BLOOD, 5=MOSS,
 

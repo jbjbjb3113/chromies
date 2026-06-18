@@ -24,19 +24,15 @@ const {
   getMutationTier,
 } = require("./generate");
 const { overlayStrayPixels } = require("./phase3-variance");
+const {
+  ON_CHAIN_CHARACTER_BYTES,
+  characterKey,
+} = require("./on-chain-character-bytes");
 
 const GRID = SETTINGS.grid;
 const PX = GRID * GRID;
 const PIXELS_BYTES = 2048;
 const TRAITS_BYTES = 32;
-
-const CHARACTER_BYTES = {
-  HeroA_Male: 0,
-  HeroA_Female: 1,
-  Alien: 2,
-  Cat: 3,
-  Agent: 4,
-};
 
 const PALETTE_BYTES = {
   SIGNAL: 0,
@@ -107,7 +103,7 @@ const MUTATION_BYTES = { Pristine: 0, Standard: 1, Drifted: 2, OffKilter: 3 };
 const DRIFT_BYTES = { Pristine: 0, Standard: 1, Drifted: 2, OffKilter: 3 };
 
 const TRAIT_SLOTS = [
-  { index: 0, key: "character", label: "Character", table: CHARACTER_BYTES, source: "character" },
+  { index: 0, key: "character", label: "Character", table: ON_CHAIN_CHARACTER_BYTES, source: "character" },
   { index: 1, key: "palette", label: "Palette", table: PALETTE_BYTES, source: "palette" },
   { index: 2, key: "hood", label: "Hood", table: HOOD_BYTES, source: "pick" },
   { index: 3, key: "shirt", label: "Shirt", table: SHIRT_BYTES, source: "pick" },
@@ -125,14 +121,6 @@ const TRAIT_SLOTS = [
   { index: 15, key: "mutation", label: "Mutation", table: MUTATION_BYTES, source: "mutation" },
   { index: 16, key: "drift", label: "Drift", table: DRIFT_BYTES, source: "drift" },
 ];
-
-function characterKey(character) {
-  if (!character) return "HeroA_Male";
-  if (character.name === "HeroA") {
-    return character.gender === "Female" ? "HeroA_Female" : "HeroA_Male";
-  }
-  return character.name;
-}
 
 function lookupByte(table, value, context, warnings) {
   if (value === undefined || value === null) {
@@ -233,7 +221,7 @@ function buildMintRecord(tokenId, traitsJson, warnings) {
   const { bytes: traitsPacked, decoded } = encodeTraits({
     character,
     paletteKey,
-    picks,
+    picks: renderPicks,
     mTier,
     driftTier,
     warnings,
@@ -422,4 +410,5 @@ module.exports = {
   countNonZeroNibbles,
   packTotalPixels,
   TRAIT_SLOTS,
+  ON_CHAIN_CHARACTER_BYTES,
 };
