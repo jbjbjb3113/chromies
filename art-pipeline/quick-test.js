@@ -41,6 +41,7 @@ const SLOT_OVERRIDE_FLAGS = [
   "bodytattoo",
   "necklace",
   "earrings",
+  "expression",
   "mask",
 ];
 

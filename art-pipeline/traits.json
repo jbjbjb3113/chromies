@@ -784,6 +784,23 @@
         }
       ]
     },
+    "expression": {
+      "zOrder": 31,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight",
+        "#4c270f": "skin_shadow_deep",
+        "#89532a": "skin_shadow"
+      },
+      "variants": [
+        {
+          "name": "None",
+          "file": "EXPRESSION_None.png",
+          "weight": 100
+        }
+      ]
+    },
     "earrings": {
       "zOrder": 32,
       "drawColors": {

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chromie Agent</title>
+  <style>
+    :root {
+      --bg: #121214;
+      --panel: #1c1c20;
+      --border: #2e2e36;
+      --text: #e8e6e3;
+      --muted: #8a8898;
+      --accent: #ff2d8a;
+      --accent-dim: #9b2352;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 20px 48px;
+    }
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+      letter-spacing: 0.02em;
+    }
+    .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 24px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 800px) { .row { grid-template-columns: 1fr; } }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+    textarea, input[type="text"] {
+      width: 100%;
+      background: #0e0e10;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.95rem;
+      resize: vertical;
+    }
+    textarea { min-height: 72px; }
+    .actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: var(--accent-dim); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 320px;
+      background: repeating-conic-gradient(#2a2a30 0% 25%, #1a1a1e 0% 50%) 50% / 16px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .preview img {
+      image-rendering: pixelated;
+      max-width: 100%;
+      max-height: 512px;
+    }
+    .placeholder { color: var(--muted); font-size: 0.9rem; }
+    .traits {
+      font-family: ui-monospace, "Cascadia Code", monospace;
+      font-size: 0.78rem;
+      line-height: 1.5;
+      max-height: 420px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .rationale {
+      margin-top: 12px;
+      padding: 10px;
+      background: #0e0e10;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-left: 3px solid var(--accent);
+    }
+    .status { margin-top: 10px; font-size: 0.82rem; color: var(--muted); }
+    .error { color: #ff6b6b; }
+    .meta { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Chromie Agent</h1>
+    <p class="sub">Describe a Chromie in natural language → Claude picks traits → pipeline renders. Refine iteratively.</p>
+
+    <div class="panel" style="margin-bottom: 20px;">
+      <label for="description">Describe your Chromie</label>
+      <textarea id="description" placeholder="e.g. chubby guy with a hood, moss palette, angry expression"></textarea>
+      <div class="actions">
+        <button id="generateBtn">Generate</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="row">
+      <div class="panel">
+        <label>Preview</label>
+        <div class="preview" id="preview">
+          <span class="placeholder">Rendered Chromie appears here</span>
+        </div>
+        <div class="actions" id="postActions" style="display: none;">
+          <button class="secondary" id="saveBtn">Save this one</button>
+        </div>
+      </div>
+      <div class="panel">
+        <label>Trait breakdown</label>
+        <div class="meta" id="meta"></div>
+        <div class="traits" id="traits">—</div>
+        <div class="rationale" id="rationale" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top: 20px;">
+      <label for="refine">Refine (builds on previous result)</label>
+      <input type="text" id="refine" placeholder="same but add sunglasses, or try CYAN palette" />
+      <div class="actions">
+        <button id="refineBtn" class="secondary" disabled>Refine</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = (() => {
+      const params = new URLSearchParams(location.search);
+      return params.get("api") || "http://localhost:3456";
+    })();
+
+    const $ = (id) => document.getElementById(id);
+    let lastTraits = null;
+    let lastFilename = null;
+
+    function setStatus(msg, isError = false) {
+      $("status").textContent = msg;
+      $("status").className = "status" + (isError ? " error" : "");
+    }
+
+    function renderTraits(data) {
+      $("meta").textContent = `${data.character} · ${data.palette}`;
+      const lines = Object.entries(data.slotSummary || {})
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([k, v]) => `${k.padEnd(14)} ${v}`);
+      $("traits").textContent = lines.join("\n") || "—";
+      const rat = data.rationale || data.traits?.rationale;
+      if (rat) {
+        $("rationale").textContent = rat;
+        $("rationale").style.display = "block";
+      } else {
+        $("rationale").style.display = "none";
+      }
+    }
+
+    function showImage(filename) {
+      const img = document.createElement("img");
+      img.src = `${API}/image/${filename}?t=${Date.now()}`;
+      img.alt = "Chromie render";
+      $("preview").innerHTML = "";
+      $("preview").appendChild(img);
+      $("postActions").style.display = "flex";
+    }
+
+    async function generate(description, previousTraits = null) {
+      setStatus("Calling Claude + rendering…");
+      $("generateBtn").disabled = true;
+      $("refineBtn").disabled = true;
+
+      try {
+        const res = await fetch(`${API}/generate`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description, previousTraits }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || res.statusText);
+
+        lastTraits = data.traits;
+        lastFilename = data.imageFilename;
+        showImage(data.image1024Url ? data.image1024Url.replace("/image/", "") : data.imageFilename);
+        renderTraits(data);
+        $("refineBtn").disabled = false;
+        setStatus(`Done — ${data.imageFilename}`);
+      } catch (err) {
+        setStatus(err.message, true);
+      } finally {
+        $("generateBtn").disabled = false;
+        if (lastTraits) $("refineBtn").disabled = false;
+      }
+    }
+
+    $("generateBtn").addEventListener("click", () => {
+      const desc = $("description").value.trim();
+      if (!desc) return setStatus("Enter a description first", true);
+      lastTraits = null;
+      generate(desc, null);
+    });
+
+    $("refineBtn").addEventListener("click", () => {
+      const desc = $("refine").value.trim();
+      if (!desc) return setStatus("Enter a refinement", true);
+      if (!lastTraits) return setStatus("Generate first", true);
+      generate(desc, lastTraits);
+      $("refine").value = "";
+    });
+
+    $("saveBtn").addEventListener("click", async () => {
+      if (!lastFilename) return;
+      try {
+        const res = await fetch(`${API}/save`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: lastFilename }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setStatus(`Saved to output/agent/saved/${data.saved}`);
+      } catch (err) {
+        setStatus(err.message, true);
+      }
+    });
+  </script>
+</body>
+</html>
