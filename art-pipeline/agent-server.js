@@ -10,15 +10,10 @@ const fs = require("fs");
 const path = require("path");
 const { createRequire } = require("module");
 
-const repoRoot = path.join(__dirname, "..");
+const repoRoot = path.resolve(__dirname, "..");
 const requireFromRoot = createRequire(path.join(repoRoot, "package.json"));
-
-try {
-  requireFromRoot("dotenv").config({ path: path.join(repoRoot, ".env") });
-  requireFromRoot("dotenv").config({ path: path.join(repoRoot, ".env.local") });
-} catch {
-  // dotenv optional if env vars set externally
-}
+requireFromRoot("dotenv").config({ path: path.resolve(repoRoot, ".env") });
+requireFromRoot("dotenv").config({ path: path.resolve(repoRoot, ".env.local") });
 
 const express = requireFromRoot("express");
 const { AGENT_DIR, SAVED_DIR, runAgent, saveAgentImage } = require("./chromie-agent");

@@ -7,8 +7,15 @@
 //   ANTHROPIC_API_KEY=... node chromie-agent.js "refine prompt"  (via API/server)
 // ============================================================================
 
-const fs = require("fs");
 const path = require("path");
+const { createRequire } = require("module");
+
+const repoRoot = path.resolve(__dirname, "..");
+const requireFromRoot = createRequire(path.join(repoRoot, "package.json"));
+requireFromRoot("dotenv").config({ path: path.resolve(repoRoot, ".env") });
+requireFromRoot("dotenv").config({ path: path.resolve(repoRoot, ".env.local") });
+
+const fs = require("fs");
 const { PALETTES, SETTINGS, CHARACTERS } = require("./chromies-config");
 const {
   pickCharacter,
