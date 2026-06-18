@@ -212,8 +212,9 @@
 
     function showImage(filename) {
       const img = document.createElement("img");
-      img.src = `${API}/image/${filename}?t=${Date.now()}`;
+      img.src = `${API}/image/${encodeURIComponent(filename)}?t=${Date.now()}`;
       img.alt = "Chromie render";
+      img.onerror = () => setStatus(`Failed to load image: ${API}/image/${filename}`, true);
       $("preview").innerHTML = "";
       $("preview").appendChild(img);
       $("postActions").style.display = "flex";
@@ -235,7 +236,7 @@
 
         lastTraits = data.traits;
         lastFilename = data.imageFilename;
-        showImage(data.image1024Url ? data.image1024Url.replace("/image/", "") : data.imageFilename);
+        showImage(data.image1024Filename || data.imageFilename);
         renderTraits(data);
         $("refineBtn").disabled = false;
         setStatus(`Done — ${data.imageFilename}`);

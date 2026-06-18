@@ -31,7 +31,7 @@ const {
 } = require("./generate");
 const { overlayStrayPixels } = require("./phase3-variance");
 
-const AGENT_DIR = path.join(SETTINGS.outputDir, "agent");
+const AGENT_DIR = path.resolve(__dirname, SETTINGS.outputDir, "agent");
 const SAVED_DIR = path.join(AGENT_DIR, "saved");
 const META_KEYS = new Set(["character", "gender", "palette", "rationale", "mtier", "tier"]);
 const CLAUDE_MODEL = "claude-sonnet-4-6";
