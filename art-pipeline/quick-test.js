@@ -207,7 +207,7 @@ function main() {
   const picks = pickTokenVariants(tokenId, traits, opts.skip, character, false);
   applySlotOverrides(picks, traits, opts);
 
-  loadPickBuffers(picks, traits);
+  loadPickBuffers(picks, traits, character);
   const renderPicks = applyCoverageRules(picks, traits, character);
   const mTier = getMutationTier(tokenId, opts.mtier);
   const { tier, driftMap, strays } = buildPhase3Effects(
@@ -229,7 +229,9 @@ function main() {
   const t0 = performance.now();
   let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
   buf = overlayStrayPixels(buf, strays);
-  const pngBuf = renderPNG(buf, palette);
+  const pngBuf = renderPNG(buf, palette, {
+    transparentIndex0: character?.name === "Zombie",
+  });
   const renderMs = performance.now() - t0;
 
   if (!fs.existsSync(QUICK_DIR)) fs.mkdirSync(QUICK_DIR, { recursive: true });

@@ -1,18 +1,20 @@
 GIMP Palette
+Name: ZOMBIE
 Channels: RGBA
 #
-  0   0   0   0	Untitled
- 14  13   8 255	Untitled
- 39  38  29 255	Untitled
- 72  18  19 255	Untitled
- 64  62  49 255	Untitled
- 97  71  47 255	Untitled
- 83  83  66 255	Untitled
-100 100  81 255	Untitled
-118 116  91 255	Untitled
-127 126 122 255	Untitled
-160 133  90 255	Untitled
-133 136 105 255	Untitled
-153 156 129 255	Untitled
-173 177 149 255	Untitled
-194 196 186 255	Untitled
+  0   0   0   0	background
+ 14  13   8 255	mask_dark
+ 39  38  29 255	mask_mid
+ 72  18  19 255	highlight
+ 64  62  49 255	skin_shadow_deep
+ 97  71  47 255	skin_shadow
+ 83  83  66 255	skin_mid
+100 100  81 255	skin_light
+118 116  91 255	skin_highlight
+127 127 122 255	hood
+160 133  90 255	eye_socket
+133 136 105 255	eye_glow
+153 156 129 255	eye_signal
+173 177 149 255	hair_dark
+194 196 186 255	hair_mid
+194 196 186 255	hair_bright

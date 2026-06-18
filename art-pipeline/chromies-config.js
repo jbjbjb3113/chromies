@@ -705,11 +705,11 @@ const PALETTES = {
   },
   ZOMBIE: {
     name: "ZOMBIE",
-    description: "Decayed flesh. Gray-green skin, blood accent. Locked to Zombie character. Role 0 = GPL transparent.",
+    description: "Decayed flesh. Gray-green skin, blood accent. Locked to Zombie character.",
     colors: [
-      "#000000", "#0e0d08", "#27261d", "#481213",
+      "#e3e5e4", "#0e0d08", "#27261d", "#481213",
       "#403e31", "#61472f", "#535342", "#646451",
-      "#76745b", "#7f7f7a", "#a0855a", "#858869",
+      "#76745b", "#7f7e7a", "#a0855a", "#858869",
       "#999c81", "#adb195", "#c2c4ba", "#c2c4ba",
     ],
   },

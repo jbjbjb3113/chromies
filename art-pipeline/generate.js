@@ -65,7 +65,31 @@ function colorDistance(a, b) {
   return dr * dr + dg * dg + db * db;
 }
 
-function extractToBuffer(filePath, drawColors) {
+/** Build drawColors lookup from a palette's 16 role colors (hex → role name). */
+function paletteColorsToDrawColors(paletteColors) {
+  const drawColors = {};
+  for (let i = 0; i < paletteColors.length; i++) {
+    const hex = paletteColors[i].toLowerCase();
+    if (!drawColors[hex]) drawColors[hex] = ROLES[i];
+  }
+  return drawColors;
+}
+
+const ZOMBIE_EXTRACTION_COLORS = paletteColorsToDrawColors(PALETTES.ZOMBIE.colors);
+
+function isZombieComponent(slot, pick, character) {
+  return character?.name === "Zombie" &&
+    (slot === "head" || slot === "body") &&
+    pick?.variant?.name === "Zombie";
+}
+
+/** drawColors for extractToBuffer — Zombie head/body use GPL palette hexes, not SIGNAL. */
+function resolveExtractionDrawColors(slot, pick, character, slotDef) {
+  if (isZombieComponent(slot, pick, character)) return ZOMBIE_EXTRACTION_COLORS;
+  return slotDef.drawColors;
+}
+
+function extractToBuffer(filePath, drawColors, opts = {}) {
   if (!fs.existsSync(filePath)) return null;
   const png = PNG.sync.read(fs.readFileSync(filePath));
   if (png.width !== GRID || png.height !== GRID) {
@@ -78,11 +102,12 @@ function extractToBuffer(filePath, drawColors) {
   }));
   const buf = new Uint8Array(PX);
   const t = SETTINGS.bgKnockoutThreshold;
+  const skipRgbKnockout = opts.skipRgbKnockout === true;
   for (let y = 0; y < GRID; y++) {
     for (let x = 0; x < GRID; x++) {
       const i = (y * GRID + x) * 4;
       const r = png.data[i], g = png.data[i + 1], b = png.data[i + 2], a = png.data[i + 3];
-      if (a === 0 || (r <= t && g <= t && b <= t)) continue;
+      if (a === 0 || (!skipRgbKnockout && r <= t && g <= t && b <= t)) continue;
       let best = null, bestDist = Infinity;
       for (const tgt of targets) {
         const d = colorDistance([r, g, b], tgt.rgb);
@@ -145,14 +170,22 @@ function renderSVG(buf, palette) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" shape-rendering="crispEdges"><rect width="1000" height="1000" fill="${bg}"/>${body}</svg>`;
 }
 
-function renderPNG(buf, palette) {
+function renderPNG(buf, palette, opts = {}) {
+  const transparentIndex0 = opts.transparentIndex0 === true;
   const png = new PNG({ width: GRID, height: GRID });
   for (let i = 0; i < PX; i++) {
+    const off = i * 4;
+    if (transparentIndex0 && buf[i] === 0) {
+      png.data[off] = 0;
+      png.data[off + 1] = 0;
+      png.data[off + 2] = 0;
+      png.data[off + 3] = 0;
+      continue;
+    }
     const hex = palette.colors[buf[i]];
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
     const b = parseInt(hex.slice(5, 7), 16);
-    const off = i * 4;
     png.data[off] = r;
     png.data[off + 1] = g;
     png.data[off + 2] = b;
@@ -238,6 +271,11 @@ function applyCoverageRules(picks, traits, character = null) {
   const shirtSlotDef = traits.slots.shirt;
   const bodySlotDef  = traits.slots.body;
 
+  const extractSlotBuffer = (filePath, slot, variantName, slotDef) => {
+    const pick = { variant: { name: variantName } };
+    return extractToBuffer(filePath, resolveExtractionDrawColors(slot, pick, character, slotDef));
+  };
+
   const suppressTo = (slot, slotDef) => {
     if (!slotDef) return;
     const noneV = slotDef.variants.find(v => v.name === "None");
@@ -246,7 +284,7 @@ function applyCoverageRules(picks, traits, character = null) {
     out[slot] = {
       variant: noneV,
       file: noneV.file,
-      buffer: extractToBuffer(filePath, slotDef.drawColors),
+      buffer: extractSlotBuffer(filePath, slot, "None", slotDef),
     };
   };
 
@@ -262,7 +300,7 @@ function applyCoverageRules(picks, traits, character = null) {
     out[slot] = {
       variant: defaultV,
       file: defaultV.file,
-      buffer: extractToBuffer(filePath, slotDef.drawColors),
+      buffer: extractSlotBuffer(filePath, slot, defaultName, slotDef),
     };
   };
 
@@ -274,7 +312,7 @@ function applyCoverageRules(picks, traits, character = null) {
     out[slot] = {
       variant,
       file: variant.file,
-      buffer: extractToBuffer(filePath, slotDef.drawColors),
+      buffer: extractSlotBuffer(filePath, slot, variantName, slotDef),
     };
   };
 
@@ -466,14 +504,19 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
   }
 
   // Load buffers
-  if (loadBuffers) loadPickBuffers(picks, traits);
+  if (loadBuffers) loadPickBuffers(picks, traits, character);
   return picks;
 }
 
-function loadPickBuffers(picks, traits) {
+function loadPickBuffers(picks, traits, character = null) {
   for (const [slot, pick] of Object.entries(picks)) {
     const filePath = path.join(SETTINGS.componentsDir, pick.file);
-    pick.buffer = extractToBuffer(filePath, traits.slots[slot].drawColors);
+    const slotDef = traits.slots[slot];
+    pick.buffer = extractToBuffer(
+      filePath,
+      resolveExtractionDrawColors(slot, pick, character, slotDef),
+      isZombieComponent(slot, pick, character) ? { skipRgbKnockout: true } : undefined,
+    );
   }
 }
 
@@ -683,7 +726,7 @@ function main() {
     }
   }
 
-  loadPickBuffers(picks, traits);
+  loadPickBuffers(picks, traits, character);
 
   const renderPicks = applyCoverageRules(picks, traits, character);
 
@@ -712,7 +755,9 @@ function main() {
   const tokensDir = path.join(SETTINGS.outputDir, "tokens");
   if (!fs.existsSync(tokensDir)) fs.mkdirSync(tokensDir, { recursive: true });
   const baseName = String(tokenId).padStart(4, "0");
-  const pngBuf = renderPNG(buf, palette);
+  const pngBuf = renderPNG(buf, palette, {
+    transparentIndex0: character?.name === "Zombie",
+  });
   fs.writeFileSync(path.join(tokensDir, `${baseName}.png`), pngBuf);
   fs.writeFileSync(path.join(tokensDir, `${baseName}_1024.png`), upscalePNG(pngBuf, 16));
   fs.writeFileSync(path.join(tokensDir, `${baseName}.svg`), renderSVG(buf, palette));
@@ -731,6 +776,7 @@ module.exports = {
   loadPickBuffers,
   applyCoverageRules,
   pickPalette,
+  resolveExtractionDrawColors,
   extractToBuffer,
   compositeChromie,
   renderSVG,

@@ -65,7 +65,7 @@ function applyOverrides(picks, traits, combo) {
 function renderZombieCombo(tokenId, traits, combo) {
   const picks = pickTokenVariants(tokenId, traits, new Set(), ZOMBIE, false);
   applyOverrides(picks, traits, combo);
-  loadPickBuffers(picks, traits);
+  loadPickBuffers(picks, traits, ZOMBIE);
   const renderPicks = applyCoverageRules(picks, traits, ZOMBIE);
   const palette = PALETTES.ZOMBIE;
   const mTier = getMutationTier(tokenId);
@@ -78,7 +78,7 @@ function renderZombieCombo(tokenId, traits, combo) {
   );
   let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
   buf = overlayStrayPixels(buf, strays);
-  return { pngBuf: renderPNG(buf, palette), renderPicks, picks };
+  return { pngBuf: renderPNG(buf, palette, { transparentIndex0: true }), renderPicks, picks };
 }
 
 function gridDims(n) {
