@@ -107,6 +107,10 @@
     }
     .status { margin-top: 10px; font-size: 0.82rem; color: var(--muted); }
     .error { color: #ff6b6b; }
+    .health { font-size: 0.82rem; margin-bottom: 16px; color: var(--muted); }
+    .health.ok { color: #6bcf8e; }
+    .health.warn { color: #e8b84b; }
+    .health.err { color: #ff6b6b; }
     .meta { font-size: 0.82rem; color: var(--muted); margin-bottom: 8px; }
   </style>
 </head>
@@ -114,6 +118,7 @@
   <div class="wrap">
     <h1>Chromie Agent</h1>
     <p class="sub">Describe a Chromie in natural language → Claude picks traits → pipeline renders. Refine iteratively.</p>
+    <div class="health" id="health">Checking server…</div>
 
     <div class="panel" style="margin-bottom: 20px;">
       <label for="description">Describe your Chromie</label>
@@ -164,6 +169,30 @@
     function setStatus(msg, isError = false) {
       $("status").textContent = msg;
       $("status").className = "status" + (isError ? " error" : "");
+    }
+
+    function setHealth(msg, level = "") {
+      const el = $("health");
+      el.textContent = msg;
+      el.className = "health" + (level ? ` ${level}` : "");
+    }
+
+    async function checkHealth() {
+      try {
+        const res = await fetch(`${API}/health`);
+        if (!res.ok) throw new Error(`Server returned ${res.status}`);
+        const data = await res.json();
+        if (data.apiKeySet) {
+          setHealth("Server ready — Claude API configured", "ok");
+        } else {
+          setHealth(
+            "Server running, but Claude API is not configured — add ANTHROPIC_API_KEY to the repo root .env on the machine running agent-server.js",
+            "warn",
+          );
+        }
+      } catch {
+        setHealth(`Cannot reach agent server at ${API} — run: node agent-server.js`, "err");
+      }
     }
 
     function renderTraits(data) {
@@ -248,6 +277,8 @@
         setStatus(err.message, true);
       }
     });
+
+    checkHealth();
   </script>
 </body>
 </html>

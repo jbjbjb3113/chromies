@@ -35,6 +35,10 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "agent-ui.html"));
 });
 
+app.get("/health", (req, res) => {
+  res.json({ apiKeySet: !!process.env.ANTHROPIC_API_KEY?.trim() });
+});
+
 app.post("/generate", async (req, res) => {
   try {
     const description = String(req.body?.description || "").trim();
@@ -85,6 +89,7 @@ app.get("/image/:filename", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Chromie Agent server: http://localhost:${PORT}/`);
   console.log(`  POST /generate  { description, previousTraits? }`);
+  console.log(`  GET  /health`);
   console.log(`  GET  /image/:filename`);
   console.log(`  POST /save      { filename }`);
   if (!process.env.ANTHROPIC_API_KEY?.trim()) {
