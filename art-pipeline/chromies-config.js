@@ -703,6 +703,16 @@ const PALETTES = {
       "#fdfbfb", "#383525", "#5d5840", "#b2ac78",
     ],
   },
+  ZOMBIE: {
+    name: "ZOMBIE",
+    description: "Decayed flesh. Gray-green skin, blood accent. Locked to Zombie character. Role 0 = GPL transparent.",
+    colors: [
+      "#000000", "#0e0d08", "#27261d", "#481213",
+      "#403e31", "#61472f", "#535342", "#646451",
+      "#76745b", "#7f7f7a", "#a0855a", "#858869",
+      "#999c81", "#adb195", "#c2c4ba", "#c2c4ba",
+    ],
+  },
   SERC: {
     name: "SERC",
     description: "Normies tribute. Monochrome grays from Normie #4354 (#e3e5e4 / #48494b), SIGNAL slot luminances mapped onto the two-tone ramp. Special/gated — weight 0.",
@@ -848,7 +858,7 @@ const CHARACTERS = [
   {
     name: "Cat",
     gender: null,
-    weight: 18,
+    weight: 0,
     palettePool: ["CAT"],
     forcedSlots: {
       head: "Cat",
@@ -857,6 +867,20 @@ const CHARACTERS = [
       mustache: "None",
     },
     slotWeightOverrides: {},
+  },
+  {
+    name: "Zombie",
+    gender: null,
+    weight: 18,
+    palettePool: ["ZOMBIE"],
+    forcedSlots: {
+      head: "Zombie",
+      body: "Zombie",
+    },
+    slotWeightOverrides: {},
+    slotVariantPool: {
+      necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
+    },
   },
   {
     name: "Agent",

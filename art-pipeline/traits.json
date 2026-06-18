@@ -274,6 +274,10 @@
       "weight": 0
     },
     {
+      "name": "ZOMBIE",
+      "weight": 0
+    },
+    {
       "name": "SERC",
       "weight": 0
     }
@@ -419,6 +423,12 @@
           "file": "BODY_Chubby.png",
           "weight": 0,
           "_comment": "Character-gated — combined crew torso (no bare/shirtless Chubby body)"
+        },
+        {
+          "name": "Zombie",
+          "file": "BODY_Zombie.png",
+          "weight": 0,
+          "_comment": "Character-gated — forced via CHARACTERS.Zombie"
         }
       ]
     },
@@ -606,6 +616,12 @@
           "file": "HEAD_Chubby.png",
           "weight": 0,
           "_comment": "Pending asset — character-gated via CHARACTERS.Chubby"
+        },
+        {
+          "name": "Zombie",
+          "file": "HEAD_Zombie.png",
+          "weight": 0,
+          "_comment": "Character-gated — neck baked in; forced via CHARACTERS.Zombie"
         }
       ]
     },

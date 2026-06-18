@@ -19,8 +19,7 @@ const ON_CHAIN_CHARACTER_BYTES = Object.freeze({
   SideProfile_Male: 5,
   SideProfile_Female: 6,
   Chubby_Male: 7,
-
-  // Zombie: 8,  // RESERVED — planned Cat replacement
+  Zombie: 8,
 });
 
 /** Character names that encode as `${name}_${gender}` when gender is Male/Female. */

@@ -47,13 +47,14 @@ const PALETTE_DECODE = [
   "GHOST_BLONDE", "GHOST_GREY", "GHOST_RED",
   "BLOOD_BLONDE", "BLOOD_GREY", "BLOOD_RED",
   "MOSS_BLONDE", "MOSS_GREY", "MOSS_RED",
-  "CAT", "ALIEN",
+  "CAT", "ALIEN", "ZOMBIE",
 ];
 
 const CHARACTER_TARGETS = [
   { label: "HeroA_Male", match: (c) => c.name === "HeroA" && c.gender === "Male" },
   { label: "HeroA_Female", match: (c) => c.name === "HeroA" && c.gender === "Female" },
   { label: "Cat", match: (c) => c.name === "Cat" },
+  { label: "Zombie", match: (c) => c.name === "Zombie" },
   { label: "Alien", match: (c) => c.name === "Alien" },
   { label: "Agent", match: (c) => c.name === "Agent" },
   { label: "SideProfile_Male", match: (c) => c.name === "SideProfile" && c.gender === "Male" },
@@ -503,11 +504,9 @@ function blitAt(gallery, pngBuf, ox, oy) {
 }
 
 function byteRegistryTable() {
-  const rows = Object.entries(ON_CHAIN_CHARACTER_BYTES)
+  return Object.entries(ON_CHAIN_CHARACTER_BYTES)
     .sort((a, b) => a[1] - b[1])
     .map(([key, byte]) => ({ key, byte, reserved: false }));
-  rows.push({ key: "Zombie", byte: 8, reserved: true });
-  return rows;
 }
 
 function writeMarkdownReport(payload) {

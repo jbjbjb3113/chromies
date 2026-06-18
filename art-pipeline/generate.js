@@ -291,9 +291,15 @@ function applyCoverageRules(picks, traits, character = null) {
   };
 
   const bodyTattooSlotDef = traits.slots.bodytattoo;
+  const isZombie = character && character.name === "Zombie";
+  if (isZombie) {
+    delete out.neck;
+    promoteToNamed("body", bodySlotDef, "Zombie");
+  }
+
   const bodyVisible = () => {
     const b = out.body ? out.body.variant.name : null;
-    return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien";
+    return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien" || b === "Zombie";
   };
 
   // Chubby — skip all general body/shirt coverage; torso is always BODY_Chubby.png.
@@ -332,13 +338,13 @@ function applyCoverageRules(picks, traits, character = null) {
 
   if (hoodPick === "Classic") {
     suppressTo("shirt", shirtSlotDef);
-    suppressTo("body",  bodySlotDef);
+    if (!isZombie) suppressTo("body",  bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
-  } else if (hoodPick === "None" && shirtPick === "None" && bodyPick !== "Tank") {
+  } else if (hoodPick === "None" && shirtPick === "None" && bodyPick !== "Tank" && !isZombie) {
     promoteToDefault("body", bodySlotDef);
     // bodytattoo stays as rolled — body is visible
-  } else if ((bodyPick === "Default" || bodyPick === "Female" || bodyPick === "Female_Tank") && (hoodPick !== "None" || (shirtPick !== "None" && shirtPick !== "Tank_Female"))) {
-    suppressTo("body", bodySlotDef);
+  } else if ((bodyPick === "Default" || bodyPick === "Female" || bodyPick === "Female_Tank" || bodyPick === "Zombie") && (hoodPick !== "None" || (shirtPick !== "None" && shirtPick !== "Tank_Female"))) {
+    if (!isZombie) suppressTo("body", bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
   }
 
@@ -354,7 +360,7 @@ function applyCoverageRules(picks, traits, character = null) {
     const finalHood = out.hood ? out.hood.variant.name : null;
     const finalShirt = out.shirt ? out.shirt.variant.name : null;
     const necklaceVisible = (finalHood !== "Classic") &&
-                            (finalShirt === "None" || finalShirt === "Tank_Female" || finalBody === "Tank" || finalBody === "Female_Tank");
+                            (finalShirt === "None" || finalShirt === "Tank" || finalShirt === "Tank_Female" || finalBody === "Tank" || finalBody === "Female_Tank");
     if (!necklaceVisible) {
       suppressTo("necklace", necklaceSlotDef);
     }
@@ -479,6 +485,7 @@ const CHARACTER_TYPE_DISPLAY = {
   "HeroA": "Human",
   "Alien": "Alien",
   "Cat": "Cat",
+  "Zombie": "Zombie",
   "Agent": "Agent",
 };
 
