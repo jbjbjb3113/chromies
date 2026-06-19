@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import traceback
 from pathlib import Path
 
 from PIL import Image
@@ -53,20 +54,56 @@ def hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
 
 
 def build_palette_image(hex_colors: list[str]) -> Image.Image:
+    if not hex_colors:
+        raise ValueError("SIGNAL palette is empty; cannot quantize.")
     palette: list[int] = []
     for hx in hex_colors:
         palette.extend(hex_to_rgb(hx))
+    # PIL palette images expect 256 RGB triplets (768 values).
     palette.extend([0] * (768 - len(palette)))
-    pal = Image.new("P", (1, 1))
+    pal = Image.new("P", (16, 16))
     pal.putpalette(palette)
     return pal
 
 
 def quantize_to_signal(img: Image.Image, hex_colors: list[str]) -> Image.Image:
+    if len(hex_colors) < 2:
+        raise ValueError(
+            f"SIGNAL palette must have at least 2 colors for quantize, got {len(hex_colors)}."
+        )
     rgb = img.convert("RGB").resize((SIZE, SIZE), Image.Resampling.NEAREST)
     pal_img = build_palette_image(hex_colors)
-    indexed = rgb.quantize(palette=pal_img, dither=Image.Dither.NONE)
+    indexed = rgb.quantize(
+        colors=len(hex_colors),
+        palette=pal_img,
+        dither=Image.Dither.NONE,
+    )
     return indexed.convert("RGB")
+
+
+def load_chromie_lora(pipe, lora_path: Path, *, adapter_name: str = "chromie") -> None:
+    """Load kohya LoRA into UNet only.
+
+    diffusers' load_lora_weights() also loads the text encoder; kohya checkpoints
+    often fail there (empty rank dict after key conversion). UNet weights are
+    sufficient for image generation.
+    """
+    state_dict, network_alphas, metadata = pipe.lora_state_dict(
+        str(lora_path),
+        return_lora_metadata=True,
+    )
+    if not state_dict or not all("lora" in key for key in state_dict.keys()):
+        raise ValueError("Invalid LoRA checkpoint: no lora-prefixed weights found.")
+
+    pipe.load_lora_into_unet(
+        state_dict,
+        network_alphas=network_alphas,
+        unet=pipe.unet,
+        adapter_name=adapter_name,
+        metadata=metadata,
+        _pipeline=pipe,
+    )
+    pipe.set_adapters([adapter_name])
 
 
 def generate_image(
@@ -91,8 +128,8 @@ def generate_image(
     pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=dtype)
     pipe = pipe.to(device)
 
-    print(f"Loading LoRA: {lora_path}")
-    pipe.load_lora_weights(str(lora_path))
+    print(f"Loading LoRA (UNet only): {lora_path}")
+    load_chromie_lora(pipe, lora_path)
 
     generator = None
     if seed is not None:
@@ -110,6 +147,7 @@ def generate_image(
     ).images[0]
 
     pipe.unload_lora_weights()
+    del pipe
     return result
 
 
@@ -148,13 +186,13 @@ def main() -> int:
             guidance=args.guidance,
             seed=args.seed,
         )
+        signal = load_signal_palette(CONFIG_PATH)
+        final = quantize_to_signal(raw, signal)
+        final.save(out_path, format="PNG")
     except Exception as err:
         print(f"Generation failed: {err}", file=sys.stderr)
+        traceback.print_exc()
         return 1
-
-    signal = load_signal_palette(CONFIG_PATH)
-    final = quantize_to_signal(raw, signal)
-    final.save(out_path, format="PNG")
 
     print(f"Saved: {out_path}")
     print(f"Palette: SIGNAL ({len(signal)} colors from {CONFIG_PATH.name})")
