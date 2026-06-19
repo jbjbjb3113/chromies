@@ -173,6 +173,12 @@ contract ChromaRenderer is Ownable {
     }
 
     function _paletteColors(uint8 paletteId) internal pure returns (string[16] memory palette) {
+        if (paletteId == 26) {
+            return [
+                "#e3e5e4", "#0e0d08", "#27261d", "#481213", "#403e31", "#61472f", "#535342", "#646451",
+                "#76745b", "#7f7e7a", "#a0855a", "#858869", "#999c81", "#adb195", "#c2c4ba", "#c2c4ba"
+            ];
+        }
         uint8 id = paletteId % 26;
         if (id == 0) {
             return [
@@ -336,6 +342,7 @@ contract ChromaRenderer is Ownable {
         if (value == 2) return "Alien";
         if (value == 3) return "Cat";
         if (value == 4) return "Agent";
+        if (value == 8) return "Zombie";
         return "Human";
     }
 
@@ -366,6 +373,7 @@ contract ChromaRenderer is Ownable {
         if (value == 23) return "MOSS_RED";
         if (value == 24) return "CAT";
         if (value == 25) return "ALIEN";
+        if (value == 26) return "ZOMBIE";
         return "SIGNAL";
     }
 

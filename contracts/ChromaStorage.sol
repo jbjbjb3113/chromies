@@ -38,9 +38,8 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     // Trait encoding (32 bytes):
 
-    // [0]  Character: 0=HeroA_Male, 1=HeroA_Female, 2=Alien, 3=Cat, 4=Agent,
-    //              5=SideProfile_Male, 6=SideProfile_Female, 7=Chubby_Male
-    //              (8 reserved: Zombie — planned Cat replacement)
+    // [0]  Character: 0=HeroA_Male, 1=HeroA_Female, 2=Alien, 3=Cat (retired), 4=Agent,
+    //              5=SideProfile_Male, 6=SideProfile_Female, 7=Chubby_Male, 8=Zombie (live)
 
     // [1]  Palette: 0=SIGNAL, 1=ACID, 2=CYAN, 3=GHOST, 4=BLOOD, 5=MOSS,
 
@@ -56,13 +55,13 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     //              21=MOSS_BLONDE, 22=MOSS_GREY, 23=MOSS_RED,
 
-    //              24=CAT, 25=ALIEN
+    //              24=CAT, 25=ALIEN, 26=ZOMBIE
 
     // [2]  Hood: 0=None, 1=Classic
 
     // [3]  Shirt: 0=None, 1=Crew, 2=Tank, 3=Tank_Female
 
-    // [4]  Body: 0=None, 1=Default, 2=Female, 3=Female_Tank, 4=Alien, 5=Tank
+    // [4]  Body: 0=None, 1=Default, 2=Female, 3=Female_Tank, 4=Alien, 5=Tank, 6=Zombie
 
     // [5]  Bodytattoo: 0=None, 1=UnderArmour, 2=AkuHeart, 3=Pyramid, 4=Normies
 
