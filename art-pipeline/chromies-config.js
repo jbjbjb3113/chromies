@@ -858,7 +858,7 @@ const CHARACTERS = [
   {
     name: "Cat",
     gender: null,
-    weight: 0,
+    weight: 0, // Retired — on-chain byte 3 permanently retired; never roll again
     palettePool: ["CAT"],
     forcedSlots: {
       head: "Cat",

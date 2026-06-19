@@ -61,11 +61,12 @@ const PALETTE_BYTES = {
   MOSS_RED: 23,
   CAT: 24,
   ALIEN: 25,
+  ZOMBIE: 26,
 };
 
 const HOOD_BYTES = { None: 0, Classic: 1 };
 const SHIRT_BYTES = { None: 0, Crew: 1, Tank: 2, Tank_Female: 3 };
-const BODY_BYTES = { None: 0, Default: 1, Female: 2, Female_Tank: 3, Alien: 4, Tank: 5 };
+const BODY_BYTES = { None: 0, Default: 1, Female: 2, Female_Tank: 3, Alien: 4, Tank: 5, Zombie: 6 };
 const BODYTATTOO_BYTES = { None: 0, UnderArmour: 1, AkuHeart: 2, Pyramid: 3, Normies: 4 };
 const NECKLACE_BYTES = {
   None: 0,

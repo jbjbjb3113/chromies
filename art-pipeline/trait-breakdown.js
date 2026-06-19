@@ -11,10 +11,10 @@ const { buildCharacterDecoderTable } = require("./on-chain-character-bytes");
 const MINT_DATA_PATH = path.resolve("output/mint-data.json");
 
 const CHARACTER  = buildCharacterDecoderTable();
-const PALETTE    = ["SIGNAL","ACID","CYAN","GHOST","BLOOD","MOSS","SIGNAL_BLONDE","SIGNAL_GREY","SIGNAL_RED","ACID_BLONDE","ACID_GREY","ACID_RED","CYAN_BLONDE","CYAN_GREY","CYAN_RED","GHOST_BLONDE","GHOST_GREY","GHOST_RED","BLOOD_BLONDE","BLOOD_GREY","BLOOD_RED","MOSS_BLONDE","MOSS_GREY","MOSS_RED","CAT","ALIEN"];
+const PALETTE    = ["SIGNAL","ACID","CYAN","GHOST","BLOOD","MOSS","SIGNAL_BLONDE","SIGNAL_GREY","SIGNAL_RED","ACID_BLONDE","ACID_GREY","ACID_RED","CYAN_BLONDE","CYAN_GREY","CYAN_RED","GHOST_BLONDE","GHOST_GREY","GHOST_RED","BLOOD_BLONDE","BLOOD_GREY","BLOOD_RED","MOSS_BLONDE","MOSS_GREY","MOSS_RED","CAT","ALIEN","ZOMBIE"];
 const HOOD       = ["None","Classic"];
 const SHIRT      = ["None","Crew","Tank","Tank_Female"];
-const BODY       = ["None","Default","Female","Female_Tank","Alien","Tank"];
+const BODY       = ["None","Default","Female","Female_Tank","Alien","Tank","Zombie"];
 const BODYTATTOO = ["None","UnderArmour","AkuHeart","Pyramid","Normies"];
 const NECKLACE   = ["None","Male_Chain","Female_Chain","Female_Ornate","Female_Flower","Female_UpsideDownCross","Female_Opal","Male_Chromies","Male_HappyFace","Male_Normies","Male_Pendent"];
 const TATTOO     = ["None","Signal","Thug","Marks","Scar"];
