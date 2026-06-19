@@ -9,19 +9,18 @@ Contracts deployed on Sepolia, site live at chromies.art, mint page wired.
 | ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
 | Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
 | ChromaCanvasV2 | `0x684b85535eDFA1C14a16987c6Da20FEf63378c9a` |
-| ChromaRenderer | `0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30` |
+| ChromaRenderer | `0xa43f589f399654037fCEB7644707d2566c5b424b` |
 | PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
 
 ## Merkle Roots
 - Tier 1 (Normies): `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
 - Tier 2 (Brain Rots): `0xd582654aae27faf95fbd5d648a9bb2fc5b0d4f7b5154e419cfb59b6d154bb2ac`
-- Reveal Root: `0x8ac55bc03bceefcbf5c389513f695101d2b27504c3ef02486c2a45f9557c7d54`
+- Reveal Root: `0x3b2d5fa07025cadfea3aea5cd5c1fe160a33ca586f14e2e7de6881b87de1c74d` (Cat→Zombie swap, 5150 tokens)
 
 ## Recent Work (This Session)
-- Recalibrated `calculateBurnAP` thresholds: TIER1=1500, TIER2=2000 (was 490/890)
-- Canvas-only Sepolia redeploy with new thresholds; renderer unchanged
-- Burn AP spread: 7.3% / 52.4% / 40.2% across yield tiers (5,150 token distribution)
-- Verified on-chain: token #16 Level 1 after burn (#17 → 68 AP at 3% tier)
+- Cat→Zombie swap: mint-data + reveal merkle regenerated (5150 tokens, root `0x3b2d5fa0...1c74d`)
+- ChromaRenderer redeployed on Sepolia with Zombie label + ZOMBIE palette (byte 26 guard)
+- `setRevealRoot` updated on live Chroma; verified token #62 shows Character=Zombie, Palette=ZOMBIE
 
 ## In Progress
 - Shirt palette system just wired — gallery not yet run/reviewed
@@ -57,7 +56,7 @@ $env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToSt
 $env:CHROMA_ADDRESS = "0xba4c3797a18958877f895b69ca4a67b914949f5d"
 $env:CHROMA_STORAGE_ADDRESS = "0x78ee267c09be83eee64050e21ecc2ffe8296ae38"
 $env:CANVAS_ADDRESS = "0x684b85535eDFA1C14a16987c6Da20FEf63378c9a"
-$env:CHROMA_RENDERER_ADDRESS = "0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30"
+$env:CHROMA_RENDERER_ADDRESS = "0xa43f589f399654037fCEB7644707d2566c5b424b"
 $env:MARKETPLACE_ADDRESS = "0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d"
 ```
 
