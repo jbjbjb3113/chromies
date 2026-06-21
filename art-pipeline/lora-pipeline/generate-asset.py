@@ -25,6 +25,8 @@ DEFAULT_LORA = SCRIPT_DIR / "output" / "chromie-lora-v1.safetensors"
 DEFAULT_MODEL = "runwayml/stable-diffusion-v1-5"
 CANDIDATES_DIR = SCRIPT_DIR / "candidates"
 SIZE = 64
+BACKGROUND_WHITE_MIN = 240
+BACKGROUND_PALETTE_TOLERANCE = 10
 
 # SIGNAL palette fallback (synced with chromies-config.js)
 SIGNAL_PALETTE_FALLBACK = [
@@ -79,6 +81,40 @@ def quantize_to_signal(img: Image.Image, hex_colors: list[str]) -> Image.Image:
         dither=Image.Dither.NONE,
     )
     return indexed.convert("RGB")
+
+
+def strip_background(
+    img: Image.Image,
+    hex_colors: list[str],
+    *,
+    white_min: int = BACKGROUND_WHITE_MIN,
+    bg_tolerance: int = BACKGROUND_PALETTE_TOLERANCE,
+) -> Image.Image:
+    """Make near-white and palette-background pixels fully transparent."""
+    rgba = img.convert("RGBA")
+    bg_rgb = hex_to_rgb(hex_colors[0]) if hex_colors else hex_to_rgb(SIGNAL_PALETTE_FALLBACK[0])
+    pixels = rgba.load()
+    width, height = rgba.size
+    stripped = 0
+
+    for y in range(height):
+        for x in range(width):
+            r, g, b, a = pixels[x, y]
+            if a == 0:
+                continue
+            near_white = r >= white_min and g >= white_min and b >= white_min
+            near_palette_bg = (
+                max(abs(r - bg_rgb[0]), abs(g - bg_rgb[1]), abs(b - bg_rgb[2])) <= bg_tolerance
+            )
+            if near_white or near_palette_bg:
+                pixels[x, y] = (r, g, b, 0)
+                stripped += 1
+
+    print(
+        f"Background strip: {stripped} px transparent "
+        f"(white min={white_min}, palette bg={bg_rgb}, tol={bg_tolerance})"
+    )
+    return rgba
 
 
 def load_chromie_lora(pipe, lora_path: Path, *, adapter_name: str = "chromie") -> None:
@@ -188,6 +224,7 @@ def main() -> int:
         )
         signal = load_signal_palette(CONFIG_PATH)
         final = quantize_to_signal(raw, signal)
+        final = strip_background(final, signal)
         final.save(out_path, format="PNG")
     except Exception as err:
         print(f"Generation failed: {err}", file=sys.stderr)
