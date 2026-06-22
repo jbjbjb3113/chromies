@@ -34,6 +34,10 @@ const SLOT_OVERRIDE_FLAGS = [
   "hair",
   "hood",
   "shirt",
+  "body",
+  "head",
+  "neck",
+  "eyes",
   "glasses",
   "beard",
   "mustache",
@@ -97,6 +101,10 @@ Slot overrides (variant name from traits.json):
   --hair <variant>
   --hood <variant>
   --shirt <variant>
+  --body <variant>
+  --head <variant>
+  --neck <variant>
+  --eyes <variant>
   --glasses <variant>     e.g. Shades, Neo, VR, None, SP_Shades, SP_Neo
   --beard <variant>
   --mustache <variant>
