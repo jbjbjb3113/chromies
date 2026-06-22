@@ -340,7 +340,7 @@ function applyCoverageRules(picks, traits, character = null) {
     return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien" || b === "Zombie";
   };
 
-  // Chubby — skip all general body/shirt coverage; torso is always BODY_Chubby.png.
+  // Chubby — skip all general body/shirt coverage; torso is always chubby/BODY_Chubby.png.
   if (character && character.name === "Chubby") {
     delete out.neck;
     suppressTo("shirt", shirtSlotDef);

@@ -59,7 +59,9 @@ function resolveInputPath(inputPath) {
 function findSlotForFile(traits, basename) {
   for (const [slot, slotDef] of Object.entries(traits.slots)) {
     for (const variant of slotDef.variants || []) {
-      if (variant.file === basename) return { slot, drawColors: slotDef.drawColors };
+      if (variant.file === basename || path.basename(variant.file) === basename) {
+        return { slot, drawColors: slotDef.drawColors };
+      }
     }
   }
 

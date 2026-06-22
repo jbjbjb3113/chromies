@@ -797,7 +797,7 @@ const CHARACTERS = [
     gender: "Male",
     weight: 136,
     palettePool: null,
-    // Torso+crew shirt combined in BODY_Chubby.png; no separate neck or shirt layer
+    // Torso+crew shirt combined in chubby/BODY_Chubby.png; no separate neck or shirt layer
     forcedSlots: {
       head: "Chubby",
       body: "Chubby",
