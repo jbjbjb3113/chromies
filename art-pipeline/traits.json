@@ -798,6 +798,21 @@
           "name": "None",
           "file": "EXPRESSION_None.png",
           "weight": 100
+        },
+        {
+          "name": "Smile",
+          "file": "EXPRESSION_Smile.png",
+          "weight": 20
+        },
+        {
+          "name": "Frown",
+          "file": "EXPRESSION_Frown.png",
+          "weight": 20
+        },
+        {
+          "name": "Neutral",
+          "file": "EXPRESSION_Neutral.png",
+          "weight": 20
         }
       ]
     },
