@@ -1,0 +1,3 @@
+#!/bin/sh
+# Install once: npm run install:githooks
+npm run verify:public-reveal-data
