@@ -801,7 +801,6 @@ const CHARACTERS = [
     forcedSlots: {
       head: "Chubby",
       body: "Chubby",
-      eyes: "Chubby_Signal",
     },
     slotWeightOverrides: {},
     slotVariantPool: {
@@ -837,6 +836,20 @@ const CHARACTERS = [
         Chubby_DanPalmer: 15,
         Chubby_Thick: 15,
         None: 70,
+      },
+      eyes: {
+        Chubby_Signal: 40,
+        Chubby_Squint_Left: 20,
+        Chubby_Squint_Right: 20,
+        Chubby_Squint_Straight: 20,
+        Chubby_Stoned: 20,
+      },
+      expression: {
+        Chubby_Front: 20,
+        Chubby_Neutral: 20,
+        Chubby_Pouting: 20,
+        Chubby_Smile: 20,
+        None: 100,
       },
       shirt: ["None"],
       hood: ["None"],

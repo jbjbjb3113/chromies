@@ -807,6 +807,26 @@
           "weight": 0
         },
         {
+          "name": "Chubby_Squint_Left",
+          "file": "chubby/EYES_Chubby_Squint_Left.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Squint_Right",
+          "file": "chubby/EYES_Chubby_Squint_Right.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Squint_Straight",
+          "file": "chubby/EYES_Chubby_Squint_Straight.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Stoned",
+          "file": "chubby/EYES_Chubby_Stoned.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "EYES_None.png",
           "weight": 0
@@ -842,6 +862,26 @@
           "name": "Neutral",
           "file": "EXPRESSION_Neutral.png",
           "weight": 20
+        },
+        {
+          "name": "Chubby_Front",
+          "file": "chubby/EXPRESSION_Chubby_Front.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Neutral",
+          "file": "chubby/EXPRESSION_Chubby_Neutral.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Pouting",
+          "file": "chubby/EXPRESSION_Chubby_Pouting.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Smile",
+          "file": "chubby/EXPRESSION_Chubby_Smile.png",
+          "weight": 0
         }
       ]
     },
