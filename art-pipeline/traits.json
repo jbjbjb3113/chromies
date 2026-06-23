@@ -526,6 +526,21 @@
           "weight": 8
         },
         {
+          "name": "Chubby_Chromies",
+          "file": "chubby/NECKLACE_Chubby_Chromies.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_Normies",
+          "file": "chubby/NECKLACE_Chubby_Normies.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_X",
+          "file": "chubby/NECKLACE_Chubby_X.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "NECKLACE_None.png",
           "weight": 70
@@ -824,6 +839,11 @@
         {
           "name": "Chubby_Signal",
           "file": "chubby/EYES_Chubby_Signal.png",
+          "weight": 0
+        },
+        {
+          "name": "Chubby_CrossEyed",
+          "file": "chubby/EYES_Chubby_CrossEyed.png",
           "weight": 0
         },
         {

@@ -346,8 +346,6 @@ function applyCoverageRules(picks, traits, character = null) {
     suppressTo("shirt", shirtSlotDef);
     promoteToNamed("body", bodySlotDef, "Chubby");
     suppressTo("bodytattoo", bodyTattooSlotDef);
-    const necklaceSlotDef = traits.slots.necklace;
-    if (necklaceSlotDef) suppressTo("necklace", necklaceSlotDef);
     return out;
   }
 

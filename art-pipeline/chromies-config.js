@@ -843,7 +843,7 @@ const CHARACTERS = [
         None: 70,
       },
       eyes: {
-        Chubby_Signal: 40,
+        Chubby_CrossEyed: 20,
         Chubby_Squint_Left: 20,
         Chubby_Squint_Right: 20,
         Chubby_Squint_Straight: 20,
@@ -866,9 +866,14 @@ const CHARACTERS = [
         Chubby_Stud: 20,
         None: 80,
       },
+      necklace: {
+        Chubby_Chromies: 15,
+        Chubby_Normies: 15,
+        Chubby_X: 15,
+        None: 55,
+      },
       shirt: ["None"],
       hood: ["None"],
-      necklace: ["None"],
     },
   },
   {
