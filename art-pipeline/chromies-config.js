@@ -851,6 +851,13 @@ const CHARACTERS = [
         Chubby_Smile: 20,
         None: 100,
       },
+      tattoo: {
+        Chubby_AkuHeart: 15,
+        Chubby_Marks: 15,
+        Chubby_Scar: 15,
+        Chubby_Tears: 15,
+        None: 50,
+      },
       shirt: ["None"],
       hood: ["None"],
       necklace: ["None"],
