@@ -8,7 +8,7 @@ const path = require("path");
 const { PNG } = require("pngjs");
 const { PALETTES, SETTINGS } = require("./chromies-config");
 const {
-  pickCharacter,
+  resolveCharacter,
   pickTokenVariants,
   applyCoverageRules,
   pickPalette,
@@ -30,7 +30,7 @@ const GALLERY_BG = [0xf5, 0xf5, 0xf5];
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, json: false };
+  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, gender: null, json: false };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--count") result.count = parseInt(args[++i], 10);
@@ -39,6 +39,7 @@ function parseArgs() {
     else if (a === "--tier")   result.tier   = args[++i];
     else if (a === "--mtier")  result.mtier  = args[++i];
     else if (a === "--character") result.character = args[++i];
+    else if (a === "--gender") result.gender = args[++i];
     else if (a === "--json") result.json = true;
   }
   return result;
@@ -64,7 +65,7 @@ function gridDims(n) {
 }
 
 function main() {
-  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, json: writeJson } = parseArgs();
+  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, gender: genderOverride, json: writeJson } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
   const slotOrder = Object.keys(traits.slots);
   const { cols, rows } = gridDims(count);
@@ -75,8 +76,9 @@ function main() {
   const palLabel = paletteOverride ? `palette FORCED to ${paletteOverride}` : "palettes per-token";
   const tierLabel = tierOverride ? `, drift FORCED to ${tierOverride}` : "";
   const mtierLabel = mtierOverride ? `, mutation FORCED to ${mtierOverride}` : "";
+  const genderLabel = genderOverride ? `, gender FORCED to ${genderOverride}` : "";
   const charLabel = characterOverride ? `, character FORCED to ${characterOverride}` : "";
-  console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}`);
+  console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}`);
 
   const tokensDir = path.join(SETTINGS.outputDir, "tokens");
   if (!fs.existsSync(tokensDir)) fs.mkdirSync(tokensDir, { recursive: true });
@@ -102,13 +104,7 @@ function main() {
     const ox = PADDING + col * (tileSize + PADDING);
     const oy = PADDING + row * (tileSize + PADDING);
 
-    // Pick character first — gates palette pool and slot picks
-    let character = pickCharacter(tokenId);
-    if (characterOverride) {
-      const { CHARACTERS } = require("./chromies-config");
-      const found = (CHARACTERS || []).find(c => c.name.toLowerCase() === characterOverride.toLowerCase());
-      if (found) character = found;
-    }
+    let character = resolveCharacter(tokenId, characterOverride, genderOverride);
     const charKey = character ? `${character.name}${character.gender ? `_${character.gender}` : ""}` : "unknown";
     characterCounts[charKey] = (characterCounts[charKey] || 0) + 1;
 

@@ -14,6 +14,7 @@ const path = require("path");
 const { PALETTES, SETTINGS, CHARACTERS } = require("./chromies-config");
 const {
   pickCharacter,
+  resolveCharacter,
   pickTokenVariants,
   loadPickBuffers,
   applyCoverageRules,
@@ -151,32 +152,6 @@ function applySlotOverride(picks, traits, slot, variantName) {
   } else {
     console.warn(`  [WARN] ${slot} variant "${variantName}" not found`);
   }
-}
-
-function resolveCharacter(tokenId, characterOverride, genderOverride) {
-  let character = pickCharacter(tokenId);
-  if (characterOverride) {
-    const found = (CHARACTERS || []).find(
-      (c) => c.name.toLowerCase() === characterOverride.toLowerCase(),
-    );
-    if (found) character = found;
-    else console.warn(`  [WARN] character "${characterOverride}" not found — using rolled character`);
-  }
-  if (genderOverride && character) {
-    const found = (CHARACTERS || []).find(
-      (c) =>
-        c.name === character.name &&
-        c.gender &&
-        c.gender.toLowerCase() === genderOverride.toLowerCase(),
-    );
-    if (found) character = found;
-    else {
-      console.warn(
-        `  [WARN] no ${character.name} entry with gender "${genderOverride}" — keeping ${character.gender || "rolled"}`,
-      );
-    }
-  }
-  return character;
 }
 
 function collectMissingFiles(picks) {

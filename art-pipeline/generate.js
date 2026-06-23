@@ -231,6 +231,32 @@ function pickCharacter(tokenId) {
   return CHARACTERS[CHARACTERS.length - 1];
 }
 
+function resolveCharacter(tokenId, characterOverride = null, genderOverride = null) {
+  let character = pickCharacter(tokenId);
+  if (characterOverride) {
+    const found = CHARACTERS.find(
+      (c) => c.name.toLowerCase() === characterOverride.toLowerCase(),
+    );
+    if (found) character = found;
+    else console.warn(`  [WARN] character "${characterOverride}" not found — using rolled character`);
+  }
+  if (genderOverride && character) {
+    const found = CHARACTERS.find(
+      (c) =>
+        c.name === character.name &&
+        c.gender &&
+        c.gender.toLowerCase() === genderOverride.toLowerCase(),
+    );
+    if (found) character = found;
+    else {
+      console.warn(
+        `  [WARN] no ${character.name} entry with gender "${genderOverride}" — keeping ${character.gender || "rolled"}`,
+      );
+    }
+  }
+  return character;
+}
+
 // ============================================================================
 // PALETTE PICK — respects character's palettePool if set
 // ============================================================================
@@ -770,6 +796,7 @@ if (require.main === module) main();
 
 module.exports = {
   pickCharacter,
+  resolveCharacter,
   pickTokenVariants,
   loadPickBuffers,
   applyCoverageRules,
