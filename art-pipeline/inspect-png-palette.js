@@ -3,7 +3,7 @@
 // Inspect a 64×64 component PNG: palette reference, index grid, per-index counts.
 //
 // Usage:
-//   node inspect-png-palette.js components/HEAD_HeroA.png
+//   node inspect-png-palette.js components/male/HEAD_HeroA.png
 //   node inspect-png-palette.js components/EXPRESSION_Smile.png
 //   node inspect-png-palette.js path/to/file.png --palette ACID
 // ============================================================================
@@ -39,8 +39,18 @@ function printUsage() {
   node inspect-png-palette.js <png-path> [--palette SIGNAL]
 
 Examples:
-  node inspect-png-palette.js components/HEAD_HeroA.png
+  node inspect-png-palette.js components/male/HEAD_HeroA.png
   node inspect-png-palette.js components/EXPRESSION_Smile.png --palette ACID`);
+}
+
+const COMPONENT_SUBDIRS = ["", "female", "male", "sideprofile", "chubby"];
+
+function resolveInComponentsDir(basename) {
+  for (const sub of COMPONENT_SUBDIRS) {
+    const candidate = path.join(__dirname, SETTINGS.componentsDir, sub, basename);
+    if (fs.existsSync(candidate)) return path.resolve(candidate);
+  }
+  return null;
 }
 
 function resolveInputPath(inputPath) {
@@ -48,8 +58,10 @@ function resolveInputPath(inputPath) {
     inputPath,
     path.join(process.cwd(), inputPath),
     path.join(__dirname, inputPath),
-    path.join(__dirname, SETTINGS.componentsDir, path.basename(inputPath)),
   ];
+  const basename = path.basename(inputPath);
+  const inComponents = resolveInComponentsDir(basename);
+  if (inComponents) candidates.push(inComponents);
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return path.resolve(candidate);
   }

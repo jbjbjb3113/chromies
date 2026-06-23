@@ -1,5 +1,5 @@
 {
-  "_comment": "Trait catalog for Chromies. Each slot has zOrder, drawColors, and a list of variants. The renderer picks one variant per slot per token, weighted by the 'weight' field. Use 'None' for empty variants (fully transparent PNG). Variants with matching 'group' values coordinate across slots. Variants with 'mutationScale' multiply the tier's mutation intensity for that variant \u2014 small/tight shapes use 1.0, larger/looser shapes use 1.5-2.5. Character gating (which variants are eligible per character) is handled in generate.js via CHARACTERS config.",
+  "_comment": "Trait catalog for Chromies. Each slot has zOrder, drawColors, and a list of variants. The renderer picks one variant per slot per token, weighted by the 'weight' field. Use 'None' for empty variants (fully transparent PNG). Variants with matching 'group' values coordinate across slots. Variants with 'mutationScale' multiply the tier's mutation intensity for that variant — small/tight shapes use 1.0, larger/looser shapes use 1.5-2.5. Character gating (which variants are eligible per character) is handled in generate.js via CHARACTERS config.",
   "palettes": [
     {
       "name": "SIGNAL",
@@ -299,7 +299,7 @@
         },
         {
           "name": "SP_Classic",
-          "file": "SP_HOOD_Classic.png",
+          "file": "sideprofile/SP_HOOD_Classic.png",
           "weight": 0
         },
         {
@@ -325,24 +325,24 @@
       "variants": [
         {
           "name": "Crew",
-          "file": "SHIRT_Crew.png",
+          "file": "male/SHIRT_Crew.png",
           "weight": 40
         },
         {
           "name": "Tank",
-          "file": "SHIRT_Tank.png",
+          "file": "male/SHIRT_Tank.png",
           "weight": 20,
           "group": "tank"
         },
         {
           "name": "Tank_Female",
-          "file": "SHIRT_Tank_Female.png",
+          "file": "female/SHIRT_Tank_Female.png",
           "weight": 20,
           "group": "tank_female"
         },
         {
           "name": "Crew_Female",
-          "file": "SHIRT_Crew_Female.png",
+          "file": "female/SHIRT_Crew_Female.png",
           "weight": 0
         },
         {
@@ -352,7 +352,7 @@
         },
         {
           "name": "SP_Crew_Female",
-          "file": "SP_SHIRT_Crew_Female.png",
+          "file": "sideprofile/SP_SHIRT_Crew_Female.png",
           "weight": 0
         },
         {
@@ -362,7 +362,7 @@
         },
         {
           "name": "SP_Flannel_Female",
-          "file": "SP_SHIRT_Flannel_Female.png",
+          "file": "sideprofile/SP_SHIRT_Flannel_Female.png",
           "weight": 0
         },
         {
@@ -388,13 +388,13 @@
       "variants": [
         {
           "name": "Tank",
-          "file": "BODY_Tank.png",
+          "file": "male/BODY_Tank.png",
           "weight": 1,
           "group": "tank"
         },
         {
           "name": "Default",
-          "file": "BODY_Default.png",
+          "file": "male/BODY_Default.png",
           "weight": 9
         },
         {
@@ -404,13 +404,13 @@
         },
         {
           "name": "Female_Tank",
-          "file": "BODY_Female_Tank.png",
+          "file": "female/BODY_Female_Tank.png",
           "weight": 0,
           "group": "tank_female"
         },
         {
           "name": "Female",
-          "file": "BODY_Female.png",
+          "file": "female/BODY_Female.png",
           "weight": 0
         },
         {
@@ -477,12 +477,12 @@
       "variants": [
         {
           "name": "Male_Chain",
-          "file": "NECKLACE_Male_Chain.png",
+          "file": "male/NECKLACE_Male_Chain.png",
           "weight": 15
         },
         {
           "name": "Female_Chain",
-          "file": "NECKLACE_Female_Chain.png",
+          "file": "female/NECKLACE_Female_Chain.png",
           "weight": 15
         },
         {
@@ -492,37 +492,37 @@
         },
         {
           "name": "Female_Flower",
-          "file": "NECKLACE_Female_Flower.png",
+          "file": "female/NECKLACE_Female_Flower.png",
           "weight": 10
         },
         {
           "name": "Female_UpsideDownCross",
-          "file": "NECKLACE_Female_UpsideDownCross.png",
+          "file": "female/NECKLACE_Female_UpsideDownCross.png",
           "weight": 8
         },
         {
           "name": "Female_Opal",
-          "file": "NECKLACE_Female_Opal.png",
+          "file": "female/NECKLACE_Female_Opal.png",
           "weight": 10
         },
         {
           "name": "Male_Chromies",
-          "file": "NECKLACE_Male_Chromies.png",
+          "file": "male/NECKLACE_Male_Chromies.png",
           "weight": 10
         },
         {
           "name": "Male_HappyFace",
-          "file": "NECKLACE_Male_HappyFace.png",
+          "file": "male/NECKLACE_Male_HappyFace.png",
           "weight": 8
         },
         {
           "name": "Male_Normies",
-          "file": "NECKLACE_Male_Normies.png",
+          "file": "male/NECKLACE_Male_Normies.png",
           "weight": 8
         },
         {
           "name": "Male_Pendent",
-          "file": "NECKLACE_Male_Pendent.png",
+          "file": "male/NECKLACE_Male_Pendent.png",
           "weight": 8
         },
         {
@@ -560,12 +560,12 @@
       "variants": [
         {
           "name": "HeroA",
-          "file": "NECK_HeroA.png",
+          "file": "male/NECK_HeroA.png",
           "weight": 0
         },
         {
           "name": "HeroA_Female",
-          "file": "NECK_HeroA_Female.png",
+          "file": "female/NECK_HeroA_Female.png",
           "weight": 0
         },
         {
@@ -575,12 +575,12 @@
         },
         {
           "name": "SP_HeroA",
-          "file": "SP_NECK_HeroA.png",
+          "file": "sideprofile/SP_NECK_HeroA.png",
           "weight": 0
         },
         {
           "name": "SP_HeroA_Female",
-          "file": "SP_NECK_HeroA_Female.png",
+          "file": "sideprofile/SP_NECK_HeroA_Female.png",
           "weight": 0
         }
       ]
@@ -598,12 +598,12 @@
       "variants": [
         {
           "name": "HeroA",
-          "file": "HEAD_HeroA.png",
+          "file": "male/HEAD_HeroA.png",
           "weight": 0
         },
         {
           "name": "HeroA_Female",
-          "file": "HEAD_Female_Hero_A.png",
+          "file": "female/HEAD_Female_Hero_A.png",
           "weight": 0
         },
         {
@@ -618,12 +618,12 @@
         },
         {
           "name": "SP_HeroA",
-          "file": "SP_HEAD_HeroA.png",
+          "file": "sideprofile/SP_HEAD_HeroA.png",
           "weight": 0
         },
         {
           "name": "SP_HeroA_Female",
-          "file": "SP_HEAD_HeroA_Female.png",
+          "file": "sideprofile/SP_HEAD_HeroA_Female.png",
           "weight": 0
         },
         {
@@ -974,12 +974,12 @@
         },
         {
           "name": "SP_Shades",
-          "file": "SP_GLASSES_Shades.png",
+          "file": "sideprofile/SP_GLASSES_Shades.png",
           "weight": 0
         },
         {
           "name": "SP_Neo",
-          "file": "SP_GLASSES_Neo.png",
+          "file": "sideprofile/SP_GLASSES_Neo.png",
           "weight": 0
         },
         {
@@ -1038,13 +1038,13 @@
           "name": "Mohawk",
           "file": "HAIR_Mohawk.png",
           "weight": 15,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "Pompadour",
           "file": "HAIR_Pompadour.png",
           "weight": 15,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "MrT",
@@ -1056,7 +1056,7 @@
           "name": "Afro",
           "file": "HAIR_Afro.png",
           "weight": 25,
-          "mutationScale": 2.0
+          "mutationScale": 2
         },
         {
           "name": "Dreads",
@@ -1090,27 +1090,27 @@
         },
         {
           "name": "SP_Mohawk",
-          "file": "SP_HAIR_Mohawk.png",
+          "file": "sideprofile/SP_HAIR_Mohawk.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "SP_Pompadour",
           "file": "SP_HAIR_Pompadour.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "SP_MrT",
-          "file": "SP_HAIR_MrT.png",
+          "file": "sideprofile/SP_HAIR_MrT.png",
           "weight": 0,
           "mutationScale": 1.2
         },
         {
           "name": "SP_Afro",
-          "file": "SP_HAIR_Afro.png",
+          "file": "sideprofile/SP_HAIR_Afro.png",
           "weight": 0,
-          "mutationScale": 2.0
+          "mutationScale": 2
         },
         {
           "name": "SP_Dreads",
@@ -1132,25 +1132,25 @@
         },
         {
           "name": "SP_Mohawk_Female",
-          "file": "SP_HAIR_Mohawk_Female.png",
+          "file": "sideprofile/SP_HAIR_Mohawk_Female.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "SP_Afro_Female",
-          "file": "SP_HAIR_Afro_Female.png",
+          "file": "sideprofile/SP_HAIR_Afro_Female.png",
           "weight": 0,
-          "mutationScale": 2.0
+          "mutationScale": 2
         },
         {
           "name": "SP_Dreads_Female",
-          "file": "SP_HAIR_Dreads_Female.png",
+          "file": "sideprofile/SP_HAIR_Dreads_Female.png",
           "weight": 0,
           "mutationScale": 2.5
         },
         {
           "name": "SP_Surfer_Female",
-          "file": "SP_HAIR_Surfer_Female.png",
+          "file": "sideprofile/SP_HAIR_Surfer_Female.png",
           "weight": 0,
           "mutationScale": 1.8
         },
@@ -1158,23 +1158,23 @@
           "name": "SP_Pompadour_Female",
           "file": "SP_HAIR_Pompadour_Female.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "SP_MrT_Female",
-          "file": "SP_HAIR_MrT_Female.png",
+          "file": "sideprofile/SP_HAIR_MrT_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
         {
           "name": "SP_FadeRight_Female",
-          "file": "SP_HAIR_FadeRight_Female.png",
+          "file": "sideprofile/SP_HAIR_FadeRight_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
         {
           "name": "SP_AZVet_Female",
-          "file": "SP_HAIR_AZVet_Female.png",
+          "file": "sideprofile/SP_HAIR_AZVet_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
@@ -1182,7 +1182,7 @@
           "name": "Chubby_Afro",
           "file": "chubby/HAIR_Chubby_Afro.png",
           "weight": 0,
-          "mutationScale": 2.0
+          "mutationScale": 2
         },
         {
           "name": "Chubby_AZVet",
@@ -1212,13 +1212,13 @@
           "name": "Chubby_FlatTop",
           "file": "chubby/HAIR_Chubby_FlatTop.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "Chubby_Mohawk",
           "file": "chubby/HAIR_Chubby_Mohawk.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "Chubby_MrT",
@@ -1230,7 +1230,7 @@
           "name": "Chubby_Pompadour",
           "file": "chubby/HAIR_Chubby_Pompadour.png",
           "weight": 0,
-          "mutationScale": 1.0
+          "mutationScale": 1
         },
         {
           "name": "Chubby_Surfer",

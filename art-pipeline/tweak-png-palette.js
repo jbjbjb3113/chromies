@@ -3,7 +3,7 @@
 // Apply coordinate-level palette index patches to a 64×64 component PNG.
 //
 // Usage:
-//   node tweak-png-palette.js components/HEAD_Female_Test.png patches/head-female-v2.json --output components/HEAD_Female_v2.png
+//   node tweak-png-palette.js components/female/HEAD_Female_Test.png patches/head-female-v2.json --output components/female/HEAD_Female_v2.png
 //
 // Patch JSON format — keys are "x,y", values are palette index 0-15:
 //   { "29,34": 4, "30,34": 5, "31,34": 0 }
@@ -55,7 +55,17 @@ Patch JSON:
   { "x,y": newIndex, ... }   — newIndex is palette index 0-15 (0 = transparent)
 
 Example:
-  node tweak-png-palette.js components/HEAD_Female_Test.png patches/head-female-v2.json --output components/HEAD_Female_v2.png`);
+  node tweak-png-palette.js components/female/HEAD_Female_Test.png patches/head-female-v2.json --output components/female/HEAD_Female_v2.png`);
+}
+
+const COMPONENT_SUBDIRS = ["", "female", "male", "sideprofile", "chubby"];
+
+function resolveInComponentsDir(basename) {
+  for (const sub of COMPONENT_SUBDIRS) {
+    const candidate = path.join(__dirname, SETTINGS.componentsDir, sub, basename);
+    if (fs.existsSync(candidate)) return path.resolve(candidate);
+  }
+  return null;
 }
 
 function resolvePath(inputPath, { componentsFallback = false } = {}) {
@@ -65,7 +75,8 @@ function resolvePath(inputPath, { componentsFallback = false } = {}) {
     path.join(__dirname, inputPath),
   ];
   if (componentsFallback) {
-    candidates.push(path.join(__dirname, SETTINGS.componentsDir, path.basename(inputPath)));
+    const inComponents = resolveInComponentsDir(path.basename(inputPath));
+    if (inComponents) candidates.push(inComponents);
   }
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) return path.resolve(candidate);
