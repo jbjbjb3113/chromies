@@ -790,6 +790,11 @@ const CHARACTERS = [
     slotWeightOverrides: {},
     slotVariantPool: {
       necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
+      expression: {
+        Smile: 25,
+        Frown: 25,
+        Neutral: 25,
+      },
     },
   },
   {
@@ -845,11 +850,10 @@ const CHARACTERS = [
         Chubby_Stoned: 20,
       },
       expression: {
-        Chubby_Front: 20,
-        Chubby_Neutral: 20,
-        Chubby_Pouting: 20,
-        Chubby_Smile: 20,
-        None: 100,
+        Chubby_Front: 25,
+        Chubby_Neutral: 25,
+        Chubby_Pouting: 25,
+        Chubby_Smile: 25,
       },
       tattoo: {
         Chubby_AkuHeart: 15,
@@ -881,6 +885,11 @@ const CHARACTERS = [
     slotVariantPool: {
       hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
       necklace: ["Female_Chain", "Female_Ornate", "Female_Flower", "Female_UpsideDownCross", "Female_Opal", "None"],
+      expression: {
+        Smile: 25,
+        Frown: 25,
+        Neutral: 25,
+      },
       shirt: {
         Crew_Female: 40,
         Tank_Female: 20,
