@@ -862,6 +862,10 @@ const CHARACTERS = [
         Chubby_Tears: 15,
         None: 50,
       },
+      earrings: {
+        Chubby_Stud: 20,
+        None: 80,
+      },
       shirt: ["None"],
       hood: ["None"],
       necklace: ["None"],

@@ -919,6 +919,11 @@
           "weight": 30
         },
         {
+          "name": "Chubby_Stud",
+          "file": "chubby/EARRING_Chubby_Stud.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "EARRINGS_None.png",
           "weight": 70
