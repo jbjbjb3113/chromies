@@ -30,7 +30,7 @@ const GALLERY_BG = [0xf5, 0xf5, 0xf5];
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null };
+  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, json: false };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--count") result.count = parseInt(args[++i], 10);
@@ -39,8 +39,22 @@ function parseArgs() {
     else if (a === "--tier")   result.tier   = args[++i];
     else if (a === "--mtier")  result.mtier  = args[++i];
     else if (a === "--character") result.character = args[++i];
+    else if (a === "--json") result.json = true;
   }
   return result;
+}
+
+function buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder) {
+  const row = {
+    tokenId,
+    character: character ? character.name : null,
+    palette: paletteKey,
+  };
+  for (const slot of slotOrder) {
+    if (picks[slot]) row[slot] = picks[slot].variant.name;
+  }
+  row.mtier = mTier ? mTier.name : null;
+  return row;
 }
 
 function gridDims(n) {
@@ -50,8 +64,9 @@ function gridDims(n) {
 }
 
 function main() {
-  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride } = parseArgs();
+  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, json: writeJson } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
+  const slotOrder = Object.keys(traits.slots);
   const { cols, rows } = gridDims(count);
   const tileSize = GRID * TILE_SCALE;
   const W = cols * (tileSize + PADDING) + PADDING;
@@ -78,6 +93,7 @@ function main() {
   const tierCounts = {};
   const mTierCounts = {};
   const characterCounts = {};
+  const traitRows = [];
 
   for (let n = 0; n < count; n++) {
     const tokenId = start + n;
@@ -126,6 +142,10 @@ function main() {
 
     updateMaster(tokenId, paletteKey, picks, tier, mTier, character);
 
+    if (writeJson) {
+      traitRows.push(buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder));
+    }
+
     const tilePng = PNG.sync.read(pngBuf);
     for (let y = 0; y < tileSize; y++) {
       for (let x = 0; x < tileSize; x++) {
@@ -149,6 +169,14 @@ function main() {
   const outName = `gallery_${count}_${paletteSlug}_${start}.png`;
   fs.writeFileSync(path.join(SETTINGS.outputDir, outName), PNG.sync.write(gallery));
   console.log(`wrote ${outName}`);
+  if (writeJson) {
+    const jsonName = `gallery_${count}_${start}_traits.json`;
+    fs.writeFileSync(
+      path.join(SETTINGS.outputDir, jsonName),
+      JSON.stringify(traitRows, null, 2)
+    );
+    console.log(`wrote ${jsonName}`);
+  }
   console.log(`wrote ${count} per-token file sets to tokens/`);
   console.log(`updated master.json + master.csv`);
   if (!paletteOverride) {
