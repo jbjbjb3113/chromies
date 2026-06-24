@@ -310,7 +310,8 @@
         {
           "name": "Female_Hooded",
           "file": "female/HOOD_Female_Hooded.png",
-          "weight": 0
+          "weight": 0,
+          "zOrder": 41
         },
         {
           "name": "Female_None",
@@ -815,6 +816,18 @@
           "mutationScale": 1.5
         },
         {
+          "name": "Female_Full",
+          "file": "female/BEARD_Female_Full.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "Female_Goat",
+          "file": "female/BEARD_Female_Goat.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
           "name": "None",
           "file": "BEARD_None.png",
           "weight": 60
@@ -843,6 +856,18 @@
         {
           "name": "Chubby_Thick",
           "file": "chubby/MUSTACHE_Chubby_Thick.png",
+          "weight": 0,
+          "mutationScale": 0.5
+        },
+        {
+          "name": "Female_DanPalmer",
+          "file": "female/Mustache_Female_DanPalmer.png",
+          "weight": 0,
+          "mutationScale": 0.5
+        },
+        {
+          "name": "Female_Thick",
+          "file": "female/Mustache_Female_Thick.png",
           "weight": 0,
           "mutationScale": 0.5
         },

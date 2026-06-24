@@ -886,11 +886,7 @@ const CHARACTERS = [
       neck: "HeroA_Female",
       body: "Female",
     },
-    slotWeightOverrides: {
-      // Beard and mustache are rare but not zero — bearded lady is a valid rare
-      beard:    { Full: 0.1 },
-      mustache: { Thick: 0.1 },
-    },
+    slotWeightOverrides: {},
     slotVariantPool: {
       hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
       glasses: {
@@ -955,6 +951,16 @@ const CHARACTERS = [
       accessory: {
         Female_Cigarette: 15,
         None: 85,
+      },
+      beard: {
+        Female_Full: 8,
+        Female_Goat: 8,
+        None: 70,
+      },
+      mustache: {
+        Female_DanPalmer: 8,
+        Female_Thick: 8,
+        None: 70,
       },
     },
   },
