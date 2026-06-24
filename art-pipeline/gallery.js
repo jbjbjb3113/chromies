@@ -6,7 +6,7 @@
 const fs = require("fs");
 const path = require("path");
 const { PNG } = require("pngjs");
-const { PALETTES, SETTINGS } = require("./chromies-config");
+const { PALETTES, SETTINGS, CHARACTERS } = require("./chromies-config");
 const {
   resolveCharacter,
   pickTokenVariants,
@@ -28,9 +28,100 @@ const TILE_SCALE = 4;
 const PADDING = 8;
 const GALLERY_BG = [0xf5, 0xf5, 0xf5];
 
+const GENDER_TOKENS = new Set(["male", "female", "non-binary", "non_binary"]);
+
+function mulberry32(seed) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function seedFromStr(s) {
+  let seed = 0;
+  for (let i = 0; i < s.length; i++) seed = (seed * 31 + s.charCodeAt(i)) | 0;
+  return seed;
+}
+
+function normalizeGenderToken(token) {
+  const g = String(token).toLowerCase().replace(/_/g, "-");
+  if (g === "non-binary") return "Non-Binary";
+  if (g === "male") return "Male";
+  if (g === "female") return "Female";
+  return token;
+}
+
+/** Parse one combo: "Chubby", "HeroA Female", "SideProfile Male". */
+function parseCharacterCombo(raw) {
+  const trimmed = String(raw).trim();
+  if (!trimmed) return null;
+  const parts = trimmed.split(/\s+/);
+  if (parts.length >= 2) {
+    const last = parts[parts.length - 1].toLowerCase().replace(/_/g, "-");
+    if (GENDER_TOKENS.has(last)) {
+      return {
+        name: parts.slice(0, -1).join(" "),
+        gender: normalizeGenderToken(parts[parts.length - 1]),
+      };
+    }
+  }
+  return { name: trimmed, gender: null };
+}
+
+function parseCharactersFlag(value) {
+  return String(value)
+    .split(",")
+    .map(parseCharacterCombo)
+    .filter(Boolean);
+}
+
+function resolveCharacterSpec(spec) {
+  let pool = CHARACTERS.filter(
+    (c) => c.name.toLowerCase() === spec.name.toLowerCase(),
+  );
+  if (pool.length === 0) {
+    throw new Error(`character "${spec.name}" not found in CHARACTERS config`);
+  }
+  if (spec.gender) {
+    const genderPool = pool.filter(
+      (c) => c.gender && c.gender.toLowerCase() === spec.gender.toLowerCase(),
+    );
+    if (genderPool.length === 0) {
+      throw new Error(`no ${spec.name} entry with gender "${spec.gender}"`);
+    }
+    pool = genderPool;
+  }
+  return pool[0];
+}
+
+/** Roughly equal counts per character, deterministically shuffled for intermixing. */
+function buildCharacterAssignments(count, start, specs) {
+  const characters = specs.map(resolveCharacterSpec);
+  const n = characters.length;
+  const base = Math.floor(count / n);
+  let remainder = count % n;
+  const slots = [];
+  for (const character of characters) {
+    const take = base + (remainder > 0 ? 1 : 0);
+    if (remainder > 0) remainder -= 1;
+    for (let i = 0; i < take; i++) slots.push(character);
+  }
+  const shuffleSeed = seedFromStr(
+    `gallery-mix:${start}:${count}:${specs.map((s) => `${s.name}|${s.gender || ""}`).join(",")}`,
+  );
+  const rng = mulberry32(shuffleSeed);
+  for (let i = slots.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [slots[i], slots[j]] = [slots[j], slots[i]];
+  }
+  return slots;
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, gender: null, json: false };
+  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, gender: null, characters: null, json: false };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--count") result.count = parseInt(args[++i], 10);
@@ -40,6 +131,7 @@ function parseArgs() {
     else if (a === "--mtier")  result.mtier  = args[++i];
     else if (a === "--character") result.character = args[++i];
     else if (a === "--gender") result.gender = args[++i];
+    else if (a === "--characters") result.characters = args[++i];
     else if (a === "--json") result.json = true;
   }
   return result;
@@ -52,10 +144,15 @@ function slugPart(value) {
     .replace(/^_|_$/g, "");
 }
 
-function galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride) {
+function galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs) {
   const parts = [`gallery_${count}`];
   if (paletteOverride) {
     parts.push(slugPart(paletteOverride));
+  } else if (characterSpecs && characterSpecs.length > 0) {
+    for (const spec of characterSpecs) {
+      parts.push(slugPart(spec.name));
+      if (spec.gender) parts.push(slugPart(spec.gender));
+    }
   } else if (characterOverride || genderOverride) {
     if (characterOverride) parts.push(slugPart(characterOverride));
     if (genderOverride) parts.push(slugPart(genderOverride));
@@ -66,12 +163,12 @@ function galleryRunBasename(count, start, paletteOverride, characterOverride, ge
   return parts.join("_");
 }
 
-function galleryPngName(count, start, paletteOverride, characterOverride, genderOverride) {
-  return `${galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride)}.png`;
+function galleryPngName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs) {
+  return `${galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs)}.png`;
 }
 
-function galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride) {
-  return `${galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride)}_traits.json`;
+function galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs) {
+  return `${galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs)}_traits.json`;
 }
 
 function buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder) {
@@ -95,7 +192,7 @@ function gridDims(n) {
 }
 
 function main() {
-  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, gender: genderOverride, json: writeJson } = parseArgs();
+  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, gender: genderOverride, characters: charactersFlag, json: writeJson } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
   const slotOrder = Object.keys(traits.slots);
   const { cols, rows } = gridDims(count);
@@ -103,11 +200,32 @@ function main() {
   const W = cols * (tileSize + PADDING) + PADDING;
   const H = rows * (tileSize + PADDING) + PADDING;
 
+  let characterSpecs = null;
+  let characterPlan = null;
+  if (charactersFlag) {
+    characterSpecs = parseCharactersFlag(charactersFlag);
+    if (characterSpecs.length === 0) {
+      console.error("--characters requires at least one character combo");
+      process.exit(1);
+    }
+    try {
+      characterPlan = buildCharacterAssignments(count, start, characterSpecs);
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    if (characterOverride || genderOverride) {
+      console.warn("  [WARN] --characters set; ignoring --character / --gender");
+    }
+  }
+
   const palLabel = paletteOverride ? `palette FORCED to ${paletteOverride}` : "palettes per-token";
   const tierLabel = tierOverride ? `, drift FORCED to ${tierOverride}` : "";
   const mtierLabel = mtierOverride ? `, mutation FORCED to ${mtierOverride}` : "";
-  const genderLabel = genderOverride ? `, gender FORCED to ${genderOverride}` : "";
-  const charLabel = characterOverride ? `, character FORCED to ${characterOverride}` : "";
+  const genderLabel = characterPlan ? "" : (genderOverride ? `, gender FORCED to ${genderOverride}` : "");
+  const charLabel = characterPlan
+    ? `, characters MIX [${characterSpecs.map((s) => (s.gender ? `${s.name} (${s.gender})` : s.name)).join(", ")}]`
+    : (characterOverride ? `, character FORCED to ${characterOverride}` : "");
   const jsonLabel = writeJson ? ", traits JSON ON" : "";
   console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}${jsonLabel}`);
 
@@ -135,8 +253,10 @@ function main() {
     const ox = PADDING + col * (tileSize + PADDING);
     const oy = PADDING + row * (tileSize + PADDING);
 
-    let character = resolveCharacter(tokenId, characterOverride, genderOverride);
-    if (genderOverride && character?.gender?.toLowerCase() !== genderOverride.toLowerCase()) {
+    let character = characterPlan
+      ? characterPlan[n]
+      : resolveCharacter(tokenId, characterOverride, genderOverride);
+    if (!characterPlan && genderOverride && character?.gender?.toLowerCase() !== genderOverride.toLowerCase()) {
       console.warn(
         `  [WARN] token ${tokenId}: expected gender ${genderOverride}, got ${character?.gender || "unknown"}`,
       );
@@ -197,11 +317,11 @@ function main() {
   }
   process.stdout.write("\n");
 
-  const outName = galleryPngName(count, start, paletteOverride, characterOverride, genderOverride);
+  const outName = galleryPngName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
   fs.writeFileSync(path.join(SETTINGS.outputDir, outName), PNG.sync.write(gallery));
   console.log(`wrote ${outName}`);
   if (writeJson) {
-    const jsonName = galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride);
+    const jsonName = galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
     fs.writeFileSync(
       path.join(SETTINGS.outputDir, jsonName),
       JSON.stringify(traitRows, null, 2)
