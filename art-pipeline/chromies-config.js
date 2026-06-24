@@ -888,7 +888,17 @@ const CHARACTERS = [
     },
     slotWeightOverrides: {},
     slotVariantPool: {
-      hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
+      hair: {
+        Female_Afro: 10,
+        Female_Dreads: 10,
+        Female_FadeRight: 10,
+        Female_FlatTop: 10,
+        Female_Mohawk: 10,
+        Female_MrT: 10,
+        Female_Pompadour: 10,
+        Female_Surfer: 10,
+        None: 20,
+      },
       glasses: {
         Female_3DGlasses: 10,
         Female_DFrame: 10,

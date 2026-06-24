@@ -1373,6 +1373,54 @@
           "mutationScale": 1.2
         },
         {
+          "name": "Female_Afro",
+          "file": "female/HAIR_Female_Afro.png",
+          "weight": 0,
+          "mutationScale": 2
+        },
+        {
+          "name": "Female_Dreads",
+          "file": "female/HAIR_Female_Dreads.png",
+          "weight": 0,
+          "mutationScale": 2.5
+        },
+        {
+          "name": "Female_FadeRight",
+          "file": "female/HAIR_Female_FadeRight.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "Female_FlatTop",
+          "file": "female/HAIR_Female_FlatTop.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "Female_Mohawk",
+          "file": "female/HAIR_Female_Mohawk.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "Female_MrT",
+          "file": "female/HAIR_Female_MrT.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "Female_Pompadour",
+          "file": "female/HAIR_Female_Pompadour.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "Female_Surfer",
+          "file": "female/HAIR_Female_Surfer.png",
+          "weight": 0,
+          "mutationScale": 1.8
+        },
+        {
           "name": "Chubby_Afro",
           "file": "chubby/HAIR_Chubby_Afro.png",
           "weight": 0,
