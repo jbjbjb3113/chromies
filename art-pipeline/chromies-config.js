@@ -873,7 +873,10 @@ const CHARACTERS = [
         None: 55,
       },
       shirt: ["None"],
-      hood: ["None"],
+      hood: {
+        Chubby_Classic: 4, // 4 / 100 pool ≈ 4% roll rate (3–5% target)
+        None: 96,
+      },
       accessory: {
         Chubby_Cigarette: 15,
         None: 85,

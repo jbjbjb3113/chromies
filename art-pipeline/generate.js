@@ -330,7 +330,12 @@ function isHoodNone(hoodName) {
 
 function hoodCoversTorso(hoodName) {
   return hoodName === "Classic" || hoodName === "SP_Classic"
-      || hoodName === "Female_Classic" || hoodName === "Female_Hooded";
+      || hoodName === "Female_Classic" || hoodName === "Female_Hooded"
+      || hoodName === "Chubby_Classic";
+}
+
+function hoodSuppressesHair(hoodName) {
+  return isFemaleHood(hoodName) || hoodName === "Chubby_Classic";
 }
 
 function isFemaleHood(hoodName) {
@@ -423,6 +428,9 @@ function applyCoverageRules(picks, traits, character = null) {
     suppressTo("shirt", shirtSlotDef);
     promoteToNamed("body", bodySlotDef, "Chubby");
     suppressTo("bodytattoo", bodyTattooSlotDef);
+    if (hoodSuppressesHair(hoodPick)) {
+      suppressTo("hair", traits.slots.hair);
+    }
     return out;
   }
 
@@ -467,7 +475,7 @@ function applyCoverageRules(picks, traits, character = null) {
   }
 
   // Female hood variants — hair hidden under hood (hood-up or hood-down bib).
-  if (isFemaleHood(hoodPick)) {
+  if (hoodSuppressesHair(hoodPick)) {
     suppressTo("hair", traits.slots.hair);
   }
 

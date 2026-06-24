@@ -319,6 +319,11 @@
           "weight": 0
         },
         {
+          "name": "Chubby_Classic",
+          "file": "chubby/HOOD_Chubby_Classic.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "HOOD_None.png",
           "weight": 80
