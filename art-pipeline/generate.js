@@ -321,6 +321,15 @@ function pickPalette(tokenId, traits, character = null) {
 // COVERAGE RULES
 // ============================================================================
 
+function isHoodNone(hoodName) {
+  return !hoodName || hoodName === "None" || hoodName === "Female_None";
+}
+
+function hoodCoversTorso(hoodName) {
+  return hoodName === "Classic" || hoodName === "SP_Classic"
+      || hoodName === "Female_Classic" || hoodName === "Female_Hooded";
+}
+
 function applyCoverageRules(picks, traits, character = null) {
   const out = {};
   for (const [slot, pick] of Object.entries(picks)) {
@@ -416,9 +425,9 @@ function applyCoverageRules(picks, traits, character = null) {
     suppressTo("bodytattoo", bodyTattooSlotDef);
     const finalHood = out.hood ? out.hood.variant.name : null;
     const finalShirt = out.shirt ? out.shirt.variant.name : null;
-    if (finalHood === "Classic" || finalHood === "SP_Classic") {
+    if (hoodCoversTorso(finalHood)) {
       suppressTo("shirt", shirtSlotDef);
-    } else if (finalHood === "None" && finalShirt === "None") {
+    } else if (isHoodNone(finalHood) && finalShirt === "None") {
       const defaultShirt = pickSideProfileDefaultShirt();
       if (defaultShirt) promoteToNamed("shirt", shirtSlotDef, defaultShirt);
     }
@@ -438,14 +447,14 @@ function applyCoverageRules(picks, traits, character = null) {
     promoteToNamed("body", bodySlotDef, "Female_Tank");
   }
 
-  if (hoodPick === "Classic") {
+  if (hoodCoversTorso(hoodPick)) {
     suppressTo("shirt", shirtSlotDef);
     if (!isZombie) suppressTo("body",  bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
-  } else if (hoodPick === "None" && shirtPick === "None" && bodyPick !== "Tank" && !isZombie) {
+  } else if (isHoodNone(hoodPick) && shirtPick === "None" && bodyPick !== "Tank" && !isZombie) {
     promoteToDefault("body", bodySlotDef);
     // bodytattoo stays as rolled — body is visible
-  } else if ((bodyPick === "Default" || bodyPick === "Female" || bodyPick === "Female_Tank" || bodyPick === "Zombie") && (hoodPick !== "None" || (shirtPick !== "None" && shirtPick !== "Tank_Female"))) {
+  } else if ((bodyPick === "Default" || bodyPick === "Female" || bodyPick === "Female_Tank" || bodyPick === "Zombie") && (!isHoodNone(hoodPick) || (shirtPick !== "None" && shirtPick !== "Tank_Female"))) {
     if (!isZombie) suppressTo("body", bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
   }
@@ -461,7 +470,7 @@ function applyCoverageRules(picks, traits, character = null) {
     const finalBody = out.body ? out.body.variant.name : null;
     const finalHood = out.hood ? out.hood.variant.name : null;
     const finalShirt = out.shirt ? out.shirt.variant.name : null;
-    const necklaceVisible = (finalHood !== "Classic") &&
+    const necklaceVisible = !hoodCoversTorso(finalHood) &&
                             (finalShirt === "None" || finalShirt === "Tank" || finalShirt === "Tank_Female" || finalBody === "Tank" || finalBody === "Female_Tank");
     if (!necklaceVisible) {
       suppressTo("necklace", necklaceSlotDef);

@@ -303,6 +303,21 @@
           "weight": 0
         },
         {
+          "name": "Female_Classic",
+          "file": "female/HOOD_Female_Classic.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Hooded",
+          "file": "female/HOOD_Female_Hooded.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_None",
+          "file": "female/HOOD_Female_None.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "HOOD_None.png",
           "weight": 80
@@ -1034,9 +1049,33 @@
           "weight": 0
         },
         {
+          "name": "Female_Stud",
+          "file": "female/EARRINGS_Female_Stud.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "EARRINGS_None.png",
           "weight": 70
+        }
+      ]
+    },
+    "accessory": {
+      "zOrder": 33,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        {
+          "name": "Female_Cigarette",
+          "file": "female/ACCESSORY_Female_Cigarette.png",
+          "weight": 0
+        },
+        {
+          "name": "None",
+          "file": "EARRINGS_None.png",
+          "weight": 100
         }
       ]
     },

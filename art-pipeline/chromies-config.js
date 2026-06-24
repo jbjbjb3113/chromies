@@ -942,6 +942,19 @@ const CHARACTERS = [
         Female_Thug: 15,
         None: 50,
       },
+      hood: {
+        Female_Classic: 20,
+        Female_Hooded: 10,
+        Female_None: 70,
+      },
+      earrings: {
+        Female_Stud: 20,
+        None: 80,
+      },
+      accessory: {
+        Female_Cigarette: 15,
+        None: 85,
+      },
     },
   },
   {
