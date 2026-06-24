@@ -902,6 +902,7 @@ const CHARACTERS = [
         Female_Pompadour: 10,
         Female_Surfer: 10,
         None: 20,
+        Female_TheAvatar: 2.04, // 2.04 / 102.04 pool ≈ 2% of all hair rolls (None stays 20)
       },
       glasses: {
         Female_3DGlasses: 10,

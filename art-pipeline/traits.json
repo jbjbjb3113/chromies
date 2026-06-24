@@ -1402,6 +1402,12 @@
           "mutationScale": 1.8
         },
         {
+          "name": "Female_TheAvatar",
+          "file": "female/HAIR_Female_TheAvatar.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
           "name": "Chubby_Afro",
           "file": "chubby/HAIR_Chubby_Afro.png",
           "weight": 0,
