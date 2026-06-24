@@ -330,6 +330,10 @@ function hoodCoversTorso(hoodName) {
       || hoodName === "Female_Classic" || hoodName === "Female_Hooded";
 }
 
+function isFemaleHood(hoodName) {
+  return hoodName === "Female_Classic" || hoodName === "Female_Hooded";
+}
+
 function applyCoverageRules(picks, traits, character = null) {
   const out = {};
   for (const [slot, pick] of Object.entries(picks)) {
@@ -457,6 +461,11 @@ function applyCoverageRules(picks, traits, character = null) {
   } else if ((bodyPick === "Default" || bodyPick === "Female" || bodyPick === "Female_Tank" || bodyPick === "Zombie") && (!isHoodNone(hoodPick) || (shirtPick !== "None" && shirtPick !== "Tank_Female"))) {
     if (!isZombie) suppressTo("body", bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
+  }
+
+  // Female hood variants — hair hidden under hood (hood-up or hood-down bib).
+  if (isFemaleHood(hoodPick)) {
+    suppressTo("hair", traits.slots.hair);
   }
 
   // Final check — if body ended up None/Tank, suppress bodytattoo
