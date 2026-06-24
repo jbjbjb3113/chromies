@@ -487,8 +487,13 @@
         },
         {
           "name": "Female_Ornate",
-          "file": "NECKLACE_Chain_Female_Ornate.png",
+          "file": "female/NECKLACE_Chain_Female Ornate.png",
           "weight": 10
+        },
+        {
+          "name": "Female_Ornate_Alt",
+          "file": "female/NECKLACE_Female_Ornate.png",
+          "weight": 0
         },
         {
           "name": "Female_Flower",
@@ -504,6 +509,26 @@
           "name": "Female_Opal",
           "file": "female/NECKLACE_Female_Opal.png",
           "weight": 10
+        },
+        {
+          "name": "Female_Chromies",
+          "file": "female/NECKLACE_Female_Chromies.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_HeyKoolAid",
+          "file": "female/NECKLACE_Female_HeyKoolAid.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Normies",
+          "file": "female/NECKLACE_Female_Normies.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Pendent",
+          "file": "female/NECKLACE_Female_Pendent.png",
+          "weight": 0
         },
         {
           "name": "Male_Chromies",
@@ -1060,6 +1085,41 @@
         {
           "name": "Chubby_NEO",
           "file": "chubby/GLASSES_CHubby_NEO.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_3DGlasses",
+          "file": "female/GLASSES_Female_3DGlasses.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_DFrame",
+          "file": "female/GLASSES_Female_DFrame.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_DFrameFilled",
+          "file": "female/GLASSES_Female_DFrameFilled.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_PiratePatch",
+          "file": "female/GLASSES_Female_PiratePatch.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Shades",
+          "file": "female/GLASSES_Female_Shades.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_VR",
+          "file": "female/GLASSES_Female_VR.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Neo",
+          "file": "female/GLASSES_Female_Neo.png",
           "weight": 0
         },
         {
