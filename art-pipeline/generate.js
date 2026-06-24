@@ -22,6 +22,7 @@ const {
   pickMutationTier,
   mutateLayer,
 } = require("./pixel-mutation");
+const { isGoldToken } = require("./gold-token-ids");
 
 const GRID = SETTINGS.grid;
 const PX = GRID * GRID;
@@ -300,6 +301,7 @@ function resolveCharacter(tokenId, characterOverride = null, genderOverride = nu
 // ============================================================================
 
 function pickPalette(tokenId, traits, character = null) {
+  if (isGoldToken(tokenId)) return "GOLD";
   // If character locks to a specific palette pool, use it
   if (character && Array.isArray(character.palettePool) && character.palettePool.length > 0) {
     const rng = mulberry32(seedFromStr(`${tokenId}:palette`));

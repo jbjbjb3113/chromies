@@ -713,6 +713,28 @@ const PALETTES = {
       "#999c81", "#adb195", "#c2c4ba", "#c2c4ba",
     ],
   },
+  GOLD: {
+    name: "GOLD",
+    description: "Ultra-rare gilded palette. Pre-assigned to exactly 11 tokens — never rolls randomly.",
+    colors: [
+      "#e8e0c8", // 0  background
+      "#1a1400", // 1  mask_dark
+      "#2d2400", // 2  mask_mid
+      "#fff8e0", // 3  highlight
+      "#7a5c00", // 4  skin_shadow_deep
+      "#a07800", // 5  skin_shadow
+      "#c49a00", // 6  skin_mid
+      "#d4aa00", // 7  skin_light
+      "#e8c840", // 8  skin_highlight
+      "#8a6a00", // 9  hood/shirt
+      "#3d2e00", // 10 eye_socket
+      "#c8960a", // 11 eye_glow
+      "#ffd700", // 12 eye_signal
+      "#7a5800", // 13 hair_dark
+      "#b08800", // 14 hair_mid
+      "#e8c020", // 15 hair_bright
+    ],
+  },
   SERC: {
     name: "SERC",
     description: "Normies tribute. Monochrome grays from Normie #4354 (#e3e5e4 / #48494b), SIGNAL slot luminances mapped onto the two-tone ramp. Special/gated — weight 0.",

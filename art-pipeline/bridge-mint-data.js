@@ -26,6 +26,7 @@ const {
 const { overlayStrayPixels } = require("./phase3-variance");
 const {
   ON_CHAIN_CHARACTER_BYTES,
+  ON_CHAIN_PALETTE_BYTES,
   characterKey,
 } = require("./on-chain-character-bytes");
 
@@ -34,35 +35,7 @@ const PX = GRID * GRID;
 const PIXELS_BYTES = 2048;
 const TRAITS_BYTES = 32;
 
-const PALETTE_BYTES = {
-  SIGNAL: 0,
-  ACID: 1,
-  CYAN: 2,
-  GHOST: 3,
-  BLOOD: 4,
-  MOSS: 5,
-  SIGNAL_BLONDE: 6,
-  SIGNAL_GREY: 7,
-  SIGNAL_RED: 8,
-  ACID_BLONDE: 9,
-  ACID_GREY: 10,
-  ACID_RED: 11,
-  CYAN_BLONDE: 12,
-  CYAN_GREY: 13,
-  CYAN_RED: 14,
-  GHOST_BLONDE: 15,
-  GHOST_GREY: 16,
-  GHOST_RED: 17,
-  BLOOD_BLONDE: 18,
-  BLOOD_GREY: 19,
-  BLOOD_RED: 20,
-  MOSS_BLONDE: 21,
-  MOSS_GREY: 22,
-  MOSS_RED: 23,
-  CAT: 24,
-  ALIEN: 25,
-  ZOMBIE: 26,
-};
+const PALETTE_BYTES = ON_CHAIN_PALETTE_BYTES;
 
 const HOOD_BYTES = { None: 0, Classic: 1 };
 const SHIRT_BYTES = { None: 0, Crew: 1, Tank: 2, Tank_Female: 3 };
