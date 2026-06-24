@@ -433,6 +433,11 @@ function applyCoverageRules(picks, traits, character = null) {
     return out;
   }
 
+  // Tank_Female shirt pairs with Female_Tank body (also covers CLI/quick-test overrides).
+  if (shirtPick === "Tank_Female") {
+    promoteToNamed("body", bodySlotDef, "Female_Tank");
+  }
+
   if (hoodPick === "Classic") {
     suppressTo("shirt", shirtSlotDef);
     if (!isZombie) suppressTo("body",  bodySlotDef);
@@ -539,7 +544,17 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
   for (const group of activeGroups) {
     for (const [slot, def] of Object.entries(traits.slots)) {
       if (skipSet.has(slot.toLowerCase())) continue;
-      if (character?.forcedSlots?.[slot] !== undefined) continue;
+      const forcedName = character?.forcedSlots?.[slot];
+      if (forcedName !== undefined) {
+        // HeroA Female forces body: Female — still upgrade to Female_Tank when tank shirt rolls.
+        if (slot === "body" && group === "tank_female" && forcedName === "Female") {
+          const tankBody = def.variants.find(v => v.name === "Female_Tank");
+          if (tankBody) {
+            picks[slot] = { variant: tankBody, file: tankBody.file, buffer: null };
+          }
+        }
+        continue;
+      }
       if (picks[slot] && picks[slot].variant.group === group) continue;
       const grouped = def.variants.find(v => v.group === group);
       if (grouped) {
