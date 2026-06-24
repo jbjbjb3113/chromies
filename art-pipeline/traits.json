@@ -1473,6 +1473,12 @@
           "mutationScale": 1.8
         },
         {
+          "name": "Chubby_TheAvatar",
+          "file": "chubby/HAIR_Chubby_TheAvatar.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
           "name": "None",
           "file": "HAIR_None.png",
           "weight": 5

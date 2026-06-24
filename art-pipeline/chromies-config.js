@@ -821,6 +821,7 @@ const CHARACTERS = [
         Chubby_Pompadour: 10,
         Chubby_Surfer: 10,
         None: 10,
+        Chubby_TheAvatar: 0.50, // 0.50 / 110.50 pool ≈ 0.45% (~4–5 per 1000 hair rolls; None stays 10)
       },
       glasses: {
         Chubby_3DGlasses: 10,
