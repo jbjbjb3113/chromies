@@ -714,6 +714,26 @@
           "weight": 0
         },
         {
+          "name": "Female_AkuHeart",
+          "file": "female/TATTOO_Female_AkuHeart.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Scar",
+          "file": "female/TATTOO_Female_Scar.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Tears",
+          "file": "female/TATTOO_Female_Tears.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Thug",
+          "file": "female/TATTOO_Female_Thug.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "TATTOO_None.png",
           "weight": 75

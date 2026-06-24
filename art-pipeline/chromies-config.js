@@ -935,6 +935,13 @@ const CHARACTERS = [
         Flannel_Female: 20,
         None: 20,
       },
+      tattoo: {
+        Female_AkuHeart: 15,
+        Female_Scar: 15,
+        Female_Tears: 15,
+        Female_Thug: 15,
+        None: 50,
+      },
     },
   },
   {
