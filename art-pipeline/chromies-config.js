@@ -928,6 +928,7 @@ const CHARACTERS = [
         Female_Frown: 25,
         Female_Neutral: 25,
         Female_Pouting: 25,
+        Female_Smirk: 25,
       },
       shirt: {
         Crew_Female: 40,

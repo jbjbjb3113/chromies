@@ -1014,6 +1014,11 @@
           "weight": 0
         },
         {
+          "name": "Female_Smirk",
+          "file": "female/EXPRESSION_Female_Smirk.png",
+          "weight": 0
+        },
+        {
           "name": "Chubby_Neutral",
           "file": "chubby/EXPRESSION_Chubby_Neutral.png",
           "weight": 0
