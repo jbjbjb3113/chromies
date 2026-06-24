@@ -45,10 +45,26 @@ function parseArgs() {
   return result;
 }
 
+function slugPart(value) {
+  return String(value || "any")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
+}
+
+function galleryTraitsJsonName(count, start, characterOverride, genderOverride) {
+  const parts = [`gallery_${count}`];
+  if (characterOverride) parts.push(slugPart(characterOverride));
+  if (genderOverride) parts.push(slugPart(genderOverride));
+  parts.push(String(start), "traits.json");
+  return parts.join("_");
+}
+
 function buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder) {
   const row = {
     tokenId,
     character: character ? character.name : null,
+    gender: character?.gender ?? null,
     palette: paletteKey,
   };
   for (const slot of slotOrder) {
@@ -166,12 +182,12 @@ function main() {
   fs.writeFileSync(path.join(SETTINGS.outputDir, outName), PNG.sync.write(gallery));
   console.log(`wrote ${outName}`);
   if (writeJson) {
-    const jsonName = `gallery_${count}_${start}_traits.json`;
+    const jsonName = galleryTraitsJsonName(count, start, characterOverride, genderOverride);
     fs.writeFileSync(
       path.join(SETTINGS.outputDir, jsonName),
       JSON.stringify(traitRows, null, 2)
     );
-    console.log(`wrote ${jsonName}`);
+    console.log(`wrote ${jsonName} (${traitRows.length} tokens)`);
   }
   console.log(`wrote ${count} per-token file sets to tokens/`);
   console.log(`updated master.json + master.csv`);

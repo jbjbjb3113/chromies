@@ -232,29 +232,51 @@ function pickCharacter(tokenId) {
 }
 
 function resolveCharacter(tokenId, characterOverride = null, genderOverride = null) {
-  let character = pickCharacter(tokenId);
+  if (!characterOverride && !genderOverride) {
+    return pickCharacter(tokenId);
+  }
+
+  let pool = CHARACTERS;
+
   if (characterOverride) {
-    const found = CHARACTERS.find(
+    const namePool = pool.filter(
       (c) => c.name.toLowerCase() === characterOverride.toLowerCase(),
     );
-    if (found) character = found;
-    else console.warn(`  [WARN] character "${characterOverride}" not found — using rolled character`);
-  }
-  if (genderOverride && character) {
-    const found = CHARACTERS.find(
-      (c) =>
-        c.name === character.name &&
-        c.gender &&
-        c.gender.toLowerCase() === genderOverride.toLowerCase(),
-    );
-    if (found) character = found;
-    else {
-      console.warn(
-        `  [WARN] no ${character.name} entry with gender "${genderOverride}" — keeping ${character.gender || "rolled"}`,
-      );
+    if (namePool.length === 0) {
+      console.warn(`  [WARN] character "${characterOverride}" not found — using rolled character`);
+      return pickCharacter(tokenId);
     }
+    pool = namePool;
   }
-  return character;
+
+  if (genderOverride) {
+    const genderPool = pool.filter(
+      (c) => c.gender && c.gender.toLowerCase() === genderOverride.toLowerCase(),
+    );
+    if (genderPool.length === 0) {
+      console.warn(
+        `  [WARN] no ${characterOverride || "matching"} entry with gender "${genderOverride}" — keeping ${pool[0]?.gender || "rolled"}`,
+      );
+      if (characterOverride) return pool[0];
+      return pickCharacter(tokenId);
+    }
+    pool = genderPool;
+  }
+
+  // Character forced without gender — first name match (legacy gallery/quick-test behavior)
+  if (characterOverride && !genderOverride) {
+    return pool[0];
+  }
+
+  const rng = mulberry32(seedFromStr(`${tokenId}:character`));
+  const total = pool.reduce((s, c) => s + (c.weight || 0), 0);
+  if (total <= 0) return pool[0];
+  let r = rng() * total;
+  for (const c of pool) {
+    r -= (c.weight || 0);
+    if (r < 0) return c;
+  }
+  return pool[pool.length - 1];
 }
 
 // ============================================================================
