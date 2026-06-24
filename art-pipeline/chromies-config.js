@@ -944,8 +944,8 @@ const CHARACTERS = [
       },
       hood: {
         Female_Classic: 20,
-        Female_Hooded: 10,
-        Female_None: 70,
+        Female_Hooded: 1.6,   // 1.6 / 100 pool = 1.6% roll rate
+        Female_None: 78.4,
       },
       earrings: {
         Female_Stud: 20,
