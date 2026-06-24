@@ -842,6 +842,31 @@
           "weight": 0
         },
         {
+          "name": "Female_CrissCrossed",
+          "file": "female/EYES_Female_CrissCrossed.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_LookLeft",
+          "file": "female/EYES_Female_LookLeft.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_LookRight",
+          "file": "female/EYES_Female_LookLRight.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Stoned",
+          "file": "female/EYES_Female_Stoned.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Straight",
+          "file": "female/EYES_Female_Straight.png",
+          "weight": 0
+        },
+        {
           "name": "Chubby_CrossEyed",
           "file": "chubby/EYES_Chubby_CrossEyed.png",
           "weight": 0
@@ -906,6 +931,26 @@
         {
           "name": "Chubby_Front",
           "file": "chubby/EXPRESSION_Chubby_Front.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Smile",
+          "file": "female/EXPRESSION_Female_Smile.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Frown",
+          "file": "female/EXPRESSION_Female_Frown.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Neutral",
+          "file": "female/EXPRESSION_Female_Neutral.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Pouting",
+          "file": "female/EXPRESSION_Female_Pouting.png",
           "weight": 0
         },
         {

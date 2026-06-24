@@ -894,10 +894,18 @@ const CHARACTERS = [
     slotVariantPool: {
       hair: ["FadeRight", "Afro", "Dreads", "Surfer", "Pompadour", "None"],
       necklace: ["Female_Chain", "Female_Ornate", "Female_Flower", "Female_UpsideDownCross", "Female_Opal", "None"],
+      eyes: {
+        Female_CrissCrossed: 20,
+        Female_LookLeft: 20,
+        Female_LookRight: 20,
+        Female_Stoned: 20,
+        Female_Straight: 20,
+      },
       expression: {
-        Smile: 25,
-        Frown: 25,
-        Neutral: 25,
+        Female_Smile: 25,
+        Female_Frown: 25,
+        Female_Neutral: 25,
+        Female_Pouting: 25,
       },
       shirt: {
         Crew_Female: 40,
