@@ -47,6 +47,7 @@ const SLOT_OVERRIDE_FLAGS = [
   "necklace",
   "earrings",
   "expression",
+  "accessory",
   "mask",
 ];
 

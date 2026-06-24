@@ -874,6 +874,10 @@ const CHARACTERS = [
       },
       shirt: ["None"],
       hood: ["None"],
+      accessory: {
+        Chubby_Cigarette: 15,
+        None: 85,
+      },
     },
   },
   {

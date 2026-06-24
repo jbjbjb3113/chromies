@@ -120,10 +120,13 @@ function extractToBuffer(filePath, drawColors, opts = {}) {
 }
 
 function compositeChromie(picks, traits, tokenId = 0, driftMap = null, mTier = null) {
+  // zOrder stack (back → front): hood 5 … hair 40, hood-up override 41, accessory 45
   const layers = Object.entries(picks)
     .map(([slot, pick]) => ({
       slot,
-      zOrder: traits.slots[slot].zOrder,
+      zOrder: (pick.variant && typeof pick.variant.zOrder === "number")
+        ? pick.variant.zOrder
+        : traits.slots[slot].zOrder,
       buf: pick.buffer,
       mutationScale: (pick.variant && typeof pick.variant.mutationScale === "number")
         ? pick.variant.mutationScale

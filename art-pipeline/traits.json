@@ -1090,25 +1090,6 @@
         }
       ]
     },
-    "accessory": {
-      "zOrder": 33,
-      "drawColors": {
-        "#1a0d0e": "mask_dark",
-        "#f0eae0": "highlight"
-      },
-      "variants": [
-        {
-          "name": "Female_Cigarette",
-          "file": "female/ACCESSORY_Female_Cigarette.png",
-          "weight": 0
-        },
-        {
-          "name": "None",
-          "file": "EARRINGS_None.png",
-          "weight": 100
-        }
-      ]
-    },
     "glasses": {
       "zOrder": 35,
       "drawColors": {
@@ -1484,6 +1465,30 @@
           "name": "None",
           "file": "HAIR_None.png",
           "weight": 5
+        }
+      ]
+    },
+    "accessory": {
+      "zOrder": 45,
+      "drawColors": {
+        "#1a0d0e": "mask_dark",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        {
+          "name": "None",
+          "file": "ACCESSORY_None.png",
+          "weight": 100
+        },
+        {
+          "name": "Chubby_Cigarette",
+          "file": "chubby/ACCESSORY_Chubby_Cigarette.png",
+          "weight": 0
+        },
+        {
+          "name": "Female_Cigarette",
+          "file": "female/ACCESSORY_Female_Cigarette.png",
+          "weight": 0
         }
       ]
     }
