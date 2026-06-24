@@ -236,6 +236,19 @@ function resolveCharacter(tokenId, characterOverride = null, genderOverride = nu
     return pickCharacter(tokenId);
   }
 
+  if (characterOverride && genderOverride) {
+    const found = CHARACTERS.find(
+      (c) =>
+        c.name.toLowerCase() === characterOverride.toLowerCase() &&
+        c.gender &&
+        c.gender.toLowerCase() === genderOverride.toLowerCase(),
+    );
+    if (found) return found;
+    console.warn(
+      `  [WARN] no ${characterOverride} entry with gender "${genderOverride}" — falling back to name match`,
+    );
+  }
+
   let pool = CHARACTERS;
 
   if (characterOverride) {

@@ -52,12 +52,26 @@ function slugPart(value) {
     .replace(/^_|_$/g, "");
 }
 
-function galleryTraitsJsonName(count, start, characterOverride, genderOverride) {
+function galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride) {
   const parts = [`gallery_${count}`];
-  if (characterOverride) parts.push(slugPart(characterOverride));
-  if (genderOverride) parts.push(slugPart(genderOverride));
-  parts.push(String(start), "traits.json");
+  if (paletteOverride) {
+    parts.push(slugPart(paletteOverride));
+  } else if (characterOverride || genderOverride) {
+    if (characterOverride) parts.push(slugPart(characterOverride));
+    if (genderOverride) parts.push(slugPart(genderOverride));
+  } else {
+    parts.push("mixed");
+  }
+  parts.push(String(start));
   return parts.join("_");
+}
+
+function galleryPngName(count, start, paletteOverride, characterOverride, genderOverride) {
+  return `${galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride)}.png`;
+}
+
+function galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride) {
+  return `${galleryRunBasename(count, start, paletteOverride, characterOverride, genderOverride)}_traits.json`;
 }
 
 function buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder) {
@@ -94,7 +108,8 @@ function main() {
   const mtierLabel = mtierOverride ? `, mutation FORCED to ${mtierOverride}` : "";
   const genderLabel = genderOverride ? `, gender FORCED to ${genderOverride}` : "";
   const charLabel = characterOverride ? `, character FORCED to ${characterOverride}` : "";
-  console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}`);
+  const jsonLabel = writeJson ? ", traits JSON ON" : "";
+  console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}${jsonLabel}`);
 
   const tokensDir = path.join(SETTINGS.outputDir, "tokens");
   if (!fs.existsSync(tokensDir)) fs.mkdirSync(tokensDir, { recursive: true });
@@ -121,6 +136,11 @@ function main() {
     const oy = PADDING + row * (tileSize + PADDING);
 
     let character = resolveCharacter(tokenId, characterOverride, genderOverride);
+    if (genderOverride && character?.gender?.toLowerCase() !== genderOverride.toLowerCase()) {
+      console.warn(
+        `  [WARN] token ${tokenId}: expected gender ${genderOverride}, got ${character?.gender || "unknown"}`,
+      );
+    }
     const charKey = character ? `${character.name}${character.gender ? `_${character.gender}` : ""}` : "unknown";
     characterCounts[charKey] = (characterCounts[charKey] || 0) + 1;
 
@@ -177,12 +197,11 @@ function main() {
   }
   process.stdout.write("\n");
 
-  const paletteSlug = paletteOverride ? paletteOverride.toLowerCase() : "mixed";
-  const outName = `gallery_${count}_${paletteSlug}_${start}.png`;
+  const outName = galleryPngName(count, start, paletteOverride, characterOverride, genderOverride);
   fs.writeFileSync(path.join(SETTINGS.outputDir, outName), PNG.sync.write(gallery));
   console.log(`wrote ${outName}`);
   if (writeJson) {
-    const jsonName = galleryTraitsJsonName(count, start, characterOverride, genderOverride);
+    const jsonName = galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride);
     fs.writeFileSync(
       path.join(SETTINGS.outputDir, jsonName),
       JSON.stringify(traitRows, null, 2)
