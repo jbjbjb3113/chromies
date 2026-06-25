@@ -1083,6 +1083,31 @@
           "weight": 0
         },
         {
+          "name": "Male_Frown",
+          "file": "male/EXPRESSION_Male_Frown.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Neutral",
+          "file": "male/EXPRESSION_Male_Neutral.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Pouting",
+          "file": "male/EXPRESSION_Male_Pouting.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Smile",
+          "file": "male/EXPRESSION_Male_Smile.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Smirk",
+          "file": "male/EXPRESSION_Male_Smirk.png",
+          "weight": 0
+        },
+        {
           "name": "Chubby_Neutral",
           "file": "chubby/EXPRESSION_Chubby_Neutral.png",
           "weight": 0
