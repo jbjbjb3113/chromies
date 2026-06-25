@@ -79,13 +79,16 @@ function paletteColorsToDrawColors(paletteColors) {
 
 const ZOMBIE_EXTRACTION_COLORS = paletteColorsToDrawColors(PALETTES.ZOMBIE.colors);
 
-function isZombieComponent(slot, pick, character) {
-  return character?.name === "Zombie" &&
-    (slot === "head" || slot === "body") &&
-    pick?.variant?.name === "Zombie";
+function isZombieAssetFile(file) {
+  return String(file || "").replace(/\\/g, "/").includes("zombie/");
 }
 
-/** drawColors for extractToBuffer — Zombie head/body use GPL palette hexes, not SIGNAL. */
+function isZombieComponent(slot, pick, character) {
+  if (character?.name !== "Zombie") return false;
+  return isZombieAssetFile(pick?.file || pick?.variant?.file);
+}
+
+/** drawColors for extractToBuffer — all zombie/ assets use GPL palette hexes, not SIGNAL. */
 function resolveExtractionDrawColors(slot, pick, character, slotDef) {
   if (isZombieComponent(slot, pick, character)) return ZOMBIE_EXTRACTION_COLORS;
   return slotDef.drawColors;
@@ -361,8 +364,13 @@ function applyCoverageRules(picks, traits, character = null) {
   const bodySlotDef  = traits.slots.body;
 
   const extractSlotBuffer = (filePath, slot, variantName, slotDef) => {
-    const pick = { variant: { name: variantName } };
-    return extractToBuffer(filePath, resolveExtractionDrawColors(slot, pick, character, slotDef));
+    const relFile = path.relative(SETTINGS.componentsDir, filePath).replace(/\\/g, "/");
+    const pick = { variant: { name: variantName }, file: relFile };
+    return extractToBuffer(
+      filePath,
+      resolveExtractionDrawColors(slot, pick, character, slotDef),
+      isZombieComponent(slot, pick, character) ? { skipRgbKnockout: true } : undefined,
+    );
   };
 
   const suppressTo = (slot, slotDef) => {
@@ -898,6 +906,8 @@ module.exports = {
   pickPalette,
   resolveExtractionDrawColors,
   extractToBuffer,
+  isZombieAssetFile,
+  isZombieComponent,
   compositeChromie,
   renderSVG,
   renderPNG,

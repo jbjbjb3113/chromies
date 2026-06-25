@@ -11,7 +11,7 @@
 const fs = require("fs");
 const path = require("path");
 const { PALETTES, ROLES, SETTINGS } = require("./chromies-config");
-const { extractToBuffer } = require("./generate");
+const { extractToBuffer, resolveExtractionDrawColors, isZombieAssetFile } = require("./generate");
 
 const GRID = SETTINGS.grid;
 const DEFAULT_PALETTE = "SIGNAL";
@@ -43,7 +43,7 @@ Examples:
   node inspect-png-palette.js components/EXPRESSION_Smile.png --palette ACID`);
 }
 
-const COMPONENT_SUBDIRS = ["", "female", "male", "sideprofile", "chubby"];
+const COMPONENT_SUBDIRS = ["", "female", "male", "sideprofile", "chubby", "zombie", "alien"];
 
 function resolveInComponentsDir(basename) {
   for (const sub of COMPONENT_SUBDIRS) {
@@ -68,11 +68,15 @@ function resolveInputPath(inputPath) {
   throw new Error(`PNG not found: ${inputPath}`);
 }
 
-function findSlotForFile(traits, basename) {
+function findSlotForFile(traits, basename, relFile) {
   for (const [slot, slotDef] of Object.entries(traits.slots)) {
     for (const variant of slotDef.variants || []) {
-      if (variant.file === basename || path.basename(variant.file) === basename) {
-        return { slot, drawColors: slotDef.drawColors };
+      if (
+        variant.file === relFile
+        || variant.file === basename
+        || path.basename(variant.file) === basename
+      ) {
+        return { slot, drawColors: slotDef.drawColors, variantFile: variant.file };
       }
     }
   }
@@ -181,9 +185,17 @@ function main() {
   const absPath = resolveInputPath(parsed.filePath);
   const basename = path.basename(absPath);
   const traits = JSON.parse(fs.readFileSync(path.join(__dirname, SETTINGS.traitsFile), "utf8"));
-  const { slot, drawColors } = findSlotForFile(traits, basename);
+  const componentsDir = path.join(__dirname, SETTINGS.componentsDir);
+  const relFile = path.relative(componentsDir, absPath).replace(/\\/g, "/");
+  const { slot, variantFile } = findSlotForFile(traits, basename, relFile);
+  const slotDef = traits.slots[slot];
+  const zombieAsset = isZombieAssetFile(variantFile || relFile);
+  const paletteKey = parsed.paletteKey === DEFAULT_PALETTE && zombieAsset ? "ZOMBIE" : parsed.paletteKey;
+  const pick = { file: variantFile || relFile, variant: { file: variantFile || relFile } };
+  const drawColors = resolveExtractionDrawColors(slot, pick, zombieAsset ? { name: "Zombie" } : null, slotDef);
+  const extractOpts = zombieAsset ? { skipRgbKnockout: true } : undefined;
 
-  const buf = extractToBuffer(absPath, drawColors);
+  const buf = extractToBuffer(absPath, drawColors, extractOpts);
   if (!buf) {
     throw new Error(`Failed to read or extract pixels from ${absPath}`);
   }
@@ -191,9 +203,10 @@ function main() {
   console.log(`File:  ${basename}`);
   console.log(`Path:  ${absPath}`);
   console.log(`Slot:  ${slot}`);
+  if (zombieAsset) console.log(`Extract: ZOMBIE palette draw colors (not SIGNAL slot colors)`);
   console.log();
 
-  printPaletteTable(parsed.paletteKey);
+  printPaletteTable(paletteKey);
   printGrid(buf);
   printCounts(buf);
 }
