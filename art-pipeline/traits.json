@@ -466,7 +466,7 @@
         },
         {
           "name": "Alien",
-          "file": "BODY_Alien.png",
+          "file": "alien/BODY_Alien.png",
           "weight": 0
         },
         {
@@ -493,7 +493,7 @@
         },
         {
           "name": "Zombie",
-          "file": "BODY_Zombie.png",
+          "file": "zombie/BODY_Zombie.png",
           "weight": 0,
           "_comment": "Character-gated — forced via CHARACTERS.Zombie"
         }
@@ -677,7 +677,7 @@
         },
         {
           "name": "Alien",
-          "file": "NECK_ALien.png",
+          "file": "alien/NECK_ALien.png",
           "weight": 0
         },
         {
@@ -720,7 +720,7 @@
         },
         {
           "name": "Alien",
-          "file": "HEAD_ALien.png",
+          "file": "alien/HEAD_ALien.png",
           "weight": 0
         },
         {
@@ -741,7 +741,7 @@
         },
         {
           "name": "Zombie",
-          "file": "HEAD_Zombie.png",
+          "file": "zombie/HEAD_Zombie.png",
           "weight": 0,
           "_comment": "Character-gated — neck baked in; forced via CHARACTERS.Zombie"
         }
@@ -1048,7 +1048,7 @@
         },
         {
           "name": "Alien",
-          "file": "EYES_ALien.png",
+          "file": "alien/EYES_ALien.png",
           "weight": 0
         },
         {
