@@ -22,6 +22,7 @@ const {
   getMutationTier,
 } = require("./generate");
 const { overlayStrayPixels } = require("./phase3-variance");
+const { characterKey } = require("./on-chain-character-bytes");
 
 const GRID = SETTINGS.grid;
 const TILE_SCALE = 4;
@@ -77,6 +78,32 @@ function parseCharactersFlag(value) {
     .filter(Boolean);
 }
 
+function parseCharacterCountsFlag(value) {
+  const entries = [];
+  for (const raw of String(value).split(",")) {
+    const trimmed = raw.trim();
+    if (!trimmed) continue;
+    const colonIdx = trimmed.lastIndexOf(":");
+    if (colonIdx <= 0) {
+      throw new Error(`invalid --character-counts entry "${trimmed}" (expected "Name:count")`);
+    }
+    const label = trimmed.slice(0, colonIdx).trim();
+    const count = parseInt(trimmed.slice(colonIdx + 1), 10);
+    if (!Number.isFinite(count) || count < 0) {
+      throw new Error(`invalid count in --character-counts entry "${trimmed}"`);
+    }
+    const spec = parseCharacterCombo(label);
+    if (!spec) {
+      throw new Error(`invalid character label in --character-counts entry "${trimmed}"`);
+    }
+    entries.push({ spec, count });
+  }
+  if (entries.length === 0) {
+    throw new Error("--character-counts requires at least one entry");
+  }
+  return entries;
+}
+
 function resolveCharacterSpec(spec) {
   let pool = CHARACTERS.filter(
     (c) => c.name.toLowerCase() === spec.name.toLowerCase(),
@@ -119,9 +146,36 @@ function buildCharacterAssignments(count, start, specs) {
   return slots;
 }
 
+/** Explicit per-character counts, deterministically shuffled for intermixing. */
+function buildCharacterAssignmentsFromCounts(start, entries) {
+  const slots = [];
+  for (const { spec, count } of entries) {
+    const character = resolveCharacterSpec(spec);
+    for (let i = 0; i < count; i++) slots.push(character);
+  }
+  const shuffleSeed = seedFromStr(
+    `gallery-mix:${start}:${slots.length}:${entries.map((e) => `${e.spec.name}|${e.spec.gender || ""}:${e.count}`).join(",")}`,
+  );
+  const rng = mulberry32(shuffleSeed);
+  for (let i = slots.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [slots[i], slots[j]] = [slots[j], slots[i]];
+  }
+  return slots;
+}
+
+function summarizeCharacterPlan(slots) {
+  const counts = {};
+  for (const character of slots) {
+    const key = characterKey(character);
+    counts[key] = (counts[key] || 0) + 1;
+  }
+  return counts;
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, gender: null, characters: null, json: false };
+  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, gender: null, characters: null, characterCounts: null, json: false };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--count") result.count = parseInt(args[++i], 10);
@@ -132,6 +186,7 @@ function parseArgs() {
     else if (a === "--character") result.character = args[++i];
     else if (a === "--gender") result.gender = args[++i];
     else if (a === "--characters") result.characters = args[++i];
+    else if (a === "--character-counts") result.characterCounts = args[++i];
     else if (a === "--json") result.json = true;
   }
   return result;
@@ -176,6 +231,7 @@ function buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slot
     tokenId,
     character: character ? character.name : null,
     gender: character?.gender ?? null,
+    characterKey: character ? characterKey(character) : null,
     palette: paletteKey,
   };
   for (const slot of slotOrder) {
@@ -192,17 +248,42 @@ function gridDims(n) {
 }
 
 function main() {
-  const { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, gender: genderOverride, characters: charactersFlag, json: writeJson } = parseArgs();
+  let { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, gender: genderOverride, characters: charactersFlag, characterCounts: characterCountsFlag, json: writeJson } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
   const slotOrder = Object.keys(traits.slots);
-  const { cols, rows } = gridDims(count);
-  const tileSize = GRID * TILE_SCALE;
-  const W = cols * (tileSize + PADDING) + PADDING;
-  const H = rows * (tileSize + PADDING) + PADDING;
 
   let characterSpecs = null;
   let characterPlan = null;
-  if (charactersFlag) {
+  let characterCountEntries = null;
+
+  if (characterCountsFlag) {
+    if (charactersFlag) {
+      console.warn("  [WARN] --character-counts set; ignoring --characters");
+    }
+    try {
+      characterCountEntries = parseCharacterCountsFlag(characterCountsFlag);
+      characterSpecs = characterCountEntries.map((e) => e.spec);
+      const derivedCount = characterCountEntries.reduce((sum, e) => sum + e.count, 0);
+      if (derivedCount === 0) {
+        console.error("--character-counts sum is 0");
+        process.exit(1);
+      }
+      characterPlan = buildCharacterAssignmentsFromCounts(start, characterCountEntries);
+      count = derivedCount;
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    const plannedCounts = summarizeCharacterPlan(characterPlan);
+    console.log(
+      `  planned character counts: ${Object.entries(plannedCounts)
+        .map(([k, v]) => `${k}=${v}`)
+        .join(", ")}`,
+    );
+    if (characterOverride || genderOverride) {
+      console.warn("  [WARN] --character-counts set; ignoring --character / --gender");
+    }
+  } else if (charactersFlag) {
     characterSpecs = parseCharactersFlag(charactersFlag);
     if (characterSpecs.length === 0) {
       console.error("--characters requires at least one character combo");
@@ -214,10 +295,21 @@ function main() {
       console.error(err.message);
       process.exit(1);
     }
+    const plannedCounts = summarizeCharacterPlan(characterPlan);
+    console.log(
+      `  planned character split: ${Object.entries(plannedCounts)
+        .map(([k, v]) => `${k}=${v}`)
+        .join(", ")}`,
+    );
     if (characterOverride || genderOverride) {
       console.warn("  [WARN] --characters set; ignoring --character / --gender");
     }
   }
+
+  const { cols, rows } = gridDims(count);
+  const tileSize = GRID * TILE_SCALE;
+  const W = cols * (tileSize + PADDING) + PADDING;
+  const H = rows * (tileSize + PADDING) + PADDING;
 
   const palLabel = paletteOverride ? `palette FORCED to ${paletteOverride}` : "palettes per-token";
   const tierLabel = tierOverride ? `, drift FORCED to ${tierOverride}` : "";
@@ -226,7 +318,7 @@ function main() {
   const charLabel = characterPlan
     ? `, characters MIX [${characterSpecs.map((s) => (s.gender ? `${s.name} (${s.gender})` : s.name)).join(", ")}]`
     : (characterOverride ? `, character FORCED to ${characterOverride}` : "");
-  const jsonLabel = writeJson ? ", traits JSON ON" : "";
+  const jsonLabel = writeJson || characterPlan ? ", traits JSON ON" : "";
   console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}${jsonLabel}`);
 
   const tokensDir = path.join(SETTINGS.outputDir, "tokens");
@@ -244,6 +336,8 @@ function main() {
   const tierCounts = {};
   const mTierCounts = {};
   const characterCounts = {};
+  const writeTraitJson = writeJson || Boolean(characterPlan);
+
   const traitRows = [];
 
   for (let n = 0; n < count; n++) {
@@ -261,7 +355,7 @@ function main() {
         `  [WARN] token ${tokenId}: expected gender ${genderOverride}, got ${character?.gender || "unknown"}`,
       );
     }
-    const charKey = character ? `${character.name}${character.gender ? `_${character.gender}` : ""}` : "unknown";
+    const charKey = character ? characterKey(character) : "unknown";
     characterCounts[charKey] = (characterCounts[charKey] || 0) + 1;
 
     const paletteKey = paletteOverride || pickPalette(tokenId, traits, character);
@@ -294,7 +388,7 @@ function main() {
 
     updateMaster(tokenId, paletteKey, picks, tier, mTier, character);
 
-    if (writeJson) {
+    if (writeTraitJson) {
       traitRows.push(buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder));
     }
 
@@ -320,7 +414,7 @@ function main() {
   const outName = galleryPngName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
   fs.writeFileSync(path.join(SETTINGS.outputDir, outName), PNG.sync.write(gallery));
   console.log(`wrote ${outName}`);
-  if (writeJson) {
+  if (writeTraitJson) {
     const jsonName = galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
     fs.writeFileSync(
       path.join(SETTINGS.outputDir, jsonName),
@@ -334,8 +428,26 @@ function main() {
     console.log(`palette distribution:    ${Object.entries(paletteCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
   }
   console.log(`character distribution:  ${Object.entries(characterCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
+  if (characterPlan) {
+    const planned = summarizeCharacterPlan(characterPlan);
+    const mismatches = Object.keys({ ...planned, ...characterCounts }).filter(
+      (key) => (planned[key] || 0) !== (characterCounts[key] || 0),
+    );
+    if (mismatches.length > 0) {
+      console.warn(`  [WARN] character plan/render mismatch: ${mismatches.join(", ")}`);
+    }
+  }
   console.log(`drift distribution:      ${Object.entries(tierCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
   console.log(`mutation distribution:   ${Object.entries(mTierCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
 }
 
 if (require.main === module) main();
+
+module.exports = {
+  parseCharacterCombo,
+  parseCharactersFlag,
+  parseCharacterCountsFlag,
+  buildCharacterAssignments,
+  buildCharacterAssignmentsFromCounts,
+  summarizeCharacterPlan,
+};
