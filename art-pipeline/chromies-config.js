@@ -1167,9 +1167,9 @@ const CHARACTERS = [
         None: 10,
       },
       expression: {
-        SP_Smile_Female: 25,
-        SP_Neutral_Female: 25,
-        SP_Smirk_Female: 25,
+        SP_Smile_Female: 45,
+        SP_Neutral_Female: 20,
+        SP_Smirk_Female: 35,
       },
       beard: ["None"],
       mustache: ["None"],
