@@ -986,6 +986,36 @@
           "weight": 0
         },
         {
+          "name": "Male_CrossEyed",
+          "file": "male/EYES_Male_CrossEyed.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_SquintLeft",
+          "file": "male/EYES_Male_SquintLeft.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_SquintRight",
+          "file": "male/EYES_Male_SquintRight.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Stoned",
+          "file": "male/EYES_Male_Stoned.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Straight",
+          "file": "male/EYES_Male_Straight.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_WideOpen",
+          "file": "male/EYES_Male_WideOpen.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "EYES_None.png",
           "weight": 0

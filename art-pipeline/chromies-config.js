@@ -812,6 +812,14 @@ const CHARACTERS = [
     slotWeightOverrides: {},
     slotVariantPool: {
       necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
+      eyes: {
+        Male_CrossEyed: 20,
+        Male_SquintLeft: 20,
+        Male_SquintRight: 20,
+        Male_Stoned: 20,
+        Male_Straight: 20,
+        Male_WideOpen: 20,
+      },
       expression: {
         Smile: 25,
         Frown: 25,
