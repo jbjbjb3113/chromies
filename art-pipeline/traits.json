@@ -307,6 +307,11 @@
           "weight": 0
         },
         {
+          "name": "SP_Classic_Female",
+          "file": "SideProfile_Female/SP_HOOD_Classic_Female.png",
+          "weight": 0
+        },
+        {
           "name": "Female_Classic",
           "file": "female/HOOD_Female_Classic.png",
           "weight": 0
@@ -377,7 +382,7 @@
         },
         {
           "name": "SP_Crew_Female",
-          "file": "sideprofile/SP_SHIRT_Crew_Female.png",
+          "file": "SideProfile_Female/SP_SHIRT_Crew_Female.png",
           "weight": 0
         },
         {
@@ -387,7 +392,12 @@
         },
         {
           "name": "SP_Flannel_Female",
-          "file": "sideprofile/SP_SHIRT_Flannel_Female.png",
+          "file": "SideProfile_Female/SP_SHIRT_Flannel_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_FlannelDark_Female",
+          "file": "SideProfile_Female/SP_SHIRT_FlannelDark_Female.png",
           "weight": 0
         },
         {
@@ -683,7 +693,7 @@
         },
         {
           "name": "SP_HeroA_Female",
-          "file": "sideprofile/SP_HEAD_HeroA_Female.png",
+          "file": "SideProfile_Female/SP_HEAD_HeroA_Female.png",
           "weight": 0
         },
         {
@@ -1175,6 +1185,21 @@
           "name": "Chubby_Smile",
           "file": "chubby/EXPRESSION_Chubby_Smile.png",
           "weight": 0
+        },
+        {
+          "name": "SP_Smile_Female",
+          "file": "SideProfile_Female/SP_EXPRESSION_Smile_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Neutral_Female",
+          "file": "SideProfile_Female/SP_EXPRESSION_Neutral_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Smirk_Female",
+          "file": "SideProfile_Female/SP_EXPRESSION_Smirk_Female.png",
+          "weight": 0
         }
       ]
     },
@@ -1238,6 +1263,21 @@
         {
           "name": "SP_Neo",
           "file": "sideprofile/SP_GLASSES_Neo.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_DFrame_Female",
+          "file": "SideProfile_Female/SP_GLASSES_DFrame_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_DFrameFilled_Female",
+          "file": "SideProfile_Female/SP_GLASSES_DFrameFilled_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Shades_Female",
+          "file": "SideProfile_Female/SP_GLASSES_Shades_Female.png",
           "weight": 0
         },
         {
@@ -1425,13 +1465,13 @@
         },
         {
           "name": "SP_Mohawk_Female",
-          "file": "sideprofile/SP_HAIR_Mohawk_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_Mohawk_Female.png",
           "weight": 0,
           "mutationScale": 1
         },
         {
           "name": "SP_Afro_Female",
-          "file": "sideprofile/SP_HAIR_Afro_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_Afro_Female.png",
           "weight": 0,
           "mutationScale": 2
         },
@@ -1443,7 +1483,7 @@
         },
         {
           "name": "SP_Surfer_Female",
-          "file": "sideprofile/SP_HAIR_Surfer_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_Surfer_Female.png",
           "weight": 0,
           "mutationScale": 1.8
         },
@@ -1455,19 +1495,19 @@
         },
         {
           "name": "SP_MrT_Female",
-          "file": "sideprofile/SP_HAIR_MrT_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_MrT_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
         {
           "name": "SP_FadeRight_Female",
-          "file": "sideprofile/SP_HAIR_FadeRight_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_FadeRight_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
         {
           "name": "SP_AZVet_Female",
-          "file": "sideprofile/SP_HAIR_AZVet_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_AZVet_Female.png",
           "weight": 0,
           "mutationScale": 1.2
         },
@@ -1694,6 +1734,11 @@
         {
           "name": "Male_Cigarette_Flipped",
           "file": "male/ACCESSORY_Male_Cigarette_Flipped.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Cigarette_Female",
+          "file": "SideProfile_Female/SP_ACCESSORY_Cigarette_Female.png",
           "weight": 0
         }
       ]

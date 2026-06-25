@@ -1154,7 +1154,6 @@ const CHARACTERS = [
       body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
       eyes: "None",        // eyes baked into SP head art
       bodytattoo: "None",  // positioned for front-facing body
-      glasses: "None",     // SP_GLASSES_Neo.png / SP_GLASSES_Shades.png not ready yet
     },
     slotVariantPool: {
       hair: {
@@ -1167,18 +1166,33 @@ const CHARACTERS = [
         SP_AZVet_Female: 7,
         None: 10,
       },
+      expression: {
+        SP_Smile_Female: 25,
+        SP_Neutral_Female: 25,
+        SP_Smirk_Female: 25,
+      },
       beard: ["None"],
       mustache: ["None"],
-      glasses: ["None"],    // pending: SP_Shades, SP_Neo
+      glasses: {
+        SP_DFrame_Female: 10,
+        SP_DFrameFilled_Female: 10,
+        SP_Shades_Female: 10,
+        None: 70,
+      },
       necklace: ["None"],
       earrings: ["None"],
       tattoo: ["None"],
       shirt: {
-        SP_Crew_Female: 40,
+        SP_Crew_Female: 35,
         SP_Flannel_Female: 20,
-        None: 40,           // includes weight from pending SP_Tank_Female
+        SP_FlannelDark_Female: 10,
+        None: 35,
       },
-      hood: { SP_Classic: 20, None: 80 },
+      hood: { SP_Classic_Female: 20, None: 80 },
+      accessory: {
+        SP_Cigarette_Female: 15,
+        None: 85,
+      },
     },
     slotWeightOverrides: {},
   },

@@ -331,7 +331,7 @@ function isHoodNone(hoodName) {
 }
 
 function hoodCoversTorso(hoodName) {
-  return hoodName === "Classic" || hoodName === "SP_Classic"
+  return hoodName === "Classic" || hoodName === "SP_Classic" || hoodName === "SP_Classic_Female"
       || hoodName === "Female_Classic" || hoodName === "Female_Hooded"
       || hoodName === "Chubby_Classic";
 }
