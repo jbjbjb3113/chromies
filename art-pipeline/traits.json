@@ -837,6 +837,18 @@
           "mutationScale": 1.5
         },
         {
+          "name": "Male_Full",
+          "file": "male/BEARD_Male_Full.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "Male_Goat",
+          "file": "male/BEARD_Male_Goat.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
           "name": "None",
           "file": "BEARD_None.png",
           "weight": 60
@@ -877,6 +889,18 @@
         {
           "name": "Female_Thick",
           "file": "female/Mustache_Female_Thick.png",
+          "weight": 0,
+          "mutationScale": 0.5
+        },
+        {
+          "name": "Male_DanPalmer",
+          "file": "male/MUSTACHE_Male_DanPalmer.png",
+          "weight": 0,
+          "mutationScale": 0.5
+        },
+        {
+          "name": "Male_Thick",
+          "file": "male/MUSTACHE_Male_Thick.png",
           "weight": 0,
           "mutationScale": 0.5
         },

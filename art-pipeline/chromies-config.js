@@ -827,6 +827,16 @@ const CHARACTERS = [
         Male_Smile: 20,
         Male_Smirk: 20,
       },
+      beard: {
+        Male_Full: 15,
+        Male_Goat: 15,
+        None: 60,
+      },
+      mustache: {
+        Male_DanPalmer: 15,
+        Male_Thick: 15,
+        None: 60,
+      },
     },
   },
   {
