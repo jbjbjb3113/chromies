@@ -611,6 +611,11 @@
           "weight": 0
         },
         {
+          "name": "SP_Chain_Female",
+          "file": "SideProfile_Female/SP_NECKLACE_Chain_Female.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "NECKLACE_None.png",
           "weight": 70
@@ -796,6 +801,26 @@
         {
           "name": "Male_Thug",
           "file": "male/TATTOO_Male_Thug.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_AkuHeart_Female",
+          "file": "SideProfile_Female/SP_TATTOO_AkuHeart_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Eagle_Female",
+          "file": "SideProfile_Female/SP_TATTOO_Eagle_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Scar_Female",
+          "file": "SideProfile_Female/SP_TATTOO_Scar_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Tears_Female",
+          "file": "SideProfile_Female/SP_TATTOO_Tears_Female.png",
           "weight": 0
         },
         {
@@ -1293,6 +1318,11 @@
         {
           "name": "SP_Shades_Female",
           "file": "SideProfile_Female/SP_GLASSES_Shades_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Neo_Female",
+          "file": "SideProfile_Female/SP_GLASSES_Neo_Female.png",
           "weight": 0
         },
         {

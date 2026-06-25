@@ -449,7 +449,11 @@ function applyCoverageRules(picks, traits, character = null) {
       if (defaultShirt) promoteToNamed("shirt", shirtSlotDef, defaultShirt);
     }
     const necklaceSlotDef = traits.slots.necklace;
-    if (necklaceSlotDef) suppressTo("necklace", necklaceSlotDef);
+    if (necklaceSlotDef) {
+      const necklaceName = out.necklace ? out.necklace.variant.name : null;
+      const keepSpNecklace = necklaceName && necklaceName.startsWith("SP_") && necklaceName !== "None";
+      if (!keepSpNecklace) suppressTo("necklace", necklaceSlotDef);
+    }
     return out;
   }
 
