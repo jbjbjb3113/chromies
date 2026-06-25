@@ -1907,6 +1907,11 @@
           "name": "SP_Cigarette_Female",
           "file": "SideProfile_Female/SP_ACCESSORY_Cigarette_Female.png",
           "weight": 0
+        },
+        {
+          "name": "Zombie_Cigarette",
+          "file": "zombie/ACCESSORY_Zombie_Cigarette.png",
+          "weight": 0
         }
       ]
     }

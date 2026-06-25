@@ -1169,7 +1169,10 @@ const CHARACTERS = [
       bodytattoo: ["None"],
       earrings: ["None"],
       shirt: ["None"],
-      accessory: ["None"],
+      accessory: {
+        Zombie_Cigarette: 15,
+        None: 85,
+      },
       glasses: {
         Zombie_Shades: 10,
         Zombie_VR: 10,
