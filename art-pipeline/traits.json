@@ -365,6 +365,22 @@
           "weight": 0
         },
         {
+          "name": "Zombie_Classic",
+          "file": "zombie/HOOD_Zombie_Classic.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_Hooded",
+          "file": "zombie/HOOD_Zombie_Hooded.png",
+          "weight": 0,
+          "zOrder": 41
+        },
+        {
+          "name": "Zombie_Hoodie",
+          "file": "zombie/HOOD_Zombie_Hoodie.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "HOOD_None.png",
           "weight": 80
@@ -640,6 +656,21 @@
         {
           "name": "Chubby_X",
           "file": "chubby/NECKLACE_Chubby_X.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_Normies",
+          "file": "zombie/NECKLACE_Zombie_Normies.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_HeyKoolAid",
+          "file": "zombie/NECKLACE_Zombie_HeyKoolAid.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_Chromies",
+          "file": "zombie/NECKLACE_Zombie_Chromies.png",
           "weight": 0
         },
         {
@@ -1424,6 +1455,31 @@
         {
           "name": "Chubby_NEO",
           "file": "chubby/GLASSES_CHubby_NEO.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_Shades",
+          "file": "zombie/GLASSES_Zombie_Shades.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_VR",
+          "file": "zombie/GLASSES_Zombie_VR.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_DFrameFilled",
+          "file": "zombie/GLASSES_Zombie_DFrameFilled.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_Neo",
+          "file": "zombie/GLASSES_Zombie_Neo.png",
+          "weight": 0
+        },
+        {
+          "name": "Zombie_PiratePatch",
+          "file": "zombie/GLASSES_Zombie_PiratePatch.png",
           "weight": 0
         },
         {
