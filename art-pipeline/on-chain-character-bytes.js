@@ -24,7 +24,7 @@ const ON_CHAIN_CHARACTER_BYTES = Object.freeze({
 
 /**
  * On-chain palette byte (traits[1]). NEVER renumber once mint data exists.
- * Next free slot after ZOMBIE (26): GOLD = 27.
+ * Next free slot after GOLD (27): Normie Legendary palettes 28–36.
  */
 const ON_CHAIN_PALETTE_BYTES = Object.freeze({
   SIGNAL: 0,
@@ -55,6 +55,16 @@ const ON_CHAIN_PALETTE_BYTES = Object.freeze({
   ALIEN: 25,
   ZOMBIE: 26,
   GOLD: 27,
+  // Normie Legendary 1/1s — greyscale placeholders until hand-colorized palettes ship.
+  NORMIE_SNOWFRO: 28,     // Snowfro (Normie #45)
+  NORMIE_ACK: 29,         // a.c.k. (Normie #603)
+  NORMIE_SERC: 30,        // Serc (Normie #4354)
+  NORMIE_JACKBUTCHER: 31, // Jack Butcher (Normie #4698)
+  NORMIE_TIMPERS: 32,     // Timpers (Normie #5974)
+  NORMIE_DEEKAY: 33,      // Deekay (Normie #6576 → seeded Chromie ID)
+  NORMIE_PIV: 34,         // PIV (Normie #7409 → seeded Chromie ID)
+  NORMIE_UPCOMING1: 35,   // Coming Soon (Normie #9993 → seeded Chromie ID)
+  NORMIE_UPCOMING2: 36,   // Coming Soon (Normie #0 → seeded Chromie ID)
 });
 
 /** Character names that encode as `${name}_${gender}` when gender is Male/Female. */

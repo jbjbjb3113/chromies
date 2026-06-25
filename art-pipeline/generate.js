@@ -23,6 +23,7 @@ const {
   mutateLayer,
 } = require("./pixel-mutation");
 const { isGoldToken } = require("./gold-token-ids");
+const { getLegendaryForToken } = require("./legendary-token-ids");
 
 const GRID = SETTINGS.grid;
 const PX = GRID * GRID;
@@ -301,6 +302,8 @@ function resolveCharacter(tokenId, characterOverride = null, genderOverride = nu
 // ============================================================================
 
 function pickPalette(tokenId, traits, character = null) {
+  const legendary = getLegendaryForToken(tokenId);
+  if (legendary) return legendary.palette;
   if (isGoldToken(tokenId)) return "GOLD";
   // If character locks to a specific palette pool, use it
   if (character && Array.isArray(character.palettePool) && character.palettePool.length > 0) {
@@ -643,6 +646,11 @@ const CHARACTER_TYPE_DISPLAY = {
 
 function buildMetadata(tokenId, paletteKey, picks, tier, mTier, character = null) {
   const attributes = [];
+  const legendary = getLegendaryForToken(tokenId);
+  if (legendary) {
+    attributes.push({ trait_type: "Tier", value: legendary.tier });
+    attributes.push({ trait_type: "Artist", value: legendary.artist });
+  }
   if (character) {
     const typeDisplay = CHARACTER_TYPE_DISPLAY[character.name] || character.name;
     attributes.push({ trait_type: "Type", value: typeDisplay });

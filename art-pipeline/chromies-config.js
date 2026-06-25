@@ -735,17 +735,75 @@ const PALETTES = {
       "#e8c020", // 15 hair_bright
     ],
   },
-  SERC: {
-    name: "SERC",
-    description: "Normies tribute. Monochrome grays from Normie #4354 (#e3e5e4 / #48494b), SIGNAL slot luminances mapped onto the two-tone ramp. Special/gated — weight 0.",
-    colors: [
-      "#e3e5e4", "#494a4c", "#505153", "#e3e5e4",
-      "#5e5f61", "#7e8081", "#959797", "#a7a9a9",
-      "#b3b4b4", "#525355", "#48494b", "#666869",
-      "#828384", "#4d4f50", "#6b6c6e", "#939595",
-    ],
-  },
 };
+
+/** Greyscale placeholder ramp for Normie Legendary 1/1 palettes (replace per-artist when ready). */
+const NORMIE_LEGENDARY_PLACEHOLDER = [
+  "#e8e8e8", // 0  background
+  "#1a1a1a", // 1  mask_dark
+  "#2a2a2a", // 2  mask_mid
+  "#f0f0f0", // 3  highlight
+  "#3a3a3a", // 4  skin_shadow_deep
+  "#4a4a4a", // 5  skin_shadow
+  "#6a6a6a", // 6  skin_mid
+  "#7a7a7a", // 7  skin_light
+  "#8a8a8a", // 8  skin_highlight
+  "#5a5a5a", // 9  hood/shirt
+  "#2e2e2e", // 10 eye_socket
+  "#888888", // 11 eye_glow
+  "#aaaaaa", // 12 eye_signal
+  "#404040", // 13 hair_dark
+  "#606060", // 14 hair_mid
+  "#909090", // 15 hair_bright
+];
+
+Object.assign(PALETTES, {
+  NORMIE_SNOWFRO: {
+    name: "NORMIE_SNOWFRO",
+    description: "Normie Legendary — Snowfro (Normie #45). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_ACK: {
+    name: "NORMIE_ACK",
+    description: "Normie Legendary — a.c.k. (Normie #603). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_SERC: {
+    name: "NORMIE_SERC",
+    description: "Normie Legendary — Serc (Normie #4354). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_JACKBUTCHER: {
+    name: "NORMIE_JACKBUTCHER",
+    description: "Normie Legendary — Jack Butcher (Normie #4698). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_TIMPERS: {
+    name: "NORMIE_TIMPERS",
+    description: "Normie Legendary — Timpers (Normie #5974). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_DEEKAY: {
+    name: "NORMIE_DEEKAY",
+    description: "Normie Legendary — Deekay (Normie #6576). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_PIV: {
+    name: "NORMIE_PIV",
+    description: "Normie Legendary — PIV (Normie #7409). Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_UPCOMING1: {
+    name: "NORMIE_UPCOMING1",
+    description: "Normie Legendary — Coming Soon. Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+  NORMIE_UPCOMING2: {
+    name: "NORMIE_UPCOMING2",
+    description: "Normie Legendary — Coming Soon. Greyscale placeholder.",
+    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  },
+});
 
 const SETTINGS = {
   grid: 64,
