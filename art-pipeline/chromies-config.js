@@ -837,6 +837,18 @@ const CHARACTERS = [
         Male_Thick: 15,
         None: 60,
       },
+      tattoo: {
+        Male_Dradle: 15,
+        Male_Scar: 15,
+        Male_Stars: 15,
+        Male_Thug: 15,
+        None: 50,
+      },
+      bodytattoo: {
+        Male_AkuHeart: 15,
+        Male_Normies: 15,
+        None: 70,
+      },
     },
   },
   {

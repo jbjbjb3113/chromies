@@ -486,6 +486,16 @@
           "weight": 5
         },
         {
+          "name": "Male_AkuHeart",
+          "file": "male/BODYTATTOO_Male_AkuHeart.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Normies",
+          "file": "male/BODYTATTOO_Male_Normies.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "BODYTATTOO_None.png",
           "weight": 60
@@ -756,6 +766,26 @@
         {
           "name": "Female_Thug",
           "file": "female/TATTOO_Female_Thug.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Dradle",
+          "file": "male/TATTOO_Male_Dradle.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Scar",
+          "file": "male/TATTOO_Male_Scar.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Stars",
+          "file": "male/TATTOO_Male_Stars.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Thug",
+          "file": "male/TATTOO_Male_Thug.png",
           "weight": 0
         },
         {
