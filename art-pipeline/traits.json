@@ -1619,6 +1619,16 @@
           "name": "Female_Cigarette",
           "file": "female/ACCESSORY_Female_Cigarette.png",
           "weight": 0
+        },
+        {
+          "name": "Male_Cigarette",
+          "file": "male/ACCESSORY_Male_Cigarette.png",
+          "weight": 0
+        },
+        {
+          "name": "Male_Cigarette_Flipped",
+          "file": "male/ACCESSORY_Male_Cigarette_Flipped.png",
+          "weight": 0
         }
       ]
     }

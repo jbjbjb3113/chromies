@@ -849,6 +849,11 @@ const CHARACTERS = [
         Male_Normies: 15,
         None: 70,
       },
+      accessory: {
+        Male_Cigarette: 10,
+        Male_Cigarette_Flipped: 10,
+        None: 80,
+      },
     },
   },
   {
