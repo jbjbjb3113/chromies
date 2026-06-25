@@ -1080,6 +1080,26 @@
           "weight": 0
         },
         {
+          "name": "SP_SquintLeft_Female",
+          "file": "SideProfile_Female/SP_EYES_SquintLeft_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_SquintRight_Female",
+          "file": "SideProfile_Female/SP_EYES_SquintRight_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Straight_Female",
+          "file": "SideProfile_Female/SP_EYES_Straight_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Stoned_Female",
+          "file": "SideProfile_Female/SP_EYES_Stoned_Female.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "EYES_None.png",
           "weight": 0
@@ -1189,11 +1209,6 @@
         {
           "name": "SP_Smile_Female",
           "file": "SideProfile_Female/SP_EXPRESSION_Smile_Female.png",
-          "weight": 0
-        },
-        {
-          "name": "SP_Neutral_Female",
-          "file": "SideProfile_Female/SP_EXPRESSION_Neutral_Female.png",
           "weight": 0
         },
         {

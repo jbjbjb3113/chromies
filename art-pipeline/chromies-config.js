@@ -1152,7 +1152,6 @@ const CHARACTERS = [
       head: "SP_HeroA_Female",
       neck: "SP_HeroA_Female",
       body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
-      eyes: "None",        // eyes baked into SP head art
       bodytattoo: "None",  // positioned for front-facing body
     },
     slotVariantPool: {
@@ -1168,8 +1167,13 @@ const CHARACTERS = [
       },
       expression: {
         SP_Smile_Female: 45,
-        SP_Neutral_Female: 20,
         SP_Smirk_Female: 35,
+      },
+      eyes: {
+        SP_SquintLeft_Female: 25,
+        SP_SquintRight_Female: 25,
+        SP_Straight_Female: 25,
+        SP_Stoned_Female: 25,
       },
       beard: ["None"],
       mustache: ["None"],
