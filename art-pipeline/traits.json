@@ -946,6 +946,24 @@
           "mutationScale": 1.5
         },
         {
+          "name": "SP_Full_Female",
+          "file": "SideProfile_Female/SP_BEARD_Female_Full.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "SP_Goat_Female",
+          "file": "SideProfile_Female/SP_BEARD_Female_Goat.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "SP_Chop_Female",
+          "file": "SideProfile_Female/SP_BEARD_Female_Chop.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
           "name": "None",
           "file": "BEARD_None.png",
           "weight": 60
@@ -998,6 +1016,12 @@
         {
           "name": "Male_Thick",
           "file": "male/MUSTACHE_Male_Thick.png",
+          "weight": 0,
+          "mutationScale": 0.5
+        },
+        {
+          "name": "SP_Thick_Female",
+          "file": "SideProfile_Female/SP_MUSTACHE_Female_Thick.png",
           "weight": 0,
           "mutationScale": 0.5
         },
@@ -1296,6 +1320,16 @@
         {
           "name": "Female_Stud",
           "file": "female/EARRINGS_Female_Stud.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Stud_Female",
+          "file": "SideProfile_Female/SP_EARRING_Female_Stud.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Flower_Female",
+          "file": "SideProfile_Female/SP_EARRING_Female_Flower.png",
           "weight": 0
         },
         {

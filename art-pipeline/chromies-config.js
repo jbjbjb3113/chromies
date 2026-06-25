@@ -1233,8 +1233,16 @@ const CHARACTERS = [
         SP_Straight_Female: 25,
         SP_Stoned_Female: 25,
       },
-      beard: ["None"],
-      mustache: ["None"],
+      beard: {
+        SP_Full_Female: 8,
+        SP_Goat_Female: 8,
+        SP_Chop_Female: 8,
+        None: 76,
+      },
+      mustache: {
+        SP_Thick_Female: 8,
+        None: 92,
+      },
       glasses: {
         SP_DFrame_Female: 10,
         SP_DFrameFilled_Female: 10,
@@ -1246,7 +1254,11 @@ const CHARACTERS = [
         SP_Chain_Female: 15,
         None: 85,
       },
-      earrings: ["None"],
+      earrings: {
+        SP_Stud_Female: 15,
+        SP_Flower_Female: 10,
+        None: 75,
+      },
       tattoo: {
         SP_AkuHeart_Female: 15,
         SP_Eagle_Female: 15,
