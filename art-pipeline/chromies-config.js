@@ -812,6 +812,20 @@ const CHARACTERS = [
     slotWeightOverrides: {},
     slotVariantPool: {
       necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
+      hair: {
+        Male_Afro: 25,
+        Male_AZVet: 7,
+        Male_Buns: 7,
+        Male_Dreads: 10,
+        Male_FadeRight: 7,
+        Male_FlatTop: 10,
+        Male_Mohawk: 15,
+        Male_MrT: 10,
+        Male_Pompadour: 15,
+        Male_Surfer: 13,
+        None: 5,
+        Male_TheAvatar: 0.56, // 0.56 / 124.56 pool ≈ 0.45% (~4–5 per 1000 hair rolls)
+      },
       eyes: {
         Male_CrossEyed: 20,
         Male_SquintLeft: 20,

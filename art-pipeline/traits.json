@@ -1526,6 +1526,72 @@
           "mutationScale": 1
         },
         {
+          "name": "Male_Afro",
+          "file": "male/HAIR_Male_Afro.png",
+          "weight": 0,
+          "mutationScale": 2
+        },
+        {
+          "name": "Male_AZVet",
+          "file": "male/HAIR_Male_AZVet.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "Male_Buns",
+          "file": "male/HAIR_Male_Buns.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "Male_Dreads",
+          "file": "male/HAIR_Male_Dreads.png",
+          "weight": 0,
+          "mutationScale": 2.5
+        },
+        {
+          "name": "Male_FadeRight",
+          "file": "male/HAIR_Male_FadeRight.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "Male_FlatTop",
+          "file": "male/HAIR_Male_FlatTop.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "Male_Mohawk",
+          "file": "male/HAIR_Male_Mohawk.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "Male_MrT",
+          "file": "male/HAIR_Male_MrT.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "Male_Pompadour",
+          "file": "male/HAIR_Male_Pompadour.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "Male_Surfer",
+          "file": "male/HAIR_Male_Surfer.png",
+          "weight": 0,
+          "mutationScale": 1.8
+        },
+        {
+          "name": "Male_TheAvatar",
+          "file": "male/HAIR_Male_TheAvatar.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
           "name": "Chubby_Afro",
           "file": "chubby/HAIR_Chubby_Afro.png",
           "weight": 0,
