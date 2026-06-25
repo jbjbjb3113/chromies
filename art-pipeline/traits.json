@@ -650,7 +650,7 @@
         },
         {
           "name": "SP_HeroA_Female",
-          "file": "sideprofile/SP_NECK_HeroA_Female.png",
+          "file": "SideProfile_Female/SP_NECK_HeroA_Female.png",
           "weight": 0
         }
       ]
@@ -1477,7 +1477,7 @@
         },
         {
           "name": "SP_Dreads_Female",
-          "file": "sideprofile/SP_HAIR_Dreads_Female.png",
+          "file": "SideProfile_Female/SP_HAIR_Dreads_Female.png",
           "weight": 0,
           "mutationScale": 2.5
         },
