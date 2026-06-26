@@ -17,7 +17,7 @@ const NORMIE_LEGENDARY_DEFS = Object.freeze([
   { palette: "NORMIE_ACK",         artist: "a.c.k.",       normieRef: 603,  tokenId: 603 },
   { palette: "NORMIE_SERC",        artist: "Serc",         normieRef: 4354, tokenId: 4354 },
   { palette: "NORMIE_JACKBUTCHER", artist: "Jack Butcher", normieRef: 4698, tokenId: 4698 },
-  { palette: "NORMIE_TIMPERS",     artist: "Timpers",      normieRef: 5974, tokenId: 5974 },
+  { palette: "NORMIE_TIMPERS",     artist: "Timpers",      normieRef: 5974, seed: "chromies-legendary-timpers-v1" },
   { palette: "NORMIE_DEEKAY",      artist: "Deekay",       normieRef: 6576, seed: "chromies-legendary-deekay-v1" },
   { palette: "NORMIE_PIV",         artist: "PIV",          normieRef: 7409, seed: "chromies-legendary-piv-v1" },
   { palette: "NORMIE_UPCOMING1",   artist: "Coming Soon",  normieRef: 9993, seed: "chromies-legendary-upcoming1-v1" },
