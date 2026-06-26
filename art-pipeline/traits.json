@@ -378,7 +378,8 @@
         {
           "name": "Zombie_Hoodie",
           "file": "zombie/HOOD_Zombie_Hoodie.png",
-          "weight": 0
+          "weight": 0,
+          "zOrder": 41
         },
         {
           "name": "None",
