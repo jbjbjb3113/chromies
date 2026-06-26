@@ -9,6 +9,7 @@ const { PNG } = require("pngjs");
 const { PALETTES, SETTINGS, CHARACTERS } = require("./chromies-config");
 const {
   resolveCharacter,
+  pickCharacter,
   pickTokenVariants,
   applyCoverageRules,
   pickPalette,
@@ -21,6 +22,8 @@ const {
   buildPhase3Effects,
   getMutationTier,
 } = require("./generate");
+const { isGoldToken } = require("./gold-token-ids");
+const { getLegendaryForToken } = require("./legendary-token-ids");
 const { overlayStrayPixels } = require("./phase3-variance");
 const { characterKey } = require("./on-chain-character-bytes");
 
@@ -175,7 +178,19 @@ function summarizeCharacterPlan(slots) {
 
 function parseArgs() {
   const args = process.argv.slice(2);
-  const result = { count: 24, start: 1, palette: null, tier: null, mtier: null, character: null, gender: null, characters: null, characterCounts: null, json: false };
+  const result = {
+    count: 24,
+    start: 1,
+    palette: null,
+    tier: null,
+    mtier: null,
+    character: null,
+    gender: null,
+    characters: null,
+    characterCounts: null,
+    json: false,
+    fromMintData: false,
+  };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--count") result.count = parseInt(args[++i], 10);
@@ -187,9 +202,31 @@ function parseArgs() {
     else if (a === "--gender") result.gender = args[++i];
     else if (a === "--characters") result.characters = args[++i];
     else if (a === "--character-counts") result.characterCounts = args[++i];
+    else if (a === "--from-mint-data") result.fromMintData = true;
     else if (a === "--json") result.json = true;
   }
   return result;
+}
+
+function loadMintDataRecords() {
+  const mintPath = path.join(SETTINGS.outputDir, "mint-data.json");
+  if (!fs.existsSync(mintPath)) {
+    throw new Error(`mint-data not found at ${mintPath} — run bridge-mint-data.js first`);
+  }
+  const records = JSON.parse(fs.readFileSync(mintPath, "utf8"));
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new Error("mint-data.json is empty or not an array");
+  }
+  records.sort((a, b) => a.tokenId - b.tokenId);
+  for (let i = 0; i < records.length; i++) {
+    const expectedId = i + 1;
+    if (records[i].tokenId !== expectedId) {
+      throw new Error(
+        `mint-data.json gap at index ${i}: expected tokenId ${expectedId}, got ${records[i].tokenId}`,
+      );
+    }
+  }
+  return records;
 }
 
 function slugPart(value) {
@@ -248,15 +285,42 @@ function gridDims(n) {
 }
 
 function main() {
-  let { count, start, palette: paletteOverride, tier: tierOverride, mtier: mtierOverride, character: characterOverride, gender: genderOverride, characters: charactersFlag, characterCounts: characterCountsFlag, json: writeJson } = parseArgs();
+  let {
+    count,
+    start,
+    palette: paletteOverride,
+    tier: tierOverride,
+    mtier: mtierOverride,
+    character: characterOverride,
+    gender: genderOverride,
+    characters: charactersFlag,
+    characterCounts: characterCountsFlag,
+    json: writeJson,
+    fromMintData,
+  } = parseArgs();
   const traits = JSON.parse(fs.readFileSync(SETTINGS.traitsFile, "utf8"));
   const slotOrder = Object.keys(traits.slots);
 
   let characterSpecs = null;
   let characterPlan = null;
   let characterCountEntries = null;
+  let mintRecords = null;
 
-  if (characterCountsFlag) {
+  if (fromMintData) {
+    if (charactersFlag || characterCountsFlag || characterOverride || genderOverride) {
+      console.warn("  [WARN] --from-mint-data set; ignoring character overrides");
+    }
+    try {
+      mintRecords = loadMintDataRecords();
+      count = mintRecords.length;
+      start = mintRecords[0].tokenId;
+      writeJson = true;
+    } catch (err) {
+      console.error(err.message);
+      process.exit(1);
+    }
+    console.log(`  mint-data: ${count} tokens (IDs ${start}–${start + count - 1})`);
+  } else if (characterCountsFlag) {
     if (charactersFlag) {
       console.warn("  [WARN] --character-counts set; ignoring --characters");
     }
@@ -318,11 +382,15 @@ function main() {
   const charLabel = characterPlan
     ? `, characters MIX [${characterSpecs.map((s) => (s.gender ? `${s.name} (${s.gender})` : s.name)).join(", ")}]`
     : (characterOverride ? `, character FORCED to ${characterOverride}` : "");
-  const jsonLabel = writeJson || characterPlan ? ", traits JSON ON" : "";
-  console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}${jsonLabel}`);
+  const jsonLabel = writeJson || characterPlan || fromMintData ? ", traits JSON ON" : "";
+  const mintLabel = fromMintData ? ", source mint-data.json" : "";
+  console.log(`Gallery: ${count} tokens, ${cols}x${rows} grid, ${palLabel}${tierLabel}${mtierLabel}${charLabel}${genderLabel}${jsonLabel}${mintLabel}`);
 
+  const skipPerTokenWrites = fromMintData;
   const tokensDir = path.join(SETTINGS.outputDir, "tokens");
-  if (!fs.existsSync(tokensDir)) fs.mkdirSync(tokensDir, { recursive: true });
+  if (!skipPerTokenWrites && !fs.existsSync(tokensDir)) {
+    fs.mkdirSync(tokensDir, { recursive: true });
+  }
 
   const gallery = new PNG({ width: W, height: H });
   for (let i = 0; i < W * H; i++) {
@@ -336,20 +404,24 @@ function main() {
   const tierCounts = {};
   const mTierCounts = {};
   const characterCounts = {};
-  const writeTraitJson = writeJson || Boolean(characterPlan);
+  let goldCount = 0;
+  let legendaryCount = 0;
+  const writeTraitJson = writeJson || Boolean(characterPlan) || fromMintData;
 
   const traitRows = [];
 
   for (let n = 0; n < count; n++) {
-    const tokenId = start + n;
+    const tokenId = fromMintData ? mintRecords[n].tokenId : start + n;
     const col = n % cols;
     const row = Math.floor(n / cols);
     const ox = PADDING + col * (tileSize + PADDING);
     const oy = PADDING + row * (tileSize + PADDING);
 
-    let character = characterPlan
-      ? characterPlan[n]
-      : resolveCharacter(tokenId, characterOverride, genderOverride);
+    let character = fromMintData
+      ? pickCharacter(tokenId)
+      : characterPlan
+        ? characterPlan[n]
+        : resolveCharacter(tokenId, characterOverride, genderOverride);
     if (!characterPlan && genderOverride && character?.gender?.toLowerCase() !== genderOverride.toLowerCase()) {
       console.warn(
         `  [WARN] token ${tokenId}: expected gender ${genderOverride}, got ${character?.gender || "unknown"}`,
@@ -365,6 +437,8 @@ function main() {
       continue;
     }
     paletteCounts[paletteKey] = (paletteCounts[paletteKey] || 0) + 1;
+    if (isGoldToken(tokenId)) goldCount += 1;
+    if (getLegendaryForToken(tokenId)) legendaryCount += 1;
 
     const picks = pickTokenVariants(tokenId, traits, new Set(), character);
     const renderPicks = applyCoverageRules(picks, traits, character);
@@ -380,13 +454,17 @@ function main() {
     buf = overlayStrayPixels(buf, strays);
     const pngBuf = renderPNG(buf, palette);
 
-    const baseName = String(tokenId).padStart(4, "0");
-    fs.writeFileSync(path.join(tokensDir, `${baseName}.png`), pngBuf);
-    fs.writeFileSync(path.join(tokensDir, `${baseName}_1024.png`), upscalePNG(pngBuf, 16));
-    fs.writeFileSync(path.join(tokensDir, `${baseName}.svg`), renderSVG(buf, palette));
-    fs.writeFileSync(path.join(tokensDir, `${baseName}.json`), JSON.stringify(buildMetadata(tokenId, paletteKey, picks, tier, mTier, character), null, 2));
-
-    updateMaster(tokenId, paletteKey, picks, tier, mTier, character);
+    if (!skipPerTokenWrites) {
+      const baseName = String(tokenId).padStart(4, "0");
+      fs.writeFileSync(path.join(tokensDir, `${baseName}.png`), pngBuf);
+      fs.writeFileSync(path.join(tokensDir, `${baseName}_1024.png`), upscalePNG(pngBuf, 16));
+      fs.writeFileSync(path.join(tokensDir, `${baseName}.svg`), renderSVG(buf, palette));
+      fs.writeFileSync(
+        path.join(tokensDir, `${baseName}.json`),
+        JSON.stringify(buildMetadata(tokenId, paletteKey, picks, tier, mTier, character), null, 2),
+      );
+      updateMaster(tokenId, paletteKey, picks, tier, mTier, character);
+    }
 
     if (writeTraitJson) {
       traitRows.push(buildGalleryTraitRow(tokenId, character, paletteKey, picks, mTier, slotOrder));
@@ -411,19 +489,25 @@ function main() {
   }
   process.stdout.write("\n");
 
-  const outName = galleryPngName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
+  const outName = fromMintData
+    ? `gallery_${count}_mint_data.png`
+    : galleryPngName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
   fs.writeFileSync(path.join(SETTINGS.outputDir, outName), PNG.sync.write(gallery));
   console.log(`wrote ${outName}`);
   if (writeTraitJson) {
-    const jsonName = galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
+    const jsonName = fromMintData
+      ? `gallery_${count}_mint_data_traits.json`
+      : galleryTraitsJsonName(count, start, paletteOverride, characterOverride, genderOverride, characterSpecs);
     fs.writeFileSync(
       path.join(SETTINGS.outputDir, jsonName),
       JSON.stringify(traitRows, null, 2)
     );
     console.log(`wrote ${jsonName} (${traitRows.length} tokens)`);
   }
-  console.log(`wrote ${count} per-token file sets to tokens/`);
-  console.log(`updated master.json + master.csv`);
+  if (!skipPerTokenWrites) {
+    console.log(`wrote ${count} per-token file sets to tokens/`);
+    console.log(`updated master.json + master.csv`);
+  }
   if (!paletteOverride) {
     console.log(`palette distribution:    ${Object.entries(paletteCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
   }
@@ -439,6 +523,10 @@ function main() {
   }
   console.log(`drift distribution:      ${Object.entries(tierCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
   console.log(`mutation distribution:   ${Object.entries(mTierCounts).map(([k, v]) => `${k}=${v}`).join(", ")}`);
+  if (fromMintData) {
+    console.log(`GOLD tokens:             ${goldCount}`);
+    console.log(`Normie Legendary tokens: ${legendaryCount}`);
+  }
 }
 
 if (require.main === module) main();
@@ -450,4 +538,5 @@ module.exports = {
   buildCharacterAssignments,
   buildCharacterAssignmentsFromCounts,
   summarizeCharacterPlan,
+  loadMintDataRecords,
 };
