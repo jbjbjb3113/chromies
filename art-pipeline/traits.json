@@ -344,6 +344,11 @@
           "weight": 0
         },
         {
+          "name": "SP_Classic_Male",
+          "file": "SideProfile_Male/SP_HOOD_Classic_Male.png",
+          "weight": 0
+        },
+        {
           "name": "Female_Classic",
           "file": "female/HOOD_Female_Classic.png",
           "weight": 0
@@ -447,6 +452,21 @@
         {
           "name": "SP_FlannelDark_Female",
           "file": "SideProfile_Female/SP_SHIRT_FlannelDark_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Crew_Male",
+          "file": "SideProfile_Male/SP_SHIRT_Crew_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Flannel_Male",
+          "file": "SideProfile_Male/SP_SHIRT_Flannel_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_FlannelDark_Male",
+          "file": "SideProfile_Male/SP_SHIRT_FlannelDark_Male.png",
           "weight": 0
         },
         {
@@ -680,6 +700,11 @@
           "weight": 0
         },
         {
+          "name": "SP_Chain_Male",
+          "file": "SideProfile_Male/SP_NECKLACE_Chain_Male.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "NECKLACE_None.png",
           "weight": 70
@@ -763,6 +788,11 @@
         {
           "name": "SP_HeroA_Female",
           "file": "SideProfile_Female/SP_HEAD_HeroA_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_HeroA_Male",
+          "file": "SideProfile_Male/SP_HEAD_HeroA_Male.png",
           "weight": 0
         },
         {
@@ -888,6 +918,26 @@
           "weight": 0
         },
         {
+          "name": "SP_AkuHeart_Male",
+          "file": "SideProfile_Male/SP_TATTOO_AkuHeart_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Eagle_Male",
+          "file": "SideProfile_Male/SP_TATTOO_Eagle_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Scar_Male",
+          "file": "SideProfile_Male/SP_TATTOO_Scar_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Tears_Male",
+          "file": "SideProfile_Male/SP_TATTOO_Tears_Male.png",
+          "weight": 0
+        },
+        {
           "name": "None",
           "file": "TATTOO_None.png",
           "weight": 75
@@ -996,6 +1046,24 @@
           "mutationScale": 1.5
         },
         {
+          "name": "SP_Full_Male",
+          "file": "SideProfile_Male/SP_BEARD_Male_Full.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "SP_Goat_Male",
+          "file": "SideProfile_Male/SP_BEARD_Male_Goat.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
+          "name": "SP_Chop_Male",
+          "file": "SideProfile_Male/SP_BEARD_Male_Chop.png",
+          "weight": 0,
+          "mutationScale": 1.5
+        },
+        {
           "name": "None",
           "file": "BEARD_None.png",
           "weight": 60
@@ -1054,6 +1122,12 @@
         {
           "name": "SP_Thick_Female",
           "file": "SideProfile_Female/SP_MUSTACHE_Female_Thick.png",
+          "weight": 0,
+          "mutationScale": 0.5
+        },
+        {
+          "name": "SP_Thick_Male",
+          "file": "SideProfile_Male/SP_MUSTACHE_Male_Thick.png",
           "weight": 0,
           "mutationScale": 0.5
         },
@@ -1328,6 +1402,21 @@
           "name": "SP_Smirk_Female",
           "file": "SideProfile_Female/SP_EXPRESSION_Smirk_Female.png",
           "weight": 0
+        },
+        {
+          "name": "SP_Smile_Male",
+          "file": "SideProfile_Male/SP_EXPRESSION_Smile_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Smirk_Male",
+          "file": "SideProfile_Male/SP_EXPRESSION_Smirk_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Neutral_Male",
+          "file": "SideProfile_Male/SP_EXPRESSION_Neutral_Male.png",
+          "weight": 0
         }
       ]
     },
@@ -1362,6 +1451,16 @@
         {
           "name": "SP_Flower_Female",
           "file": "SideProfile_Female/SP_EARRING_Female_Flower.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Stud_Male",
+          "file": "SideProfile_Male/SP_EARRING_Male_Stud.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Flower_Male",
+          "file": "SideProfile_Male/SP_EARRING_Male_Flower.png",
           "weight": 0
         },
         {
@@ -1421,6 +1520,26 @@
         {
           "name": "SP_Neo_Female",
           "file": "SideProfile_Female/SP_GLASSES_Neo_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_DFrame_Male",
+          "file": "SideProfile_Male/SP_GLASSES_DFrame_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_DFrameFilled_Male",
+          "file": "SideProfile_Male/SP_GLASSES_DFrameFilled_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Shades_Male",
+          "file": "SideProfile_Male/SP_GLASSES_Shades_Male.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Neo_Male",
+          "file": "SideProfile_Male/SP_GLASSES_Neo_Male.png",
           "weight": 0
         },
         {
@@ -1680,6 +1799,48 @@
           "mutationScale": 1.2
         },
         {
+          "name": "SP_Mohawk_Male",
+          "file": "SideProfile_Male/SP_HAIR_Mohawk_Male.png",
+          "weight": 0,
+          "mutationScale": 1
+        },
+        {
+          "name": "SP_Afro_Male",
+          "file": "SideProfile_Male/SP_HAIR_Afro_Male.png",
+          "weight": 0,
+          "mutationScale": 2
+        },
+        {
+          "name": "SP_Dreads_Male",
+          "file": "SideProfile_Male/SP_HAIR_Dreads_Male.png",
+          "weight": 0,
+          "mutationScale": 2.5
+        },
+        {
+          "name": "SP_Surfer_Male",
+          "file": "SideProfile_Male/SP_HAIR_Surfer_Male.png",
+          "weight": 0,
+          "mutationScale": 1.8
+        },
+        {
+          "name": "SP_MrT_Male",
+          "file": "SideProfile_Male/SP_HAIR_MrT_Male.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "SP_FadeRight_Male",
+          "file": "SideProfile_Male/SP_HAIR_FadeRight_Male.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
+          "name": "SP_AZVet_Male",
+          "file": "SideProfile_Male/SP_HAIR_AZVet_Male.png",
+          "weight": 0,
+          "mutationScale": 1.2
+        },
+        {
           "name": "Female_Afro",
           "file": "female/HAIR_Female_Afro.png",
           "weight": 0,
@@ -1907,6 +2068,11 @@
         {
           "name": "SP_Cigarette_Female",
           "file": "SideProfile_Female/SP_ACCESSORY_Cigarette_Female.png",
+          "weight": 0
+        },
+        {
+          "name": "SP_Cigarette_Male",
+          "file": "SideProfile_Male/SP_ACCESSORY_Cigarette_Male.png",
           "weight": 0
         },
         {

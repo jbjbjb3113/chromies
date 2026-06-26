@@ -338,6 +338,7 @@ function isHoodNone(hoodName) {
 
 function hoodCoversTorso(hoodName) {
   return hoodName === "Classic" || hoodName === "SP_Classic" || hoodName === "SP_Classic_Female"
+      || hoodName === "SP_Classic_Male"
       || hoodName === "Female_Classic" || hoodName === "Female_Hooded"
       || hoodName === "Chubby_Classic"
       || hoodName === "Zombie_Classic" || hoodName === "Zombie_Hooded" || hoodName === "Zombie_Hoodie";
@@ -345,6 +346,7 @@ function hoodCoversTorso(hoodName) {
 
 function hoodSuppressesHair(hoodName) {
   return isFemaleHood(hoodName) || hoodName === "Chubby_Classic"
+      || hoodName === "SP_Classic_Female" || hoodName === "SP_Classic_Male"
       || hoodName === "Zombie_Classic" || hoodName === "Zombie_Hooded" || hoodName === "Zombie_Hoodie";
 }
 
@@ -416,7 +418,9 @@ function applyCoverageRules(picks, traits, character = null) {
   const pickSideProfileDefaultShirt = () => {
     const candidates = character?.gender === "Female"
       ? ["SP_Crew_Female"]
-      : ["SP_Crew", "Crew"];
+      : character?.gender === "Male"
+        ? ["SP_Crew_Male"]
+        : ["SP_Crew", "Crew"];
     for (const name of candidates) {
       const variant = shirtSlotDef.variants.find(v => v.name === name);
       if (!variant) continue;
@@ -451,6 +455,9 @@ function applyCoverageRules(picks, traits, character = null) {
 
   // SideProfile — body slot always None; shirt is SP crew (or rolled SP variant), never naked default.
   if (character && character.name === "SideProfile") {
+    if (character.gender === "Male") {
+      delete out.neck; // neck baked into SideProfile_Male head asset
+    }
     suppressTo("body", bodySlotDef);
     suppressTo("bodytattoo", bodyTattooSlotDef);
     const finalHood = out.hood ? out.hood.variant.name : null;

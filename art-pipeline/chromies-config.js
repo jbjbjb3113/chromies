@@ -1212,24 +1212,70 @@ const CHARACTERS = [
     weight: 20,
     palettePool: null,
     forcedSlots: {
-      head: "SP_HeroA",
-      neck: "SP_HeroA",
-      body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
-      eyes: "None",        // eyes baked into SP head art
-      bodytattoo: "None",  // positioned for front-facing body
-      glasses: "None",     // SP_GLASSES_* assets not ready yet
+      head: "SP_HeroA_Male",
+      body: "None",
+      eyes: "None",
+      bodytattoo: "None",
     },
     slotVariantPool: {
-      // Object form: weights REPLACE traits.json weights (SP_ variants are weight 0 there)
-      hair: { SP_Mohawk: 22, SP_Afro: 45, SP_MrT: 10, None: 23 },
-      beard: ["None"],        // pending: SP_Full, SP_Goat
-      glasses: ["None"],      // pending: SP_Shades, SP_Neo
-      mustache: ["None"],        // no SP mustache asset yet — front-view would misalign
-      necklace: ["None"],        // hidden from side view
-      earrings: ["None"],        // hidden from side view
-      tattoo: ["None"],          // face tattoos hidden
-      shirt: ["Crew", "Tank", "None"],   // existing shirts work
-      hood: { SP_Classic: 20, None: 80 },
+      hair: {
+        SP_Mohawk_Male: 15,
+        SP_Afro_Male: 20,
+        SP_Dreads_Male: 10,
+        SP_Surfer_Male: 13,
+        SP_MrT_Male: 10,
+        SP_FadeRight_Male: 7,
+        SP_AZVet_Male: 7,
+        None: 10,
+      },
+      expression: {
+        SP_Smile_Male: 45,
+        SP_Smirk_Male: 35,
+      },
+      beard: {
+        SP_Full_Male: 8,
+        SP_Goat_Male: 8,
+        SP_Chop_Male: 8,
+        None: 76,
+      },
+      mustache: {
+        SP_Thick_Male: 8,
+        None: 92,
+      },
+      glasses: {
+        SP_DFrame_Male: 10,
+        SP_DFrameFilled_Male: 10,
+        SP_Shades_Male: 10,
+        SP_Neo_Male: 10,
+        None: 60,
+      },
+      necklace: {
+        SP_Chain_Male: 15,
+        None: 85,
+      },
+      earrings: {
+        SP_Stud_Male: 15,
+        SP_Flower_Male: 10,
+        None: 75,
+      },
+      tattoo: {
+        SP_AkuHeart_Male: 15,
+        SP_Eagle_Male: 15,
+        SP_Scar_Male: 15,
+        SP_Tears_Male: 15,
+        None: 40,
+      },
+      shirt: {
+        SP_Crew_Male: 35,
+        SP_Flannel_Male: 20,
+        SP_FlannelDark_Male: 10,
+        None: 35,
+      },
+      hood: { SP_Classic_Male: 20, None: 80 },
+      accessory: {
+        SP_Cigarette_Male: 15,
+        None: 85,
+      },
     },
     slotWeightOverrides: {},
   },
