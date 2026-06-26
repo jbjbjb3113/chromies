@@ -1233,14 +1233,14 @@ const CHARACTERS = [
         SP_Smirk_Male: 35,
       },
       beard: {
-        SP_Full_Male: 8,
-        SP_Goat_Male: 8,
-        SP_Chop_Male: 8,
-        None: 76,
+        SP_Full_Male: 30,
+        SP_Goat_Male: 30,
+        SP_Chop_Male: 30,
+        None: 20,
       },
       mustache: {
-        SP_Thick_Male: 8,
-        None: 92,
+        SP_Thick_Male: 30,
+        None: 20,
       },
       glasses: {
         SP_DFrame_Male: 10,
@@ -1311,16 +1311,8 @@ const CHARACTERS = [
         SP_Straight_Female: 25,
         SP_Stoned_Female: 25,
       },
-      beard: {
-        SP_Full_Female: 8,
-        SP_Goat_Female: 8,
-        SP_Chop_Female: 8,
-        None: 76,
-      },
-      mustache: {
-        SP_Thick_Female: 8,
-        None: 92,
-      },
+      beard: ["None"],
+      mustache: ["None"],
       glasses: {
         SP_DFrame_Female: 10,
         SP_DFrameFilled_Female: 10,
