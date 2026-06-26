@@ -88,9 +88,17 @@ function isZombieComponent(slot, pick, character) {
   return isZombieAssetFile(pick?.file || pick?.variant?.file);
 }
 
+function isLegendaryHeadVariant(pick) {
+  return String(pick?.variant?.name || "").startsWith("Legendary_");
+}
+
 /** drawColors for extractToBuffer — all zombie/ assets use GPL palette hexes, not SIGNAL. */
 function resolveExtractionDrawColors(slot, pick, character, slotDef) {
   if (isZombieComponent(slot, pick, character)) return ZOMBIE_EXTRACTION_COLORS;
+  if (pick?.variant?.drawColors) return pick.variant.drawColors;
+  if (pick?.variant?.extractionPalette && PALETTES[pick.variant.extractionPalette]) {
+    return paletteColorsToDrawColors(PALETTES[pick.variant.extractionPalette].colors);
+  }
   return slotDef.drawColors;
 }
 
@@ -436,6 +444,13 @@ function applyCoverageRules(picks, traits, character = null) {
     promoteToNamed("body", bodySlotDef, "Zombie");
   }
 
+  if (isLegendaryHeadVariant(out.head)) {
+    for (const slot of ["hair", "beard", "mustache", "eyes", "expression", "mask", "glasses"]) {
+      suppressTo(slot, traits.slots[slot]);
+    }
+    return out;
+  }
+
   const bodyVisible = () => {
     const b = out.body ? out.body.variant.name : null;
     return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien" || b === "Zombie";
@@ -529,6 +544,19 @@ function applyCoverageRules(picks, traits, character = null) {
 // ============================================================================
 // VARIANT PICK — character-aware
 // ============================================================================
+
+function applyLegendaryHeadOverride(tokenId, picks, traits) {
+  const legendary = getLegendaryForToken(tokenId);
+  if (!legendary?.headVariant) return;
+  const headDef = traits.slots.head;
+  if (!headDef) return;
+  const variant = headDef.variants.find((v) => v.name === legendary.headVariant);
+  if (!variant) {
+    console.warn(`  [WARN] legendary head variant "${legendary.headVariant}" not found in traits.json`);
+    return;
+  }
+  picks.head = { variant, file: variant.file, buffer: null };
+}
 
 function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = null, loadBuffers = true) {
   const picks = {};
@@ -631,6 +659,8 @@ function pickTokenVariants(tokenId, traits, skipSet = new Set(), character = nul
       }
     }
   }
+
+  applyLegendaryHeadOverride(tokenId, picks, traits);
 
   // Load buffers
   if (loadBuffers) loadPickBuffers(picks, traits, character);

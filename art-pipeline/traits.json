@@ -806,6 +806,85 @@
           "file": "zombie/HEAD_Zombie.png",
           "weight": 0,
           "_comment": "Character-gated — neck baked in; forced via CHARACTERS.Zombie"
+        },
+        {
+          "name": "Legendary_Snowfro",
+          "file": "legendary/NORMIE_0045_Snowfro.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_SNOWFRO",
+          "drawColors": {
+            "#140a0a": "skin_shadow_deep",
+            "#2d0808": "skin_shadow_deep",
+            "#550f0f": "skin_shadow",
+            "#821919": "skin_shadow",
+            "#aa2d23": "skin_mid",
+            "#c8503c": "skin_light",
+            "#dc1e1e": "skin_highlight"
+          },
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
+        },
+        {
+          "name": "Legendary_ACK",
+          "file": "legendary/NORMIE_0603_ACK.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_ACK",
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
+        },
+        {
+          "name": "Legendary_Serc",
+          "file": "legendary/NORMIE_4354_Serc.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_SERC",
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
+        },
+        {
+          "name": "Legendary_JackButcher",
+          "file": "legendary/NORMIE_4698_JackButcher.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_JACKBUTCHER",
+          "drawColors": {
+            "#4a4a4a": "skin_mid"
+          },
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
+        },
+        {
+          "name": "Legendary_Timpers",
+          "file": "legendary/NORMIE_5974_Timpers.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_TIMPERS",
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
+        },
+        {
+          "name": "Legendary_Deekay",
+          "file": "legendary/NORMIE_6576_Deekay.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_DEEKAY",
+          "drawColors": {
+            "#1a0d0e": "mask_dark",
+            "#024057": "skin_shadow_deep",
+            "#035a7a": "skin_shadow",
+            "#b8f8ff": "skin_light",
+            "#f6b59d": "skin_highlight",
+            "#ffbba0": "skin_highlight",
+            "#fffd94": "highlight",
+            "#f9ff61": "eye_signal"
+          },
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
+        },
+        {
+          "name": "Legendary_PIV",
+          "file": "legendary/NORMIE_7409_PIV.png",
+          "weight": 0,
+          "extractionPalette": "NORMIE_PIV",
+          "drawColors": {
+            "#000000": "mask_dark",
+            "#48494b": "skin_shadow",
+            "#56381a": "skin_mid",
+            "#713f1d": "skin_light",
+            "#bb916e": "skin_highlight",
+            "#e3e5e4": "highlight"
+          },
+          "_comment": "Normie Legendary 1/1 — forced via legendary-token-ids"
         }
       ]
     },

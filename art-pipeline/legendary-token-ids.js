@@ -13,13 +13,13 @@ const TIER = "Normie Legendary";
 
 /** @type {ReadonlyArray<{ palette: string, artist: string, normieRef: number, tokenId?: number, seed?: string }>} */
 const NORMIE_LEGENDARY_DEFS = Object.freeze([
-  { palette: "NORMIE_SNOWFRO",     artist: "Snowfro",      normieRef: 45,   tokenId: 45 },
-  { palette: "NORMIE_ACK",         artist: "a.c.k.",       normieRef: 603,  tokenId: 603 },
-  { palette: "NORMIE_SERC",        artist: "Serc",         normieRef: 4354, tokenId: 4354 },
-  { palette: "NORMIE_JACKBUTCHER", artist: "Jack Butcher", normieRef: 4698, tokenId: 4698 },
-  { palette: "NORMIE_TIMPERS",     artist: "Timpers",      normieRef: 5974, seed: "chromies-legendary-timpers-v1" },
-  { palette: "NORMIE_DEEKAY",      artist: "Deekay",       normieRef: 6576, seed: "chromies-legendary-deekay-v1" },
-  { palette: "NORMIE_PIV",         artist: "PIV",          normieRef: 7409, seed: "chromies-legendary-piv-v1" },
+  { palette: "NORMIE_SNOWFRO",     artist: "Snowfro",      normieRef: 45,   tokenId: 45,   headVariant: "Legendary_Snowfro",     headFile: "legendary/NORMIE_0045_Snowfro.png" },
+  { palette: "NORMIE_ACK",         artist: "a.c.k.",       normieRef: 603,  tokenId: 603,  headVariant: "Legendary_ACK",         headFile: "legendary/NORMIE_0603_ACK.png" },
+  { palette: "NORMIE_SERC",        artist: "Serc",         normieRef: 4354, tokenId: 4354, headVariant: "Legendary_Serc",        headFile: "legendary/NORMIE_4354_Serc.png" },
+  { palette: "NORMIE_JACKBUTCHER", artist: "Jack Butcher", normieRef: 4698, tokenId: 4698, headVariant: "Legendary_JackButcher", headFile: "legendary/NORMIE_4698_JackButcher.png" },
+  { palette: "NORMIE_TIMPERS",     artist: "Timpers",      normieRef: 5974, seed: "chromies-legendary-timpers-v1",  headVariant: "Legendary_Timpers", headFile: "legendary/NORMIE_5974_Timpers.png" },
+  { palette: "NORMIE_DEEKAY",      artist: "Deekay",       normieRef: 6576, seed: "chromies-legendary-deekay-v1",   headVariant: "Legendary_Deekay",  headFile: "legendary/NORMIE_6576_Deekay.png" },
+  { palette: "NORMIE_PIV",         artist: "PIV",          normieRef: 7409, seed: "chromies-legendary-piv-v1",      headVariant: "Legendary_PIV",     headFile: "legendary/NORMIE_7409_PIV.png" },
   { palette: "NORMIE_UPCOMING1",   artist: "Coming Soon",  normieRef: 9993, seed: "chromies-legendary-upcoming1-v1" },
   { palette: "NORMIE_UPCOMING2",   artist: "Coming Soon",  normieRef: 0,    seed: "chromies-legendary-upcoming2-v1" },
 ]);
@@ -78,6 +78,8 @@ function buildLegendaryAssignments() {
       tokenId,
       tier: TIER,
       seed: def.seed || null,
+      headVariant: def.headVariant || null,
+      headFile: def.headFile || null,
     }));
   }
 
@@ -108,6 +110,11 @@ function getLegendaryForToken(tokenId) {
   return LEGENDARY_BY_TOKEN_ID.get(Number(tokenId)) || null;
 }
 
+function getLegendaryHeadVariantForPalette(paletteKey) {
+  const def = NORMIE_LEGENDARY_DEFS.find((d) => d.palette === paletteKey);
+  return def?.headVariant || null;
+}
+
 module.exports = {
   TIER,
   NORMIE_LEGENDARY_DEFS,
@@ -115,4 +122,5 @@ module.exports = {
   LEGENDARY_TOKEN_IDS,
   isLegendaryToken,
   getLegendaryForToken,
+  getLegendaryHeadVariantForPalette,
 };

@@ -26,6 +26,7 @@ const {
   getMutationTier,
 } = require("./generate");
 const { overlayStrayPixels } = require("./phase3-variance");
+const { getLegendaryHeadVariantForPalette } = require("./legendary-token-ids");
 
 const FIXED_TOKEN_ID = 1;
 const QUICK_DIR = path.join(SETTINGS.outputDir, "quick");
@@ -191,6 +192,10 @@ function main() {
 
   const picks = pickTokenVariants(tokenId, traits, opts.skip, character, false);
   applySlotOverrides(picks, traits, opts);
+  if (!opts.head) {
+    const legendaryHead = getLegendaryHeadVariantForPalette(paletteKey);
+    if (legendaryHead) applySlotOverride(picks, traits, "head", legendaryHead);
+  }
 
   loadPickBuffers(picks, traits, character);
   const renderPicks = applyCoverageRules(picks, traits, character);
