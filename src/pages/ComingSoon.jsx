@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { buildTokenGridTiles, TOKEN_CELL_PX } from "../data/tokens.js";
 
-const ACCESS_PASSWORD = "serc4321";
 const CELL = TOKEN_CELL_PX;
 
 const LINKS = [
@@ -11,21 +10,10 @@ const LINKS = [
 ];
 
 export default function ComingSoon() {
-  const navigate = useNavigate();
-  const [value, setValue] = useState("");
-  const [wrong, setWrong] = useState(false);
-  const [shaking, setShaking] = useState(false);
-
   const [dims, setDims] = useState(() => ({
     w: typeof window !== "undefined" ? window.innerWidth : 1280,
     h: typeof window !== "undefined" ? window.innerHeight : 720,
   }));
-
-  useEffect(() => {
-    if (sessionStorage.getItem("chromies_access") === "true") {
-      navigate("/landing", { replace: true });
-    }
-  }, [navigate]);
 
   useEffect(() => {
     const onResize = () => setDims({ w: window.innerWidth, h: window.innerHeight });
@@ -37,17 +25,6 @@ export default function ComingSoon() {
     () => buildTokenGridTiles(dims.w, dims.h, CELL),
     [dims.w, dims.h],
   );
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (value === ACCESS_PASSWORD) {
-      sessionStorage.setItem("chromies_access", "true");
-      navigate("/landing");
-    } else {
-      setWrong(true);
-      setShaking(true);
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-ink">
@@ -85,22 +62,12 @@ export default function ComingSoon() {
           Coming Soon
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 w-full max-w-xs">
-          <input
-            type="password"
-            autoComplete="off"
-            value={value}
-            onChange={(event) => {
-              setValue(event.target.value);
-              setWrong(false);
-            }}
-            onAnimationEnd={() => setShaking(false)}
-            className={`w-full border bg-ink/80 px-4 py-3 text-center text-sm tracking-[0.3em] text-white outline-none backdrop-blur-sm transition-colors placeholder:text-white/25 focus:border-signal ${
-              wrong ? "border-red-500" : "border-white/20"
-            } ${shaking ? "animate-shake" : ""}`}
-            placeholder="••••••••"
-          />
-        </form>
+        <Link
+          to="/"
+          className="mt-6 border border-white/20 bg-ink/80 px-6 py-3 text-sm tracking-[0.2em] text-white transition-colors hover:border-signal hover:text-signal"
+        >
+          Enter
+        </Link>
       </div>
 
       <nav className="absolute inset-x-0 bottom-6 z-10 flex items-center justify-center gap-6">
