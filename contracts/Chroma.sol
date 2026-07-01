@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC2981} from "@openzeppelin/contracts/token/common/ERC2981.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
@@ -11,7 +12,7 @@ import {IChromaRenderer} from "./IChromaRenderer.sol";
 import {ChromaStorage} from "./ChromaStorage.sol";
 import {IChromaCanvasFinalize} from "./IChromaCanvasFinalize.sol";
 
-contract Chroma is ERC721, ERC2981, Ownable {
+contract Chroma is ERC721, ERC2981, Ownable, ReentrancyGuard {
     using Strings for uint256;
 
     enum Phase {
@@ -34,6 +35,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error NotTokenOwner();
     error AlreadyLocked();
     error NotRevealed();
+    error InvalidTokenId();
+    error InvalidPayload();
+    error AlreadyInscribed();
+    error RevealedBaseURINotSet();
 
     uint256 public constant MAX_SUPPLY = 5150;
     uint256 public constant MINT_PRICE = 0.006 ether;
@@ -41,18 +46,24 @@ contract Chroma is ERC721, ERC2981, Ownable {
     uint256 public constant ALLOWLIST_TWO_PRICE = 0.005 ether;
     uint256 public constant MAX_PER_WALLET_ONE = 2;
 
+    uint256 internal constant PIXELS_LENGTH = 2048;
+    uint256 internal constant TRAITS_LENGTH = 32;
+
     Phase public phase = Phase.Closed;
     bytes32 public merkleRootOne;
     bytes32 public merkleRootTwo;
     bytes32 public revealRoot;
+    string public revealedBaseURI;
 
     mapping(address => uint256) public claimedOne;
     mapping(address => uint256) public claimedTwo;
     mapping(address => uint256) public claimedPublic;
     mapping(uint256 => bool) public revealed;
     mapping(uint256 => bool) public locked;
+    mapping(uint256 => bytes32) public revealedTraits;
 
     event TokenRevealed(uint256 indexed tokenId);
+    event TokenInscribed(uint256 indexed tokenId);
     event TokenLocked(uint256 indexed tokenId);
 
     ChromaStorage public immutable chromaStorage;
@@ -76,11 +87,15 @@ contract Chroma is ERC721, ERC2981, Ownable {
         return _totalSupply;
     }
 
-    function mint(address to, uint256 tokenId, bytes calldata pixels, bytes calldata traits) external onlyOwner {
-        _mintWithData(to, tokenId, pixels, traits, true);
+    /// @notice Owner mint — placeholder only; same reveal/inscribe path as public mints.
+    function mint(address to, uint256 tokenId) external onlyOwner {
+        if (tokenId != _totalSupply + 1) revert InvalidTokenId();
+        if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
+        ++_totalSupply;
+        _safeMint(to, tokenId);
     }
 
-    function mint(bytes32[] calldata proof, uint256 quantity) external payable {
+    function mint(bytes32[] calldata proof, uint256 quantity) external payable nonReentrant {
         if (phase == Phase.AllowlistOne) {
             _mintAllowlistOne(proof, quantity);
         } else if (phase == Phase.AllowlistTwo) {
@@ -90,56 +105,45 @@ contract Chroma is ERC721, ERC2981, Ownable {
         }
     }
 
-    function mint(uint256 quantity) external payable {
+    function mint(uint256 quantity) external payable nonReentrant {
         if (phase != Phase.Public) revert WrongPhase();
         _mintPublic(quantity);
     }
 
+    /// @notice Cheap reveal — merkle verify + revealed flag + traits snapshot. No SSTORE2 write.
     function reveal(uint256 tokenId, bytes calldata pixels, bytes calldata traits, bytes32[] calldata proof)
         external
     {
         _requireOwned(tokenId);
         if (revealed[tokenId]) revert AlreadyRevealed();
+        if (pixels.length != PIXELS_LENGTH || traits.length != TRAITS_LENGTH) revert InvalidPayload();
 
-        bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
+        bytes32 leaf = keccak256(abi.encode(tokenId, pixels, traits));
         if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
 
-        chromaStorage.writeTokenData(tokenId, pixels, traits);
         revealed[tokenId] = true;
+        revealedTraits[tokenId] = bytes32(traits);
         emit TokenRevealed(tokenId);
     }
 
-    function inscribe(uint256 tokenId) external {
-        if (ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
-        if (locked[tokenId]) revert AlreadyLocked();
-        if (!revealed[tokenId]) revert NotRevealed();
-
-        _bakeCanvasEdits(tokenId);
-        locked[tokenId] = true;
-        emit TokenLocked(tokenId);
-    }
-
-    /// @notice Reveal+lock (unrevealed) or lock-only (already revealed). Never overwrites
-    ///         revealed pixel data with the supplied mint payload.
+    /// @notice Expensive permanence — SSTORE2 pixel write, canvas bake, and permanent lock.
     function inscribe(uint256 tokenId, bytes calldata pixels, bytes calldata traits, bytes32[] calldata proof)
         external
     {
         if (ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
         if (locked[tokenId]) revert AlreadyLocked();
+        if (!revealed[tokenId]) revert NotRevealed();
+        if (chromaStorage.hasData(tokenId)) revert AlreadyInscribed();
+        if (pixels.length != PIXELS_LENGTH || traits.length != TRAITS_LENGTH) revert InvalidPayload();
 
-        if (revealed[tokenId]) {
-            _bakeCanvasEdits(tokenId);
-            locked[tokenId] = true;
-            emit TokenLocked(tokenId);
-            return;
-        }
-
-        bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
+        bytes32 leaf = keccak256(abi.encode(tokenId, pixels, traits));
         if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
 
-        chromaStorage.writeTokenData(tokenId, pixels, traits);
-        revealed[tokenId] = true;
         locked[tokenId] = true;
+        chromaStorage.writeTokenData(tokenId, pixels, traits);
+        delete revealedTraits[tokenId];
+        _bakeCanvasEdits(tokenId);
+        emit TokenInscribed(tokenId);
         emit TokenLocked(tokenId);
     }
 
@@ -161,6 +165,10 @@ contract Chroma is ERC721, ERC2981, Ownable {
 
     function setRevealRoot(bytes32 root) external onlyOwner {
         revealRoot = root;
+    }
+
+    function setRevealedBaseURI(string calldata uri) external onlyOwner {
+        revealedBaseURI = uri;
     }
 
     /// @notice Testing helper — clears a wallet's per-phase mint counts.
@@ -191,6 +199,9 @@ contract Chroma is ERC721, ERC2981, Ownable {
         _requireOwned(tokenId);
         if (!revealed[tokenId]) {
             return _unrevealedURI(tokenId);
+        }
+        if (!chromaStorage.hasData(tokenId)) {
+            return _revealedOffChainURI(tokenId);
         }
         if (address(renderer) == address(0)) revert RendererNotSet();
         return renderer.tokenURI(tokenId);
@@ -238,18 +249,8 @@ contract Chroma is ERC721, ERC2981, Ownable {
     function _mintPlaceholder(address to) internal {
         if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
         uint256 tokenId = _totalSupply + 1;
-        _safeMint(to, tokenId);
         ++_totalSupply;
-    }
-
-    function _mintWithData(address to, uint256 tokenId, bytes memory pixels, bytes memory traits, bool isRevealed)
-        internal
-    {
-        if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
         _safeMint(to, tokenId);
-        chromaStorage.writeTokenData(tokenId, pixels, traits);
-        revealed[tokenId] = isRevealed;
-        ++_totalSupply;
     }
 
     function _verifyAllowlist(address account, bytes32[] calldata proof, bytes32 root) internal pure returns (bool) {
@@ -266,6 +267,11 @@ contract Chroma is ERC721, ERC2981, Ownable {
         (pixels, totalPixelCount) = canvas.computeFinalPixels(tokenId);
         chromaStorage.rewritePixels(tokenId, pixels, totalPixelCount);
         canvas.clearDiffs(tokenId);
+    }
+
+    function _revealedOffChainURI(uint256 tokenId) internal view returns (string memory) {
+        if (bytes(revealedBaseURI).length == 0) revert RevealedBaseURINotSet();
+        return string(abi.encodePacked(revealedBaseURI, tokenId.toString(), ".json"));
     }
 
     function _unrevealedURI(uint256 tokenId) internal pure returns (string memory) {

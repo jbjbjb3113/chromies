@@ -30,6 +30,8 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     error InvalidTotalPixelsCount();
 
+    error ZeroAddress();
+
 
 
     uint256 internal constant PIXELS_LENGTH = 2048;
@@ -114,25 +116,22 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
 
     constructor(address initialOwner, address initialWriter) Ownable(initialOwner) {
-
+        if (initialWriter == address(0)) revert ZeroAddress();
         writer = initialWriter;
-
     }
 
 
 
     function setWriter(address newWriter) external onlyOwner {
-
+        if (newWriter == address(0)) revert ZeroAddress();
         writer = newWriter;
-
     }
 
 
 
     function setTraitUpdater(address newTraitUpdater) external onlyOwner {
-
+        if (newTraitUpdater == address(0)) revert ZeroAddress();
         traitUpdater = newTraitUpdater;
-
     }
 
 

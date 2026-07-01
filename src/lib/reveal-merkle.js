@@ -1,24 +1,15 @@
-import { encodePacked, hexToBytes, keccak256 } from "viem";
+import { encodeAbiParameters, encodePacked, hexToBytes, keccak256 } from "viem";
 
-function encodeUint256(value) {
-  const buf = new Uint8Array(32);
-  let v = BigInt(value);
-  for (let i = 31; i >= 0; i--) {
-    buf[i] = Number(v & 0xffn);
-    v >>= 8n;
-  }
-  return buf;
-}
-
-/** Leaf hash for Chroma.reveal — keccak256(abi.encodePacked(tokenId, pixels, traits)). */
+/** Leaf hash for Chroma.reveal — keccak256(abi.encode(tokenId, pixels, traits)). */
 export function computeRevealLeaf(tokenId, pixelsHex, traitsHex) {
   const pixels = hexToBytes(pixelsHex);
   const traits = hexToBytes(traitsHex);
-  const packed = new Uint8Array(32 + pixels.length + traits.length);
-  packed.set(encodeUint256(tokenId), 0);
-  packed.set(pixels, 32);
-  packed.set(traits, 32 + pixels.length);
-  return keccak256(packed);
+  return keccak256(
+    encodeAbiParameters(
+      [{ type: "uint256" }, { type: "bytes" }, { type: "bytes" }],
+      [BigInt(tokenId), pixels, traits]
+    )
+  );
 }
 
 /** OpenZeppelin MerkleProof.verify with sortPairs (matches generate-reveal-merkle.js). */

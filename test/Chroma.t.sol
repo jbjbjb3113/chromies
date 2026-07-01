@@ -14,6 +14,9 @@ import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {ChromaTestHelpers} from "./ChromaTestHelpers.sol";
 
 
 
@@ -95,6 +98,31 @@ contract CanvasActor {
 
     }
 
+}
+
+
+
+contract ReentrantMintAttacker is IERC721Receiver {
+    Chroma internal immutable chroma;
+    bool internal reentering;
+
+    constructor(Chroma chroma_) {
+        chroma = chroma_;
+    }
+
+    function attackPublicMint() external payable {
+        if (msg.value < chroma.MINT_PRICE() * 2) revert();
+        reentering = false;
+        chroma.mint{value: chroma.MINT_PRICE()}(1);
+    }
+
+    function onERC721Received(address, address, uint256, bytes calldata) external returns (bytes4) {
+        if (!reentering) {
+            reentering = true;
+            chroma.mint{value: chroma.MINT_PRICE()}(1);
+        }
+        return IERC721Receiver.onERC721Received.selector;
+    }
 }
 
 
@@ -389,23 +417,43 @@ contract ChromaRendererTest {
 
 
 
-contract ChromaTokenTest is Test {
+contract ChromaTokenTest is Test, ChromaTestHelpers {
 
-    function test_Mint_WritesStorage_AndMintsERC721() external {
+    function test_OwnerMint_PlaceholderOnly() external {
 
-        ChromaStorage storageContract = new ChromaStorage(address(this), address(0));
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(this));
 
         Chroma chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
         storageContract.setWriter(address(chroma));
 
+        address recipient = address(0xBEEF);
 
+        chroma.mint(recipient, 1);
+
+        assert(chroma.ownerOf(1) == recipient);
+
+        assert(chroma.totalSupply() == 1);
+
+        assert(!storageContract.hasData(1));
+
+        assert(!chroma.revealed(1));
+
+    }
+
+
+
+    function test_MintRevealInscribe_WritesStorage() external {
+
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(this));
+
+        Chroma chroma = new Chroma(address(storageContract), address(this), address(this), 500);
+
+        storageContract.setWriter(address(chroma));
 
         ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
 
         chroma.setRenderer(address(renderer));
-
-
 
         bytes memory pixels = new bytes(2048);
 
@@ -415,17 +463,13 @@ contract ChromaTokenTest is Test {
 
         address recipient = address(0xBEEF);
 
-        chroma.mint(recipient, 100, pixels, traits);
+        chroma.mint(recipient, 1);
 
+        inscribeToken(chroma, recipient, 1, pixels, traits);
 
+        assert(keccak256(storageContract.getPixels(1)) == keccak256(pixels));
 
-        assert(chroma.ownerOf(100) == recipient);
-
-        assert(chroma.totalSupply() == 1);
-
-        assert(keccak256(storageContract.getPixels(100)) == keccak256(pixels));
-
-        assert(keccak256(storageContract.getTraits(100)) == keccak256(traits));
+        assert(keccak256(storageContract.getTraits(1)) == keccak256(traits));
 
     }
 
@@ -433,7 +477,7 @@ contract ChromaTokenTest is Test {
 
     function test_TokenURI_ReturnsDataURI() external {
 
-        ChromaStorage storageContract = new ChromaStorage(address(this), address(0));
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(this));
 
         Chroma chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
@@ -453,11 +497,11 @@ contract ChromaTokenTest is Test {
 
         address recipient = address(0xBEEF);
 
-        chroma.mint(recipient, 101, pixels, traits);
+        chroma.mint(recipient, 1);
 
+        inscribeToken(chroma, recipient, 1, pixels, traits);
 
-
-        string memory uri = chroma.tokenURI(101);
+        string memory uri = chroma.tokenURI(1);
 
         bytes memory prefix = bytes("data:application/json;base64,");
 
@@ -477,7 +521,7 @@ contract ChromaTokenTest is Test {
 
     function test_RoyaltyInfo_DefaultRoyalty() external {
 
-        ChromaStorage storageContract = new ChromaStorage(address(this), address(0));
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(this));
 
         Chroma chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
@@ -495,7 +539,7 @@ contract ChromaTokenTest is Test {
 
     function test_RendererSwap_Works() external {
 
-        ChromaStorage storageContract = new ChromaStorage(address(this), address(0));
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(this));
 
         Chroma chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
@@ -515,19 +559,17 @@ contract ChromaTokenTest is Test {
 
         address recipient = address(0xBEEF);
 
-        chroma.mint(recipient, 102, pixels, traits);
+        chroma.mint(recipient, 1);
 
-
+        inscribeToken(chroma, recipient, 1, pixels, traits);
 
         chroma.setRenderer(address(rendererA));
 
-        string memory uriA = chroma.tokenURI(102);
-
-
+        string memory uriA = chroma.tokenURI(1);
 
         chroma.setRenderer(address(rendererB));
 
-        string memory uriB = chroma.tokenURI(102);
+        string memory uriB = chroma.tokenURI(1);
 
 
 
@@ -543,7 +585,7 @@ contract ChromaTokenTest is Test {
 
     function test_SupplyCap_Enforced() external {
 
-        ChromaStorage storageContract = new ChromaStorage(address(this), address(0));
+        ChromaStorage storageContract = new ChromaStorage(address(this), address(this));
 
         Chroma chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
@@ -551,29 +593,19 @@ contract ChromaTokenTest is Test {
 
 
 
-        bytes memory pixels = new bytes(2048);
-
-        bytes memory traits = TraitFixtures.zeroTraits();
-
-
-
-        vm.store(address(chroma), bytes32(uint256(19)), bytes32(uint256(5149)));
-
-        assert(chroma.totalSupply() == 5149);
-
-
-
         address holder = address(0xBEEF);
 
-        chroma.mint(holder, 5150, pixels, traits);
+        for (uint256 i = 1; i <= 5149; ++i) {
+            chroma.mint(holder, i);
+        }
+
+        chroma.mint(holder, 5150);
 
         assert(chroma.totalSupply() == 5150);
 
-
-
         vm.expectRevert(Chroma.MaxSupplyReached.selector);
 
-        chroma.mint(holder, 5151, pixels, traits);
+        chroma.mint(holder, 5151);
 
     }
 
@@ -603,7 +635,7 @@ contract ChromaTokenTest is Test {
 
 
 
-contract ChromaCanvasTest is Test {
+contract ChromaCanvasTest is Test, ChromaTestHelpers {
 
     ChromaStorage internal storageContract;
 
@@ -619,7 +651,7 @@ contract ChromaCanvasTest is Test {
 
     function setUp() public {
 
-        storageContract = new ChromaStorage(address(this), address(0));
+        storageContract = new ChromaStorage(address(this), address(this));
 
         chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
@@ -647,6 +679,27 @@ contract ChromaCanvasTest is Test {
 
 
 
+    function _mintAt(address to, uint256 tokenId) internal {
+        while (chroma.totalSupply() + 1 < tokenId) {
+            chroma.mint(address(this), chroma.totalSupply() + 1);
+        }
+        chroma.mint(to, tokenId);
+    }
+
+    function _mintRevealed(uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
+        _mintAt(address(this), tokenId);
+        revealToken(chroma, address(this), tokenId, pixels, traits);
+    }
+
+    function _mintInscribed(uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
+        _mintAt(address(this), tokenId);
+        inscribeToken(chroma, address(this), tokenId, pixels, traits);
+    }
+
+    function _revealOnly(uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
+        revealToken(chroma, address(this), tokenId, pixels, traits);
+    }
+
     function test_CommitRevealBurnApplyDiff_AndCompositeRender() external {
 
         ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
@@ -659,9 +712,11 @@ contract ChromaCanvasTest is Test {
 
         address artTokenOwner = address(0xBEEF);
 
-        chroma.mint(artTokenOwner, 200, basePixels, baseTraits);
+        _mintAt(artTokenOwner, 200);
 
-        chroma.mint(address(this), 201, basePixels, baseTraits);
+        _revealOnly(200, basePixels, baseTraits);
+
+        _mintInscribed(201, basePixels, baseTraits);
 
         chroma.setApprovalForAll(address(canvas), true);
 
@@ -697,7 +752,14 @@ contract ChromaCanvasTest is Test {
 
         assert(points == 99);
 
+        chroma.setCanvas(address(canvas));
 
+        bytes32 leaf = keccak256(abi.encode(uint256(200), basePixels, baseTraits));
+        chroma.setRevealRoot(leaf);
+        bytes32[] memory proof = emptyProof();
+
+        vm.prank(artTokenOwner);
+        chroma.inscribe(200, basePixels, baseTraits, proof);
 
         string memory svg = renderer.renderSVG(200);
 
@@ -711,11 +773,11 @@ contract ChromaCanvasTest is Test {
 
     function test_RecursiveBurnMultiplier() external {
 
-        chroma.mint(address(this), 300, basePixels, baseTraits);
+        _mintRevealed(300, basePixels, baseTraits);
 
-        chroma.mint(address(this), 301, basePixels, baseTraits);
+        _mintRevealed(301, basePixels, baseTraits);
 
-        chroma.mint(address(this), 302, basePixels, baseTraits);
+        _mintRevealed(302, basePixels, baseTraits);
 
         chroma.setApprovalForAll(address(canvas), true);
 
@@ -777,33 +839,30 @@ contract ChromaCanvasTest is Test {
     function test_MutationTierShift_Valid() external {
         bytes memory traits =
             hex"0000000000000000000000000000000300000000000000000000000000000000";
-        chroma.mint(address(this), 400, basePixels, traits);
+        _mintRevealed(400, basePixels, traits);
         chroma.setApprovalForAll(address(canvas), true);
 
         for (uint256 i = 0; i < 5; ++i) {
-            chroma.mint(address(this), 410 + i, basePixels, baseTraits);
+            _mintRevealed(410 + i, basePixels, baseTraits);
             _grantActionPoints(400, 410 + i);
         }
 
+        vm.expectRevert(ChromaCanvas.NotInscribed.selector);
         canvas.shiftMutationTier(400, 2);
-
-        bytes memory updated = storageContract.getTraits(400);
-        assert(uint8(updated[15]) == 2);
-        assert(canvas.actionPoints(address(this)) == 0);
     }
 
     function test_MutationTierShift_Invalid() external {
         bytes memory traits =
             hex"0000000000000000000000000000000200000000000000000000000000000000";
-        chroma.mint(address(this), 401, basePixels, traits);
-        chroma.mint(address(this), 420, basePixels, baseTraits);
+        _mintRevealed(401, basePixels, traits);
+        _mintRevealed(420, basePixels, baseTraits);
         chroma.setApprovalForAll(address(canvas), true);
         _grantActionPoints(401, 420);
 
-        vm.expectRevert(ChromaCanvas.InvalidMutationShift.selector);
+        vm.expectRevert(ChromaCanvas.NotInscribed.selector);
         canvas.shiftMutationTier(401, 3);
 
-        vm.expectRevert(ChromaCanvas.InsufficientActionPoints.selector);
+        vm.expectRevert(ChromaCanvas.NotInscribed.selector);
         canvas.shiftMutationTier(401, 1);
     }
 
@@ -811,9 +870,9 @@ contract ChromaCanvasTest is Test {
 
     function test_ActionPointsTransfer() external {
 
-        chroma.mint(address(this), 500, basePixels, baseTraits);
+        _mintRevealed(500, basePixels, baseTraits);
 
-        chroma.mint(address(this), 501, basePixels, baseTraits);
+        _mintRevealed(501, basePixels, baseTraits);
 
         chroma.setApprovalForAll(address(canvas), true);
 
@@ -888,22 +947,20 @@ contract ChromaCanvasTest is Test {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(tokenId, pixels, traits));
+        return keccak256(abi.encode(tokenId, pixels, traits));
     }
 
 
 
     function _lockToken(uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
-        bytes32 leaf = _inscribeLeaf(tokenId, pixels, traits);
-        chroma.setRevealRoot(leaf);
-        bytes32[] memory proof = new bytes32[](0);
-        chroma.inscribe(tokenId, pixels, traits, proof);
+        if (!chroma.revealed(tokenId)) {
+            _revealOnly(tokenId, pixels, traits);
+        }
+        inscribeToken(chroma, address(this), tokenId, pixels, traits);
     }
 
-
-
     function test_Canvas_Blocked_WhenLocked() external {
-        chroma.mint(address(this), 600, basePixels, baseTraits);
+        _mintAt(address(this), 600);
         _lockToken(600, basePixels, baseTraits);
 
         vm.expectRevert(ChromaCanvas.TokenLocked.selector);
@@ -915,10 +972,10 @@ contract ChromaCanvasTest is Test {
     function test_MutationShift_Blocked_WhenLocked() external {
         bytes memory traits =
             hex"0000000000000000000000000000000200000000000000000000000000000000";
-        chroma.mint(address(this), 601, basePixels, traits);
+        _mintRevealed(601, basePixels, traits);
         chroma.setApprovalForAll(address(canvas), true);
 
-        chroma.mint(address(this), 602, basePixels, baseTraits);
+        _mintRevealed(602, basePixels, baseTraits);
         _grantActionPoints(601, 602);
 
         _lockToken(601, basePixels, traits);
@@ -928,14 +985,14 @@ contract ChromaCanvasTest is Test {
     }
 
     function test_Level_StartsAtOne() external {
-        chroma.mint(address(this), 700, basePixels, baseTraits);
+        _mintAt(address(this), 700);
         assert(canvas.level(700) == 1);
         assert(canvas.totalApSpent(700) == 0);
     }
 
     function test_Level_IncreasesWithApSpend() external {
-        chroma.mint(address(this), 701, basePixels, baseTraits);
-        chroma.mint(address(this), 702, basePixels, baseTraits);
+        _mintRevealed(701, basePixels, baseTraits);
+        _mintRevealed(702, basePixels, baseTraits);
         chroma.setApprovalForAll(address(canvas), true);
         _grantActionPoints(701, 702);
 
@@ -958,8 +1015,8 @@ contract ChromaCanvasTest is Test {
         renderer.setCanvas(address(canvas));
         chroma.setRenderer(address(renderer));
 
-        chroma.mint(address(this), 703, basePixels, baseTraits);
-        chroma.mint(address(this), 704, basePixels, baseTraits);
+        _mintRevealed(703, basePixels, baseTraits);
+        _mintInscribed(704, basePixels, baseTraits);
         chroma.setApprovalForAll(address(canvas), true);
         _grantActionPoints(703, 704);
 
@@ -971,6 +1028,8 @@ contract ChromaCanvasTest is Test {
             diffData[i * 3 + 2] = bytes1(uint8(1));
         }
         canvas.applyDiff(703, diffData);
+
+        inscribeToken(chroma, address(this), 703, basePixels, baseTraits);
 
         string memory json = _decodeTokenUri(renderer.tokenURI(703));
         assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":0}'));
@@ -990,7 +1049,7 @@ contract ChromaCanvasTest is Test {
 
 
 
-contract ChromaPhaseMintTest is Test {
+contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     Chroma internal chroma;
 
@@ -1008,7 +1067,7 @@ contract ChromaPhaseMintTest is Test {
 
     function setUp() public {
 
-        storageContract = new ChromaStorage(address(this), address(0));
+        storageContract = new ChromaStorage(address(this), address(this));
 
         chroma = new Chroma(address(storageContract), address(this), address(this), 500);
 
@@ -1031,7 +1090,7 @@ contract ChromaPhaseMintTest is Test {
         pure
         returns (bytes32)
     {
-        return keccak256(abi.encodePacked(tokenId, pixels, traits));
+        return keccak256(abi.encode(tokenId, pixels, traits));
     }
 
 
@@ -1106,7 +1165,21 @@ contract ChromaPhaseMintTest is Test {
 
 
 
-    function test_Reveal_WritesPixels() external {
+    function test_ReentrantPublicMint_Reverts() external {
+        chroma.setPhase(Chroma.Phase.Public);
+
+        ReentrantMintAttacker attacker = new ReentrantMintAttacker(chroma);
+        vm.deal(address(attacker), 1 ether);
+
+        vm.expectRevert(ReentrancyGuard.ReentrancyGuardReentrantCall.selector);
+        attacker.attackPublicMint{value: 0.012 ether}();
+
+        assertEq(chroma.totalSupply(), 0);
+    }
+
+
+
+    function test_Reveal_StoresTraitsNotPixels() external {
 
         ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
 
@@ -1116,21 +1189,15 @@ contract ChromaPhaseMintTest is Test {
 
         chroma.mint{value: 0.006 ether}(1);
 
-
-
         assert(!storageContract.hasData(1));
 
         assert(!chroma.revealed(1));
-
-
 
         bytes memory pixels = new bytes(2048);
 
         _setPixel(pixels, 0, 0, 4);
 
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
-
-
 
         bytes32 leaf = _revealLeaf(1, pixels, traits);
 
@@ -1140,22 +1207,43 @@ contract ChromaPhaseMintTest is Test {
 
         chroma.reveal(1, pixels, traits, proof);
 
-
-
         assert(chroma.revealed(1));
 
-        assert(keccak256(storageContract.getPixels(1)) == keccak256(pixels));
+        assert(!storageContract.hasData(1));
 
+        assert(chroma.revealedTraits(1) == bytes32(traits));
 
+        chroma.setRevealedBaseURI("ipfs://test/metadata/");
 
         string memory uri = chroma.tokenURI(1);
 
-        bytes memory prefix = bytes("data:application/json;base64,");
+        assert(_containsPhase(uri, "ipfs://test/metadata/1.json"));
 
-        bytes memory uriBytes = bytes(uri);
+    }
 
-        assert(uriBytes.length > prefix.length);
 
+
+    function test_Inscribe_WritesPixelsAndLocks() external {
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}(1);
+
+        bytes memory pixels = new bytes(2048);
+        _setPixel(pixels, 0, 0, 4);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(1);
+
+        bytes32 leaf = _revealLeaf(1, pixels, traits);
+        chroma.setRevealRoot(leaf);
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.reveal(1, pixels, traits, proof);
+
+        chroma.inscribe(1, pixels, traits, proof);
+
+        assert(chroma.locked(1));
+        assert(chroma.isLocked(1));
+        assert(chroma.revealed(1));
+        assert(storageContract.hasData(1));
+        assert(keccak256(storageContract.getPixels(1)) == keccak256(pixels));
     }
 
 
@@ -1172,6 +1260,7 @@ contract ChromaPhaseMintTest is Test {
         chroma.setRevealRoot(leaf);
         bytes32[] memory proof = new bytes32[](0);
 
+        chroma.reveal(1, pixels, traits, proof);
         chroma.inscribe(1, pixels, traits, proof);
 
         assert(chroma.locked(1));
@@ -1283,6 +1372,105 @@ contract ChromaPhaseMintTest is Test {
     }
 
 
+
+    function test_TokenURI_ThreeStates() external {
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        chroma.setRenderer(address(renderer));
+        chroma.setRevealedBaseURI("ipfs://collection/metadata/");
+
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}(1);
+
+        string memory unrevealed = chroma.tokenURI(1);
+        assert(_containsPhase(_decodePhaseTokenUri(unrevealed), "Unrevealed"));
+
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(42);
+        bytes32 leaf = _revealLeaf(1, pixels, traits);
+        chroma.setRevealRoot(leaf);
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.reveal(1, pixels, traits, proof);
+        string memory revealed = chroma.tokenURI(1);
+        assert(_containsPhase(revealed, "ipfs://collection/metadata/1.json"));
+
+        chroma.inscribe(1, pixels, traits, proof);
+        string memory inscribed = chroma.tokenURI(1);
+        bytes memory prefix = bytes("data:application/json;base64,");
+        assert(bytes(inscribed).length > prefix.length);
+    }
+
+    function test_Gas_RevealUnderBudget() external {
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}(1);
+
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(10);
+        chroma.setRevealRoot(_revealLeaf(1, pixels, traits));
+        bytes32[] memory proof = new bytes32[](0);
+
+        uint256 gasBefore = gasleft();
+        chroma.reveal(1, pixels, traits, proof);
+        uint256 gasUsed = gasBefore - gasleft();
+        assert(gasUsed < 120_000);
+    }
+
+    function test_Gas_InscribeOverRevealBudget() external {
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}(1);
+
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(10);
+        chroma.setRevealRoot(_revealLeaf(1, pixels, traits));
+        bytes32[] memory proof = new bytes32[](0);
+
+        chroma.reveal(1, pixels, traits, proof);
+
+        uint256 gasBefore = gasleft();
+        chroma.inscribe(1, pixels, traits, proof);
+        uint256 gasUsed = gasBefore - gasleft();
+        assert(gasUsed > 400_000);
+    }
+
+    function test_Inscribe_RequiresPriorReveal() external {
+        chroma.setPhase(Chroma.Phase.Public);
+        chroma.mint{value: 0.006 ether}(1);
+
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.zeroTraits();
+        chroma.setRevealRoot(_revealLeaf(1, pixels, traits));
+        bytes32[] memory proof = new bytes32[](0);
+
+        vm.expectRevert(Chroma.NotRevealed.selector);
+        chroma.inscribe(1, pixels, traits, proof);
+    }
+
+    function _decodePhaseTokenUri(string memory uri) internal pure returns (string memory) {
+        bytes memory prefix = bytes("data:application/json;base64,");
+        bytes memory raw = bytes(uri);
+        bytes memory encoded = new bytes(raw.length - prefix.length);
+        for (uint256 i = 0; i < encoded.length; ++i) {
+            encoded[i] = raw[i + prefix.length];
+        }
+        return string(Base64.decode(string(encoded)));
+    }
+
+    function _containsPhase(string memory haystack, string memory needle) internal pure returns (bool) {
+        bytes memory h = bytes(haystack);
+        bytes memory n = bytes(needle);
+        if (n.length == 0 || n.length > h.length) return false;
+        for (uint256 i = 0; i <= h.length - n.length; ++i) {
+            bool matchFound = true;
+            for (uint256 j = 0; j < n.length; ++j) {
+                if (h[i + j] != n[j]) {
+                    matchFound = false;
+                    break;
+                }
+            }
+            if (matchFound) return true;
+        }
+        return false;
+    }
 
     function _setPixel(bytes memory packedPixels, uint256 x, uint256 y, uint8 value) internal pure {
 

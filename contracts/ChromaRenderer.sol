@@ -113,7 +113,10 @@ contract ChromaRenderer is Ownable {
     }
 
     function _getDiff(uint256 tokenId) internal view returns (uint16[] memory diffIndexes, uint8[] memory diffColors) {
-        if (address(chromaCanvas) == address(0)) return (new uint16[](0), new uint8[](0));
+        if (address(chromaCanvas) == address(0)) {
+            return (new uint16[](0), new uint8[](0));
+        }
+        // Canvas diff arrays are passed through to SVG rendering; no ownerOf check needed here.
         return chromaCanvas.getDiff(tokenId);
     }
 
@@ -181,8 +184,8 @@ contract ChromaRenderer is Ownable {
         }
         if (paletteId == 27) {
             return [
-                "#e8e0c8", "#1a1400", "#2d2400", "#fff8e0", "#7a5c00", "#a07800", "#c49a00", "#d4aa00",
-                "#e8c840", "#8a6a00", "#3d2e00", "#c8960a", "#ffd700", "#7a5800", "#b08800", "#e8c020"
+                "#e8e0c8", "#3d2e00", "#5c4600", "#fff8e0", "#7a5c00", "#a07800", "#c49a00", "#d4aa00",
+                "#e8c840", "#c49a00", "#5c4400", "#c8960a", "#ffd700", "#9a7400", "#b08800", "#e8c020"
             ];
         }
         uint8 id = paletteId % 26;

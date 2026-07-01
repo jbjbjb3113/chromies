@@ -34,6 +34,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     error InvalidTransfer();
     error TokenLocked();
     error UnauthorizedChromaCaller();
+    error NotInscribed();
 
     uint256 internal constant GRID_PIXELS = 4096;
     uint256 internal constant TRAIT_MUTATION_INDEX = 15;
@@ -122,7 +123,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     /// @notice Admin AP grant (promotions, migrations from V1 balances, etc).
     ///         Organic earning happens through the burn flow below.
     function earnAP(uint256 tokenId, uint256 amount) external onlyOwner {
-        chroma.ownerOf(tokenId); // reverts for nonexistent token
+        // Intentionally discards return value; reverts if tokenId does not exist.
+        chroma.ownerOf(tokenId);
         _earnAP(tokenId, amount);
     }
 
@@ -183,9 +185,11 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     }
 
     /// @notice Shift mutation tier toward Pristine, spending the token's own AP.
+    ///         Requires on-chain inscription — pre-inscribe shifts would break the merkle leaf.
     function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
         if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
         if (chroma.isLocked(tokenId)) revert TokenLocked();
+        if (!chromaStorage.hasData(tokenId)) revert NotInscribed();
         if (newTier > 3) revert InvalidMutationTier();
 
         bytes memory traits = chromaStorage.getTraits(tokenId);
@@ -234,9 +238,12 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         return Math.sqrt(earned / LEVEL_AP_DIVISOR);
     }
 
-    /// @notice Tiered burn yield from the sacrificed token's on-chain pixel count.
+    /// @notice Tiered burn yield from the sacrificed token's pixel count.
+    ///         Uses on-chain storage when inscribed; otherwise revealedTraits snapshot.
     function calculateBurnAP(uint256 burnTokenId) public view returns (uint256) {
-        uint256 pixels = chromaStorage.getTotalPixels(burnTokenId);
+        uint256 pixels = _sacrificePixelCount(burnTokenId);
+        if (pixels == 0) return 0;
+
         uint256 percent;
         if (pixels < TIER1_THRESHOLD) {
             percent = TIER1_MIN_PERCENT;
@@ -282,6 +289,18 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     // Internals
     // ========================================================================
 
+    function _sacrificePixelCount(uint256 burnTokenId) internal view returns (uint256) {
+        if (chromaStorage.hasData(burnTokenId)) {
+            return chromaStorage.getTotalPixels(burnTokenId);
+        }
+        if (!chroma.revealed(burnTokenId)) return 0;
+
+        bytes32 traits = chroma.revealedTraits(burnTokenId);
+        if (traits == bytes32(0)) return 0;
+
+        return (uint256(uint8(traits[17])) << 8) | uint256(uint8(traits[18]));
+    }
+
     function _earnAP(uint256 tokenId, uint256 amount) internal {
         actionPoints[tokenId] += amount;
         totalApEarned[tokenId] += amount;
@@ -297,7 +316,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
 
     function _transferAP(uint256 fromTokenId, uint256 toTokenId, uint256 amount) internal {
         if (fromTokenId == toTokenId) revert InvalidTransfer();
-        chroma.ownerOf(toTokenId); // reverts for nonexistent destination
+        // Intentionally discards return value; reverts if destination token does not exist.
+        chroma.ownerOf(toTokenId);
         if (actionPoints[fromTokenId] < amount) revert InsufficientActionPoints();
 
         actionPoints[fromTokenId] -= amount;

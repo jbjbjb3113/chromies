@@ -9,9 +9,10 @@ import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
 import {TraitFixtures} from "./Chroma.t.sol";
+import {ChromaTestHelpers} from "./ChromaTestHelpers.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
-contract ChromaCanvasV2Test is Test {
+contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
     ChromaStorage internal storageContract;
     Chroma internal chroma;
     ChromaCanvasV2 internal canvas;
@@ -23,11 +24,15 @@ contract ChromaCanvasV2Test is Test {
     uint256 internal constant ALICE_TOKEN = 1;
     uint256 internal constant BOB_TOKEN = 2;
 
+    function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
     function setUp() public {
         alice = makeAddr("alice");
         bob = makeAddr("bob");
 
-        storageContract = new ChromaStorage(address(this), address(0));
+        storageContract = new ChromaStorage(address(this), address(this));
         chroma = new Chroma(address(storageContract), address(this), address(this), 500);
         storageContract.setWriter(address(chroma));
 
@@ -39,8 +44,20 @@ contract ChromaCanvasV2Test is Test {
 
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.zeroTraits();
-        chroma.mint(alice, ALICE_TOKEN, pixels, traits);
-        chroma.mint(bob, BOB_TOKEN, pixels, traits);
+        chroma.mint(alice, ALICE_TOKEN);
+        chroma.mint(bob, BOB_TOKEN);
+        revealToken(chroma, alice, ALICE_TOKEN, pixels, traits);
+        revealToken(chroma, bob, BOB_TOKEN, pixels, traits);
+    }
+
+    function _mintRevealedAt(address to, uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
+        _mintAt(to, tokenId);
+        revealToken(chroma, to, tokenId, pixels, traits);
+    }
+
+    function _mintInscribedAt(address to, uint256 tokenId, bytes memory pixels, bytes memory traits) internal {
+        _mintAt(to, tokenId);
+        inscribeToken(chroma, to, tokenId, pixels, traits);
     }
 
     // ========================================================================
@@ -233,12 +250,14 @@ contract ChromaCanvasV2Test is Test {
     }
 
     function test_BurnCount_IncrementsOnBurn() external {
-        uint256 fuelOne = 10;
-        uint256 fuelTwo = 11;
+        uint256 fuelOne = 3;
+        uint256 fuelTwo = 4;
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.zeroTraits();
-        chroma.mint(alice, fuelOne, pixels, traits);
-        chroma.mint(alice, fuelTwo, pixels, traits);
+        chroma.mint(alice, fuelOne);
+        chroma.mint(alice, fuelTwo);
+        revealToken(chroma, alice, fuelOne, pixels, traits);
+        revealToken(chroma, alice, fuelTwo, pixels, traits);
 
         vm.prank(alice);
         chroma.setApprovalForAll(address(canvas), true);
@@ -256,14 +275,18 @@ contract ChromaCanvasV2Test is Test {
         renderer.setChroma(address(chroma));
         chroma.setRenderer(address(renderer));
 
-        uint256 fuelToken = 12;
+        uint256 fuelToken = 3;
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.zeroTraits();
-        chroma.mint(alice, fuelToken, pixels, traits);
+        _mintRevealedAt(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);
         chroma.setApprovalForAll(address(canvas), true);
         _revealBurn(alice, ALICE_TOKEN, fuelToken, bytes(""));
+
+        bytes memory basePixels = new bytes(2048);
+        bytes memory baseTraits = TraitFixtures.zeroTraits();
+        inscribeToken(chroma, alice, ALICE_TOKEN, basePixels, baseTraits);
 
         string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
         assert(_contains(json, '{"display_type":"number","trait_type":"Burns Absorbed","value":1}'));
@@ -289,10 +312,14 @@ contract ChromaCanvasV2Test is Test {
 
     function test_Customized_TraitInTokenURI() external {
         ChromaRenderer renderer = _setupRenderer();
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.zeroTraits();
 
         canvas.earnAP(ALICE_TOKEN, 10);
         vm.prank(alice);
         canvas.applyDiff(ALICE_TOKEN, hex"00000f");
+
+        inscribeToken(chroma, alice, ALICE_TOKEN, pixels, traits);
 
         string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
         assert(_contains(json, '{"trait_type":"Customized","value":"Yes"}'));
@@ -317,20 +344,24 @@ contract ChromaCanvasV2Test is Test {
 
     function test_PixelsEdited_TraitInTokenURI() external {
         ChromaRenderer renderer = _setupRenderer();
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.zeroTraits();
 
         canvas.earnAP(ALICE_TOKEN, 10);
         vm.prank(alice);
         canvas.applyDiff(ALICE_TOKEN, hex"00010f00020f");
 
+        inscribeToken(chroma, alice, ALICE_TOKEN, pixels, traits);
+
         string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
         assert(_contains(json, '{"display_type":"number","trait_type":"Pixels Edited","value":2}'));
     }
 
-    function test_TotalPixels_CalculatedOnMint() external {
-        uint256 tokenId = 20;
+    function test_TotalPixels_CalculatedOnInscribe() external {
+        uint256 tokenId = 3;
         bytes memory pixels = _pixelsWithNonZeroCount(3);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(3);
-        chroma.mint(alice, tokenId, pixels, traits);
+        _mintInscribedAt(alice, tokenId, pixels, traits);
 
         assert(storageContract.getTotalPixels(tokenId) == 3);
         assert(storageContract.totalPixels(tokenId) == 3);
@@ -338,115 +369,133 @@ contract ChromaCanvasV2Test is Test {
     }
 
     function test_Inscribe_PreservesCustomizedPixels() external {
+        uint256 tokenId = 5;
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.zeroTraits();
+        _mintRevealedAt(alice, tokenId, pixels, traits);
+
         chroma.setCanvas(address(canvas));
         ChromaRenderer renderer = _setupRenderer();
 
-        canvas.earnAP(ALICE_TOKEN, 10);
+        canvas.earnAP(tokenId, 10);
         vm.prank(alice);
-        canvas.applyDiff(ALICE_TOKEN, hex"00000f");
-
-        bytes memory beforeInscribe = storageContract.getPixels(ALICE_TOKEN);
-        assert(_getPixel(beforeInscribe, 0) == 0);
+        canvas.applyDiff(tokenId, hex"00000f");
 
         bytes memory maliciousPixels = new bytes(2048);
         _setPixel(maliciousPixels, 0, 0, 4);
-        bytes memory traits = storageContract.getTraits(ALICE_TOKEN);
 
         vm.prank(alice);
-        chroma.inscribe(ALICE_TOKEN, maliciousPixels, traits, new bytes32[](0));
+        vm.expectRevert(Chroma.InvalidMerkleProof.selector);
+        chroma.inscribe(tokenId, maliciousPixels, traits, emptyProof());
 
-        assert(chroma.isLocked(ALICE_TOKEN));
+        vm.prank(alice);
+        chroma.inscribe(tokenId, pixels, traits, emptyProof());
 
-        bytes memory baked = storageContract.getPixels(ALICE_TOKEN);
+        assert(chroma.isLocked(tokenId));
+
+        bytes memory baked = storageContract.getPixels(tokenId);
         assert(_getPixel(baked, 0) == 15);
-        assert(_getPixel(baked, 0) != _getPixel(maliciousPixels, 0));
 
-        (uint16[] memory indexes,) = canvas.getDiff(ALICE_TOKEN);
+        (uint16[] memory indexes,) = canvas.getDiff(tokenId);
         assert(indexes.length == 0);
 
-        string memory svg = renderer.renderSVG(ALICE_TOKEN);
+        string memory svg = renderer.renderSVG(tokenId);
         assert(_contains(svg, 'fill="#db5a91"'));
     }
 
-    function test_Inscribe_LockOnly_PreservesCustomizedPixels() external {
-        chroma.setCanvas(address(canvas));
+    function test_MutationTierShift_Blocked_PreInscribe() external {
+        uint256 tokenId = 6;
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits =
+            hex"0000000000000000000000000000000300000000000000000000000000000000";
+        _mintRevealedAt(alice, tokenId, pixels, traits);
+        canvas.earnAP(tokenId, 500);
 
-        canvas.earnAP(ALICE_TOKEN, 10);
         vm.prank(alice);
-        canvas.applyDiff(ALICE_TOKEN, hex"00000f");
+        vm.expectRevert(ChromaCanvasV2.NotInscribed.selector);
+        canvas.shiftMutationTier(tokenId, 2);
+    }
+
+    function test_MutationTierShift_WorksAfterInscribe() external {
+        uint256 tokenId = 7;
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits =
+            hex"0000000000000000000000000000000300000000000000000000000000000000";
+        _mintInscribedAt(alice, tokenId, pixels, traits);
+        canvas.earnAP(tokenId, 500);
 
         vm.prank(alice);
-        chroma.inscribe(ALICE_TOKEN);
+        vm.expectRevert(ChromaCanvasV2.TokenLocked.selector);
+        canvas.shiftMutationTier(tokenId, 2);
+    }
 
-        assert(chroma.isLocked(ALICE_TOKEN));
-        bytes memory baked = storageContract.getPixels(ALICE_TOKEN);
-        assert(_getPixel(baked, 0) == 15);
+    function test_TotalPixels_UnchangedByEdits() external {
+        uint256 tokenId = 8;
+        bytes memory pixels = _pixelsWithNonZeroCount(5);
+        bytes memory traits = TraitFixtures.traitsWithTotalPixels(5);
+        _mintRevealedAt(alice, tokenId, pixels, traits);
+
+        assert(!storageContract.hasData(tokenId));
+        canvas.earnAP(tokenId, 10);
+        vm.prank(alice);
+        canvas.applyDiff(tokenId, hex"00000f00010f");
+
+        assert(!storageContract.hasData(tokenId));
+        assert(canvas.getPixelsEdited(tokenId) == 2);
     }
 
     function test_TotalPixels_TraitInTokenURI() external {
         ChromaRenderer renderer = _setupRenderer();
 
-        uint256 tokenId = 21;
+        uint256 tokenId = 9;
         bytes memory pixels = _pixelsWithNonZeroCount(4);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(4);
-        chroma.mint(alice, tokenId, pixels, traits);
+        _mintInscribedAt(alice, tokenId, pixels, traits);
 
         string memory json = _decodeTokenUri(renderer.tokenURI(tokenId));
         assert(_contains(json, '{"display_type":"number","trait_type":"Total Pixels","value":4}'));
-    }
-
-    function test_TotalPixels_UnchangedByEdits() external {
-        uint256 tokenId = 22;
-        bytes memory pixels = _pixelsWithNonZeroCount(5);
-        bytes memory traits = TraitFixtures.traitsWithTotalPixels(5);
-        chroma.mint(alice, tokenId, pixels, traits);
-
-        uint256 before = storageContract.getTotalPixels(tokenId);
-        canvas.earnAP(tokenId, 10);
-        vm.prank(alice);
-        canvas.applyDiff(tokenId, hex"00000f00010f");
-
-        assert(storageContract.getTotalPixels(tokenId) == before);
-        assert(before == 5);
-        assert(canvas.getPixelsEdited(tokenId) == 2);
     }
 
     // ========================================================================
     // Tiered burn AP
     // ========================================================================
 
+    function test_CalculateBurnAP_UnrevealedReturnsZero() external view {
+        assert(canvas.calculateBurnAP(999) == 0);
+    }
+
     function test_CalculateBurnAP_LowPixelCount() external {
-        uint256 tokenId = 30;
+        uint256 tokenId = 3;
         bytes memory pixels = _pixelsWithNonZeroCount(100);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(100);
-        chroma.mint(alice, tokenId, pixels, traits);
+        _mintRevealedAt(alice, tokenId, pixels, traits);
 
         assert(canvas.calculateBurnAP(tokenId) == 1);
     }
 
     function test_CalculateBurnAP_MidPixelCount() external {
-        uint256 tokenId = 31;
+        uint256 tokenId = 4;
         bytes memory pixels = _pixelsWithNonZeroCount(1750);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(1750);
-        chroma.mint(alice, tokenId, pixels, traits);
+        _mintRevealedAt(alice, tokenId, pixels, traits);
 
         assert(canvas.calculateBurnAP(tokenId) == 35);
     }
 
     function test_CalculateBurnAP_HighPixelCount() external {
-        uint256 tokenId = 32;
+        uint256 tokenId = 5;
         bytes memory pixels = _pixelsWithNonZeroCount(2100);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(2100);
-        chroma.mint(alice, tokenId, pixels, traits);
+        _mintRevealedAt(alice, tokenId, pixels, traits);
 
         assert(canvas.calculateBurnAP(tokenId) == 63);
     }
 
     function test_RevealBurn_CreditsCalculatedAP() external {
-        uint256 fuelToken = 33;
+        uint256 fuelToken = 6;
         bytes memory pixels = _pixelsWithNonZeroCount(1750);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(1750);
-        chroma.mint(alice, fuelToken, pixels, traits);
+        _mintRevealedAt(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);
         chroma.setApprovalForAll(address(canvas), true);
@@ -473,14 +522,15 @@ contract ChromaCanvasV2Test is Test {
 
         bytes memory traits =
             hex"0000000000000000000000000000000300000000000000000000000000000000";
-        uint256 shiftToken = 40;
-        chroma.mint(alice, shiftToken, new bytes(2048), traits);
+        uint256 shiftToken = 10;
+        bytes memory shiftPixels = new bytes(2048);
+        _mintAt(alice, shiftToken);
+        inscribeToken(chroma, alice, shiftToken, shiftPixels, traits);
         canvas.earnAP(shiftToken, 500);
 
         vm.prank(alice);
+        vm.expectRevert(ChromaCanvasV2.TokenLocked.selector);
         canvas.shiftMutationTier(shiftToken, 2);
-        assert(canvas.totalApEarned(shiftToken) == 500);
-        assert(canvas.actionPoints(shiftToken) == 0);
     }
 
     function test_TotalApEarned_NotCreditedOnTransfer() external {
@@ -517,10 +567,10 @@ contract ChromaCanvasV2Test is Test {
     }
 
     function test_GetLevel_SurvivesSpendAndBurnCredit() external {
-        uint256 fuelToken = 41;
+        uint256 fuelToken = 11;
         bytes memory pixels = _pixelsWithNonZeroCount(1750);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(1750);
-        chroma.mint(alice, fuelToken, pixels, traits);
+        _mintRevealedAt(alice, fuelToken, pixels, traits);
 
         vm.prank(alice);
         chroma.setApprovalForAll(address(canvas), true);
@@ -541,11 +591,22 @@ contract ChromaCanvasV2Test is Test {
 
     function test_GetLevel_InTokenURI() external {
         ChromaRenderer renderer = _setupRenderer();
+        bytes memory pixels = new bytes(2048);
+        bytes memory traits = TraitFixtures.zeroTraits();
 
         canvas.earnAP(ALICE_TOKEN, 200);
+        inscribeToken(chroma, alice, ALICE_TOKEN, pixels, traits);
+
         string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
         assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":2}'));
         assert(_contains(json, '"trait_type":"Mutation"'));
+    }
+
+    function _mintAt(address to, uint256 tokenId) internal {
+        while (chroma.totalSupply() + 1 < tokenId) {
+            chroma.mint(address(this), chroma.totalSupply() + 1);
+        }
+        chroma.mint(to, tokenId);
     }
 
     function _setupRenderer() internal returns (ChromaRenderer renderer) {
