@@ -26,7 +26,6 @@ contract RedeployCanvasScript is Script {
         ChromaStorage chromaStorage = ChromaStorage(storageAddress);
 
         ChromaCanvasV2 canvas = new ChromaCanvasV2(chromaAddress, storageAddress, deployer);
-        chromaStorage.setTraitUpdater(address(canvas));
         canvas.setOperatorApproval(marketplaceAddress, true);
 
         chroma.setCanvas(address(canvas));

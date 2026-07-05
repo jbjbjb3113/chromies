@@ -31,7 +31,6 @@ contract DeployScript is Script {
         chromaStorage.setWriter(address(chroma));
 
         ChromaCanvasV2 chromaCanvas = new ChromaCanvasV2(address(chroma), address(chromaStorage), deployer);
-        chromaStorage.setTraitUpdater(address(chromaCanvas));
 
         PixelMarketplace pixelMarketplace = new PixelMarketplace();
         chromaCanvas.setOperatorApproval(address(pixelMarketplace), true);

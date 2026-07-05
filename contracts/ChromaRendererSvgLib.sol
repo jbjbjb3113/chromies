@@ -17,7 +17,6 @@ library ChromaRendererSvgLib {
         string[16] palette;
         uint16[] diffIndexes;
         uint8[] diffColors;
-        uint8 mutationTier;
     }
 
     function buildBody(SvgRenderContext memory ctx) internal pure returns (bytes memory) {
@@ -49,19 +48,12 @@ library ChromaRendererSvgLib {
         for (uint256 y = 0; y < GRID; ++y) {
             uint256 x = 0;
             while (x < GRID) {
-                uint256 flatIndex = y * GRID + x;
                 uint8 idx = _getCompositePixelIndex(ctx.pixels, x, y, ctx.diffIndexes, ctx.diffColors);
-                if (ctx.mutationTier != 0) {
-                    idx = _mutatePixelIndex(ctx.tokenId, flatIndex, idx, ctx.mutationTier);
-                }
 
                 uint256 run = 1;
                 while (x + run < GRID) {
                     uint256 nextFlat = y * GRID + x + run;
                     uint8 nextIdx = _getCompositePixelIndex(ctx.pixels, x + run, y, ctx.diffIndexes, ctx.diffColors);
-                    if (ctx.mutationTier != 0) {
-                        nextIdx = _mutatePixelIndex(ctx.tokenId, nextFlat, nextIdx, ctx.mutationTier);
-                    }
                     if (nextIdx != idx) break;
                     ++run;
                 }
@@ -125,36 +117,5 @@ library ChromaRendererSvgLib {
             if (diffIndexes[idx] == flatIndex) return diffColors[idx];
         }
         return _getPixelIndex(pixels, x, y);
-    }
-
-    function _mutationSwapThreshold(uint8 tier) private pure returns (uint8) {
-        if (tier == 1) return 5;
-        if (tier == 2) return 10;
-        if (tier == 3) return 20;
-        return 0;
-    }
-
-    function _mutatePixelIndex(uint256 tokenId, uint256 pixelIndex, uint8 paletteIndex, uint8 tier)
-        private
-        pure
-        returns (uint8)
-    {
-        if (tier == 0 || paletteIndex == 0) return paletteIndex;
-
-        uint8 threshold = _mutationSwapThreshold(tier);
-        if (threshold == 0) return paletteIndex;
-
-        uint256 seed = uint256(keccak256(abi.encodePacked(tokenId, pixelIndex, "mutation")));
-        if (seed % 100 >= threshold) return paletteIndex;
-
-        if (paletteIndex >= 4 && paletteIndex <= 8) {
-            uint256 familyPos = paletteIndex - 4;
-            return uint8(4 + ((familyPos + seed) % 5));
-        }
-        if (paletteIndex >= 13 && paletteIndex <= 15) {
-            uint256 familyPos = paletteIndex - 13;
-            return uint8(13 + ((familyPos + seed) % 3));
-        }
-        return paletteIndex;
     }
 }

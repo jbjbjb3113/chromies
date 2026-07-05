@@ -349,50 +349,6 @@ contract ChromaRendererTest {
 
 
 
-    function test_MutationTier_AffectsRender() external {
-
-        WriterCaller writer = new WriterCaller();
-
-        ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
-
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
-
-
-
-        bytes memory pixels = new bytes(2048);
-
-        for (uint256 x = 0; x < 64; ++x) {
-
-            _setPixel(pixels, x, 10, 6);
-
-        }
-
-
-
-        bytes memory pristineTraits = TraitFixtures.traitsWithTotalPixels(64);
-        bytes memory offKilterTraits =
-            hex"0000000000000000000000000000000300000000000000000040000000000000";
-
-
-
-        writer.write(storageContract, 100, pixels, pristineTraits);
-
-        writer.write(storageContract, 101, pixels, offKilterTraits);
-
-
-
-        string memory svgPristine = renderer.renderSVG(100);
-
-        string memory svgMutated = renderer.renderSVG(101);
-
-
-
-        assert(keccak256(bytes(svgPristine)) != keccak256(bytes(svgMutated)));
-
-    }
-
-
-
     function _setPixel(bytes memory packedPixels, uint256 x, uint256 y, uint8 value) internal pure {
 
         uint256 flatIndex = y * 64 + x;
@@ -659,10 +615,6 @@ contract ChromaCanvasTest is Test, ChromaTestHelpers {
 
         canvas = new ChromaCanvas(address(chroma), address(storageContract), address(this));
 
-        storageContract.setTraitUpdater(address(canvas));
-
-
-
         basePixels = new bytes(2048);
 
         baseTraits = TraitFixtures.zeroTraits();
@@ -836,38 +788,6 @@ contract ChromaCanvasTest is Test, ChromaTestHelpers {
         canvas.revealBurnAndApplyDiff(tokenId, burnedTokenId, salt, bytes(""));
     }
 
-    function test_MutationTierShift_Valid() external {
-        bytes memory traits =
-            hex"0000000000000000000000000000000300000000000000000000000000000000";
-        _mintRevealed(400, basePixels, traits);
-        chroma.setApprovalForAll(address(canvas), true);
-
-        for (uint256 i = 0; i < 5; ++i) {
-            _mintRevealed(410 + i, basePixels, baseTraits);
-            _grantActionPoints(400, 410 + i);
-        }
-
-        vm.expectRevert(ChromaCanvas.NotInscribed.selector);
-        canvas.shiftMutationTier(400, 2);
-    }
-
-    function test_MutationTierShift_Invalid() external {
-        bytes memory traits =
-            hex"0000000000000000000000000000000200000000000000000000000000000000";
-        _mintRevealed(401, basePixels, traits);
-        _mintRevealed(420, basePixels, baseTraits);
-        chroma.setApprovalForAll(address(canvas), true);
-        _grantActionPoints(401, 420);
-
-        vm.expectRevert(ChromaCanvas.NotInscribed.selector);
-        canvas.shiftMutationTier(401, 3);
-
-        vm.expectRevert(ChromaCanvas.NotInscribed.selector);
-        canvas.shiftMutationTier(401, 1);
-    }
-
-
-
     function test_ActionPointsTransfer() external {
 
         _mintRevealed(500, basePixels, baseTraits);
@@ -968,21 +888,6 @@ contract ChromaCanvasTest is Test, ChromaTestHelpers {
     }
 
 
-
-    function test_MutationShift_Blocked_WhenLocked() external {
-        bytes memory traits =
-            hex"0000000000000000000000000000000200000000000000000000000000000000";
-        _mintRevealed(601, basePixels, traits);
-        chroma.setApprovalForAll(address(canvas), true);
-
-        _mintRevealed(602, basePixels, baseTraits);
-        _grantActionPoints(601, 602);
-
-        _lockToken(601, basePixels, traits);
-
-        vm.expectRevert(ChromaCanvas.TokenLocked.selector);
-        canvas.shiftMutationTier(601, 2);
-    }
 
     function test_Level_StartsAtOne() external {
         _mintAt(address(this), 700);
@@ -1105,7 +1010,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
 
 
-        chroma.mint{value: 0.003 ether}(proof, 1);
+        chroma.mint{value: 0.0025 ether}(proof, 1);
 
 
 
@@ -1131,7 +1036,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
 
 
-        chroma.mint{value: 0.005 ether}(proof, 1);
+        chroma.mint{value: 0.0035 ether}(proof, 1);
 
 
 
@@ -1151,7 +1056,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
 
 
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
 
 
@@ -1172,7 +1077,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
         vm.deal(address(attacker), 1 ether);
 
         vm.expectRevert(ReentrancyGuard.ReentrancyGuardReentrantCall.selector);
-        attacker.attackPublicMint{value: 0.012 ether}();
+        attacker.attackPublicMint{value: 0.009 ether}();
 
         assertEq(chroma.totalSupply(), 0);
     }
@@ -1187,7 +1092,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
         chroma.setPhase(Chroma.Phase.Public);
 
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         assert(!storageContract.hasData(1));
 
@@ -1225,7 +1130,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Inscribe_WritesPixelsAndLocks() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 0, 0, 4);
@@ -1250,7 +1155,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Inscribe_LocksToken() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         _setPixel(pixels, 0, 0, 4);
@@ -1274,7 +1179,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Inscribe_NonOwner_Reverts() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.zeroTraits();
@@ -1293,7 +1198,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
         chroma.setPhase(Chroma.Phase.Public);
 
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
 
 
@@ -1333,42 +1238,111 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
         vm.expectRevert(Chroma.WrongPhase.selector);
 
-        chroma.mint{value: 0.003 ether}(proof, 1);
+        chroma.mint{value: 0.0025 ether}(proof, 1);
 
 
 
         vm.expectRevert(Chroma.WrongPhase.selector);
 
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
     }
 
 
 
-    function test_MaxPerWallet_Enforced() external {
-
+    function test_MaxPerWallet_AllowlistOne_FiveThenSixthReverts() external {
         bytes32[] memory proof = new bytes32[](0);
-
         chroma.setMerkleRootOne(_leaf(address(this)));
-
         chroma.setPhase(Chroma.Phase.AllowlistOne);
 
-
-
-        chroma.mint{value: 0.003 ether}(proof, 1);
-
-        chroma.mint{value: 0.003 ether}(proof, 1);
-
-        assert(chroma.claimedOne(address(this)) == 2);
-
-        assert(chroma.totalSupply() == 2);
-
-
+        uint256 unitPrice = chroma.ALLOWLIST_ONE_PRICE();
+        chroma.mint{value: unitPrice * 5}(proof, 5);
+        assert(chroma.claimedOne(address(this)) == 5);
+        assert(chroma.totalSupply() == 5);
 
         vm.expectRevert(Chroma.MaxPerWalletExceeded.selector);
+        chroma.mint{value: unitPrice}(proof, 1);
+    }
 
-        chroma.mint{value: 0.003 ether}(proof, 1);
+    function test_MaxPerWallet_AllowlistTwo_FiveThenSixthReverts() external {
+        bytes32[] memory proof = new bytes32[](0);
+        chroma.setMerkleRootTwo(_leaf(address(this)));
+        chroma.setPhase(Chroma.Phase.AllowlistTwo);
 
+        uint256 unitPrice = chroma.ALLOWLIST_TWO_PRICE();
+        chroma.mint{value: unitPrice * 5}(proof, 5);
+        assert(chroma.claimedTwo(address(this)) == 5);
+
+        vm.expectRevert(Chroma.MaxPerWalletExceeded.selector);
+        chroma.mint{value: unitPrice}(proof, 1);
+    }
+
+    function test_MaxPerWallet_Public_FiveThenSixthReverts() external {
+        chroma.setPhase(Chroma.Phase.Public);
+
+        uint256 unitPrice = chroma.MINT_PRICE();
+        chroma.mint{value: unitPrice * 5}(5);
+        assert(chroma.claimedPublic(address(this)) == 5);
+
+        vm.expectRevert(Chroma.MaxPerWalletExceeded.selector);
+        chroma.mint{value: unitPrice}(1);
+    }
+
+    function test_Public_Rollover_UnsoldAllowlistSupplyStillMintable() external {
+        bytes32[] memory proof = new bytes32[](0);
+        chroma.setMerkleRootOne(_leaf(address(this)));
+        chroma.setPhase(Chroma.Phase.AllowlistOne);
+        uint256 tierOnePrice = chroma.ALLOWLIST_ONE_PRICE();
+        chroma.mint{value: tierOnePrice * 5}(proof, 5);
+        assert(chroma.mintedAllowlistOne() == 5);
+        assert(chroma.mintedAllowlistOne() < chroma.MAX_MINT_ALLOWLIST_ONE());
+
+        chroma.setPhase(Chroma.Phase.Public);
+        uint256 publicPrice = chroma.MINT_PRICE();
+        chroma.mint{value: publicPrice * 5}(5);
+        assert(chroma.totalSupply() == 10);
+        assert(chroma.claimedPublic(address(this)) == 5);
+    }
+
+    function test_CommunityCap_ProtectsTeamReserve() external {
+        for (uint256 i = 0; i < 4949; ++i) {
+            chroma.mint(address(this), i + 1);
+        }
+        assert(chroma.totalSupply() == 4949);
+
+        chroma.setPhase(Chroma.Phase.Public);
+        uint256 publicPrice = chroma.MINT_PRICE();
+        chroma.mint{value: publicPrice}(1);
+        assert(chroma.totalSupply() == 4950);
+
+        vm.expectRevert(Chroma.MaxSupplyReached.selector);
+        chroma.mint{value: publicPrice}(1);
+
+        chroma.mint(address(this), 4951);
+        assert(chroma.totalSupply() == 4951);
+    }
+
+    function test_PhaseSupply_AllowlistOne_Capped() external {
+        address buyer = makeAddr("buyer");
+        bytes32[] memory proof = new bytes32[](0);
+        chroma.setMerkleRootOne(_leaf(buyer));
+        chroma.setPhase(Chroma.Phase.AllowlistOne);
+
+        uint256 unitPrice = chroma.ALLOWLIST_ONE_PRICE();
+        vm.deal(buyer, 10_000 ether);
+        vm.startPrank(buyer);
+        for (uint256 i = 0; i < 500; ++i) {
+            chroma.mint{value: unitPrice * 5}(proof, 5);
+            vm.stopPrank();
+            chroma.resetClaimed(buyer);
+            vm.startPrank(buyer);
+        }
+        vm.stopPrank();
+        assert(chroma.mintedAllowlistOne() == 2500);
+
+        vm.prank(buyer);
+        vm.expectRevert(Chroma.PhaseSupplyExceeded.selector);
+        chroma.mint{value: unitPrice}(proof, 1);
     }
 
 
@@ -1379,7 +1353,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
         chroma.setRevealedBaseURI("ipfs://collection/metadata/");
 
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         string memory unrevealed = chroma.tokenURI(1);
         assert(_containsPhase(_decodePhaseTokenUri(unrevealed), "Unrevealed"));
@@ -1402,7 +1376,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Gas_RevealUnderBudget() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(10);
@@ -1417,7 +1391,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Gas_InscribeOverRevealBudget() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(10);
@@ -1434,7 +1408,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Inscribe_RequiresPriorReveal() external {
         chroma.setPhase(Chroma.Phase.Public);
-        chroma.mint{value: 0.006 ether}(1);
+        chroma.mint{value: 0.0045 ether}(1);
 
         bytes memory pixels = new bytes(2048);
         bytes memory traits = TraitFixtures.zeroTraits();

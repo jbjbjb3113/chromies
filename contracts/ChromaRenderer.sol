@@ -44,7 +44,6 @@ contract ChromaRenderer is Ownable {
         ctx.pixels = chromaStorage.getPixels(tokenId);
         ctx.palette = _paletteForToken(traits);
         (ctx.diffIndexes, ctx.diffColors) = _getDiff(tokenId);
-        ctx.mutationTier = uint8(traits[15]);
     }
 
     function tokenURI(uint256 tokenId) external view returns (string memory) {
@@ -89,9 +88,7 @@ contract ChromaRenderer is Ownable {
             ",",
             _jsonAttribute("Glasses", _glassesLabel(uint8(traits[13]))),
             ",",
-            _jsonAttribute("Hair", _hairLabel(uint8(traits[14]))),
-            ",",
-            _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15])))
+            _jsonAttribute("Hair", _hairLabel(uint8(traits[14])))
         );
 
         return abi.encodePacked(
@@ -489,13 +486,5 @@ contract ChromaRenderer is Ownable {
         if (value == 6) return "Surfer";
         if (value == 7) return "FadeRight";
         return "None";
-    }
-
-    function _mutationLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "Pristine";
-        if (value == 1) return "Standard";
-        if (value == 2) return "Drifted";
-        if (value == 3) return "OffKilter";
-        return "Standard";
     }
 }

@@ -37,7 +37,6 @@ contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
         storageContract.setWriter(address(chroma));
 
         canvas = new ChromaCanvasV2(address(chroma), address(storageContract), address(this));
-        storageContract.setTraitUpdater(address(canvas));
 
         marketplace = new PixelMarketplace();
         canvas.setOperatorApproval(address(marketplace), true);
@@ -403,32 +402,6 @@ contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
         assert(_contains(svg, 'fill="#db5a91"'));
     }
 
-    function test_MutationTierShift_Blocked_PreInscribe() external {
-        uint256 tokenId = 6;
-        bytes memory pixels = new bytes(2048);
-        bytes memory traits =
-            hex"0000000000000000000000000000000300000000000000000000000000000000";
-        _mintRevealedAt(alice, tokenId, pixels, traits);
-        canvas.earnAP(tokenId, 500);
-
-        vm.prank(alice);
-        vm.expectRevert(ChromaCanvasV2.NotInscribed.selector);
-        canvas.shiftMutationTier(tokenId, 2);
-    }
-
-    function test_MutationTierShift_WorksAfterInscribe() external {
-        uint256 tokenId = 7;
-        bytes memory pixels = new bytes(2048);
-        bytes memory traits =
-            hex"0000000000000000000000000000000300000000000000000000000000000000";
-        _mintInscribedAt(alice, tokenId, pixels, traits);
-        canvas.earnAP(tokenId, 500);
-
-        vm.prank(alice);
-        vm.expectRevert(ChromaCanvasV2.TokenLocked.selector);
-        canvas.shiftMutationTier(tokenId, 2);
-    }
-
     function test_TotalPixels_UnchangedByEdits() external {
         uint256 tokenId = 8;
         bytes memory pixels = _pixelsWithNonZeroCount(5);
@@ -520,17 +493,8 @@ contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
         assert(canvas.totalApEarned(ALICE_TOKEN) == 250);
         assert(canvas.actionPoints(ALICE_TOKEN) == 150);
 
-        bytes memory traits =
-            hex"0000000000000000000000000000000300000000000000000000000000000000";
-        uint256 shiftToken = 10;
-        bytes memory shiftPixels = new bytes(2048);
-        _mintAt(alice, shiftToken);
-        inscribeToken(chroma, alice, shiftToken, shiftPixels, traits);
-        canvas.earnAP(shiftToken, 500);
-
-        vm.prank(alice);
-        vm.expectRevert(ChromaCanvasV2.TokenLocked.selector);
-        canvas.shiftMutationTier(shiftToken, 2);
+        canvas.earnAP(ALICE_TOKEN, 50);
+        assert(canvas.totalApEarned(ALICE_TOKEN) == 300);
     }
 
     function test_TotalApEarned_NotCreditedOnTransfer() external {
@@ -599,7 +563,7 @@ contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
 
         string memory json = _decodeTokenUri(renderer.tokenURI(ALICE_TOKEN));
         assert(_contains(json, '{"display_type":"number","trait_type":"Level","value":2}'));
-        assert(_contains(json, '"trait_type":"Mutation"'));
+        assert(_contains(json, '"trait_type":"Hair"'));
     }
 
     function _mintAt(address to, uint256 tokenId) internal {

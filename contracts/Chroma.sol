@@ -39,12 +39,18 @@ contract Chroma is ERC721, ERC2981, Ownable, ReentrancyGuard {
     error InvalidPayload();
     error AlreadyInscribed();
     error RevealedBaseURINotSet();
+    error PhaseSupplyExceeded();
 
     uint256 public constant MAX_SUPPLY = 5150;
-    uint256 public constant MINT_PRICE = 0.006 ether;
-    uint256 public constant ALLOWLIST_ONE_PRICE = 0.003 ether;
-    uint256 public constant ALLOWLIST_TWO_PRICE = 0.005 ether;
-    uint256 public constant MAX_PER_WALLET_ONE = 2;
+    uint256 public constant TEAM_RESERVE = 200;
+    uint256 public constant MAX_MINT_ALLOWLIST_ONE = 2500;
+    uint256 public constant MAX_MINT_ALLOWLIST_TWO = 1000;
+    uint256 public constant MINT_PRICE = 0.0045 ether;
+    uint256 public constant ALLOWLIST_ONE_PRICE = 0.0025 ether;
+    uint256 public constant ALLOWLIST_TWO_PRICE = 0.0035 ether;
+    uint256 public constant MAX_PER_WALLET_ONE = 5;
+    uint256 public constant MAX_PER_WALLET_TWO = 5;
+    uint256 public constant MAX_PER_WALLET_PUBLIC = 5;
 
     uint256 internal constant PIXELS_LENGTH = 2048;
     uint256 internal constant TRAITS_LENGTH = 32;
@@ -58,6 +64,8 @@ contract Chroma is ERC721, ERC2981, Ownable, ReentrancyGuard {
     mapping(address => uint256) public claimedOne;
     mapping(address => uint256) public claimedTwo;
     mapping(address => uint256) public claimedPublic;
+    uint256 public mintedAllowlistOne;
+    uint256 public mintedAllowlistTwo;
     mapping(uint256 => bool) public revealed;
     mapping(uint256 => bool) public locked;
     mapping(uint256 => bytes32) public revealedTraits;
@@ -215,35 +223,48 @@ contract Chroma is ERC721, ERC2981, Ownable, ReentrancyGuard {
         if (quantity == 0) revert InvalidQuantity();
         if (msg.value != ALLOWLIST_ONE_PRICE * quantity) revert InsufficientPayment();
         if (claimedOne[msg.sender] + quantity > MAX_PER_WALLET_ONE) revert MaxPerWalletExceeded();
+        if (mintedAllowlistOne + quantity > MAX_MINT_ALLOWLIST_ONE) revert PhaseSupplyExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootOne)) revert InvalidMerkleProof();
 
         claimedOne[msg.sender] += quantity;
+        mintedAllowlistOne += quantity;
         for (uint256 i = 0; i < quantity; ++i) {
-            _mintPlaceholder(msg.sender);
+            _mintCommunity(msg.sender);
         }
     }
 
     function _mintAllowlistTwo(bytes32[] calldata proof, uint256 quantity) internal {
         if (quantity == 0) revert InvalidQuantity();
         if (msg.value != ALLOWLIST_TWO_PRICE * quantity) revert InsufficientPayment();
-        if (claimedTwo[msg.sender] + quantity > 2) revert MaxPerWalletExceeded();
+        if (claimedTwo[msg.sender] + quantity > MAX_PER_WALLET_TWO) revert MaxPerWalletExceeded();
+        if (mintedAllowlistTwo + quantity > MAX_MINT_ALLOWLIST_TWO) revert PhaseSupplyExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootTwo)) revert InvalidMerkleProof();
 
         claimedTwo[msg.sender] += quantity;
+        mintedAllowlistTwo += quantity;
         for (uint256 i = 0; i < quantity; ++i) {
-            _mintPlaceholder(msg.sender);
+            _mintCommunity(msg.sender);
         }
     }
 
     function _mintPublic(uint256 quantity) internal {
         if (quantity == 0) revert InvalidQuantity();
         if (msg.value != MINT_PRICE * quantity) revert InsufficientPayment();
-        if (claimedPublic[msg.sender] + quantity > 3) revert MaxPerWalletExceeded();
+        if (claimedPublic[msg.sender] + quantity > MAX_PER_WALLET_PUBLIC) revert MaxPerWalletExceeded();
 
         claimedPublic[msg.sender] += quantity;
         for (uint256 i = 0; i < quantity; ++i) {
-            _mintPlaceholder(msg.sender);
+            _mintCommunity(msg.sender);
         }
+    }
+
+    function _communityMintCap() internal pure returns (uint256) {
+        return MAX_SUPPLY - TEAM_RESERVE;
+    }
+
+    function _mintCommunity(address to) internal {
+        if (_totalSupply + 1 > _communityMintCap()) revert MaxSupplyReached();
+        _mintPlaceholder(to);
     }
 
     function _mintPlaceholder(address to) internal {

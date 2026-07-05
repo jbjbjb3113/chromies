@@ -32,7 +32,6 @@ contract RedeployChromaScript is Script {
         storageContract.setWriter(address(chroma));
 
         ChromaCanvasV2 canvas = new ChromaCanvasV2(address(chroma), address(storageContract), deployer);
-        storageContract.setTraitUpdater(address(canvas));
 
         PixelMarketplace marketplace = new PixelMarketplace();
         canvas.setOperatorApproval(address(marketplace), true);

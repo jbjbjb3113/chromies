@@ -24,10 +24,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     error TokenNotWritten();
 
-    error UnauthorizedTraitUpdater();
-
-    error InvalidTraitIndex();
-
     error InvalidTotalPixelsCount();
 
     error ZeroAddress();
@@ -89,9 +85,8 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     //            5=Dreads, 6=Surfer, 7=FadeRight
 
-    // [15] Mutation tier: 0=Pristine, 1=Standard, 2=Drifted, 3=OffKilter
-
-    // [16] Drift tier: 0=Pristine, 1=Standard, 2=Drifted, 3=OffKilter
+    // [15] Retired / unused
+    // [16] Retired / unused
 
     // [17] Total Pixels (uint16 high byte) — pipeline-computed non-zero nibble count
 
@@ -102,10 +97,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
     uint256 internal constant TRAITS_LENGTH = 32;
 
     address public writer;
-
-    address public traitUpdater;
-
-
 
     mapping(uint256 tokenId => address) public pixelPointers;
 
@@ -125,13 +116,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
     function setWriter(address newWriter) external onlyOwner {
         if (newWriter == address(0)) revert ZeroAddress();
         writer = newWriter;
-    }
-
-
-
-    function setTraitUpdater(address newTraitUpdater) external onlyOwner {
-        if (newTraitUpdater == address(0)) revert ZeroAddress();
-        traitUpdater = newTraitUpdater;
     }
 
 
@@ -166,26 +150,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
 
 
-    function revealTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traitBytes) external {
-
-        if (msg.sender != writer) revert UnauthorizedWriter();
-
-        if (pixels.length != PIXELS_LENGTH) revert InvalidPixelsLength();
-
-        if (traitBytes.length != TRAITS_LENGTH) revert InvalidTraitsLength();
-
-        if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
-
-
-
-        pixelPointers[tokenId] = SSTORE2.write(pixels);
-
-        traits[tokenId] = bytes32(traitBytes);
-
-    }
-
-
-
     function hasData(uint256 tokenId) external view returns (bool) {
 
         return pixelPointers[tokenId] != address(0);
@@ -211,28 +175,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
         if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
 
         return abi.encodePacked(traits[tokenId]);
-
-    }
-
-
-
-    function updateTrait(uint256 tokenId, uint256 traitIndex, uint8 value) external override {
-
-        if (msg.sender != traitUpdater) revert UnauthorizedTraitUpdater();
-
-        if (traitIndex >= TRAITS_LENGTH) revert InvalidTraitIndex();
-
-        if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
-
-
-
-        bytes memory traitBytes = abi.encodePacked(traits[tokenId]);
-
-        traitBytes[traitIndex] = bytes1(value);
-
-        traits[tokenId] = bytes32(traitBytes);
-
-        totalPixels[tokenId] = _totalPixelsFromTraitsMemory(traitBytes);
 
     }
 
@@ -273,14 +215,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
 
     function _totalPixelsFromTraits(bytes calldata traitBytes) internal pure returns (uint256 count) {
-
-        count = (uint256(uint8(traitBytes[17])) << 8) | uint256(uint8(traitBytes[18]));
-
-        if (count > 4096) revert InvalidTotalPixelsCount();
-
-    }
-
-    function _totalPixelsFromTraitsMemory(bytes memory traitBytes) internal pure returns (uint256 count) {
 
         count = (uint256(uint8(traitBytes[17])) << 8) | uint256(uint8(traitBytes[18]));
 

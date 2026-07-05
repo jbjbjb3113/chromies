@@ -29,15 +29,11 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     error InsufficientActionPoints();
     error MissingCommit();
     error InvalidReveal();
-    error InvalidMutationShift();
-    error InvalidMutationTier();
     error InvalidTransfer();
     error TokenLocked();
     error UnauthorizedChromaCaller();
-    error NotInscribed();
 
     uint256 internal constant GRID_PIXELS = 4096;
-    uint256 internal constant TRAIT_MUTATION_INDEX = 15;
     uint256 public constant TIER1_THRESHOLD = 1500;
     uint256 public constant TIER2_THRESHOLD = 2000;
     uint256 public constant TIER1_MIN_PERCENT = 1;
@@ -79,7 +75,6 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     event CommitSubmitted(address indexed user, bytes32 indexed commitment);
     event BurnRevealed(address indexed user, uint256 indexed burnedTokenId, uint256 indexed creditedTokenId, uint256 actionPointsAwarded);
     event DiffApplied(address indexed user, uint256 indexed tokenId, uint256 entriesApplied);
-    event MutationTierShifted(uint256 indexed tokenId, uint8 oldTier, uint8 newTier);
     event APEarned(uint256 indexed tokenId, uint256 amount);
     event APSpent(uint256 indexed tokenId, uint256 amount);
     event OperatorApprovalSet(address indexed operator, bool approved);
@@ -184,23 +179,6 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         _applyDiff(tokenId, diffData, msg.sender);
     }
 
-    /// @notice Shift mutation tier toward Pristine, spending the token's own AP.
-    ///         Requires on-chain inscription — pre-inscribe shifts would break the merkle leaf.
-    function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
-        if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
-        if (chroma.isLocked(tokenId)) revert TokenLocked();
-        if (!chromaStorage.hasData(tokenId)) revert NotInscribed();
-        if (newTier > 3) revert InvalidMutationTier();
-
-        bytes memory traits = chromaStorage.getTraits(tokenId);
-        uint8 currentTier = uint8(traits[TRAIT_MUTATION_INDEX]);
-        uint256 cost = _mutationShiftCost(currentTier, newTier);
-
-        _spendAP(tokenId, cost);
-        chromaStorage.updateTrait(tokenId, TRAIT_MUTATION_INDEX, newTier);
-        emit MutationTierShifted(tokenId, currentTier, newTier);
-    }
-
     // ========================================================================
     // Views
     // ========================================================================
@@ -231,7 +209,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         return chromaStorage.getTotalPixels(tokenId);
     }
 
-    /// @notice Uncapped activity level from lifetime AP earned (sqrt curve, separate from mutation tier).
+    /// @notice Uncapped activity level from lifetime AP earned (sqrt curve).
     function getLevel(uint256 tokenId) public view returns (uint256) {
         uint256 earned = totalApEarned[tokenId];
         if (earned == 0) return 0;
@@ -323,14 +301,6 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         actionPoints[fromTokenId] -= amount;
         actionPoints[toTokenId] += amount;
         emit APTransferred(fromTokenId, toTokenId, amount);
-    }
-
-    function _mutationShiftCost(uint8 currentTier, uint8 newTier) internal pure returns (uint256) {
-        if (newTier >= currentTier) revert InvalidMutationShift();
-        if (currentTier == 3 && newTier == 2) return 500;
-        if (currentTier == 2 && newTier == 1) return 1500;
-        if (currentTier == 1 && newTier == 0) return 5000;
-        revert InvalidMutationShift();
     }
 
     function _applyDiff(uint256 tokenId, bytes calldata diffData, address user) internal {
