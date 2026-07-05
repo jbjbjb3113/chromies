@@ -42,7 +42,8 @@
 - [ ] Announce mint
 
 ### Infrastructure
-- [ ] Rotate Alchemy API key (exposed in broadcast JSON — done before mainnet)
+- [x] Repo key handling hardened (`broadcast/` + `run-latest.json` gitignored; `.env.example` has `ALCHEMY_MAINNET_KEY` / `SEPOLIA_RPC_URL` slots — no keys in tracked files)
+- [ ] Rotate Alchemy API key in dashboard (JB — old key may exist in local `.env` / `.env.local`; paste new key after rotation, before mainnet)
 - [ ] Verify Alchemy free tier sufficient (300M CU/month — safe for mint event)
 - [ ] Consider Alchemy Growth plan for mainnet analytics (optional)
 

@@ -16,10 +16,12 @@ _backups/
 
 /lib/
 
-# Foundry
+# Foundry (broadcast JSONs embed RPC URLs — never commit)
 cache/
 out/
 broadcast/
+**/broadcast/**
+run-latest.json
 .verify-worktrees/
 .verify-tmp-*/
 .verify-worktree/
