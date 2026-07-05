@@ -1,8 +1,12 @@
-// Generates merkle trees for Tier 1 (Normies) and Tier 2 (Brain Rots) allowlists.
+// Generates merkle trees for Tier 1 (Normies) and Tier 2 (Brain Rots ∪ Akutars) allowlists.
 // Leaf = keccak256(abi.encodePacked(address)) — matches Chroma.sol _verifyAllowlist.
 //
 // USAGE:
 //   node generate-merkle.js
+//
+// INPUTS (from snapshot-holders.js):
+//   output/normies-holders.json   → Tier 1
+//   output/tier2-holders.json     → Tier 2 merged (Brain Rots ∪ Akutars)
 //
 // OUTPUTS:
 //   output/merkle-tier1.json / merkle-tier1-root.txt
@@ -24,7 +28,7 @@ const TIERS = [
   },
   {
     name: "Tier 2",
-    input: path.join(OUTPUT_DIR, "brainrots-holders.json"),
+    input: path.join(OUTPUT_DIR, "tier2-holders.json"),
     jsonOut: path.join(OUTPUT_DIR, "merkle-tier2.json"),
     rootOut: path.join(OUTPUT_DIR, "merkle-tier2-root.txt"),
   },
