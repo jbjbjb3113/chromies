@@ -63,8 +63,9 @@ const ON_CHAIN_PALETTE_BYTES = Object.freeze({
   NORMIE_TIMPERS: 32,     // Timpers (Normie #5974)
   NORMIE_DEEKAY: 33,      // Deekay (Normie #6576 → seeded Chromie ID)
   NORMIE_PIV: 34,         // PIV (Normie #7409 → seeded Chromie ID)
-  NORMIE_UPCOMING1: 35,   // Coming Soon (Normie #9993 → seeded Chromie ID)
+  NORMIE_DOPEMIND: 35,    // DOPEMIND (Normie #9993 → Chromie #2222)
   NORMIE_UPCOMING2: 36,   // Coming Soon (Normie #0 → seeded Chromie ID)
+  AGENT: 37,
 });
 
 /** Character names that encode as `${name}_${gender}` when gender is Male/Female. */

@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_DOPEMIND
+Channels: RGBA
+#
+227 229 228 255	background (#e3e5e4 — Normie #9993 light)
+ 20  20  20 255	mask_dark (off-black)
+ 36  36  36 255	mask_mid
+245 245 245 255	highlight (off-white)
+ 42  43  44 255	skin_shadow_deep
+ 54  55  57 255	skin_shadow
+ 72  73  75 255	skin_mid (#48494b — Normie #9993 dark)
+ 92  93  95 255	skin_light
+112 113 115 255	skin_highlight
+ 72  73  75 255	hood/shirt
+ 10  10  10 255	eye_socket (pure off-black)
+ 72  73  75 255	eye_glow
+216 217 216 255	eye_signal
+ 42  43  44 255	hair_dark
+ 72  73  75 255	hair_mid
+138 139 141 255	hair_bright

@@ -20,7 +20,7 @@ const NORMIE_LEGENDARY_DEFS = Object.freeze([
   { palette: "NORMIE_TIMPERS",     artist: "Timpers",      normieRef: 5974, seed: "chromies-legendary-timpers-v1",  headVariant: "Legendary_Timpers", headFile: "legendary/NORMIE_5974_Timpers.png" },
   { palette: "NORMIE_DEEKAY",      artist: "Deekay",       normieRef: 6576, seed: "chromies-legendary-deekay-v1",   headVariant: "Legendary_Deekay",  headFile: "legendary/NORMIE_6576_Deekay.png" },
   { palette: "NORMIE_PIV",         artist: "PIV",          normieRef: 7409, seed: "chromies-legendary-piv-v1",      headVariant: "Legendary_PIV",     headFile: "legendary/NORMIE_7409_PIV.png" },
-  { palette: "NORMIE_UPCOMING1",   artist: "Coming Soon",  normieRef: 9993, seed: "chromies-legendary-upcoming1-v1" },
+  { palette: "NORMIE_DOPEMIND",    artist: "DOPEMIND",     normieRef: 9993, seed: "chromies-legendary-upcoming1-v1" },
   { palette: "NORMIE_UPCOMING2",   artist: "Coming Soon",  normieRef: 0,    seed: "chromies-legendary-upcoming2-v1" },
 ]);
 
