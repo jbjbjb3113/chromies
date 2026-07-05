@@ -68,16 +68,23 @@ export const PHASE_LABELS = {
   [PHASE.Revealed]: "Revealed",
 };
 
-/** Per-phase wallet caps (contract: Tier2=2, Public=3; Tier1 reads MAX_PER_WALLET_ONE). */
+/** Per-phase wallet caps — all phases allow 5 mints per wallet on-chain. */
 export const PHASE_WALLET_MAX = {
-  [PHASE.AllowlistOne]: null,
-  [PHASE.AllowlistTwo]: 2,
-  [PHASE.Public]: 3,
+  [PHASE.AllowlistOne]: 5,
+  [PHASE.AllowlistTwo]: 5,
+  [PHASE.Public]: 5,
+};
+
+/** Display fallbacks when contract reads are unavailable (Sepolia/mainnet use on-chain values). */
+export const MINT_PRICES_ETH = {
+  allowlistOne: "0.0025",
+  allowlistTwo: "0.0035",
+  public: "0.0045",
 };
 
 export function getPhaseWalletMax(phase, maxPerWalletOne) {
   if (phase === PHASE.AllowlistOne) {
-    return maxPerWalletOne !== undefined ? Number(maxPerWalletOne) : 2;
+    return maxPerWalletOne !== undefined ? Number(maxPerWalletOne) : PHASE_WALLET_MAX[PHASE.AllowlistOne];
   }
   if (phase === PHASE.AllowlistTwo) return PHASE_WALLET_MAX[PHASE.AllowlistTwo];
   if (phase === PHASE.Public) return PHASE_WALLET_MAX[PHASE.Public];
