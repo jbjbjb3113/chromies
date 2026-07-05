@@ -11,7 +11,7 @@ const { buildCharacterDecoderTable } = require("./on-chain-character-bytes");
 const MINT_DATA_PATH = path.resolve("output/mint-data.json");
 
 const CHARACTER  = buildCharacterDecoderTable();
-const PALETTE    = ["SIGNAL","ACID","CYAN","GHOST","BLOOD","MOSS","SIGNAL_BLONDE","SIGNAL_GREY","SIGNAL_RED","ACID_BLONDE","ACID_GREY","ACID_RED","CYAN_BLONDE","CYAN_GREY","CYAN_RED","GHOST_BLONDE","GHOST_GREY","GHOST_RED","BLOOD_BLONDE","BLOOD_GREY","BLOOD_RED","MOSS_BLONDE","MOSS_GREY","MOSS_RED","CAT","ALIEN","ZOMBIE"];
+const PALETTE    = ["SIGNAL","ACID","CYAN","GHOST","BLOOD","MOSS","SIGNAL_BLONDE","SIGNAL_GREY","SIGNAL_RED","ACID_BLONDE","ACID_GREY","ACID_RED","CYAN_BLONDE","CYAN_GREY","CYAN_RED","GHOST_BLONDE","GHOST_GREY","GHOST_RED","BLOOD_BLONDE","BLOOD_GREY","BLOOD_RED","MOSS_BLONDE","MOSS_GREY","MOSS_RED","CAT","ALIEN","ZOMBIE","AGENT"];
 const HOOD       = ["None","Classic"];
 const SHIRT      = ["None","Crew","Tank","Tank_Female"];
 const BODY       = ["None","Default","Female","Female_Tank","Alien","Tank","Zombie"];
@@ -25,9 +25,6 @@ const EYES       = ["Signal","Alien"];
 const EARRINGS   = ["None","Stud"];
 const GLASSES    = ["None","Shades","Neo","VR"];
 const HAIR       = ["None","Mohawk","Pompadour","MrT","Afro","Dreads","Surfer","FadeRight"];
-const MUTATION   = ["Pristine","Standard","Drifted","OffKilter"];
-const DRIFT      = ["Pristine","Standard","Drifted","OffKilter"];
-
 const SLOTS = [
   { name: "Character",   table: CHARACTER  },
   { name: "Palette",     table: PALETTE    },
@@ -44,14 +41,15 @@ const SLOTS = [
   { name: "Earrings",    table: EARRINGS   },
   { name: "Glasses",     table: GLASSES    },
   { name: "Hair",        table: HAIR       },
-  { name: "Mutation",    table: MUTATION   },
-  { name: "Drift",       table: DRIFT      },
+  { name: "Mutation",    retired: true     },
+  { name: "Drift",       retired: true     },
 ];
 
 function decode(traitsHex) {
   const hex = traitsHex.replace("0x", "");
   const bytes = Buffer.from(hex, "hex");
   return SLOTS.map((slot, i) => {
+    if (slot.retired) return "Retired/Unused";
     const val = bytes[i];
     return slot.table[val] ?? `unknown(${val})`;
   });
