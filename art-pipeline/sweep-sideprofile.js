@@ -22,9 +22,7 @@ const {
   renderPNG,
   extractToBuffer,
   buildPhase3Effects,
-  getMutationTier,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
 
 const FIXED_TOKEN_ID = 1;
 const CHARACTER_NAME = "SideProfile";
@@ -115,7 +113,6 @@ function parseArgs() {
     genders: [...DEFAULT_GENDERS],
     hairs: null,
     palettes: [...DEFAULT_PALETTES],
-    mtier: "Pristine",
     hood: "None",
   };
 
@@ -126,7 +123,6 @@ function parseArgs() {
     else if (a === "--gender") result.genders = splitList(args[++i]);
     else if (a === "--hair") result.hairs = splitList(args[++i]);
     else if (a === "--palette") result.palettes = splitList(args[++i]).map((p) => p.toUpperCase());
-    else if (a === "--mtier") result.mtier = args[++i];
     else if (a === "--hood") result.hood = args[++i];
     else {
       console.error(`Unknown argument: ${a}`);
@@ -151,7 +147,6 @@ Axes:
   --gender <Male,Female>     Default: Male,Female
   --hair <variant,...>       Default: SP_HAIR_* files present in components/
   --palette <SIGNAL,...>     Default: SIGNAL,ACID,CYAN,GHOST,BLOOD,MOSS
-  --mtier <name>             Mutation tier override (default: Pristine)
   --hood <variant>           Hood override (default: None; e.g. SP_Classic)
 
 Options:
@@ -375,17 +370,8 @@ function renderCombo(ctx, combo) {
   applySlotOverride(picks, ctx.traits, "hood", ctx.hood);
   loadPickBuffersCached(picks, ctx.traits, ctx.bufferCache);
 
-  const mTier = getMutationTier(FIXED_TOKEN_ID, ctx.mtier);
-  const { driftMap, strays } = buildPhase3Effects(
-    FIXED_TOKEN_ID,
-    picks,
-    compositeChromie(renderPicks, ctx.traits, 0, null, null),
-    null,
-    character,
-  );
-
-  let buf = compositeChromie(renderPicks, ctx.traits, FIXED_TOKEN_ID, driftMap, mTier);
-  buf = overlayStrayPixels(buf, strays);
+  const { driftMap } = buildPhase3Effects(FIXED_TOKEN_ID, picks, null, character);
+  const buf = compositeChromie(renderPicks, ctx.traits, FIXED_TOKEN_ID, driftMap);
   return renderPNG(buf, palette);
 }
 
@@ -489,7 +475,7 @@ function main() {
   const plannedCombos = buildCombos(opts.genders, hairByGender, opts.palettes, opts.hairs);
   const attempted = plannedCombos.length;
 
-  console.log(`SideProfile sweep | token #${FIXED_TOKEN_ID} | mtier=${opts.mtier} | hood=${opts.hood} | output/quick/sideprofile-sweep.png`);
+  console.log(`SideProfile sweep | token #${FIXED_TOKEN_ID} | hood=${opts.hood} | output/quick/sideprofile-sweep.png`);
   console.log(`  ${summarizeSpHoodAssetCoverage(opts.genders)}`);
   for (const gender of opts.genders) {
     console.log(`  ${gender} hair files: ${(hairByGender[gender] || []).join(", ") || "(none)"}`);
@@ -516,7 +502,7 @@ function main() {
     opts.genders.map((gender) => [gender, resolveCharacter(gender)]),
   );
   const bufferCache = new Map();
-  const ctx = { traits, characterByGender, bufferCache, mtier: opts.mtier, hood: opts.hood };
+  const ctx = { traits, characterByGender, bufferCache, hood: opts.hood };
 
   const skipped = [];
   const rendered = [];

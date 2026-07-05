@@ -18,10 +18,8 @@ const {
   compositeChromie,
   renderPNG,
   buildPhase3Effects,
-  getMutationTier,
   extractToBuffer,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
 const { buildMintRecord } = require("./bridge-mint-data");
 const {
   ON_CHAIN_CHARACTER_BYTES,
@@ -47,7 +45,7 @@ const PALETTE_DECODE = [
   "GHOST_BLONDE", "GHOST_GREY", "GHOST_RED",
   "BLOOD_BLONDE", "BLOOD_GREY", "BLOOD_RED",
   "MOSS_BLONDE", "MOSS_GREY", "MOSS_RED",
-  "CAT", "ALIEN", "ZOMBIE",
+  "CAT", "ALIEN", "ZOMBIE", "AGENT",
 ];
 
 const CHARACTER_TARGETS = [
@@ -199,11 +197,8 @@ function renderTokenNew(tokenId, traits) {
   const palette = PALETTES[paletteKey];
   const picks = pickTokenVariants(tokenId, traits, new Set(), character);
   const renderPicks = applyCoverageRules(picks, traits, character);
-  const mTier = getMutationTier(tokenId);
-  const baseBuf = compositeChromie(renderPicks, traits, 0, null, null);
-  const { tier, driftMap, strays } = buildPhase3Effects(tokenId, picks, baseBuf, null, character);
-  let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
-  buf = overlayStrayPixels(buf, strays);
+  const { driftMap } = buildPhase3Effects(tokenId, picks, null, character);
+  const buf = compositeChromie(renderPicks, traits, tokenId, driftMap);
   const issues = checkRenderPicks(renderPicks, traits);
   return {
     pngBuf: renderPNG(buf, palette),
@@ -211,8 +206,6 @@ function renderTokenNew(tokenId, traits) {
     paletteKey,
     picks,
     renderPicks,
-    mTier,
-    tier,
     issues,
   };
 }
@@ -326,7 +319,7 @@ function pickDiverseSamples(ids, metaById, max = 16) {
   const buckets = new Map();
   for (const id of ids) {
     const m = metaById.get(id);
-    const key = [m.paletteKey, m.mTier, m.tier.name, m.hood, m.shirt, m.hair].join("|");
+    const key = [m.paletteKey, m.hood, m.shirt, m.hair].join("|");
     if (!buckets.has(key)) buckets.set(key, id);
   }
   const out = [...buckets.values()];
@@ -346,8 +339,6 @@ function writeCharacterGalleries(traits, allTokenIds) {
       const r = renderTokenNew(id, traits);
       metaById.set(id, {
         paletteKey: r.paletteKey,
-        mTier: r.mTier.name,
-        tier: r.tier,
         hood: r.renderPicks.hood?.variant.name,
         shirt: r.renderPicks.shirt?.variant.name,
         hair: r.renderPicks.hair?.variant.name,
@@ -371,13 +362,11 @@ function writeCharacterGalleries(traits, allTokenIds) {
       const id = samples[n];
       const r = renderTokenNew(id, traits);
       const m = metaById.get(id);
-      const label = `#${id} ${m.paletteKey.slice(0, 8)} ${m.mTier.slice(0, 3)}`;
+      const label = `#${id} ${m.paletteKey.slice(0, 8)}`;
       blitTile(gallery, r.pngBuf, n % cols, Math.floor(n / cols), cols, label);
       tiles.push({
         tokenId: id,
         palette: r.paletteKey,
-        mutation: r.mTier.name,
-        drift: r.tier.name,
         renderIssues: r.issues,
         picks: Object.fromEntries(
           Object.entries(r.renderPicks).map(([s, p]) => [s, { variant: p.variant.name, file: p.file }])

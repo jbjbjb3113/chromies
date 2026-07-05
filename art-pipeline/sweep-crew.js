@@ -21,9 +21,7 @@ const {
   renderPNG,
   extractToBuffer,
   buildPhase3Effects,
-  getMutationTier,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
 
 const FIXED_TOKEN_ID = 1;
 const SWEEP_DIR = path.join(SETTINGS.outputDir, "sweep");
@@ -42,7 +40,6 @@ const FIXED = {
   character: "HeroA",
   gender: "Male",
   shirt: "Crew",
-  mtier: "Pristine",
 };
 
 function parseArgs() {
@@ -55,7 +52,7 @@ function parseArgs() {
 }
 
 function printHelp() {
-  console.log(`Crew shirt accessory sweep (Male HeroA, mtier Pristine)
+  console.log(`Crew shirt accessory sweep (Male HeroA)
 
 Options:
   --dry-run   Print combo count and time estimate only
@@ -160,7 +157,6 @@ function renderCombo({
   palette,
   combo,
   bufferCache,
-  mTier,
 }) {
   const picks = pickTokenVariants(tokenId, traits, new Set(), character, false);
   applySlotOverride(picks, traits, "shirt", FIXED.shirt);
@@ -172,20 +168,12 @@ function renderCombo({
 
   loadPickBuffersCached(picks, traits, bufferCache);
   const renderPicks = applyCoverageRules(picks, traits, character);
-  const { tier, driftMap, strays } = buildPhase3Effects(
-    tokenId,
-    picks,
-    compositeChromie(renderPicks, traits, 0, null, null),
-    null,
-    character,
-  );
-
-  let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
-  buf = overlayStrayPixels(buf, strays);
+  const { driftMap } = buildPhase3Effects(tokenId, picks, null, character);
+  const buf = compositeChromie(renderPicks, traits, tokenId, driftMap);
   const pngBuf = renderPNG(buf, palette);
   const missing = collectMissingFiles(picks);
 
-  return { pngBuf, missing, tier, mTier };
+  return { pngBuf, missing };
 }
 
 function benchmarkAverageMs(combos, ctx) {
@@ -226,20 +214,18 @@ function main() {
   const counts = Object.entries(variants)
     .map(([slot, list]) => `${slot}=${list.length}`)
     .join(" × ");
-  console.log(`Crew sweep: ${FIXED.character} ${FIXED.gender} | shirt=${FIXED.shirt} | mtier=${FIXED.mtier} | palette=${paletteKey}`);
+  console.log(`Crew sweep: ${FIXED.character} ${FIXED.gender} | shirt=${FIXED.shirt} | palette=${paletteKey}`);
   console.log(`Combos: ${counts} = ${total}`);
 
   if (!fs.existsSync(SWEEP_DIR)) fs.mkdirSync(SWEEP_DIR, { recursive: true });
 
   const bufferCache = new Map();
-  const mTier = getMutationTier(FIXED_TOKEN_ID, FIXED.mtier);
   const ctx = {
     tokenId: FIXED_TOKEN_ID,
     traits,
     character,
     palette,
     bufferCache,
-    mTier,
   };
 
   const avgMs = benchmarkAverageMs(combos, ctx);

@@ -19,9 +19,7 @@ const {
   compositeChromie,
   renderPNG,
   buildPhase3Effects,
-  getMutationTier,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
 
 const REVIEW_DIR = path.join(SETTINGS.outputDir, "review");
 const GRID = SETTINGS.grid;
@@ -68,16 +66,8 @@ function renderZombieCombo(tokenId, traits, combo) {
   loadPickBuffers(picks, traits, ZOMBIE);
   const renderPicks = applyCoverageRules(picks, traits, ZOMBIE);
   const palette = PALETTES.ZOMBIE;
-  const mTier = getMutationTier(tokenId);
-  const { tier, driftMap, strays } = buildPhase3Effects(
-    tokenId,
-    picks,
-    compositeChromie(renderPicks, traits, 0, null, null),
-    null,
-    ZOMBIE,
-  );
-  let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
-  buf = overlayStrayPixels(buf, strays);
+  const { driftMap } = buildPhase3Effects(tokenId, picks, null, ZOMBIE);
+  const buf = compositeChromie(renderPicks, traits, tokenId, driftMap);
   return { pngBuf: renderPNG(buf, palette, { transparentIndex0: true }), renderPicks, picks };
 }
 

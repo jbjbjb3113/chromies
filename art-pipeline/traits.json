@@ -278,6 +278,10 @@
       "weight": 0
     },
     {
+      "name": "AGENT",
+      "weight": 0
+    },
+    {
       "name": "GOLD",
       "weight": 0
     },
@@ -310,7 +314,7 @@
       "weight": 0
     },
     {
-      "name": "NORMIE_UPCOMING1",
+      "name": "NORMIE_DOPEMIND",
       "weight": 0
     },
     {
@@ -533,6 +537,12 @@
           "file": "zombie/BODY_Zombie.png",
           "weight": 0,
           "_comment": "Character-gated — forced via CHARACTERS.Zombie"
+        },
+        {
+          "name": "Agent",
+          "file": "Agent/BODY_Agent.png",
+          "weight": 0,
+          "_comment": "Character-gated — forced via CHARACTERS.Agent"
         }
       ]
     },
@@ -551,7 +561,7 @@
         },
         {
           "name": "AkuHeart",
-          "file": "BODYTATTOO_AkusHeart.png",
+          "file": "BODYTATTOO_AkuHeart.png",
           "weight": 10
         },
         {
@@ -746,6 +756,12 @@
           "name": "SP_HeroA_Female",
           "file": "SideProfile_Female/SP_NECK_HeroA_Female.png",
           "weight": 0
+        },
+        {
+          "name": "Agent",
+          "file": "Agent/NECK_Agent.png",
+          "weight": 0,
+          "_comment": "Character-gated — forced via CHARACTERS.Agent"
         }
       ]
     },
@@ -806,6 +822,12 @@
           "file": "zombie/HEAD_Zombie.png",
           "weight": 0,
           "_comment": "Character-gated — neck baked in; forced via CHARACTERS.Zombie"
+        },
+        {
+          "name": "Agent",
+          "file": "Agent/HEAD_Agent.png",
+          "weight": 0,
+          "_comment": "Character-gated — forced via CHARACTERS.Agent"
         },
         {
           "name": "Legendary_Snowfro",
@@ -1570,6 +1592,26 @@
           "name": "VR",
           "file": "GLASSES_VR.png",
           "weight": 10
+        },
+        {
+          "name": "DFrame",
+          "file": "GLASSES_DFrame.png",
+          "weight": 0
+        },
+        {
+          "name": "DFrameFilled",
+          "file": "GLASSES_DFrameFilled.png",
+          "weight": 0
+        },
+        {
+          "name": "3DGlasses",
+          "file": "GLASSES_3DGlasses.png",
+          "weight": 0
+        },
+        {
+          "name": "PiratePatch",
+          "file": "GLASSES_PiratePatch.png",
+          "weight": 0
         },
         {
           "name": "SP_Shades",

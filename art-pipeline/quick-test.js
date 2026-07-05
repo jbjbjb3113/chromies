@@ -6,7 +6,7 @@
 // USAGE:
 //   node quick-test.js --gender Male --shirt Crew --hood None --hair Mohawk --glasses Shades --palette SIGNAL
 //   node quick-test.js --character SideProfile --gender Female --shirt SP_Crew_Female --hair SP_Afro_Female --glasses SP_Shades
-//   node quick-test.js --palette ACID --mtier Pristine --tier None
+//   node quick-test.js --palette ACID
 // ============================================================================
 
 const fs = require("fs");
@@ -23,9 +23,7 @@ const {
   renderPNG,
   upscalePNG,
   buildPhase3Effects,
-  getMutationTier,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
 const { getLegendaryHeadVariantForPalette } = require("./legendary-token-ids");
 
 const FIXED_TOKEN_ID = 1;
@@ -60,8 +58,6 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const result = {
     palette: null,
-    tier: null,
-    mtier: null,
     skip: new Set(),
     character: null,
     gender: null,
@@ -72,9 +68,7 @@ function parseArgs() {
     const a = args[i];
     if (a === "--help" || a === "-h") {
       result.help = true;
-    } else if (a === "--palette" || a === "-p") result.palette = args[++i].toUpperCase();
-    else if (a === "--tier") result.tier = args[++i];
-    else if (a === "--mtier") result.mtier = args[++i];
+    }     else if (a === "--palette" || a === "-p") result.palette = args[++i].toUpperCase();
     else if (a === "--character") result.character = args[++i];
     else if (a === "--gender") result.gender = args[++i];
     else if (SLOT_OVERRIDE_FLAGS.includes(a.slice(2))) result[a.slice(2)] = args[++i];
@@ -96,8 +90,6 @@ Flags:
   --character <name>   Character type (e.g. HeroA, SideProfile, Alien)
   --gender <Male|Female>
   --palette, -p <name> Palette family (SIGNAL, ACID, ...)
-  --mtier <name>       Mutation tier override
-  --tier <name>        Drift tier override
   --skip <slots>       Comma-separated slots to skip
 
 Slot overrides (variant name from traits.json):
@@ -199,14 +191,7 @@ function main() {
 
   loadPickBuffers(picks, traits, character);
   const renderPicks = applyCoverageRules(picks, traits, character);
-  const mTier = getMutationTier(tokenId, opts.mtier);
-  const { tier, driftMap, strays } = buildPhase3Effects(
-    tokenId,
-    picks,
-    compositeChromie(renderPicks, traits, 0, null, null),
-    opts.tier,
-    character,
-  );
+  const { driftMap } = buildPhase3Effects(tokenId, picks, null, character);
 
   const missing = collectMissingFiles(renderPicks);
   if (missing.length > 0) {
@@ -217,8 +202,7 @@ function main() {
   }
 
   const t0 = performance.now();
-  let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
-  buf = overlayStrayPixels(buf, strays);
+  const buf = compositeChromie(renderPicks, traits, tokenId, driftMap);
   const pngBuf = renderPNG(buf, palette, {
     transparentIndex0: character?.name === "Zombie",
   });

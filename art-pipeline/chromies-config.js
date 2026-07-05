@@ -1,6 +1,6 @@
 // ============================================================================
 // chromies-config.js
-// System config: role slots, palette families, settings, Phase 3, mutation.
+// System config: role slots, palette families, settings, characters.
 // ============================================================================
 
 const ROLES = [
@@ -713,6 +713,28 @@ const PALETTES = {
       "#999c81", "#adb195", "#c2c4ba", "#c2c4ba",
     ],
   },
+  AGENT: {
+    name: "AGENT",
+    description: "Monochrome agent skin. Locked to Agent character.",
+    colors: [
+      "#e3e5e4", // 0  background
+      "#0a0a0a", // 1  mask_dark
+      "#191919", // 2  mask_mid
+      "#f5f5f5", // 3  highlight
+      "#2d2d2d", // 4  skin_shadow_deep
+      "#505050", // 5  skin_shadow
+      "#737373", // 6  skin_mid
+      "#969696", // 7  skin_light
+      "#b9b9b9", // 8  skin_highlight
+      "#1e1e1e", // 9  hood/shirt
+      "#0f0f0f", // 10 eye_socket
+      "#5a5a5a", // 11 eye_glow
+      "#c8c8c8", // 12 eye_signal
+      "#141414", // 13 hair_dark
+      "#464646", // 14 hair_mid
+      "#828282", // 15 hair_bright
+    ],
+  },
   GOLD: {
     name: "GOLD",
     description: "Ultra-rare gilded palette. Pre-assigned to exactly 11 tokens — never rolls randomly.",
@@ -793,10 +815,27 @@ Object.assign(PALETTES, {
     description: "Normie Legendary — PIV (Normie #7409). Greyscale placeholder.",
     colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
   },
-  NORMIE_UPCOMING1: {
-    name: "NORMIE_UPCOMING1",
-    description: "Normie Legendary — Coming Soon. Greyscale placeholder.",
-    colors: [...NORMIE_LEGENDARY_PLACEHOLDER],
+  NORMIE_DOPEMIND: {
+    name: "NORMIE_DOPEMIND",
+    description: "Normie Legendary — DOPEMIND (Normie #9993). Off-black / off-white ramp anchored on #48494b.",
+    colors: [
+      "#e3e5e4", // 0  background (Normie #9993 light grey)
+      "#141414", // 1  mask_dark
+      "#242424", // 2  mask_mid
+      "#f5f5f5", // 3  highlight (off-white)
+      "#2a2b2c", // 4  skin_shadow_deep
+      "#363739", // 5  skin_shadow
+      "#48494b", // 6  skin_mid (Normie #9993 pixel tone)
+      "#5c5d5f", // 7  skin_light
+      "#707173", // 8  skin_highlight
+      "#48494b", // 9  hood/shirt
+      "#0a0a0a", // 10 eye_socket
+      "#48494b", // 11 eye_glow
+      "#d8d9d8", // 12 eye_signal
+      "#2a2b2c", // 13 hair_dark
+      "#48494b", // 14 hair_mid
+      "#8a8b8d", // 15 hair_bright
+    ],
   },
   NORMIE_UPCOMING2: {
     name: "NORMIE_UPCOMING2",
@@ -813,42 +852,8 @@ const SETTINGS = {
   bgKnockoutThreshold: 20,
 };
 
-// PHASE 3 — Layer transforms (zeroed out for now; tunable later)
-const PHASE3 = {
-  enabled: true,
-  driftTiers: [
-    { name: "Pristine",  maxDrift: 0, strayMin: 0, strayMax: 0, weight: 8  },
-    { name: "Standard",  maxDrift: 0, strayMin: 0, strayMax: 0, weight: 60 },
-    { name: "Drifted",   maxDrift: 0, strayMin: 0, strayMax: 0, weight: 25 },
-    { name: "OffKilter", maxDrift: 0, strayMin: 0, strayMax: 0, weight: 7  },
-  ],
-  driftableSlots: ["hair", "earrings", "tattoo", "beard", "mustache", "glasses", "shirt", "body"],
-  strayPaletteSlots: [3, 12, 15],
-  strayAvoidBackground: true,
-  strayEdgeMargin: 4,
-};
-
-// PIXEL_MUTATION — Per-pixel palette swap within role families.
-const PIXEL_MUTATION = {
-  enabled: true,
-  tiers: [
-    { name: "Pristine",  paletteSwap: 0.00, edgeErode: 0.00, edgeDilate: 0.00, edgePasses: 0, scatter: 0.00, scatterRadius: 0, strayChance: 0.00, weight: 2  },
-    { name: "Standard",  paletteSwap: 0.05, edgeErode: 0.03, edgeDilate: 0.03, edgePasses: 1, scatter: 0.02, scatterRadius: 2, strayChance: 0.00, weight: 30 },
-    { name: "Drifted",   paletteSwap: 0.10, edgeErode: 0.06, edgeDilate: 0.06, edgePasses: 1, scatter: 0.05, scatterRadius: 3, strayChance: 0.00, weight: 50 },
-    { name: "OffKilter", paletteSwap: 0.35, edgeErode: 0.18, edgeDilate: 0.15, edgePasses: 3, scatter: 0.12, scatterRadius: 5, strayChance: 0.12, weight: 17 },
-  ],
-  mutableSlots: ["hair", "head", "neck", "body", "shirt", "hood", "glasses", "necklace"],
-  paletteFamilies: {
-    "hair": [13, 14, 15],   // hair_dark, hair_mid, hair_bright
-    "head": [4, 5, 6, 7, 8],
-    "neck": [4, 5, 6, 7, 8],
-    "body": [4, 5, 6, 7, 8],
-    "shirt": [9],
-    "hood":  [9],
-    "glasses": [1, 3],
-    "necklace": [1, 3],
-  },
-};
+// PHASE3 — Retired drift/mutation tiers; kept for slotDriftOverrides helper only.
+const PHASE3 = { enabled: false };
 
 // CHARACTERS — Top-level roll before any slot picks.
 // weight: relative rarity (mirrors Normies mint distribution at ~10k supply).
@@ -869,6 +874,17 @@ const CHARACTERS = [
     },
     slotWeightOverrides: {},
     slotVariantPool: {
+      glasses: {
+        // Variety pass: None ~42%, dark-lens ~35%, clear/light ~23% (was traits.json Shades/Neo/VR/None only)
+        Shades: 6,
+        Neo: 6,
+        VR: 6,
+        DFrameFilled: 6,
+        "3DGlasses": 6,
+        DFrame: 16,
+        PiratePatch: 5,
+        None: 48,
+      },
       necklace: ["Male_Chain", "Male_Chromies", "Male_HappyFace", "Male_Normies", "Male_Pendent", "None"],
       hair: {
         Male_Afro: 25,
@@ -955,14 +971,15 @@ const CHARACTERS = [
         Chubby_TheAvatar: 0.50, // 0.50 / 110.50 pool ≈ 0.45% (~4–5 per 1000 hair rolls; None stays 10)
       },
       glasses: {
-        Chubby_3DGlasses: 10,
-        Chubby_DFrame: 10,
-        Chubby_DFrameFilled: 10,
-        Chubby_PiratePatch: 10,
-        Chubby_Shades: 10,
-        Chubby_VR: 10,
-        Chubby_NEO: 10,
-        None: 30,
+        // Variety pass: None ~42%, dark-lens ~35%, clear/light ~23% (was None 30, others 10)
+        Chubby_3DGlasses: 6,
+        Chubby_DFrameFilled: 6,
+        Chubby_Shades: 6,
+        Chubby_VR: 6,
+        Chubby_NEO: 6,
+        Chubby_DFrame: 16,
+        Chubby_PiratePatch: 5,
+        None: 48,
       },
       beard: {
         Chubby_Full: 15,
@@ -1028,26 +1045,27 @@ const CHARACTERS = [
     slotWeightOverrides: {},
     slotVariantPool: {
       hair: {
-        Female_Afro: 10,
-        Female_Dreads: 10,
-        Female_FadeRight: 10,
-        Female_FlatTop: 10,
-        Female_Mohawk: 10,
-        Female_MrT: 10,
-        Female_Pompadour: 10,
-        Female_Surfer: 10,
-        None: 20,
-        Female_TheAvatar: 0.45, // 0.45 / 100.45 pool ≈ 0.45% (~4–5 per 1000 hair rolls; None stays 20)
+        Female_Afro: 11,
+        Female_Dreads: 11,
+        Female_FadeRight: 11,
+        Female_FlatTop: 11,
+        Female_Mohawk: 11,
+        Female_MrT: 11,
+        Female_Pompadour: 11,
+        Female_Surfer: 11,
+        None: 12,
+        Female_TheAvatar: 0.45, // 0.45 / 100.45 pool ≈ 0.45% (~4–5 per 1000 hair rolls)
       },
       glasses: {
-        Female_3DGlasses: 10,
-        Female_DFrame: 10,
-        Female_DFrameFilled: 10,
-        Female_PiratePatch: 10,
-        Female_Shades: 10,
-        Female_VR: 10,
-        Female_Neo: 10,
-        None: 30,
+        // Variety pass: None ~42%, dark-lens ~35%, clear/light ~23% (was None 30, others 10)
+        Female_3DGlasses: 6,
+        Female_DFrameFilled: 6,
+        Female_Shades: 6,
+        Female_VR: 6,
+        Female_Neo: 6,
+        Female_DFrame: 16,
+        Female_PiratePatch: 5,
+        None: 48,
       },
       necklace: {
         Female_Chain: 15,
@@ -1090,9 +1108,9 @@ const CHARACTERS = [
         None: 50,
       },
       hood: {
-        Female_Classic: 20,
-        Female_Hooded: 1.6,   // 1.6 / 100 pool = 1.6% roll rate
-        Female_None: 78.4,
+        Female_Classic: 7.5,  // ~7.5% roll rate — matches HeroA_Male Classic (~20/100 traits.json default → ~7.5% of collection)
+        Female_Hooded: 0.6,
+        Female_None: 91.9,
       },
       earrings: {
         Female_Stud: 20,
@@ -1166,7 +1184,12 @@ const CHARACTERS = [
       eyes: ["None"],
       expression: ["None"],
       tattoo: ["None"],
-      bodytattoo: ["None"],
+      bodytattoo: {
+        None: 55,
+        Normies: 15,
+        AkuHeart: 15,
+        Pyramid: 15,
+      },
       earrings: ["None"],
       shirt: ["None"],
       accessory: {
@@ -1198,13 +1221,57 @@ const CHARACTERS = [
   {
     name: "Agent",
     gender: null,
-    weight: 4,
-    palettePool: null,
+    weight: 6,
+    palettePool: ["AGENT"],
     forcedSlots: {
       head: "Agent",
       neck: "Agent",
+      body: "Agent",
+      eyes: "None",
+      expression: "None",
+      tattoo: "None",
+      beard: "None",
+      mustache: "None",
     },
     slotWeightOverrides: {},
+    slotVariantPool: {
+      hair: {
+        Male_Afro: 25,
+        Male_AZVet: 7,
+        Male_Buns: 7,
+        Male_Dreads: 10,
+        Male_FadeRight: 7,
+        Male_FlatTop: 10,
+        Male_Mohawk: 15,
+        Male_MrT: 10,
+        Male_Pompadour: 15,
+        Male_Surfer: 13,
+        None: 5,
+      },
+      glasses: {
+        Shades: 25,
+        Neo: 25,
+        VR: 10,
+        None: 40,
+      },
+      hood: {
+        Classic: 20,
+        None: 80,
+      },
+      shirt: {
+        Crew: 40,
+        Tank: 20,
+        None: 40,
+      },
+      necklace: {
+        Male_Chain: 15,
+        Male_Chromies: 15,
+        Male_HappyFace: 15,
+        Male_Normies: 15,
+        Male_Pendent: 15,
+        None: 25,
+      },
+    },
   },
   {
     name: "SideProfile",
@@ -1352,4 +1419,4 @@ const CHARACTERS = [
   },
 ];
 
-module.exports = { ROLES, PALETTES, SETTINGS, PHASE3, PIXEL_MUTATION, CHARACTERS };
+module.exports = { ROLES, PALETTES, SETTINGS, PHASE3, CHARACTERS };

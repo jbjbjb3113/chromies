@@ -27,13 +27,11 @@ const {
   renderPNG,
   upscalePNG,
   buildPhase3Effects,
-  getMutationTier,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
 
 const AGENT_DIR = path.resolve(__dirname, SETTINGS.outputDir, "agent");
 const SAVED_DIR = path.join(AGENT_DIR, "saved");
-const META_KEYS = new Set(["character", "gender", "palette", "rationale", "mtier", "tier"]);
+const META_KEYS = new Set(["character", "gender", "palette", "rationale"]);
 /** Slots always set by character forcedSlots — never agent-pickable. */
 const AGENT_EXCLUDED_SLOTS = new Set(["neck", "head", "body", "eyes"]);
 const CLAUDE_MODEL = "claude-sonnet-4-6";
@@ -103,7 +101,7 @@ Never specify values for neck, head, body, or eyes — these are automatically d
 
 ## Palettes
 Rollable palette families: SIGNAL (magenta), ACID (green), CYAN (blue), GHOST (purple), BLOOD (red), MOSS (olive) — each has base, _BLONDE, _GREY, _RED, and _SHIRT_* variants.
-Character-locked: ALIEN, ZOMBIE, CAT (weight 0).
+Character-locked: ALIEN, ZOMBIE, AGENT, CAT (weight 0).
 
 ## Expression slot
 Additive face overlay at z=31. Only variants in catalog exist. If user asks for an expression not in catalog, use expression=None and note in rationale.
@@ -189,8 +187,6 @@ function validateAgentTraits(raw, traits, catalog) {
   }
 
   if (raw.rationale) cleaned.rationale = String(raw.rationale);
-  if (raw.mtier) cleaned.mtier = raw.mtier;
-  if (raw.tier) cleaned.tier = raw.tier;
 
   for (const [key, value] of Object.entries(raw)) {
     if (META_KEYS.has(key)) continue;
@@ -257,17 +253,8 @@ function renderFromAgentTraits(agentTraits, traits) {
 
   loadPickBuffers(picks, traits, character);
   const renderPicks = applyCoverageRules(picks, traits, character);
-  const mTier = getMutationTier(tokenId, agentTraits.mtier ?? null);
-  const { tier, driftMap, strays } = buildPhase3Effects(
-    tokenId,
-    picks,
-    compositeChromie(renderPicks, traits, 0, null, null),
-    agentTraits.tier ?? null,
-    character,
-  );
-
-  let buf = compositeChromie(renderPicks, traits, tokenId, driftMap, mTier);
-  buf = overlayStrayPixels(buf, strays);
+  const { driftMap } = buildPhase3Effects(tokenId, picks, null, character);
+  const buf = compositeChromie(renderPicks, traits, tokenId, driftMap);
   const pngBuf = renderPNG(buf, palette, {
     transparentIndex0: character?.name === "Zombie",
   });
@@ -292,8 +279,6 @@ function renderFromAgentTraits(agentTraits, traits) {
     character: character
       ? `${character.name}${character.gender ? ` (${character.gender})` : ""}`
       : "unknown",
-    drift: tier.name,
-    mutation: mTier.name,
     imagePath: outPath,
     imageFilename: `${base}.png`,
     imageUrl: `/image/${base}.png`,
@@ -315,7 +300,6 @@ function printSummary(result) {
   if (result.traits.rationale) console.log(`Rationale: ${result.traits.rationale}`);
   console.log(`Character: ${result.character}`);
   console.log(`Palette:   ${result.paletteKey}`);
-  console.log(`Drift:     ${result.drift} | Mutation: ${result.mutation}`);
   console.log("\nSlots (after coverage rules):");
   for (const [slot, name] of Object.entries(result.slotSummary).sort(([a], [b]) => a.localeCompare(b))) {
     console.log(`  ${slot.padEnd(12)} → ${name}`);

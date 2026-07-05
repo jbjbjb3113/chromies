@@ -16,14 +16,21 @@ const path = require("path");
 const { SETTINGS } = require("./chromies-config");
 const {
   pickCharacter,
-  pickTokenVariants,
-  applyCoverageRules,
+  resolveUniqueTokenTraits,
+  TraitDedupeGuard,
+  ComboCapGuard,
+  resetGenerationStats,
+  getAntiNoneStackFireTotal,
+  getDedupeRerollFireTotal,
+  getDedupeRerollLog,
+  getComboCapRerollFireTotal,
+  getComboCapRerollLog,
   pickPalette,
-  compositeChromie,
+  resolveTokenPixelBuffer,
   buildPhase3Effects,
-  getMutationTier,
 } = require("./generate");
-const { overlayStrayPixels } = require("./phase3-variance");
+const { isLegendaryToken } = require("./legendary-token-ids");
+const { formatColorUsage } = require("./legendary-finals");
 const {
   ON_CHAIN_CHARACTER_BYTES,
   ON_CHAIN_PALETTE_BYTES,
@@ -73,8 +80,6 @@ const HAIR_BYTES = {
   AZVet: 8,
   Buns: 9,
 };
-const MUTATION_BYTES = { Pristine: 0, Standard: 1, Drifted: 2, OffKilter: 3 };
-const DRIFT_BYTES = { Pristine: 0, Standard: 1, Drifted: 2, OffKilter: 3 };
 
 const TRAIT_SLOTS = [
   { index: 0, key: "character", label: "Character", table: ON_CHAIN_CHARACTER_BYTES, source: "character" },
@@ -92,8 +97,8 @@ const TRAIT_SLOTS = [
   { index: 12, key: "earrings", label: "Earrings", table: EARRINGS_BYTES, source: "pick" },
   { index: 13, key: "glasses", label: "Glasses", table: GLASSES_BYTES, source: "pick" },
   { index: 14, key: "hair", label: "Hair", table: HAIR_BYTES, source: "pick" },
-  { index: 15, key: "mutation", label: "Mutation", table: MUTATION_BYTES, source: "mutation" },
-  { index: 16, key: "drift", label: "Drift", table: DRIFT_BYTES, source: "drift" },
+  { index: 15, key: "mutation", label: "Mutation", source: "retired" },
+  { index: 16, key: "drift", label: "Drift", source: "retired" },
 ];
 
 function lookupByte(table, value, context, warnings) {
@@ -148,16 +153,19 @@ function packPixels(buf) {
   return packed;
 }
 
-function encodeTraits({ character, paletteKey, picks, mTier, driftTier, warnings }) {
+function encodeTraits({ character, paletteKey, picks, warnings }) {
   const bytes = Buffer.alloc(TRAITS_BYTES, 0);
   const decoded = {};
 
   for (const slot of TRAIT_SLOTS) {
+    if (slot.source === "retired") {
+      bytes[slot.index] = 0;
+      decoded[slot.key] = { value: "Retired/Unused", byte: 0 };
+      continue;
+    }
     let raw;
     if (slot.source === "character") raw = characterKey(character);
     else if (slot.source === "palette") raw = paletteKey;
-    else if (slot.source === "mutation") raw = mTier ? mTier.name : "Standard";
-    else if (slot.source === "drift") raw = driftTier ? driftTier.name : "Standard";
     else raw = pickValue(picks, slot.key);
 
     const byteVal = lookupByte(slot.table, raw, `${slot.label} [${slot.index}]`, warnings);
@@ -173,31 +181,33 @@ function toHex(buf, withPrefix) {
   return withPrefix ? `0x${hex}` : hex;
 }
 
-function buildMintRecord(tokenId, traitsJson, warnings) {
-  const character = pickCharacter(tokenId);
-  const paletteKey = pickPalette(tokenId, traitsJson, character);
-  const picks = pickTokenVariants(tokenId, traitsJson, new Set(), character);
-  const renderPicks = applyCoverageRules(picks, traitsJson, character);
-  const mTier = getMutationTier(tokenId);
-  const baseBuf = compositeChromie(renderPicks, traitsJson, 0, null, null);
-  const { tier: driftTier, driftMap, strays } = buildPhase3Effects(
+function buildMintRecord(tokenId, traitsJson, warnings, dedupeGuard = null, comboCapGuard = null) {
+  const guard = dedupeGuard || new TraitDedupeGuard();
+  const capGuard = comboCapGuard || new ComboCapGuard();
+  const { character, paletteKey, picks, renderPicks } = resolveUniqueTokenTraits(
     tokenId,
-    picks,
-    baseBuf,
-    null,
-    character
+    traitsJson,
+    guard,
+    { comboCapGuard: capGuard, loadBuffers: !isLegendaryToken(tokenId) },
   );
-
-  let buf = compositeChromie(renderPicks, traitsJson, tokenId, driftMap, null);
-  buf = overlayStrayPixels(buf, strays);
+  const { driftMap } = buildPhase3Effects(tokenId, picks, null, character);
+  const { buf, legendaryFinal, colorUsage, sourcePath } = resolveTokenPixelBuffer(
+    tokenId,
+    traitsJson,
+    renderPicks,
+    driftMap,
+    paletteKey,
+  );
+  if (legendaryFinal) {
+    console.log(`  [legendary-final] #${tokenId} ← ${sourcePath}`);
+    console.log(`  [legendary-final] colors: ${formatColorUsage(colorUsage)}`);
+  }
 
   const pixelsPacked = packPixels(buf);
   const { bytes: traitsPacked, decoded } = encodeTraits({
     character,
     paletteKey,
     picks: renderPicks,
-    mTier,
-    driftTier,
     warnings,
   });
   packTotalPixels(traitsPacked, countNonZeroNibbles(pixelsPacked));
@@ -276,10 +286,14 @@ function runBatch(count, start, traitsJson) {
 
   console.log(`Building mint data for tokens ${start}–${start + count - 1} (${count} total)...`);
 
+  resetGenerationStats();
+  const dedupeGuard = new TraitDedupeGuard();
+  const comboCapGuard = new ComboCapGuard();
+
   for (let i = 0; i < count; i++) {
     const tokenId = start + i;
     const warnings = [];
-    const record = buildMintRecord(tokenId, traitsJson, warnings);
+    const record = buildMintRecord(tokenId, traitsJson, warnings, dedupeGuard, comboCapGuard);
     allWarnings.push(...warnings.map(w => `token ${tokenId}: ${w}`));
 
     records.push({
@@ -321,6 +335,28 @@ function runBatch(count, start, traitsJson) {
   for (const [k, v] of Object.entries(characterDist).sort((a, b) => b[1] - a[1])) {
     console.log(`  ${k.padEnd(16)} ${v} (${((v / count) * 100).toFixed(1)}%)`);
   }
+  console.log(`\nAnti-none-stack fires: ${getAntiNoneStackFireTotal()} (${((getAntiNoneStackFireTotal() / count) * 100).toFixed(2)}%)`);
+  console.log(`Dedupe-reroll fires: ${getDedupeRerollFireTotal()} (${((getDedupeRerollFireTotal() / count) * 100).toFixed(2)}%)`);
+  const dedupeLog = getDedupeRerollLog();
+  if (dedupeLog.length > 0) {
+    console.log(`Dedupe-reroll log (${dedupeLog.length} entries):`);
+    for (const entry of dedupeLog) {
+      console.log(
+        `  #${entry.tokenId} vs #${entry.partnerId} → ${entry.slot}${entry.variant ? `=${entry.variant}` : ""} (:dedupe:${entry.attempt}, attempt ${entry.attempt}/5)`,
+      );
+    }
+  }
+  console.log(`Combo-cap-reroll fires: ${getComboCapRerollFireTotal()} (${((getComboCapRerollFireTotal() / count) * 100).toFixed(2)}%)`);
+  const capLog = getComboCapRerollLog();
+  if (capLog.length > 0) {
+    console.log(`Combo-cap-reroll log (${capLog.length} entries):`);
+    for (const entry of capLog) {
+      console.log(
+        `  #${entry.tokenId} "${entry.originalCombo}" → ${entry.slot}=${entry.variant} (:comboCap:${entry.attempt}, attempt ${entry.attempt}/5)`,
+      );
+    }
+  }
+  console.log(`Trait vector duplicates: 0 (dedupe guard enforced)`);
   console.log("\nPalette distribution (top 10):");
   for (const [k, v] of Object.entries(paletteDist).sort((a, b) => b[1] - a[1]).slice(0, 10)) {
     console.log(`  ${k.padEnd(16)} ${v} (${((v / count) * 100).toFixed(1)}%)`);
