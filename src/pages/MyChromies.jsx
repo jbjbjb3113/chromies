@@ -7,7 +7,11 @@ import WalletButton from "../components/WalletButton.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { chromaAbi, DEFAULT_CHAIN, getCanvasAddress, getChromaAddress } from "../lib/chroma-contract.js";
-import { fetchOnChainTokenMetadata } from "../lib/chromie-token.js";
+import {
+  fetchChromieMetadata,
+  fetchTokenMetadata,
+} from "../lib/chromie-token.js";
+import { GAS_COPY } from "../lib/chroma-gas-copy.js";
 import {
   fetchOwnedChromaTokenIds,
   fetchTokenLevels,
@@ -15,6 +19,7 @@ import {
   fetchTokenRevealStatus,
 } from "../lib/chroma-ownership.js";
 import { getRevealPayload, preloadRevealData } from "../lib/chroma-reveal.js";
+import WalletSelectModal from "../components/WalletSelectModal.jsx";
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
@@ -39,7 +44,6 @@ function OwnedChromieCard({
   chromaAddress,
   refreshKey,
   level,
-  mutationTier,
 }) {
   const id = tokenId.toString();
   const [traits, setTraits] = useState([]);
@@ -54,7 +58,7 @@ function OwnedChromieCard({
     let cancelled = false;
     setTraitsLoading(true);
 
-    fetchOnChainTokenMetadata(publicClient, chromaAddress, Number(tokenId))
+    fetchTokenMetadata(publicClient, chromaAddress, Number(tokenId))
       .then((metadata) => {
         if (cancelled) return;
         const attrs = metadata?.attributes ?? [];
@@ -117,11 +121,9 @@ function OwnedChromieCard({
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">CHROMIES</p>
             <h3 className="mt-1 text-base font-black tracking-tight text-ink">Chromie #{id}</h3>
-            {isRevealed && (mutationTier || level != null) && (
+            {isRevealed && level != null && (
               <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-ink/55">
-                {mutationTier ? `Tier: ${mutationTier}` : null}
-                {mutationTier && level != null ? " · " : null}
-                {level != null ? `Level ${level}` : null}
+                Level {level}
               </p>
             )}
           </div>
@@ -188,7 +190,6 @@ export default function MyChromies() {
   const [tokenIds, setTokenIds] = useState([]);
   const [revealedByTokenId, setRevealedByTokenId] = useState({});
   const [levelByTokenId, setLevelByTokenId] = useState({});
-  const [mutationByTokenId, setMutationByTokenId] = useState({});
   const [inscribableCount, setInscribableCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
@@ -201,6 +202,7 @@ export default function MyChromies() {
   const [successTokenId, setSuccessTokenId] = useState(null);
   const [thumbnailRefresh, setThumbnailRefresh] = useState(0);
   const [viewerTokenId, setViewerTokenId] = useState(null);
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
 
   const unrevealedCount = tokenIds.filter((id) => revealedByTokenId[id.toString()] !== true).length;
 
@@ -209,7 +211,6 @@ export default function MyChromies() {
       setTokenIds([]);
       setRevealedByTokenId({});
       setLevelByTokenId({});
-      setMutationByTokenId({});
       setInscribableCount(0);
       return;
     }
@@ -226,36 +227,12 @@ export default function MyChromies() {
           : Promise.resolve({}),
       ]);
 
-      const mutations = {};
-      if (ids.length > 0) {
-        const metaResults = await Promise.all(
-          ids.map(async (tokenId) => {
-            if (!revealed[tokenId.toString()]) return [tokenId.toString(), null];
-            try {
-              const metadata = await fetchOnChainTokenMetadata(
-                publicClient,
-                chromaAddress,
-                Number(tokenId),
-              );
-              const mutation = metadata?.attributes?.find((a) => a.trait_type === "Mutation");
-              return [tokenId.toString(), mutation?.value != null ? String(mutation.value) : null];
-            } catch {
-              return [tokenId.toString(), null];
-            }
-          }),
-        );
-        for (const [id, tier] of metaResults) {
-          mutations[id] = tier;
-        }
-      }
-
       const inscribable = ids.filter(
         (id) => revealed[id.toString()] === true && locked[id.toString()] !== true,
       ).length;
       setTokenIds(ids);
       setRevealedByTokenId(revealed);
       setLevelByTokenId(levels);
-      setMutationByTokenId(mutations);
       setInscribableCount(inscribable);
     } catch (error) {
       console.error("Failed to load owned Chromies:", error);
@@ -263,7 +240,6 @@ export default function MyChromies() {
       setTokenIds([]);
       setRevealedByTokenId({});
       setLevelByTokenId({});
-      setMutationByTokenId({});
       setInscribableCount(0);
     } finally {
       setLoading(false);
@@ -277,7 +253,6 @@ export default function MyChromies() {
       setTokenIds([]);
       setRevealedByTokenId({});
       setLevelByTokenId({});
-      setMutationByTokenId({});
       setInscribableCount(0);
       setLoadError(null);
       setDataError(null);
@@ -363,7 +338,9 @@ export default function MyChromies() {
         <div className="mx-auto max-w-3xl">
           <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">MY CHROMIES</h1>
           <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
-            Chromies in your connected wallet on Sepolia.
+            Mint a placeholder, reveal your Chromie ({GAS_COPY.reveal}, {GAS_COPY.revealGas}),
+            then optionally inscribe to lock pixels on Ethereum forever ({GAS_COPY.inscribe},{" "}
+            {GAS_COPY.inscribeGas}).
           </p>
 
           {!isConnected && (
@@ -421,7 +398,8 @@ export default function MyChromies() {
 
           {successTokenId != null && (
             <div className="mb-6 border border-emerald-600/40 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-              Chromie #{successTokenId.toString()} revealed successfully. Traits are now on-chain.
+              Chromie #{successTokenId.toString()} revealed — traits are visible immediately.
+              Inscribing ({GAS_COPY.inscribe}) is optional and permanent.
             </div>
           )}
 
@@ -432,7 +410,8 @@ export default function MyChromies() {
                   {inscribableCount} Chromie{inscribableCount === 1 ? "" : "s"} ready to inscribe
                 </p>
                 <p className="mt-1 text-xs text-ink/60">
-                  Permanently lock on-chain pixel data — canvas edits will be disabled forever.
+                  Reveal is cheap ({GAS_COPY.reveal}). Inscribe ({GAS_COPY.inscribe}) permanently
+                  writes pixels on-chain and locks the canvas.
                 </p>
               </div>
               <Link
@@ -472,7 +451,6 @@ export default function MyChromies() {
                   chromaAddress={chromaAddress}
                   refreshKey={thumbnailRefresh}
                   level={levelByTokenId[tokenId.toString()]}
-                  mutationTier={mutationByTokenId[tokenId.toString()]}
                 />
               ))}
             </div>
@@ -487,6 +465,8 @@ export default function MyChromies() {
         publicClient={publicClient}
         chromaAddress={chromaAddress}
       />
+
+      <WalletSelectModal open={walletModalOpen} onClose={() => setWalletModalOpen(false)} />
 
       <SiteFooter />
     </div>

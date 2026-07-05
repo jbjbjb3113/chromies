@@ -16,6 +16,7 @@ contract ChromaCanvas is Ownable {
     error InvalidMutationTier();
     error InvalidTransfer();
     error TokenLocked();
+    error NotInscribed();
 
     uint256 internal constant GRID_PIXELS = 4096;
     uint256 internal constant TRAIT_MUTATION_INDEX = 15;
@@ -84,6 +85,7 @@ contract ChromaCanvas is Ownable {
     function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
         if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
         if (chroma.isLocked(tokenId)) revert TokenLocked();
+        if (!chromaStorage.hasData(tokenId)) revert NotInscribed();
         if (newTier > 3) revert InvalidMutationTier();
 
         bytes memory traits = chromaStorage.getTraits(tokenId);

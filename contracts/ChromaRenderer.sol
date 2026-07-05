@@ -188,6 +188,12 @@ contract ChromaRenderer is Ownable {
                 "#e8c840", "#c49a00", "#5c4400", "#c8960a", "#ffd700", "#9a7400", "#b08800", "#e8c020"
             ];
         }
+        if (paletteId == 37) {
+            return [
+                "#e3e5e4", "#0a0a0a", "#191919", "#f5f5f5", "#2d2d2d", "#505050", "#737373", "#969696",
+                "#b9b9b9", "#1e1e1e", "#0f0f0f", "#5a5a5a", "#c8c8c8", "#141414", "#464646", "#828282"
+            ];
+        }
         uint8 id = paletteId % 26;
         if (id == 0) {
             return [
@@ -384,6 +390,7 @@ contract ChromaRenderer is Ownable {
         if (value == 25) return "ALIEN";
         if (value == 26) return "ZOMBIE";
         if (value == 27) return "GOLD";
+        if (value == 37) return "AGENT";
         return "SIGNAL";
     }
 

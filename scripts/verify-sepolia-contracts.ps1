@@ -1,4 +1,5 @@
 # Verify live Sepolia Chromies contracts on Etherscan.
+# Each contract is built from the git commit that matches its on-chain deployment.
 # Constructor args are taken from Foundry broadcast logs (not hand-derived).
 $ErrorActionPreference = "Stop"
 $Root = Split-Path $PSScriptRoot -Parent
@@ -36,74 +37,103 @@ function Encode-ConstructorArgs([string]$Signature, [string[]]$Values) {
     return ($encoded | Out-String).Trim()
 }
 
+function Ensure-VerifyWorktree([string]$Commit) {
+    $dir = Join-Path $Root ".verify-worktrees\$Commit"
+    if (-not (Test-Path $dir)) {
+        New-Item -ItemType Directory -Path (Split-Path $dir -Parent) -Force | Out-Null
+        git -C $Root worktree add $dir $Commit | Out-Null
+        robocopy (Join-Path $Root "lib") (Join-Path $dir "lib") /E /NFL /NDL /NJH /NJS /nc /ns /np | Out-Null
+        Push-Location $dir
+        try {
+            & $Forge build --force --skip test --skip script | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "forge build failed at commit $Commit" }
+        }
+        finally {
+            Pop-Location
+        }
+    }
+    return $dir
+}
+
 Load-DotEnv (Join-Path $Root ".env")
 
 if (-not $env:ETHERSCAN_API_KEY) { throw "ETHERSCAN_API_KEY is not set in .env" }
 if (-not $env:SEPOLIA_RPC_URL) { throw "SEPOLIA_RPC_URL is not set in .env" }
 
-Push-Location $Root
-try {
-    & $Forge build | Out-Host
-    if ($LASTEXITCODE -ne 0) { throw "forge build failed" }
+# Git commits that match each live Sepolia deployment (see Redeploy*.s.sol broadcast logs).
+$deploys = @(
+    @{
+        Name = "ChromaStorage"
+        Commit = "31162d1"
+        Fqcn = "contracts/ChromaStorage.sol:ChromaStorage"
+        Broadcast = { Get-BroadcastCreate "RedeployChroma.s.sol" "ChromaStorage" }
+        Sig = "constructor(address,address)"
+    },
+    @{
+        Name = "Chroma"
+        Commit = "31162d1"
+        Fqcn = "contracts/Chroma.sol:Chroma"
+        Broadcast = { Get-BroadcastCreate "RedeployChroma.s.sol" "Chroma" }
+        Sig = "constructor(address,address,address,uint96)"
+    },
+    @{
+        Name = "ChromaCanvasV2"
+        Commit = "2f040cc"
+        Fqcn = "contracts/ChromaCanvasV2.sol:ChromaCanvasV2"
+        Broadcast = { Get-BroadcastCreate "RedeployCanvas.s.sol" "ChromaCanvasV2" }
+        Sig = "constructor(address,address,address)"
+    },
+    @{
+        Name = "PixelMarketplace"
+        Commit = "31162d1"
+        Fqcn = "contracts/PixelMarketplace.sol:PixelMarketplace"
+        Broadcast = { Get-BroadcastCreate "RedeployChroma.s.sol" "PixelMarketplace" }
+        Sig = $null
+    },
+    @{
+        Name = "ChromaRenderer"
+        Commit = "43500af"
+        Fqcn = "contracts/ChromaRenderer.sol:ChromaRenderer"
+        Broadcast = { Get-BroadcastCreate "RedeployRenderer.s.sol" "ChromaRenderer" }
+        Sig = "constructor(address,address)"
+    }
+)
 
-    $deploys = @(
-        @{
-            Name = "ChromaStorage"
-            Fqcn = "contracts/ChromaStorage.sol:ChromaStorage"
-            Broadcast = Get-BroadcastCreate "RedeployChroma.s.sol" "ChromaStorage"
-            Sig = "constructor(address,address)"
-        },
-        @{
-            Name = "Chroma"
-            Fqcn = "contracts/Chroma.sol:Chroma"
-            Broadcast = Get-BroadcastCreate "RedeployChroma.s.sol" "Chroma"
-            Sig = "constructor(address,address,address,uint96)"
-        },
-        @{
-            Name = "ChromaCanvasV2"
-            Fqcn = "contracts/ChromaCanvasV2.sol:ChromaCanvasV2"
-            Broadcast = Get-BroadcastCreate "RedeployCanvas.s.sol" "ChromaCanvasV2"
-            Sig = "constructor(address,address,address)"
-        },
-        @{
-            Name = "PixelMarketplace"
-            Fqcn = "contracts/PixelMarketplace.sol:PixelMarketplace"
-            Broadcast = Get-BroadcastCreate "RedeployChroma.s.sol" "PixelMarketplace"
-            Sig = $null
-        },
-        @{
-            Name = "ChromaRenderer"
-            Fqcn = "contracts/ChromaRenderer.sol:ChromaRenderer"
-            Broadcast = Get-BroadcastCreate "RedeployRenderer.s.sol" "ChromaRenderer"
-            Sig = "constructor(address,address)"
-        }
+$failed = @()
+foreach ($d in $deploys) {
+    $broadcast = & $d.Broadcast
+    $addr = $broadcast.contractAddress
+    $worktree = Ensure-VerifyWorktree $d.Commit
+
+    Write-Host "`n=== Verifying $($d.Name) at $addr (commit $($d.Commit)) ===" -ForegroundColor Cyan
+
+    $args = @(
+        "verify-contract",
+        $addr,
+        $d.Fqcn,
+        "--chain", "sepolia",
+        "--rpc-url", $env:SEPOLIA_RPC_URL,
+        "--etherscan-api-key", $env:ETHERSCAN_API_KEY,
+        "--watch"
     )
 
-    foreach ($d in $deploys) {
-        $addr = $d.Broadcast.contractAddress
-        Write-Host "`n=== Verifying $($d.Name) at $addr ===" -ForegroundColor Cyan
-
-        $args = @(
-            "verify-contract",
-            $addr,
-            $d.Fqcn,
-            "--chain", "sepolia",
-            "--rpc-url", $env:SEPOLIA_RPC_URL,
-            "--etherscan-api-key", $env:ETHERSCAN_API_KEY,
-            "--watch"
-        )
-
-        if ($d.Sig) {
-            $encoded = Encode-ConstructorArgs $d.Sig @($d.Broadcast.arguments)
-            $args += @("--constructor-args", $encoded)
-        }
-
-        & $Forge @args
-        if ($LASTEXITCODE -ne 0) { throw "Verification failed for $($d.Name)" }
+    if ($d.Sig) {
+        $encoded = Encode-ConstructorArgs $d.Sig @($broadcast.arguments)
+        $args += @("--constructor-args", $encoded)
     }
 
-    Write-Host "`nAll Sepolia contracts verified." -ForegroundColor Green
+    Push-Location $worktree
+    try {
+        & $Forge @args
+        if ($LASTEXITCODE -ne 0) { $failed += $d.Name }
+    }
+    finally {
+        Pop-Location
+    }
 }
-finally {
-    Pop-Location
+
+if ($failed.Count -gt 0) {
+    throw "Verification failed for: $($failed -join ', ')"
 }
+
+Write-Host "`nAll Sepolia contracts verified." -ForegroundColor Green

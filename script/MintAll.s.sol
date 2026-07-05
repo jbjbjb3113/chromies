@@ -32,9 +32,7 @@ contract MintAllScript is Script {
             for (uint256 i = batchStart; i < batchEnd; ++i) {
                 string memory index = vm.toString(i);
                 uint256 tokenId = json.readUint(string.concat("$[", index, "].tokenId"));
-                bytes memory pixels = json.readBytes(string.concat("$[", index, "].pixelsHex"));
-                bytes memory traits = json.readBytes(string.concat("$[", index, "].traitsHex"));
-                chroma.mint(deployer, tokenId, pixels, traits);
+                chroma.mint(deployer, tokenId);
 
                 uint256 minted = i + 1;
                 if (minted % LOG_INTERVAL == 0 || minted == total) {

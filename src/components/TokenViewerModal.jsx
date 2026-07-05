@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { formatEther } from "viem";
-import { fetchChromieMetadata, fetchOnChainTokenMetadata, tokenPngUrl } from "../lib/chromie-token.js";
+import { fetchChromieMetadata, fetchTokenMetadata, tokenPngUrl } from "../lib/chromie-token.js";
 import { fetchTokenActionPoints } from "../lib/chroma-ownership.js";
 import { getCanvasAddress } from "../lib/chroma-contract.js";
-import { chromaAbi } from "../../abis/Chroma.ts";
 import {
   resolveOnChainDisplayImage,
+  fetchTokenDisplayState,
   logRevealedSvgLoadError,
 } from "../lib/token-display-image.js";
 import { useChainId } from "wagmi";
@@ -24,8 +24,6 @@ const TRAIT_ORDER = [
   "Earrings",
   "Glasses",
   "Hair",
-  "Mutation",
-  "Drift",
   "Level",
   "Burns Absorbed",
   "AP Balance",
@@ -170,20 +168,19 @@ export default function TokenViewerModal({
 
         if (publicClient && chromaAddress) {
           try {
-            const [onChainData, revealed] = await Promise.all([
-              fetchOnChainTokenMetadata(publicClient, chromaAddress, numericTokenId),
-              publicClient.readContract({
-                address: chromaAddress,
-                abi: chromaAbi,
-                functionName: "revealed",
-                args: [BigInt(numericTokenId)],
-              }),
+            const [displayState, onChainData] = await Promise.all([
+              fetchTokenDisplayState(publicClient, chromaAddress, numericTokenId),
+              fetchTokenMetadata(publicClient, chromaAddress, numericTokenId),
             ]);
             data = onChainData;
             source = "onchain";
 
             if (!cancelled) {
-              const display = resolveOnChainDisplayImage(onChainData, revealed, numericTokenId);
+              const display = resolveOnChainDisplayImage(
+                onChainData,
+                displayState.state,
+                numericTokenId,
+              );
               cleanupImage = display.cleanup;
               nextImageSrc = display.src;
               nextImageKind = display.kind;

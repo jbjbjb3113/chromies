@@ -6,6 +6,22 @@ const TOKEN_MAX = 9999;
 const JSON_DATA_URI_PREFIX = "data:application/json;base64,";
 const SVG_DATA_URI_PREFIX = "data:image/svg+xml;base64,";
 
+const DEFAULT_IPFS_GATEWAY =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_IPFS_GATEWAY) ||
+  "https://ipfs.io/ipfs/";
+
+/** Convert ipfs:// URIs to an HTTP gateway URL for browser fetch. */
+export function resolveFetchableUri(uri) {
+  if (!uri || typeof uri !== "string") return uri;
+  if (uri.startsWith("ipfs://ipfs/")) {
+    return `${DEFAULT_IPFS_GATEWAY}${uri.slice("ipfs://ipfs/".length)}`;
+  }
+  if (uri.startsWith("ipfs://")) {
+    return `${DEFAULT_IPFS_GATEWAY}${uri.slice(7)}`;
+  }
+  return uri;
+}
+
 export function formatTokenId(id) {
   return String(id).padStart(4, "0");
 }
@@ -20,13 +36,18 @@ export function tokenPngUrl(id) {
   return `/tokens/${formatTokenId(id)}.png`;
 }
 
-/** Map chromies.art reveal placeholders to local public assets when available. */
+/** Resolve metadata image URL for display (placeholders, ipfs, local fallbacks). */
 export function resolveMetadataImageUrl(image) {
   if (!image || typeof image !== "string") return image;
   const match = image.match(/RevealImage(?:_([A-Za-z]))?\.png$/i);
-  if (!match) return image;
-  const suffix = match[1] ? `_${match[1].toUpperCase()}` : "";
-  return `/RevealImage${suffix}.png`;
+  if (match) {
+    const suffix = match[1] ? `_${match[1].toUpperCase()}` : "";
+    return `/RevealImage${suffix}.png`;
+  }
+  if (image.startsWith("ipfs://")) {
+    return resolveFetchableUri(image);
+  }
+  return image;
 }
 
 /** Decode embedded on-chain SVG from token metadata image field. */
@@ -37,6 +58,14 @@ export function decodeSvgFromMetadataImage(image) {
   } catch {
     return null;
   }
+}
+
+export function isOnChainSvgImage(image) {
+  return typeof image === "string" && image.startsWith(SVG_DATA_URI_PREFIX);
+}
+
+export function isDataUriJsonTokenUri(tokenUri) {
+  return typeof tokenUri === "string" && tokenUri.startsWith(JSON_DATA_URI_PREFIX);
 }
 
 /** Create a blob URL for decoded SVG markup (caller must revoke). */
@@ -50,12 +79,15 @@ export function revokeObjectUrl(url) {
   if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
 }
 
-export function isOnChainSvgImage(image) {
-  return typeof image === "string" && image.startsWith(SVG_DATA_URI_PREFIX);
-}
-
 export function tokenJsonUrl(id) {
   return `/tokens/${formatTokenId(id)}.json`;
+}
+
+export async function fetchMetadataFromUri(uri, signal) {
+  const url = resolveFetchableUri(uri);
+  const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  if (!res.ok) throw new Error(`Metadata fetch failed (${res.status})`);
+  return res.json();
 }
 
 export async function fetchChromieMetadata(id, signal) {
@@ -73,14 +105,37 @@ export function decodeTokenUriMetadata(tokenUri) {
   return JSON.parse(json);
 }
 
-export async function fetchOnChainTokenMetadata(publicClient, chromaAddress, tokenId) {
+/**
+ * Fetch token metadata from tokenURI — handles base64 data URIs and off-chain
+ * ipfs/http links (revealed-but-not-inscribed state).
+ */
+export async function fetchTokenMetadata(publicClient, chromaAddress, tokenId, signal) {
   const tokenUri = await publicClient.readContract({
     address: chromaAddress,
     abi: chromaAbi,
     functionName: "tokenURI",
     args: [BigInt(tokenId)],
   });
-  return decodeTokenUriMetadata(tokenUri);
+
+  if (isDataUriJsonTokenUri(tokenUri)) {
+    return decodeTokenUriMetadata(tokenUri);
+  }
+
+  try {
+    return await fetchMetadataFromUri(tokenUri, signal);
+  } catch (error) {
+    console.warn("[chromie-token] Off-chain metadata fetch failed, using local fallback", {
+      tokenId,
+      tokenUri,
+      error: error?.message ?? error,
+    });
+    return fetchChromieMetadata(tokenId, signal);
+  }
+}
+
+/** @deprecated Prefer fetchTokenMetadata for three-state routing. */
+export async function fetchOnChainTokenMetadata(publicClient, chromaAddress, tokenId) {
+  return fetchTokenMetadata(publicClient, chromaAddress, tokenId);
 }
 
 export function loadTokenImage(id) {

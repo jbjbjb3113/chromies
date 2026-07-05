@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { GAS_COPY } from "../lib/chroma-gas-copy.js";
 import SiteHeader from "../components/SiteHeader.jsx";
 import TokenGridBackground from "../components/TokenGridBackground.jsx";
 import TokenHeroForeground from "../components/TokenHeroForeground.jsx";
@@ -22,7 +23,7 @@ const PILLARS = [
   },
   {
     label: "Community-Driven",
-    text: "Holders shape the collection through pixel edits, purification burns, and action-point spending. The face evolves with its owner.",
+    text: "Holders shape the collection through canvas edits, burns that earn Action Points, and on-chain customization. The face evolves with its owner.",
   },
 ];
 
@@ -37,7 +38,7 @@ const FUTURE = [
   {
     title: "CHROMIE CANVAS",
     href: "/canvas",
-    text: "Edit pixels. Burn to purify. Spend action points. Your art, on-chain.",
+    text: "Edit pixels. Burn to earn AP. Spend action points. Your art, on-chain.",
   },
   {
     title: "AWAKEN",
@@ -144,15 +145,13 @@ export default function Landing() {
           <FlowTextRow className="mx-auto mt-4 max-w-3xl">
             Mint
             <FlowArrow />
-            Collect
-            <FlowArrow />
-            Edit
+            Reveal
             <FlowArrow />
             Burn
             <FlowArrow />
             Earn AP
             <FlowArrow />
-            Purify
+            Customize
             <FlowArrow />
             Inscribe
           </FlowTextRow>
@@ -180,9 +179,9 @@ export default function Landing() {
               built from a fixed 16-color palette, deterministic from token ID.
             </p>
             <p className="mt-4">
-              Every Chromie is rendered and stored entirely on the blockchain. No
-              IPFS. No external servers. One seed, one face, forever unique — but
-              editable by holders through the Chromie Canvas.
+              Your Chromie&apos;s final art is cryptographically locked at mint. Reveal when
+              you&apos;re ready ({GAS_COPY.reveal}), edit on the canvas, then choose when to make
+              it permanent on Ethereum ({GAS_COPY.inscribe}).
             </p>
             <p className="mt-4">
               They are CC0, interoperable, and built for a colorful on-chain future.
@@ -267,7 +266,7 @@ export default function Landing() {
       <footer className="border-t border-ink bg-ink text-white">
         <div className="mx-auto max-w-[960px] px-5 py-16 sm:px-6">
           <p className="text-center text-sm tracking-wide text-neutral-400">
-            TBD faces. Zero servers.
+            5,150 faces. Reveal cheap. Inscribe when ready.
           </p>
           <div className="mt-8 flex justify-center">
             <a

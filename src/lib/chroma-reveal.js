@@ -36,6 +36,16 @@ export async function preloadRevealData() {
   await Promise.all([loadMintDataByTokenId(), loadProofsDoc()]);
 }
 
+/** Single mint-data row for a token (pixelsHex, traitsHex). */
+export async function getMintDataEntry(tokenId) {
+  const mintData = await loadMintDataByTokenId();
+  const entry = mintData[tokenId.toString()];
+  if (!entry?.pixelsHex || !entry?.traitsHex) {
+    throw new Error(`No mint data for Chromie #${tokenId}`);
+  }
+  return entry;
+}
+
 /** pixelsHex, traitsHex, and merkle proof for Chroma.reveal(). */
 export async function getRevealPayload(tokenId) {
   const id = tokenId.toString();

@@ -31,14 +31,14 @@ import {
 } from "../lib/pixel-canvas.js";
 import {
   fetchChromieMetadata,
-  fetchOnChainTokenMetadata,
+  fetchTokenMetadata,
   formatTokenId,
   loadTokenImage,
   parseTokenId,
   resolveMetadataImageUrl,
   tokenPngUrl,
 } from "../lib/chromie-token.js";
-import { chromaAbi } from "../../abis/Chroma.ts";
+import { chromaAbi, chromaStorageAbi } from "../../abis/Chroma.ts";
 import {
   chromaCanvasV2Abi,
   DEFAULT_CHAIN,
@@ -50,6 +50,8 @@ import {
   fetchCanvasEditState,
   fetchTokenOwner,
 } from "../lib/chroma-canvas.js";
+import { loadRevealedOffChainCanvasBase } from "../lib/chroma-canvas-load.js";
+import { GAS_COPY } from "../lib/chroma-gas-copy.js";
 import { fetchOwnedChromaTokenIds, fetchTokenRevealStatus } from "../lib/chroma-ownership.js";
 
 const THUMB_SCALE = 4;
@@ -602,6 +604,8 @@ export default function Canvas() {
   const [revealedByTokenId, setRevealedByTokenId] = useState({});
   const [loadedId, setLoadedId] = useState(null);
   const [isTokenUnrevealed, setIsTokenUnrevealed] = useState(false);
+  const [isTokenRevealedOffChain, setIsTokenRevealedOffChain] = useState(false);
+  const [chainDiffCount, setChainDiffCount] = useState(0);
   const [unrevealedPlaceholderSrc, setUnrevealedPlaceholderSrc] = useState(null);
   const [metadata, setMetadata] = useState(null);
   const [palette, setPalette] = useState(null);
@@ -757,18 +761,33 @@ export default function Canvas() {
       setSaveError(null);
       setSaveSuccess(null);
       setIsTokenUnrevealed(false);
+      setIsTokenRevealedOffChain(false);
+      setChainDiffCount(0);
       setUnrevealedPlaceholderSrc(null);
       try {
         if (onSepolia && chromaAddress && publicClient) {
-          const revealed = await publicClient.readContract({
+          const storageAddress = await publicClient.readContract({
             address: chromaAddress,
             abi: chromaAbi,
-            functionName: "revealed",
-            args: [BigInt(id)],
+            functionName: "chromaStorage",
           });
+          const [revealed, hasData] = await Promise.all([
+            publicClient.readContract({
+              address: chromaAddress,
+              abi: chromaAbi,
+              functionName: "revealed",
+              args: [BigInt(id)],
+            }),
+            publicClient.readContract({
+              address: storageAddress,
+              abi: chromaStorageAbi,
+              functionName: "hasData",
+              args: [BigInt(id)],
+            }),
+          ]);
 
           if (!revealed) {
-            const meta = await fetchOnChainTokenMetadata(publicClient, chromaAddress, id);
+            const meta = await fetchTokenMetadata(publicClient, chromaAddress, id);
             const placeholderSrc =
               resolveMetadataImageUrl(meta?.image) ?? "/RevealImage.png";
             setLoadedId(id);
@@ -778,6 +797,27 @@ export default function Canvas() {
             setPalette(null);
             setOriginal(null);
             resetHistory(empty);
+            setColorIndex(1);
+            setShowDiff(false);
+            setImportedActive(false);
+            await refreshChainState(id);
+            return;
+          }
+
+          if (!hasData) {
+            const base = await loadRevealedOffChainCanvasBase({
+              tokenId: id,
+              publicClient,
+              chromaAddress,
+              canvasAddress,
+            });
+            setLoadedId(id);
+            setMetadata(base.metadata);
+            setPalette(base.palette);
+            setOriginal(cloneIndices(base.indices));
+            resetHistory(base.indices);
+            setChainDiffCount(base.chainDiffCount);
+            setIsTokenRevealedOffChain(true);
             setColorIndex(1);
             setShowDiff(false);
             setImportedActive(false);
@@ -812,6 +852,8 @@ export default function Canvas() {
         setPalette(null);
         setOriginal(null);
         setIsTokenUnrevealed(false);
+        setIsTokenRevealedOffChain(false);
+        setChainDiffCount(0);
         setUnrevealedPlaceholderSrc(null);
         resetHistory(empty);
         setActionPoints(null);
@@ -1236,6 +1278,20 @@ export default function Canvas() {
       resetHistory(synced);
       await refreshChainState(loadedId);
 
+      if (isTokenRevealedOffChain && publicClient && canvasAddress) {
+        try {
+          const edited = await publicClient.readContract({
+            address: canvasAddress,
+            abi: chromaCanvasV2Abi,
+            functionName: "getPixelsEdited",
+            args: [BigInt(loadedId)],
+          });
+          setChainDiffCount(Number(edited));
+        } catch {
+          /* ignore */
+        }
+      }
+
       setSaveSuccess(`Saved ${diffCount} pixel change${diffCount === 1 ? "" : "s"} on-chain.`);
       setConfirmSaveOpen(false);
     } catch (err) {
@@ -1258,7 +1314,8 @@ export default function Canvas() {
         <div className="border-b border-ink px-4 py-3 md:px-6">
           <h1 className="text-xl font-black tracking-tight md:text-2xl">CANVAS</h1>
           <p className="mt-0.5 text-xs text-ink/60 md:text-sm">
-            Edit Chromies locally, then save pixel changes on-chain with Action Points.
+            Edit revealed Chromies with Action Points. Canvas diffs stay on-chain until you
+            inscribe ({GAS_COPY.inscribe} mainnet) to bake pixels permanently.
           </p>
         </div>
 
@@ -1268,6 +1325,29 @@ export default function Canvas() {
               This Chromie is inscribed and permanently locked.
             </p>
             <p className="mt-1 text-xs text-amber-800/80">Canvas is view-only — edits cannot be saved.</p>
+          </div>
+        )}
+
+        {isTokenRevealedOffChain && loadedId && !isTokenLocked && (
+          <div className="border-b border-signal/40 bg-signal/5 px-4 py-3 text-center md:px-6">
+            <p className="text-sm font-bold text-ink">
+              Revealed — not yet inscribed
+            </p>
+            <p className="mt-1 text-xs text-ink/70">
+              Base art loads from off-chain metadata. Your canvas edits are stored as on-chain
+              diffs
+              {chainDiffCount > 0
+                ? ` (${chainDiffCount} already saved)`
+                : ""}
+              {" "}
+              and will be baked in when you inscribe ({GAS_COPY.inscribe} mainnet).
+            </p>
+            <Link
+              to="/inscribe"
+              className="mt-2 inline-block text-xs font-bold uppercase tracking-wide text-signal transition-colors hover:text-ink"
+            >
+              Inscribe when ready →
+            </Link>
           </div>
         )}
 
@@ -1415,6 +1495,10 @@ export default function Canvas() {
                     {isTokenUnrevealed ? (
                       <p className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
                         Unrevealed
+                      </p>
+                    ) : isTokenRevealedOffChain ? (
+                      <p className="mt-0.5 text-[10px] font-bold uppercase tracking-wide text-signal">
+                        Revealed · not inscribed
                       </p>
                     ) : (
                       palette && (

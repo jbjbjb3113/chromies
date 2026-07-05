@@ -136,6 +136,27 @@ export const chromaAbi = [
   },
   {
     type: "function",
+    name: "revealedTraits",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "bytes32" }],
+  },
+  {
+    type: "function",
+    name: "revealedBaseURI",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "string" }],
+  },
+  {
+    type: "function",
+    name: "setRevealedBaseURI",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "uri", type: "string" }],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "reveal",
     stateMutability: "nonpayable",
     inputs: [
@@ -144,13 +165,6 @@ export const chromaAbi = [
       { name: "traits", type: "bytes" },
       { name: "proof", type: "bytes32[]" },
     ],
-    outputs: [],
-  },
-  {
-    type: "function",
-    name: "inscribe",
-    stateMutability: "nonpayable",
-    inputs: [{ name: "tokenId", type: "uint256" }],
     outputs: [],
   },
   {
@@ -207,6 +221,13 @@ export const PHASE = {
 } as const;
 
 export const chromaStorageAbi = [
+  {
+    type: "function",
+    name: "hasData",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "", type: "bool" }],
+  },
   {
     type: "function",
     name: "getPixels",

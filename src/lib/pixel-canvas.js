@@ -115,6 +115,31 @@ export function loadTokenPixelIndices(image, paletteColors) {
   return indices;
 }
 
+/** Unpack 2048-byte packed pixel hex (merkle mint-data format) to 4096 color indices. */
+export function unpackPixelIndicesFromHex(pixelsHex) {
+  const hex = pixelsHex.replace(/^0x/i, "");
+  const indices = new Uint8Array(GRID * GRID);
+  for (let i = 0; i < GRID * GRID; i++) {
+    const byteIndex = i >> 1;
+    const byte = parseInt(hex.slice(byteIndex * 2, byteIndex * 2 + 2), 16) || 0;
+    indices[i] = (i & 1) === 0 ? byte >> 4 : byte & 0x0f;
+  }
+  return indices;
+}
+
+/** Apply on-chain canvas diffs to a base pixel index buffer. */
+export function applyCanvasDiffs(indices, pixelIndexes, newColorIndexes) {
+  const out = cloneIndices(indices);
+  const count = Math.min(pixelIndexes?.length ?? 0, newColorIndexes?.length ?? 0);
+  for (let i = 0; i < count; i++) {
+    const idx = Number(pixelIndexes[i]);
+    if (idx >= 0 && idx < out.length) {
+      out[idx] = Number(newColorIndexes[i]) & 0x0f;
+    }
+  }
+  return out;
+}
+
 export function cloneIndices(indices) {
   return new Uint8Array(indices);
 }

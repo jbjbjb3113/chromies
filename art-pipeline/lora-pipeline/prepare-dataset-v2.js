@@ -19,13 +19,18 @@ const DATASET_DIR = path.resolve(SCRIPT_DIR, "dataset-v2", DATASET_FOLDER);
 
 const HEAD_PATTERN = /^(SP_)?HEAD_.+\.png$/i;
 const HAIR_PATTERN = /^(SP_)?HAIR_.+\.png$/i;
+const BACKUP_COPY_PATTERN = / - Copy|-Copy/i;
+
+function isBackupCopy(filename) {
+  return BACKUP_COPY_PATTERN.test(path.basename(filename, path.extname(filename)));
+}
 
 function isHeadFile(filename) {
-  return HEAD_PATTERN.test(filename);
+  return HEAD_PATTERN.test(filename) && !isBackupCopy(filename);
 }
 
 function isHairFile(filename) {
-  return HAIR_PATTERN.test(filename);
+  return HAIR_PATTERN.test(filename) && !isBackupCopy(filename);
 }
 
 function parseVariant(filename, slotPrefix) {
@@ -78,6 +83,13 @@ function main() {
 
   fs.mkdirSync(DATASET_DIR, { recursive: true });
 
+  // Remove stale outputs from prior runs (e.g. excluded backup copies).
+  for (const existing of fs.readdirSync(DATASET_DIR)) {
+    if (existing.endsWith(".png") || existing.endsWith(".txt")) {
+      fs.unlinkSync(path.join(DATASET_DIR, existing));
+    }
+  }
+
   let pairs = 0;
   for (const file of files) {
     const srcPng = path.join(COMPONENTS_DIR, file);
@@ -114,6 +126,7 @@ module.exports = {
   captionHair,
   isHeadFile,
   isHairFile,
+  isBackupCopy,
   REPEAT_COUNT,
   INSTANCE_TOKEN,
   DATASET_FOLDER,

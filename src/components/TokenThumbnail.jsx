@@ -113,8 +113,11 @@ export default function TokenThumbnail({ tokenId, publicClient, chromaAddress, r
               setDisplayFailed(true);
               return;
             }
-            if (imageKind === "unrevealed-placeholder") {
-              console.warn("[TokenThumbnail] Reveal placeholder failed to load", { tokenId: id });
+            if (imageKind === "unrevealed-placeholder" || imageKind === "offchain-revealed") {
+              console.warn("[TokenThumbnail] Metadata image failed to load", {
+                tokenId: id,
+                imageKind,
+              });
               setDisplayFailed(true);
               return;
             }

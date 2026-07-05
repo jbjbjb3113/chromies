@@ -54,23 +54,6 @@ function FramedChromie({ tokenId, size, className = "" }) {
 
 const FAQ_ITEMS = [
   {
-    q: "What is a Mutation Tier?",
-    a: [
-      "Every Chromie is born with a mutation tier — Pristine, Standard, Drifted, or OffKilter.",
-      "The tier determines how much pixel drift and palette corruption your Chromie carries. OffKilter Chromies are glitched and chaotic. Pristine Chromies carry perfect signal — no drift, no corruption, no noise.",
-    ],
-  },
-  {
-    q: "What is Pristine?",
-    a: [
-      "The rarest mutation tier.",
-      "Only 81 Pristine Chromies exist at mint — 1.6% of the collection.",
-      "But Pristine isn't just born — it's earned.",
-      "Burn Chromies to generate Action Points (AP). Spend AP to shift your mutation tier toward Pristine. It takes roughly 70 burns to fully purify a token.",
-      "The community ultimately determines how rare Pristine becomes over time.",
-    ],
-  },
-  {
     q: "What is the Canvas?",
     a: [
       "Every Chromie includes an editable pixel canvas.",
@@ -82,14 +65,15 @@ const FAQ_ITEMS = [
     q: "What are Action Points?",
     a: [
       "Action Points (AP) are the fuel of the Chromies economy.",
-      "Earn AP by burning Chromies. Spend AP to edit pixels on the canvas or shift your mutation tier toward Pristine.",
-      "AP can be transferred between wallets, creating a secondary market for collectors pursuing purification and progression.",
+      "Earn AP by burning Chromies — the yield goes to a Chromie you keep, tiered 1–3% based on the burned token's pixel count.",
+      "Spend AP to edit pixels on the canvas. AP can be transferred between wallets, creating a secondary market for collectors pursuing customization and progression.",
     ],
   },
   {
     q: "What is Burn?",
     a: [
-      "Burning a Chromie permanently destroys it and yields 100 Action Points.",
+      "Burning a Chromie permanently destroys it and credits Action Points to a Chromie you keep.",
+      "The AP yield is tiered 1–3% of the burned token's on-chain pixel count — denser art yields more.",
       "Tokens with canvas edits applied before burning receive bonus AP. Every burn is recorded on-chain, creating a permanent lineage of sacrificed Chromies.",
     ],
   },
@@ -97,7 +81,7 @@ const FAQ_ITEMS = [
     q: "What is Level?",
     a: [
       "Every Chromie starts at Level 1.",
-      "Level increases whenever Action Points are spent — whether editing pixels or shifting mutation tiers. There is no level cap.",
+      "Level increases whenever Action Points are spent on canvas edits. There is no level cap.",
       "Level is displayed as an on-chain trait and contributes heavily to Chromies' native rarity rankings, rewarding collectors who actively evolve their tokens.",
     ],
   },
@@ -105,9 +89,9 @@ const FAQ_ITEMS = [
     q: "What is Inscribe?",
     a: [
       "Inscribing permanently writes your Chromie's pixel data onto Ethereum.",
-      "Once inscribed, the art is frozen forever — no edits, no mutations, no changes.",
+      "Once inscribed, the art is frozen forever — no further canvas edits or changes.",
       "The token receives the Inscribed trait on-chain.",
-      "An Inscribed Pristine is the highest form of a Chromie — provably perfect, provably permanent.",
+      "Inscribing is the moment your customized art becomes provably permanent on Ethereum.",
     ],
   },
   {
@@ -142,7 +126,7 @@ export default function FAQ() {
               </div>
               <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">FAQ</h1>
               <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
-                Mutation tiers, Action Points, the Canvas, burn mechanics, and everything
+                Action Points, the Canvas, and inscribing — plus burn mechanics and everything
                 else you need to know about Chromies.
               </p>
             </div>

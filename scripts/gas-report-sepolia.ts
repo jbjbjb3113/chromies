@@ -1,5 +1,5 @@
 /**
- * Sepolia gas report: public mint(1) + reveal() for the minted token.
+ * Sepolia gas report: public mint(1) + reveal() + inscribe() for the minted token.
  *
  * Usage (from repo root, with .env containing PRIVATE_KEY + SEPOLIA_RPC_URL):
  *   npx tsx scripts/gas-report-sepolia.ts
@@ -56,8 +56,9 @@ const CHROMA_ADDRESS = (process.env.CHROMA_ADDRESS ??
 
 const EXPECTED = {
   mint: 115_000,
-  revealOrInscribe: 616_000,
-  source: "art-pipeline/chromies-project-journal.md (15 gwei mainnet estimates)",
+  reveal: 83_000,
+  inscribe: 584_000,
+  source: "Foundry gas-report (Chroma.sol migration, local tests)",
 };
 
 function requireEnv(name: string): string {
@@ -109,6 +110,15 @@ function printTxReport(
   console.log(`total cost:     ${formatEther(costWei)} ETH (${formatUsd(costEth, ethUsd)})`);
 }
 
+function printBudgetCompare(label: string, actual: bigint, budget: number) {
+  console.log(
+    `vs expected ${label}: ${actual.toString()} actual / ~${budget.toLocaleString()} budget (${(
+      (Number(actual) / budget) *
+      100
+    ).toFixed(1)}%)`,
+  );
+}
+
 async function main() {
   const rpcUrl = requireEnv("SEPOLIA_RPC_URL");
   const privateKey = requireEnv("PRIVATE_KEY") as `0x${string}`;
@@ -127,9 +137,10 @@ async function main() {
   console.log(`Chroma:  ${CHROMA_ADDRESS}`);
   console.log(`Wallet:  ${account.address}`);
   console.log(`ETH/USD: ${ethUsd ?? "unavailable"}`);
-  console.log("\nExpected/budgeted (from project journal, not on-chain constants):");
-  console.log(`  mint(uint256):           ~${EXPECTED.mint.toLocaleString()} gas`);
-  console.log(`  reveal/inscribe:        ~${EXPECTED.revealOrInscribe.toLocaleString()} gas`);
+  console.log("\nExpected/budgeted (Foundry migration tests, not on-chain constants):");
+  console.log(`  mint(uint256):     ~${EXPECTED.mint.toLocaleString()} gas`);
+  console.log(`  reveal():          ~${EXPECTED.reveal.toLocaleString()} gas`);
+  console.log(`  inscribe():        ~${EXPECTED.inscribe.toLocaleString()} gas`);
   console.log(`  source: ${EXPECTED.source}`);
 
   const totalSupply = await publicClient.readContract({
@@ -213,12 +224,7 @@ async function main() {
   const mintReceipt = await publicClient.waitForTransactionReceipt({ hash: mintHash });
   printTxReport("mint(uint256 quantity=1)", mintReceipt, ethUsd);
   console.log(`tx: ${mintHash}`);
-  console.log(
-    `vs expected mint: ${mintReceipt.gasUsed.toString()} actual / ~${EXPECTED.mint.toLocaleString()} budget (${(
-      (Number(mintReceipt.gasUsed) / EXPECTED.mint) *
-      100
-    ).toFixed(1)}%)`,
-  );
+  printBudgetCompare("mint", mintReceipt.gasUsed, EXPECTED.mint);
 
   const mintedSupply = await publicClient.readContract({
     address: CHROMA_ADDRESS,
@@ -239,23 +245,19 @@ async function main() {
   const revealReceipt = await publicClient.waitForTransactionReceipt({ hash: revealHash });
   printTxReport(`reveal(tokenId=${tokenId})`, revealReceipt, ethUsd);
   console.log(`tx: ${revealHash}`);
-  console.log(
-    `vs expected reveal/inscribe: ${revealReceipt.gasUsed.toString()} actual / ~${EXPECTED.revealOrInscribe.toLocaleString()} budget (${(
-      (Number(revealReceipt.gasUsed) / EXPECTED.revealOrInscribe) *
-      100
-    ).toFixed(1)}%)`,
-  );
+  printBudgetCompare("reveal", revealReceipt.gasUsed, EXPECTED.reveal);
 
-  console.log("\nSending inscribe() lock-only…");
+  console.log("\nSending inscribe() (full payload + SSTORE2 write)…");
   const inscribeHash = await walletClient.writeContract({
     address: CHROMA_ADDRESS,
     abi: gasReportAbi,
     functionName: "inscribe",
-    args: [tokenId],
+    args: [tokenId, entry.pixelsHex as `0x${string}`, entry.traitsHex as `0x${string}`, proof as `0x${string}`[]],
   });
   const inscribeReceipt = await publicClient.waitForTransactionReceipt({ hash: inscribeHash });
-  printTxReport(`inscribe(tokenId=${tokenId}) lock-only`, inscribeReceipt, ethUsd);
+  printTxReport(`inscribe(tokenId=${tokenId})`, inscribeReceipt, ethUsd);
   console.log(`tx: ${inscribeHash}`);
+  printBudgetCompare("inscribe", inscribeReceipt.gasUsed, EXPECTED.inscribe);
 
   const locked = await publicClient.readContract({
     address: CHROMA_ADDRESS,
@@ -266,10 +268,9 @@ async function main() {
   console.log(`\nToken #${tokenId} locked: ${locked}`);
 
   console.log("\n--- Foundry reference (local, same contract paths) ---");
-  console.log("script/TestMint.s.sol — Sepolia mint + reveal + inscribe sequence");
-  console.log("test/Chroma.t.sol::test_Reveal_WritesPixels — mint + reveal");
-  console.log("test/Chroma.t.sol::test_Inscribe_LocksToken — mint + inscribe (reveal+lock)");
-  console.log("Run locally: forge test --match-test \"test_Reveal_WritesPixels|test_Inscribe_LocksToken\" --gas-report");
+  console.log("test/Chroma.t.sol::test_Gas_RevealUnderBudget");
+  console.log("test/Chroma.t.sol::test_Gas_InscribeOverRevealBudget");
+  console.log('Run locally: forge test --match-test "test_Gas_" --gas-report');
 }
 
 main().catch((error) => {

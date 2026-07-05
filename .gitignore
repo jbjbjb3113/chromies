@@ -20,3 +20,6 @@ _backups/
 cache/
 out/
 broadcast/
+.verify-worktrees/
+.verify-tmp-*/
+.verify-worktree/

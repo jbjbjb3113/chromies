@@ -79,6 +79,9 @@ contract TestMint is Script {
         require(chroma.totalSupply() == inscribeTokenId, "inscribe mint got unexpected token ID");
         console2.log("Minted token ID for inscribe:", inscribeTokenId);
 
+        chroma.reveal(inscribeTokenId, inscribePixels, inscribeTraits, inscribeProof);
+        console2.log("Revealed token ID for inscribe path:", inscribeTokenId);
+
         chroma.inscribe(inscribeTokenId, inscribePixels, inscribeTraits, inscribeProof);
         console2.log("Inscribed token ID:", inscribeTokenId);
         console2.log("isLocked:", chroma.isLocked(inscribeTokenId));

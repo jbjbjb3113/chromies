@@ -62,14 +62,6 @@
     {
       "trait_type": "Hair",
       "value": "Dreads"
-    },
-    {
-      "trait_type": "Drift",
-      "value": "Standard"
-    },
-    {
-      "trait_type": "Mutation",
-      "value": "Drifted"
     }
   ]
 }

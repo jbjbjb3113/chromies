@@ -19,6 +19,16 @@ export function encodeCanvasDiff(indices, original) {
   return `0x${bytes.map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
 
+export async function fetchCanvasDiffs(publicClient, canvasAddress, tokenId) {
+  const [pixelIndexes, newColorIndexes] = await publicClient.readContract({
+    address: canvasAddress,
+    abi: chromaCanvasV2Abi,
+    functionName: "getDiff",
+    args: [BigInt(tokenId)],
+  });
+  return { pixelIndexes, newColorIndexes };
+}
+
 export async function fetchCanvasEditState(publicClient, chromaAddress, canvasAddress, tokenId) {
   const id = BigInt(tokenId);
   const [actionPoints, isLocked] = await Promise.all([

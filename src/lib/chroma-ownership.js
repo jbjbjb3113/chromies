@@ -1,5 +1,6 @@
 import { chromaAbi } from "../../abis/Chroma.ts";
 import { chromaCanvasV2Abi } from "../../abis/ChromaCanvasV2.ts";
+import { chromaStorageAbi } from "../../abis/Chroma.ts";
 
 const OWNER_SCAN_BATCH = 64;
 
@@ -55,6 +56,40 @@ export async function fetchOwnedChromaTokenIds(publicClient, chromaAddress, owne
   }
 
   return owned.sort((a, b) => (a > b ? 1 : a < b ? -1 : 0));
+}
+
+/** Map tokenId string -> { revealed, hasData, inscribed } from on-chain reads. */
+export async function fetchTokenLifecycleStatus(publicClient, chromaAddress, tokenIds) {
+  if (!publicClient || !chromaAddress || tokenIds.length === 0) return {};
+
+  const storageAddress = await publicClient.readContract({
+    address: chromaAddress,
+    abi: chromaAbi,
+    functionName: "chromaStorage",
+  });
+
+  const entries = await Promise.all(
+    tokenIds.map(async (tokenId) => {
+      const id = BigInt(tokenId);
+      const [revealed, hasData] = await Promise.all([
+        publicClient.readContract({
+          address: chromaAddress,
+          abi: chromaAbi,
+          functionName: "revealed",
+          args: [id],
+        }),
+        publicClient.readContract({
+          address: storageAddress,
+          abi: chromaStorageAbi,
+          functionName: "hasData",
+          args: [id],
+        }),
+      ]);
+      return [tokenId.toString(), { revealed, hasData, inscribed: revealed && hasData }];
+    }),
+  );
+
+  return Object.fromEntries(entries);
 }
 
 /** Map tokenId string -> revealed flag from Chroma.revealed(). */

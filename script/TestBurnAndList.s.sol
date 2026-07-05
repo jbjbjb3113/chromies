@@ -49,7 +49,7 @@ contract TestBurnAndList is Script {
         console2.log("Minted token IDs 1-3 (public, quantity 3)");
 
         // Public mint caps at 3/wallet -- token 4 via owner mint (placeholder data)
-        chroma.mint(deployer, 4, new bytes(2048), new bytes(32));
+        chroma.mint(deployer, 4);
         console2.log("Minted token ID (owner):", uint256(4));
         require(chroma.totalSupply() == 4, "expected 4 tokens minted");
 

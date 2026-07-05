@@ -7,13 +7,15 @@ import WalletButton from "../components/WalletButton.jsx";
 import TokenThumbnail from "../components/TokenThumbnail.jsx";
 import TokenViewerModal from "../components/TokenViewerModal.jsx";
 import { chromaAbi, DEFAULT_CHAIN, getCanvasAddress, getChromaAddress } from "../lib/chroma-contract.js";
-import { inscribeRevealedArgs } from "../lib/chroma-inscribe.js";
+import { getInscribeArgs, preloadRevealData } from "../lib/chroma-inscribe.js";
+import { GAS_COPY } from "../lib/chroma-gas-copy.js";
 import {
   fetchOwnedChromaTokenIds,
   fetchTokenCanvasStats,
   fetchTokenLockStatus,
   fetchTokenRevealStatus,
 } from "../lib/chroma-ownership.js";
+import WalletSelectModal from "../components/WalletSelectModal.jsx";
 
 const CONNECT_BTN_CLASS =
   "w-full border border-ink bg-white px-3 py-2 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:border-signal hover:text-signal disabled:cursor-not-allowed disabled:border-ink/20 disabled:text-ink/40 sm:w-auto sm:px-8 sm:py-3";
@@ -65,8 +67,9 @@ function ConfirmInscribeModal({
         <div className="border-b border-ink px-5 py-4">
           <h2 className="text-lg font-black uppercase tracking-tight text-ink">Inscribe & lock</h2>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-red-700">
-            This permanently locks Chromie #{id}&apos;s pixel data on-chain. No further edits via
-            canvas will ever be possible. This action cannot be undone.
+            This permanently writes Chromie #{id}&apos;s pixel data on-chain and locks the canvas.
+            Expect roughly {GAS_COPY.inscribe} at mainnet gas prices ({GAS_COPY.inscribeGas}).
+            This action cannot be undone.
           </p>
         </div>
 
@@ -81,6 +84,9 @@ function ConfirmInscribeModal({
               <li>
                 <span className="text-ink/60">Pixels edited:</span>{" "}
                 <span className="font-bold">{pixelsEdited?.toString() ?? "0"}</span>
+                {Number(pixelsEdited ?? 0) > 0 && (
+                  <span className="ml-1 text-ink/55">(will be baked in)</span>
+                )}
               </li>
             </ul>
           </div>
@@ -202,6 +208,13 @@ function InscribeTokenCard({
           </li>
         </ul>
 
+        {!isLocked && Number(pixelsEdited ?? 0) > 0 && (
+          <p className="text-[10px] leading-relaxed text-signal">
+            Your {pixelsEdited.toString()} canvas edit{pixelsEdited === 1n ? "" : "s"} will be
+            baked in at inscribe.
+          </p>
+        )}
+
         {!isLocked && (
           <button
             type="button"
@@ -240,6 +253,7 @@ export default function Inscribe() {
   const [txError, setTxError] = useState(null);
   const [successTokenId, setSuccessTokenId] = useState(null);
   const [viewerTokenId, setViewerTokenId] = useState(null);
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
 
   const inscribableTokenIds = tokenIds.filter(
     (id) => revealedByTokenId[id.toString()] === true && lockedByTokenId[id.toString()] !== true,
@@ -319,7 +333,7 @@ export default function Inscribe() {
     setProgressStep(`Preparing Chromie #${id}…`);
 
     try {
-      const { functionName, args } = inscribeRevealedArgs(tokenId);
+      const { functionName, args } = await getInscribeArgs(tokenId);
 
       setProgressStep(`Confirm inscribe for Chromie #${id}…`);
       const hash = await walletClient.writeContract({
@@ -358,8 +372,9 @@ export default function Inscribe() {
         <div className="mx-auto max-w-3xl">
           <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">INSCRIBE</h1>
           <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
-            Permanently lock a revealed Chromie&apos;s on-chain pixel data. Inscribed tokens can
-            never be edited on the canvas again.
+            Reveal is cheap and immediate ({GAS_COPY.reveal}, {GAS_COPY.revealGas}). Inscribe is
+            the optional permanent step — it writes pixels on-chain and locks the canvas (
+            {GAS_COPY.inscribe}, {GAS_COPY.inscribeGas}).
           </p>
 
           {!isConnected && (
@@ -524,6 +539,8 @@ export default function Inscribe() {
         publicClient={publicClient}
         chromaAddress={chromaAddress}
       />
+
+      <WalletSelectModal open={walletModalOpen} onClose={() => setWalletModalOpen(false)} />
 
       <SiteFooter />
     </div>

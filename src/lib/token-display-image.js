@@ -3,17 +3,25 @@ import {
   decodeSvgFromMetadataImage,
   createSvgBlobUrl,
   revokeObjectUrl,
-  fetchOnChainTokenMetadata,
+  fetchTokenMetadata,
   resolveMetadataImageUrl,
   tokenPngUrl,
 } from "./chromie-token.js";
+import {
+  TOKEN_DISPLAY_STATE,
+  fetchTokenDisplayState,
+} from "./chroma-token-state.js";
+
+export { TOKEN_DISPLAY_STATE, fetchTokenDisplayState };
 
 /**
- * Resolve display image for on-chain metadata.
- * Revealed tokens use an SVG blob URL; unrevealed use reveal placeholders.
+ * Resolve display image from metadata + three-state token lifecycle.
+ * @param {object|null} metadata
+ * @param {string} displayState — TOKEN_DISPLAY_STATE value
+ * @param {number} tokenId
  */
-export function resolveOnChainDisplayImage(metadata, revealed, tokenId) {
-  if (!revealed) {
+export function resolveOnChainDisplayImage(metadata, displayState, tokenId) {
+  if (displayState === TOKEN_DISPLAY_STATE.Unrevealed) {
     return {
       src: resolveMetadataImageUrl(metadata?.image) ?? null,
       kind: "unrevealed-placeholder",
@@ -21,10 +29,20 @@ export function resolveOnChainDisplayImage(metadata, revealed, tokenId) {
     };
   }
 
+  if (displayState === TOKEN_DISPLAY_STATE.RevealedOffChain) {
+    const src =
+      resolveMetadataImageUrl(metadata?.image) ?? tokenPngUrl(tokenId);
+    return {
+      src,
+      kind: "offchain-revealed",
+      cleanup: () => {},
+    };
+  }
+
   const svg = decodeSvgFromMetadataImage(metadata?.image);
   if (!svg) {
-    console.error("[token-display-image] Revealed token missing SVG image", { tokenId });
-    return { src: null, kind: "revealed-missing-svg", cleanup: () => {} };
+    console.error("[token-display-image] Inscribed token missing SVG image", { tokenId });
+    return { src: tokenPngUrl(tokenId), kind: "inscribed-fallback-png", cleanup: () => {} };
   }
 
   const blobUrl = createSvgBlobUrl(svg);
@@ -46,17 +64,12 @@ export async function loadTokenDisplayImage({ publicClient, chromaAddress, token
   }
 
   try {
-    const [metadata, revealed] = await Promise.all([
-      fetchOnChainTokenMetadata(publicClient, chromaAddress, tokenId),
-      publicClient.readContract({
-        address: chromaAddress,
-        abi: chromaAbi,
-        functionName: "revealed",
-        args: [BigInt(tokenId)],
-      }),
+    const [{ state }, metadata] = await Promise.all([
+      fetchTokenDisplayState(publicClient, chromaAddress, tokenId),
+      fetchTokenMetadata(publicClient, chromaAddress, tokenId),
     ]);
 
-    return resolveOnChainDisplayImage(metadata, revealed, tokenId);
+    return resolveOnChainDisplayImage(metadata, state, tokenId);
   } catch (error) {
     console.warn("[token-display-image] On-chain fetch failed, using static PNG", {
       tokenId,

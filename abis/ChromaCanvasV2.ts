@@ -60,6 +60,16 @@ export const chromaCanvasV2Abi = [
   },
   {
     type: "function",
+    name: "getDiff",
+    stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [
+      { name: "pixelIndexes", type: "uint16[]" },
+      { name: "newColorIndexes", type: "uint8[]" },
+    ],
+  },
+  {
+    type: "function",
     name: "getCanvasInfo",
     stateMutability: "view",
     inputs: [

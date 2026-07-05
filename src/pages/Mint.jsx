@@ -557,8 +557,8 @@ export default function Mint() {
           </div>
           <p className="mt-8 max-w-md text-base leading-relaxed text-ink/70">
             Each Chromie is a unique 64×64 pixel identity, permanently committed
-            to Ethereum. Your mutation tier is determined at mint. Inscribe to
-            write your art on-chain forever.
+            to Ethereum. Art and traits are fixed at mint — deterministic from token ID.
+            Inscribe to write your canvas on-chain forever.
           </p>
         </div>
       </section>
