@@ -1,0 +1,64 @@
+name: Chromies CI
+
+on:
+  push:
+    paths:
+      - "contracts/**"
+      - "test/**"
+      - "script/**"
+      - "chromies-engine/**"
+      - "art-pipeline/palette-registry.json"
+      - "art-pipeline/components/legendary/HEAD_MANIFEST.json"
+      - "scripts/**"
+      - "foundry.toml"
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "test/**"
+      - "script/**"
+      - "chromies-engine/**"
+      - "art-pipeline/palette-registry.json"
+      - "art-pipeline/components/legendary/HEAD_MANIFEST.json"
+      - "scripts/**"
+      - "foundry.toml"
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: foundry-rs/foundry-toolchain@v1
+      - name: Forge test
+        run: forge test -vv
+      - name: Contract size gate
+        run: python scripts/check_contract_size_gate.py
+      - name: Palette registry compiler diff
+        run: python scripts/check_palette_registry.py
+      - name: Mint encoder compiler diff
+        run: python scripts/check_mint_encoder.py
+
+  engine:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: chromies-engine
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - uses: foundry-rs/foundry-toolchain@v1
+      - name: Payload determinism + mint tests
+        run: pytest tests/test_mint_payload.py tests/test_payload_authoritative.py tests/test_determinism.py -q
+      - name: Parity harness (100 seeds)
+        run: python scripts/parity_harness.py --count 100
+      - name: Traits parity (1011 baseline)
+        run: python scripts/traits_parity_check.py --count 1011
+      - name: Legendary head manifest pin
+        run: node scripts/check-legendary-heads.js

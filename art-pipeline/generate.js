@@ -1334,13 +1334,14 @@ function resolveUniqueTokenTraits(tokenId, traits, dedupeGuard, options = {}) {
   const metadataOnly = options.metadataOnly === true;
   const skipSet = options.skipSet || new Set();
   const comboCapGuard = options.comboCapGuard || null;
-  const character = options.character || pickCharacter(tokenId);
-  const paletteKey = options.paletteKey || pickPalette(tokenId, traits, character);
+  const rollId = options.rollTokenId || tokenId;
+  const character = options.character || pickCharacter(rollId);
+  const paletteKey = options.paletteKey || pickPalette(rollId, traits, character);
   const loadBuffers = options.loadBuffers !== false && !isLegendaryToken(tokenId) && !metadataOnly;
   const rerolls = [];
 
   for (let dedupeAttempt = 0; dedupeAttempt <= DEDUPE_REROLL_MAX; dedupeAttempt++) {
-    const picks = pickTokenVariants(tokenId, traits, skipSet, character, loadBuffers);
+    const picks = pickTokenVariants(rollId, traits, skipSet, character, loadBuffers);
     applyStoredRerolls(picks, rerolls, traits, character);
 
     const { picks: finalPicks, renderPicks, antiStackFires } = finalizeTokenTraits(

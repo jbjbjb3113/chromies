@@ -35,71 +35,46 @@ const {
   ON_CHAIN_CHARACTER_BYTES,
   ON_CHAIN_PALETTE_BYTES,
   characterKey,
-} = require("./on-chain-character-bytes");
+} = require("./generated/on-chain-character-bytes");
+const { TRAIT_BYTE_TABLES } = require("./generated/on-chain-trait-bytes");
 
 const GRID = SETTINGS.grid;
 const PX = GRID * GRID;
 const PIXELS_BYTES = 2048;
 const TRAITS_BYTES = 32;
+const PAYLOAD_DEDUPE_MAX = 8;
 
 const PALETTE_BYTES = ON_CHAIN_PALETTE_BYTES;
-
-const HOOD_BYTES = { None: 0, Classic: 1 };
-const SHIRT_BYTES = { None: 0, Crew: 1, Tank: 2, Tank_Female: 3 };
-const BODY_BYTES = { None: 0, Default: 1, Female: 2, Female_Tank: 3, Alien: 4, Tank: 5, Zombie: 6 };
-const BODYTATTOO_BYTES = { None: 0, UnderArmour: 1, AkuHeart: 2, Pyramid: 3, Normies: 4 };
-const NECKLACE_BYTES = {
-  None: 0,
-  Male_Chain: 1,
-  Female_Chain: 2,
-  Female_Ornate: 3,
-  Female_Flower: 4,
-  Female_UpsideDownCross: 5,
-  Female_Opal: 6,
-  Male_Chromies: 7,
-  Male_HappyFace: 8,
-  Male_Normies: 9,
-  Male_Pendent: 10,
-};
-const TATTOO_BYTES = { None: 0, Signal: 1, Thug: 2, Marks: 3, Scar: 4 };
-const MASK_BYTES = { None: 0 };
-const BEARD_BYTES = { None: 0, Full: 1, Goat: 2 };
-const MUSTACHE_BYTES = { None: 0, Thick: 1 };
-const EYES_BYTES = { Signal: 0, BlackEye: 1, MakeUp: 2, RunningMascara: 3, Stoned: 4, Alien: 5 };
-const EARRINGS_BYTES = { None: 0, Stud: 1 };
-const GLASSES_BYTES = { None: 0, Shades: 1, Neo: 2, VR: 3 };
-const HAIR_BYTES = {
-  None: 0,
-  Mohawk: 1,
-  Pompadour: 2,
-  MrT: 3,
-  Afro: 4,
-  Dreads: 5,
-  Surfer: 6,
-  FadeRight: 7,
-  AZVet: 8,
-  Buns: 9,
-};
 
 const TRAIT_SLOTS = [
   { index: 0, key: "character", label: "Character", table: ON_CHAIN_CHARACTER_BYTES, source: "character" },
   { index: 1, key: "palette", label: "Palette", table: PALETTE_BYTES, source: "palette" },
-  { index: 2, key: "hood", label: "Hood", table: HOOD_BYTES, source: "pick" },
-  { index: 3, key: "shirt", label: "Shirt", table: SHIRT_BYTES, source: "pick" },
-  { index: 4, key: "body", label: "Body", table: BODY_BYTES, source: "pick" },
-  { index: 5, key: "bodytattoo", label: "Bodytattoo", table: BODYTATTOO_BYTES, source: "pick" },
-  { index: 6, key: "necklace", label: "Necklace", table: NECKLACE_BYTES, source: "pick" },
-  { index: 7, key: "tattoo", label: "Tattoo", table: TATTOO_BYTES, source: "pick" },
-  { index: 8, key: "mask", label: "Mask", table: MASK_BYTES, source: "pick" },
-  { index: 9, key: "beard", label: "Beard", table: BEARD_BYTES, source: "pick" },
-  { index: 10, key: "mustache", label: "Mustache", table: MUSTACHE_BYTES, source: "pick" },
-  { index: 11, key: "eyes", label: "Eyes", table: EYES_BYTES, source: "pick" },
-  { index: 12, key: "earrings", label: "Earrings", table: EARRINGS_BYTES, source: "pick" },
-  { index: 13, key: "glasses", label: "Glasses", table: GLASSES_BYTES, source: "pick" },
-  { index: 14, key: "hair", label: "Hair", table: HAIR_BYTES, source: "pick" },
+  { index: 2, key: "hood", label: "Hood", table: TRAIT_BYTE_TABLES.hood, source: "pick" },
+  { index: 3, key: "shirt", label: "Shirt", table: TRAIT_BYTE_TABLES.shirt, source: "pick" },
+  { index: 4, key: "body", label: "Body", table: TRAIT_BYTE_TABLES.body, source: "pick" },
+  { index: 5, key: "bodytattoo", label: "Bodytattoo", table: TRAIT_BYTE_TABLES.bodytattoo, source: "pick" },
+  { index: 6, key: "necklace", label: "Necklace", table: TRAIT_BYTE_TABLES.necklace, source: "pick" },
+  { index: 7, key: "tattoo", label: "Tattoo", table: TRAIT_BYTE_TABLES.tattoo, source: "pick" },
+  { index: 8, key: "mask", label: "Mask", table: TRAIT_BYTE_TABLES.mask, source: "pick" },
+  { index: 9, key: "beard", label: "Beard", table: TRAIT_BYTE_TABLES.beard, source: "pick" },
+  { index: 10, key: "mustache", label: "Mustache", table: TRAIT_BYTE_TABLES.mustache, source: "pick" },
+  { index: 11, key: "eyes", label: "Eyes", table: TRAIT_BYTE_TABLES.eyes, source: "pick" },
+  { index: 12, key: "earrings", label: "Earrings", table: TRAIT_BYTE_TABLES.earrings, source: "pick" },
+  { index: 13, key: "glasses", label: "Glasses", table: TRAIT_BYTE_TABLES.glasses, source: "pick" },
+  { index: 14, key: "hair", label: "Hair", table: TRAIT_BYTE_TABLES.hair, source: "pick" },
   { index: 15, key: "mutation", label: "Mutation", source: "retired" },
   { index: 16, key: "drift", label: "Drift", source: "retired" },
 ];
+
+const payloadDedupeLog = [];
+
+function getPayloadDedupeLog() {
+  return payloadDedupeLog.slice();
+}
+
+function resetPayloadDedupeLog() {
+  payloadDedupeLog.length = 0;
+}
 
 function lookupByte(table, value, context, warnings) {
   if (value === undefined || value === null) {
@@ -181,18 +156,19 @@ function toHex(buf, withPrefix) {
   return withPrefix ? `0x${hex}` : hex;
 }
 
-function buildMintRecord(tokenId, traitsJson, warnings, dedupeGuard = null, comboCapGuard = null) {
+function buildMintRecordOnce(tokenId, traitsJson, warnings, dedupeGuard, comboCapGuard, rollTokenId) {
   const guard = dedupeGuard || new TraitDedupeGuard();
   const capGuard = comboCapGuard || new ComboCapGuard();
+  const rollId = rollTokenId || tokenId;
   const { character, paletteKey, picks, renderPicks } = resolveUniqueTokenTraits(
     tokenId,
     traitsJson,
     guard,
-    { comboCapGuard: capGuard, loadBuffers: !isLegendaryToken(tokenId) },
+    { comboCapGuard: capGuard, loadBuffers: !isLegendaryToken(tokenId), rollTokenId: rollId },
   );
-  const { driftMap } = buildPhase3Effects(tokenId, picks, null, character);
+  const { driftMap } = buildPhase3Effects(rollId, picks, null, character);
   const { buf, legendaryFinal, colorUsage, sourcePath } = resolveTokenPixelBuffer(
-    tokenId,
+    isLegendaryToken(tokenId) ? tokenId : rollId,
     traitsJson,
     renderPicks,
     driftMap,
@@ -222,7 +198,74 @@ function buildMintRecord(tokenId, traitsJson, warnings, dedupeGuard = null, comb
     palette: paletteKey,
     traitsDecoded: decoded,
     warnings: [],
+    payloadDedupeAttempt: rollId === tokenId ? 0 : Number(String(rollId).split(":payloadDedupe:")[1] || 0),
   };
+}
+
+class PayloadDedupeGuard {
+  constructor() {
+    this.full = new Map();
+    this.pixels = new Map();
+  }
+}
+
+function buildMintRecord(
+  tokenId,
+  traitsJson,
+  warnings,
+  dedupeGuard = null,
+  comboCapGuard = null,
+  payloadGuard = null,
+) {
+  let lastPartner = null;
+  for (let attempt = 0; attempt <= PAYLOAD_DEDUPE_MAX; attempt++) {
+    const rollTokenId = isLegendaryToken(tokenId)
+      ? tokenId
+      : attempt === 0
+        ? tokenId
+        : `${tokenId}:payloadDedupe:${attempt}`;
+    const record = buildMintRecordOnce(
+      tokenId,
+      traitsJson,
+      warnings,
+      dedupeGuard,
+      comboCapGuard,
+      rollTokenId,
+    );
+    if (!payloadGuard) return record;
+
+    const fullKey = `${record.pixelsHex}|${record.traitsHex}`.toLowerCase();
+    const pixelKey = record.pixelsHex.toLowerCase();
+    const fullPartner = payloadGuard.full.get(fullKey);
+    const pixelPartner = payloadGuard.pixels.get(pixelKey);
+
+    if (!fullPartner && !pixelPartner) {
+      payloadGuard.full.set(fullKey, tokenId);
+      payloadGuard.pixels.set(pixelKey, tokenId);
+      if (attempt > 0) {
+        const entry = {
+          tokenId,
+          partnerId: lastPartner,
+          attempt,
+          rollTokenId,
+          reason: fullPartner ? "full_payload" : "pixel_visual",
+        };
+        payloadDedupeLog.push(entry);
+        console.log(
+          `  [payload-dedupe] #${tokenId} collides with #${lastPartner} → reroll :payloadDedupe:${attempt}`,
+        );
+      }
+      return record;
+    }
+
+    lastPartner = fullPartner || pixelPartner;
+    if (attempt === PAYLOAD_DEDUPE_MAX) {
+      throw new Error(
+        `Payload dedupe exhausted for token #${tokenId} (collides with #${lastPartner})`,
+      );
+    }
+  }
+  throw new Error(`Payload dedupe failed for token #${tokenId}`);
 }
 
 function parseArgs() {
@@ -287,13 +330,15 @@ function runBatch(count, start, traitsJson) {
   console.log(`Building mint data for tokens ${start}–${start + count - 1} (${count} total)...`);
 
   resetGenerationStats();
+  resetPayloadDedupeLog();
   const dedupeGuard = new TraitDedupeGuard();
   const comboCapGuard = new ComboCapGuard();
+  const payloadGuard = new PayloadDedupeGuard();
 
   for (let i = 0; i < count; i++) {
     const tokenId = start + i;
     const warnings = [];
-    const record = buildMintRecord(tokenId, traitsJson, warnings, dedupeGuard, comboCapGuard);
+    const record = buildMintRecord(tokenId, traitsJson, warnings, dedupeGuard, comboCapGuard, payloadGuard);
     allWarnings.push(...warnings.map(w => `token ${tokenId}: ${w}`));
 
     records.push({
@@ -357,6 +402,13 @@ function runBatch(count, start, traitsJson) {
     }
   }
   console.log(`Trait vector duplicates: 0 (dedupe guard enforced)`);
+  const pLog = getPayloadDedupeLog();
+  console.log(`Payload dedupe rerolls: ${pLog.length}`);
+  for (const entry of pLog) {
+    console.log(
+      `  #${entry.tokenId} vs #${entry.partnerId} → :payloadDedupe:${entry.attempt} (${entry.reason})`,
+    );
+  }
   console.log("\nPalette distribution (top 10):");
   for (const [k, v] of Object.entries(paletteDist).sort((a, b) => b[1] - a[1]).slice(0, 10)) {
     console.log(`  ${k.padEnd(16)} ${v} (${((v / count) * 100).toFixed(1)}%)`);
@@ -416,9 +468,13 @@ module.exports = {
   packPixels,
   encodeTraits,
   buildMintRecord,
+  buildMintRecordOnce,
   characterKey,
   countNonZeroNibbles,
   packTotalPixels,
   TRAIT_SLOTS,
   ON_CHAIN_CHARACTER_BYTES,
+  PayloadDedupeGuard,
+  getPayloadDedupeLog,
+  resetPayloadDedupeLog,
 };

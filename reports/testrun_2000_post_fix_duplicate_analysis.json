@@ -1,0 +1,262 @@
+{
+  "batchSize": 2000,
+  "fullPayloadDuplicateGroups": 0,
+  "fullPayloadDuplicateExtraInstances": 0,
+  "encodingCollapseGroups": 0,
+  "rollSpaceGroups": 0,
+  "visualOnlyCollisionGroups": 0,
+  "visualOnlyExtraInstances": 0,
+  "payloadDedupeRerolls": 35,
+  "payloadDedupeLog": [
+    {
+      "tokenId": 151,
+      "partnerId": 91,
+      "attempt": 1,
+      "rollTokenId": "151:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 429,
+      "partnerId": 91,
+      "attempt": 1,
+      "rollTokenId": "429:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 431,
+      "partnerId": 91,
+      "attempt": 1,
+      "rollTokenId": "431:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 661,
+      "partnerId": 515,
+      "attempt": 1,
+      "rollTokenId": "661:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 745,
+      "partnerId": 55,
+      "attempt": 1,
+      "rollTokenId": "745:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 749,
+      "partnerId": 91,
+      "attempt": 1,
+      "rollTokenId": "749:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 788,
+      "partnerId": 576,
+      "attempt": 1,
+      "rollTokenId": "788:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 841,
+      "partnerId": 313,
+      "attempt": 1,
+      "rollTokenId": "841:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 867,
+      "partnerId": 322,
+      "attempt": 1,
+      "rollTokenId": "867:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 873,
+      "partnerId": 2,
+      "attempt": 1,
+      "rollTokenId": "873:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 955,
+      "partnerId": 642,
+      "attempt": 1,
+      "rollTokenId": "955:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1022,
+      "partnerId": 515,
+      "attempt": 1,
+      "rollTokenId": "1022:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1037,
+      "partnerId": 334,
+      "attempt": 1,
+      "rollTokenId": "1037:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1039,
+      "partnerId": 515,
+      "attempt": 1,
+      "rollTokenId": "1039:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1093,
+      "partnerId": 91,
+      "attempt": 1,
+      "rollTokenId": "1093:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1161,
+      "partnerId": 601,
+      "attempt": 1,
+      "rollTokenId": "1161:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1167,
+      "partnerId": 15,
+      "attempt": 1,
+      "rollTokenId": "1167:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1207,
+      "partnerId": 771,
+      "attempt": 2,
+      "rollTokenId": "1207:payloadDedupe:2",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1271,
+      "partnerId": 1024,
+      "attempt": 1,
+      "rollTokenId": "1271:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1277,
+      "partnerId": 1092,
+      "attempt": 1,
+      "rollTokenId": "1277:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1288,
+      "partnerId": 793,
+      "attempt": 1,
+      "rollTokenId": "1288:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1319,
+      "partnerId": 61,
+      "attempt": 1,
+      "rollTokenId": "1319:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1394,
+      "partnerId": 62,
+      "attempt": 1,
+      "rollTokenId": "1394:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1505,
+      "partnerId": 91,
+      "attempt": 1,
+      "rollTokenId": "1505:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1529,
+      "partnerId": 343,
+      "attempt": 1,
+      "rollTokenId": "1529:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1546,
+      "partnerId": 62,
+      "attempt": 1,
+      "rollTokenId": "1546:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1578,
+      "partnerId": 62,
+      "attempt": 1,
+      "rollTokenId": "1578:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1585,
+      "partnerId": 503,
+      "attempt": 1,
+      "rollTokenId": "1585:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1599,
+      "partnerId": 1028,
+      "attempt": 1,
+      "rollTokenId": "1599:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1712,
+      "partnerId": 699,
+      "attempt": 1,
+      "rollTokenId": "1712:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1760,
+      "partnerId": 506,
+      "attempt": 1,
+      "rollTokenId": "1760:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1853,
+      "partnerId": 506,
+      "attempt": 1,
+      "rollTokenId": "1853:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1956,
+      "partnerId": 99,
+      "attempt": 1,
+      "rollTokenId": "1956:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1970,
+      "partnerId": 1108,
+      "attempt": 1,
+      "rollTokenId": "1970:payloadDedupe:1",
+      "reason": "pixel_visual"
+    },
+    {
+      "tokenId": 1983,
+      "partnerId": 99,
+      "attempt": 1,
+      "rollTokenId": "1983:payloadDedupe:1",
+      "reason": "pixel_visual"
+    }
+  ],
+  "projectedAt5150": {
+    "fullPayloadExtraLinear": 0,
+    "visualOnlyExtraLinear": 0
+  },
+  "groups": []
+}
