@@ -917,13 +917,13 @@
     },
     {
       "path": "chubby/HAT_Chubby_Baseball.png",
-      "sha256": "78b3e5c7decad045ad528b6dedcea4348d755c8650aa01025d0ade9337584c0e",
+      "sha256": "137a3994a2809f62c66230c909d10d6238d0b27704c0cdcc50ac445ed7e8e643",
       "bytes": 277
     },
     {
       "path": "chubby/HAT_Chubby_Bucket.png",
-      "sha256": "9918177b96975201179325231c037d9cffbb941a4ce228a46be7bc131dc0f99d",
-      "bytes": 353
+      "sha256": "6ec2bfdb2048095eecf904885cb35b95b675f3098f5a055a2c615f35b7ec01bc",
+      "bytes": 347
     },
     {
       "path": "chubby/HEAD_Chubby.png",
