@@ -2,7 +2,7 @@
   "schema_version": 1,
   "generated_at": "2026-07-09",
   "root": "art-pipeline/components",
-  "file_count": 359,
+  "file_count": 364,
   "note": "Pinned SHA-256 for every components/ file. CI fails on add/delete/modify without updating this manifest.",
   "files": [
     {
@@ -911,6 +911,16 @@
       "bytes": 226
     },
     {
+      "path": "chubby/HAT_Chubby_Baseball.png",
+      "sha256": "78b3e5c7decad045ad528b6dedcea4348d755c8650aa01025d0ade9337584c0e",
+      "bytes": 277
+    },
+    {
+      "path": "chubby/HAT_Chubby_Bucket.png",
+      "sha256": "e43c8171755074fc02a1ec8c760eb16d632967d756472709ddc7da2cb528b2fc",
+      "bytes": 353
+    },
+    {
       "path": "chubby/HEAD_Chubby.png",
       "sha256": "e83017c900185c5c6f6a50895641aa6b8773ca18dadd6613968e4326159d6628",
       "bytes": 548
@@ -1134,6 +1144,16 @@
       "path": "female/HAIR_Female_TheAvatar.png",
       "sha256": "4add6ae6f42f41564ef118e3a9f867bc4209d1e009f9b91b71e5bea07f702c9e",
       "bytes": 228
+    },
+    {
+      "path": "female/HAT_Female_Baseball.png",
+      "sha256": "75fa39ba21236aecbfbac066df0540881f5cac56b39ec6b24b3678d786a6ed1d",
+      "bytes": 278
+    },
+    {
+      "path": "female/HAT_Female_Bucket.png",
+      "sha256": "28620db0a38e59eb4fa17ae5a63725541962e532724c50fd871e14783759db29",
+      "bytes": 349
     },
     {
       "path": "female/HEAD_Female_Angular.png",
@@ -1489,6 +1509,11 @@
       "path": "male/HAIR_Male_TheAvatar.png",
       "sha256": "ba42c490cb9f4fb4173a5f14e35862cdc7247420e45f43d1fe76805c677d30fe",
       "bytes": 229
+    },
+    {
+      "path": "male/HAT_Male_Baseball.png",
+      "sha256": "f78798e0a1af0af1483af45e3e8bbccec689951d5b032cdb10014f8a268ee825",
+      "bytes": 270
     },
     {
       "path": "male/HAT_Male_Bucket.png",
