@@ -1162,8 +1162,8 @@
     },
     {
       "path": "female/HAT_Female_Bucket.png",
-      "sha256": "488a11d4bad96d4110358f84cd05fc489517f682497c1dca78853c0bd02c221d",
-      "bytes": 349
+      "sha256": "8b0e62151aff8a28eb534803ec82e28e272f3c3f72f64ab83334920a8468bdfc",
+      "bytes": 344
     },
     {
       "path": "female/HEAD_Female_Angular.png",
@@ -1532,8 +1532,8 @@
     },
     {
       "path": "male/HAT_Male_Bucket.png",
-      "sha256": "babe9622042094641f9f3c7a4d43cc39e9c314989496e37d57310b31f40bd765",
-      "bytes": 352
+      "sha256": "e4c77dd4af4f9502695499b20c6d46999e3ae1aa79380c91392105d108d0f9d0",
+      "bytes": 347
     },
     {
       "path": "male/HEAD_HeroA.png",

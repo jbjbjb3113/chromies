@@ -948,11 +948,14 @@ const CHARACTERS = [
         None: 79.4,
       },
       hat: {
-        // Bandana rung only — clean art passed preflight this wave. Baseball/Bucket
-        // stay out of this pool (still failing palette-role preflight); Cowboy/Beanie
-        // undelivered. Ruled ladder weight: 1.2% of eligible-archetype pool.
+        // Baseball/Bucket/Bandana all clean as of wave-3d (2026-07-09) — full rarity
+        // ladder now live for the clean rungs. Cowboy/Beanie stay out (undelivered art;
+        // hard-fail guard enforces weight 0 until art lands). Ruled ladder weights:
+        // Baseball 4.5%, Cowboy 2.5% (pending), Bucket 1.2%, Bandana 1.2%, Beanie 0.6% (pending).
+        Male_Baseball: 4.5,
+        Male_Bucket: 1.2,
         Male_Bandana: 1.2,
-        None: 98.8,
+        None: 93.1,
       },
     },
   },
@@ -1039,9 +1042,12 @@ const CHARACTERS = [
         None: 96,
       },
       hat: {
-        // Bandana rung only — see HeroA Male comment. Ruled ladder weight: 1.2%.
+        // Baseball/Bucket/Bandana all clean as of wave-3d (2026-07-09) — see HeroA Male
+        // comment. Ruled ladder weights: Baseball 4.5%, Bucket 1.2%, Bandana 1.2%.
+        Chubby_Baseball: 4.5,
+        Chubby_Bucket: 1.2,
         Chubby_Bandana: 1.2,
-        None: 98.8,
+        None: 93.1,
       },
       accessory: {
         Chubby_Cigarette: 15,
@@ -1130,9 +1136,12 @@ const CHARACTERS = [
         Female_None: 91.9,
       },
       hat: {
-        // Bandana rung only — see HeroA Male comment. Ruled ladder weight: 1.2%.
+        // Baseball/Bucket/Bandana all clean as of wave-3d (2026-07-09) — see HeroA Male
+        // comment. Ruled ladder weights: Baseball 4.5%, Bucket 1.2%, Bandana 1.2%.
+        Female_Baseball: 4.5,
+        Female_Bucket: 1.2,
         Female_Bandana: 1.2,
-        None: 98.8,
+        None: 93.1,
       },
       earrings: {
         Female_Stud: 20,
