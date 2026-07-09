@@ -2183,7 +2183,7 @@
       },
       "variants": [
         { "name": "None", "file": "HAT_None.png", "weight": 0 },
-        { "name": "Male_Baseball", "file": "male/HAT_Male_Baseball.png", "weight": 0, "_comment": "Re-exported wave-3 (2026-07-09) — STILL FAILING preflight: 1 off-role px (#1a0a14) @ (19,17). Weight 0 held pending a real fix; not auto-fixed." },
+        { "name": "Male_Baseball", "file": "male/HAT_Male_Baseball.png", "weight": 0, "_comment": "Re-exported wave-3c (2026-07-09) — PASSES preflight now (was 1 off-role px #1a0a14, gone). Baseball rung is now fully clean (Male+Female+Chubby all pass) — weight still held at 0 pending explicit ladder-flip confirmation." },
         { "name": "Male_Cowboy", "file": "male/HAT_Male_Cowboy.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
         { "name": "Male_Bucket", "file": "male/HAT_Male_Bucket.png", "weight": 0, "_comment": "Re-exported wave-3 (2026-07-09) — FAILING preflight (was never actually clean despite prior assumption): 4 off-role px (#1a0a14) @ (20,12)(30,15)(36,19)(44,21). Weight 0 held; not auto-fixed." },
         { "name": "Male_Bandana", "file": "male/HAT_Male_Bandana.png", "weight": 0, "_comment": "Art delivered + PASSES preflight (wave-3, 2026-07-09) — 64x64, binary alpha, all pixels role-conformant. Wired at 1.2% in HeroA Male slotVariantPool.hat pending JB's final ladder ruling." },
