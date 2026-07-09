@@ -2,7 +2,7 @@
   "schema_version": 1,
   "generated_at": "2026-07-09",
   "root": "art-pipeline/components",
-  "file_count": 364,
+  "file_count": 367,
   "note": "Pinned SHA-256 for every components/ file. CI fails on add/delete/modify without updating this manifest.",
   "files": [
     {
@@ -911,13 +911,18 @@
       "bytes": 226
     },
     {
+      "path": "chubby/HAT_Chubby_Bandana.png",
+      "sha256": "3ac7fe055117a412f4978a6e0d63ae66116dc50611ea5e0c0f12e33d74eb9a5a",
+      "bytes": 311
+    },
+    {
       "path": "chubby/HAT_Chubby_Baseball.png",
       "sha256": "78b3e5c7decad045ad528b6dedcea4348d755c8650aa01025d0ade9337584c0e",
       "bytes": 277
     },
     {
       "path": "chubby/HAT_Chubby_Bucket.png",
-      "sha256": "e43c8171755074fc02a1ec8c760eb16d632967d756472709ddc7da2cb528b2fc",
+      "sha256": "9918177b96975201179325231c037d9cffbb941a4ce228a46be7bc131dc0f99d",
       "bytes": 353
     },
     {
@@ -1146,13 +1151,18 @@
       "bytes": 228
     },
     {
+      "path": "female/HAT_Female_Bandana.png",
+      "sha256": "05c6efe272534e60abd7cdaef007e16651950a605ac9c9268479f8ba227a5e62",
+      "bytes": 316
+    },
+    {
       "path": "female/HAT_Female_Baseball.png",
-      "sha256": "75fa39ba21236aecbfbac066df0540881f5cac56b39ec6b24b3678d786a6ed1d",
+      "sha256": "b2add79a463b099034a7f20330f7702bb061ac4858ae15060b5e5cd626417855",
       "bytes": 278
     },
     {
       "path": "female/HAT_Female_Bucket.png",
-      "sha256": "28620db0a38e59eb4fa17ae5a63725541962e532724c50fd871e14783759db29",
+      "sha256": "488a11d4bad96d4110358f84cd05fc489517f682497c1dca78853c0bd02c221d",
       "bytes": 349
     },
     {
@@ -1511,13 +1521,18 @@
       "bytes": 229
     },
     {
+      "path": "male/HAT_Male_Bandana.png",
+      "sha256": "7b3c63c97462bef3012855f272d545dffc448abea96254f03d0da13d9fd9b159",
+      "bytes": 317
+    },
+    {
       "path": "male/HAT_Male_Baseball.png",
-      "sha256": "f78798e0a1af0af1483af45e3e8bbccec689951d5b032cdb10014f8a268ee825",
-      "bytes": 270
+      "sha256": "301a0cca88700d818e4a1797308ed0b3f7331093b116d0777d48ca06eee4cf1f",
+      "bytes": 281
     },
     {
       "path": "male/HAT_Male_Bucket.png",
-      "sha256": "a8eb2c84a3a26465707f08edb6290facbc07151e10c0479b244b018146e5d5d6",
+      "sha256": "babe9622042094641f9f3c7a4d43cc39e9c314989496e37d57310b31f40bd765",
       "bytes": 352
     },
     {

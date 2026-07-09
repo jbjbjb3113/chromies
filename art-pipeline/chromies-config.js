@@ -947,6 +947,13 @@ const CHARACTERS = [
         Male_Hooded: 0.6,
         None: 79.4,
       },
+      hat: {
+        // Bandana rung only — clean art passed preflight this wave. Baseball/Bucket
+        // stay out of this pool (still failing palette-role preflight); Cowboy/Beanie
+        // undelivered. Ruled ladder weight: 1.2% of eligible-archetype pool.
+        Male_Bandana: 1.2,
+        None: 98.8,
+      },
     },
   },
   {
@@ -1030,6 +1037,11 @@ const CHARACTERS = [
       hood: {
         Chubby_Classic: 4, // 4 / 100 pool ≈ 4% roll rate (3–5% target)
         None: 96,
+      },
+      hat: {
+        // Bandana rung only — see HeroA Male comment. Ruled ladder weight: 1.2%.
+        Chubby_Bandana: 1.2,
+        None: 98.8,
       },
       accessory: {
         Chubby_Cigarette: 15,
@@ -1116,6 +1128,11 @@ const CHARACTERS = [
         Female_Classic: 7.5,  // ~7.5% roll rate — matches HeroA_Male Classic (~20/100 traits.json default → ~7.5% of collection)
         Female_Hooded: 0.6,
         Female_None: 91.9,
+      },
+      hat: {
+        // Bandana rung only — see HeroA Male comment. Ruled ladder weight: 1.2%.
+        Female_Bandana: 1.2,
+        None: 98.8,
       },
       earrings: {
         Female_Stud: 20,
