@@ -8,7 +8,7 @@ on:
       - "script/**"
       - "chromies-engine/**"
       - "art-pipeline/palette-registry.json"
-      - "art-pipeline/components/legendary/HEAD_MANIFEST.json"
+      - "art-pipeline/components/**"
       - "scripts/**"
       - "foundry.toml"
   pull_request:
@@ -18,7 +18,7 @@ on:
       - "script/**"
       - "chromies-engine/**"
       - "art-pipeline/palette-registry.json"
-      - "art-pipeline/components/legendary/HEAD_MANIFEST.json"
+      - "art-pipeline/components/**"
       - "scripts/**"
       - "foundry.toml"
 
@@ -62,3 +62,5 @@ jobs:
         run: python scripts/traits_parity_check.py --count 1011
       - name: Legendary head manifest pin
         run: node scripts/check-legendary-heads.js
+      - name: Components manifest pin
+        run: node scripts/check-components-manifest.js

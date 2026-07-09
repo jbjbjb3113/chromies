@@ -942,6 +942,11 @@ const CHARACTERS = [
         Male_Cigarette_Flipped: 10,
         None: 80,
       },
+      hood: {
+        Classic: 20,
+        Male_Hooded: 0.6,
+        None: 79.4,
+      },
     },
   },
   {

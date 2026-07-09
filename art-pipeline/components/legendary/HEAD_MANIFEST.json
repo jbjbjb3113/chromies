@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "restored_from": "9f3b5127785dee151d0ed7f62dc9bd933fe1b7cb",
+  "restored_at": "2026-07-07",
+  "note": "Pinned legendary head component PNGs wired in traits.json. DOPEMIND (#2222) and UPCOMING2 (#3792) have no head assets — only these 7 exist. Update this manifest explicitly after JB-approved art changes.",
+  "files": [
+    {
+      "path": "legendary/NORMIE_0045_Snowfro.png",
+      "tokenId": 45,
+      "artist": "Snowfro",
+      "headVariant": "Legendary_Snowfro",
+      "sha256": "8bdcd936e753954f9bef121b6b8043bd7c0ae9b6d834671f3d942a5262b0fdea"
+    },
+    {
+      "path": "legendary/NORMIE_0603_ACK.png",
+      "tokenId": 603,
+      "artist": "a.c.k.",
+      "headVariant": "Legendary_ACK",
+      "sha256": "8d84cd06bd14caadf6f88af19538c08ef99193705ead81d6786421bccf10075a"
+    },
+    {
+      "path": "legendary/NORMIE_4354_Serc.png",
+      "tokenId": 4354,
+      "artist": "Serc",
+      "headVariant": "Legendary_Serc",
+      "sha256": "85c51e9bd9f8667abb04cc32793afdff9766489c221ed74ac936fa46c2b58a42"
+    },
+    {
+      "path": "legendary/NORMIE_4698_JackButcher.png",
+      "tokenId": 4698,
+      "artist": "Jack Butcher",
+      "headVariant": "Legendary_JackButcher",
+      "sha256": "535f642bc4c2bd7561746f6b06a2aec2759074db0255e77921990d751ebd4ab4"
+    },
+    {
+      "path": "legendary/NORMIE_5974_Timpers.png",
+      "tokenId": 264,
+      "artist": "Timpers",
+      "headVariant": "Legendary_Timpers",
+      "sha256": "090dbeb0f277e1678c05128b6bb4b8d115bb780388f61d2361209626a2ddb025"
+    },
+    {
+      "path": "legendary/NORMIE_6576_Deekay.png",
+      "tokenId": 1173,
+      "artist": "Deekay",
+      "headVariant": "Legendary_Deekay",
+      "sha256": "5eb5fcd868ec9cb5a7efb4c2e8831b6df36117ab30d8cd1117cf327d944915dc"
+    },
+    {
+      "path": "legendary/NORMIE_7409_PIV.png",
+      "tokenId": 1294,
+      "artist": "PIV",
+      "headVariant": "Legendary_PIV",
+      "sha256": "8389404b965cea7dc7b490005f1a5cd0d47638c41bd7eeb4072ad06a7f9580e1"
+    }
+  ]
+}

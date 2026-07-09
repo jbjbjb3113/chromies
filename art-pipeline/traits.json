@@ -364,6 +364,12 @@
           "zOrder": 41
         },
         {
+          "name": "Male_Hooded",
+          "file": "male/HOOD_Male_Hooded.png",
+          "weight": 0,
+          "zOrder": 41
+        },
+        {
           "name": "Female_None",
           "file": "female/HOOD_Female_None.png",
           "weight": 0

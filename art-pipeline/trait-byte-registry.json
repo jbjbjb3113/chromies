@@ -9,6 +9,7 @@
         "Classic": 1,
         "Female_Classic": 3,
         "Female_Hooded": 4,
+        "Male_Hooded": 12,
         "Female_None": 5,
         "None": 0,
         "SP_Classic": 6,

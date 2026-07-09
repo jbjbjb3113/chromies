@@ -430,13 +430,13 @@ function isHoodNone(hoodName) {
 function hoodCoversTorso(hoodName) {
   return hoodName === "Classic" || hoodName === "SP_Classic" || hoodName === "SP_Classic_Female"
       || hoodName === "SP_Classic_Male"
-      || hoodName === "Female_Classic" || hoodName === "Female_Hooded"
+      || hoodName === "Female_Classic" || hoodName === "Female_Hooded" || hoodName === "Male_Hooded"
       || hoodName === "Chubby_Classic"
       || hoodName === "Zombie_Classic" || hoodName === "Zombie_Hooded" || hoodName === "Zombie_Hoodie";
 }
 
 function hoodSuppressesHair(hoodName) {
-  return isFemaleHood(hoodName) || hoodName === "Chubby_Classic"
+  return isFemaleHood(hoodName) || hoodName === "Male_Hooded" || hoodName === "Chubby_Classic"
       || hoodName === "SP_Classic_Female" || hoodName === "SP_Classic_Male"
       || hoodName === "Zombie_Classic" || hoodName === "Zombie_Hooded" || hoodName === "Zombie_Hoodie";
 }
