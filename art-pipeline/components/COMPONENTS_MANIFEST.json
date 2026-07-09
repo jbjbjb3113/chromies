@@ -2,7 +2,7 @@
   "schema_version": 1,
   "generated_at": "2026-07-09",
   "root": "art-pipeline/components",
-  "file_count": 355,
+  "file_count": 359,
   "note": "Pinned SHA-256 for every components/ file. CI fails on add/delete/modify without updating this manifest.",
   "files": [
     {
@@ -239,6 +239,11 @@
       "path": "HAIR_Surfer.png",
       "sha256": "a5d4020a1bbcec05c85b7756c90df785a75161ec25dca34d3af3c0f917ebafae",
       "bytes": 486
+    },
+    {
+      "path": "HAT_None.png",
+      "sha256": "13429c2a016f14f1b2ed78792f67496f3655151c6e272769c7481ecb1d6d7d7f",
+      "bytes": 96
     },
     {
       "path": "HEAD_Cat.png",
@@ -1131,6 +1136,11 @@
       "bytes": 228
     },
     {
+      "path": "female/HEAD_Female_Angular.png",
+      "sha256": "b2719f5744ef797c3e3dbb35cbc874c65efe81a2d8839ce613d9f7f3881f37a5",
+      "bytes": 1031
+    },
+    {
       "path": "female/HEAD_Female_Hero_A.png",
       "sha256": "daff0bbc02d9911ff4cdc27e4df9820cddc6d72e80b3274bb2c7b451eb62986f",
       "bytes": 454
@@ -1481,9 +1491,19 @@
       "bytes": 229
     },
     {
+      "path": "male/HAT_Male_Bucket.png",
+      "sha256": "a8eb2c84a3a26465707f08edb6290facbc07151e10c0479b244b018146e5d5d6",
+      "bytes": 352
+    },
+    {
       "path": "male/HEAD_HeroA.png",
       "sha256": "129fce1c22fd6dca7e67b2861d3c02daa26d2d222a2262cc6b6801c6697f2882",
       "bytes": 431
+    },
+    {
+      "path": "male/HEAD_Male_Angular.png",
+      "sha256": "2175186ce3f8768f242a34e7f2a11d6aec85e5a7de9a1d289ba2cf064e6b0e1f",
+      "bytes": 429
     },
     {
       "path": "male/HOOD_Male_Hooded.png",

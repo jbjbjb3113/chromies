@@ -1147,6 +1147,7 @@ const CHARACTERS = [
       neck: "Alien",
       body: "Alien",
       eyes: "Alien",
+      hat: "None",
       hair: "None",
       beard: "None",
       mustache: "None",
@@ -1169,6 +1170,7 @@ const CHARACTERS = [
       neck: "HeroA",
       beard: "None",
       mustache: "None",
+      hat: "None",
     },
     slotWeightOverrides: {},
   },
@@ -1180,6 +1182,7 @@ const CHARACTERS = [
     forcedSlots: {
       head: "Zombie",
       body: "Zombie",
+      hat: "None",
     },
     slotWeightOverrides: {},
     slotVariantPool: {
@@ -1233,6 +1236,7 @@ const CHARACTERS = [
       neck: "Agent",
       body: "Agent",
       eyes: "None",
+      hat: "None",
       expression: "None",
       tattoo: "None",
       beard: "None",
@@ -1288,6 +1292,7 @@ const CHARACTERS = [
       body: "None",
       eyes: "None",
       bodytattoo: "None",
+      hat: "None",
     },
     slotVariantPool: {
       hair: {
@@ -1361,6 +1366,7 @@ const CHARACTERS = [
       neck: "SP_HeroA_Female",
       body: "None",        // TEMP: no SP body asset yet, prevents naked default body showing on side profile
       bodytattoo: "None",  // positioned for front-facing body
+      hat: "None",
     },
     slotVariantPool: {
       hair: {

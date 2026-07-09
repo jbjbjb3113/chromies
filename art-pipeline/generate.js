@@ -445,6 +445,61 @@ function isFemaleHood(hoodName) {
   return hoodName === "Female_Classic" || hoodName === "Female_Hooded";
 }
 
+function isHatNone(hatName) {
+  return !hatName || hatName === "None";
+}
+
+function hatSuppressesHair(hatName) {
+  return !isHatNone(hatName);
+}
+
+// Legendary-injection discipline: any hat variant with weight > 0 in ANY character's
+// effective pool (base traits.json weight, forcedSlots, or slotVariantPool) MUST have
+// delivered art on disk. Call explicitly before a generation run — throws (does not
+// silently fall back) if a NOT-FINAL stub has been given weight without art landing.
+function assertHatArtDelivered(traits, characters) {
+  const hatDef = traits.slots && traits.slots.hat;
+  if (!hatDef) return;
+  const active = new Set();
+  for (const v of hatDef.variants) {
+    if ((v.weight || 0) > 0) active.add(v.name);
+  }
+  for (const character of characters || []) {
+    const forced = character.forcedSlots && character.forcedSlots.hat;
+    if (forced !== undefined) {
+      if (forced !== "None") active.add(forced);
+      continue;
+    }
+    const pool = character.slotVariantPool && character.slotVariantPool.hat;
+    if (!pool) continue;
+    if (Array.isArray(pool)) {
+      for (const name of pool) active.add(name);
+    } else {
+      for (const [name, weight] of Object.entries(pool)) {
+        if ((weight || 0) > 0) active.add(name);
+      }
+    }
+  }
+  const missing = [];
+  for (const name of active) {
+    if (name === "None") continue;
+    const variant = hatDef.variants.find(v => v.name === name);
+    if (!variant) {
+      missing.push(`${name} (not defined in traits.json hat slot)`);
+      continue;
+    }
+    const filePath = path.join(SETTINGS.componentsDir, variant.file);
+    if (!fs.existsSync(filePath)) {
+      missing.push(`${name} -> ${variant.file} (file not found)`);
+    }
+  }
+  if (missing.length > 0) {
+    throw new Error(
+      `[HAT ART GUARD] weight>0 hat variant(s) with no delivered art — refusing to generate:\n  ${missing.join("\n  ")}`,
+    );
+  }
+}
+
 function applyCoverageRules(picks, traits, character = null, options = {}) {
   const metadataOnly = options.metadataOnly === true;
   const out = {};
@@ -543,13 +598,24 @@ function applyCoverageRules(picks, traits, character = null, options = {}) {
     return b === "Default" || b === "Female" || b === "Female_Tank" || b === "Alien" || b === "Zombie" || b === "Agent";
   };
 
+  // Hat <-> hood mutually exclusive (both directions) — hood is the incumbent trait; on
+  // collision, hat yields to hood (documented default pending JB confirmation of priority).
+  const hatSlotDef = traits.slots.hat;
+  if (hatSlotDef && out.hat) {
+    const hatPickName = out.hat.variant.name;
+    if (!isHatNone(hatPickName) && !isHoodNone(hoodPick)) {
+      suppressTo("hat", hatSlotDef);
+    }
+  }
+  const finalHatPick = out.hat ? out.hat.variant.name : null;
+
   // Chubby — skip all general body/shirt coverage; torso is always chubby/BODY_Chubby.png.
   if (character && character.name === "Chubby") {
     delete out.neck;
     suppressTo("shirt", shirtSlotDef);
     promoteToNamed("body", bodySlotDef, "Chubby");
     suppressTo("bodytattoo", bodyTattooSlotDef);
-    if (hoodSuppressesHair(hoodPick)) {
+    if (hoodSuppressesHair(hoodPick) || hatSuppressesHair(finalHatPick)) {
       suppressTo("hair", traits.slots.hair);
     }
     return out;
@@ -603,7 +669,8 @@ function applyCoverageRules(picks, traits, character = null, options = {}) {
   }
 
   // Female hood variants — hair hidden under hood (hood-up or hood-down bib).
-  if (hoodSuppressesHair(hoodPick)) {
+  // Hat also suppresses hair (facial hair/beard/mustache/tattoo untouched — JB ruling).
+  if (hoodSuppressesHair(hoodPick) || hatSuppressesHair(finalHatPick)) {
     suppressTo("hair", traits.slots.hair);
   }
 
@@ -1862,4 +1929,7 @@ module.exports = {
   buildMetadata,
   updateMaster,
   buildPhase3Effects,
+  hatSuppressesHair,
+  isHatNone,
+  assertHatArtDelivered,
 };

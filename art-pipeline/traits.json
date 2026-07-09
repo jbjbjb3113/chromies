@@ -788,9 +788,21 @@
           "weight": 0
         },
         {
+          "name": "Male_Angular",
+          "file": "male/HEAD_Male_Angular.png",
+          "weight": 0,
+          "_comment": "HEAD_SHAPE rolled variant — weight 0 pending JB frequency ruling; sandboxed in preview/render scripts only"
+        },
+        {
           "name": "HeroA_Female",
           "file": "female/HEAD_Female_Hero_A.png",
           "weight": 0
+        },
+        {
+          "name": "Female_Angular",
+          "file": "female/HEAD_Female_Angular.png",
+          "weight": 0,
+          "_comment": "HEAD_SHAPE rolled variant — weight 0 pending JB frequency ruling; sandboxed in preview/render scripts only"
         },
         {
           "name": "Cat",
@@ -2158,6 +2170,34 @@
           "file": "HAIR_None.png",
           "weight": 5
         }
+      ]
+    },
+    "hat": {
+      "zOrder": 42,
+      "_comment": "New slot (pipeline-only, byte 20). Above hood-up override (41) and hair (40); mutually exclusive with hood, suppresses hair. All weights 0 pending JB frequency ruling — sandboxed in preview/render scripts only. NOT-FINAL variants have no delivered art and MUST stay weight 0 (hard-fail guard enforces this).",
+      "drawColors": {
+        "#1c1c26": "hood",
+        "#1a0d0e": "mask_dark",
+        "#2a1518": "mask_mid",
+        "#f0eae0": "highlight"
+      },
+      "variants": [
+        { "name": "None", "file": "HAT_None.png", "weight": 0 },
+        { "name": "Male_Baseball", "file": "male/HAT_Male_Baseball.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Male_Cowboy", "file": "male/HAT_Male_Cowboy.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Male_Bucket", "file": "male/HAT_Male_Bucket.png", "weight": 0 },
+        { "name": "Male_Bandana", "file": "male/HAT_Male_Bandana.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Male_Beanie", "file": "male/HAT_Male_Beanie.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Female_Baseball", "file": "female/HAT_Female_Baseball.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Female_Cowboy", "file": "female/HAT_Female_Cowboy.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Female_Bucket", "file": "female/HAT_Female_Bucket.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Female_Bandana", "file": "female/HAT_Female_Bandana.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Female_Beanie", "file": "female/HAT_Female_Beanie.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Chubby_Baseball", "file": "chubby/HAT_Chubby_Baseball.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Chubby_Cowboy", "file": "chubby/HAT_Chubby_Cowboy.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Chubby_Bucket", "file": "chubby/HAT_Chubby_Bucket.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Chubby_Bandana", "file": "chubby/HAT_Chubby_Bandana.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" },
+        { "name": "Chubby_Beanie", "file": "chubby/HAT_Chubby_Beanie.png", "weight": 0, "_comment": "NOT-FINAL — no art delivered" }
       ]
     },
     "accessory": {

@@ -79,6 +79,14 @@ def body_visible(body_name: str | None) -> bool:
     return body_name in {"Default", "Female", "Female_Tank", "Alien", "Zombie", "Agent"}
 
 
+def is_hat_none(hat_name: str | None) -> bool:
+    return not hat_name or hat_name == "None"
+
+
+def hat_suppresses_hair(hat_name: str | None) -> bool:
+    return not is_hat_none(hat_name)
+
+
 def pick_character(roll_id: int, schema: ArtSchemaBundle) -> dict[str, Any]:
     rng = mulberry32(seed_from_str(f"{roll_id}:character"))
     characters = schema.characters
@@ -382,12 +390,19 @@ def apply_coverage_rules(
         out.pop("neck", None)
         _promote_to_named(out, "body", "Zombie", schema)
 
+    # Hat <-> hood mutually exclusive (both directions) — hood is the incumbent trait; on
+    # collision, hat yields to hood (documented default pending JB confirmation of priority).
+    hat_pick = out.get("hat", {}).get("variant", {}).get("name")
+    if "hat" in out and not is_hat_none(hat_pick) and not is_hood_none(hood_pick):
+        _suppress_to(out, "hat", schema)
+    final_hat_pick = out.get("hat", {}).get("variant", {}).get("name")
+
     if character and character.get("name") == "Chubby":
         out.pop("neck", None)
         _suppress_to(out, "shirt", schema)
         _promote_to_named(out, "body", "Chubby", schema)
         _suppress_to(out, "bodytattoo", schema)
-        if hood_suppresses_hair(hood_pick):
+        if hood_suppresses_hair(hood_pick) or hat_suppresses_hair(final_hat_pick):
             _suppress_to(out, "hair", schema)
         return out
 
@@ -431,7 +446,7 @@ def apply_coverage_rules(
             _suppress_to(out, "body", schema)
         _suppress_to(out, "bodytattoo", schema)
 
-    if hood_suppresses_hair(hood_pick):
+    if hood_suppresses_hair(hood_pick) or hat_suppresses_hair(final_hat_pick):
         _suppress_to(out, "hair", schema)
 
     final_body = out.get("body", {}).get("variant", {}).get("name")

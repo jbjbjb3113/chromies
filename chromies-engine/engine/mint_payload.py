@@ -35,6 +35,19 @@ EYES_BYTES = _SLOT_TABLES["eyes"]
 EARRINGS_BYTES = _SLOT_TABLES["earrings"]
 GLASSES_BYTES = _SLOT_TABLES["glasses"]
 HAIR_BYTES = _SLOT_TABLES["hair"]
+HAT_BYTES = _SLOT_TABLES["hat"]
+HEAD_SHAPE_BYTES = _SLOT_TABLES["head_shape"]
+
+ANGULAR_HEAD_VARIANTS = {"Male_Angular", "Female_Angular"}
+
+
+def derive_head_shape(head_variant_name: str | None) -> str:
+    if not head_variant_name:
+        return "None"
+    if head_variant_name in ANGULAR_HEAD_VARIANTS:
+        return "Angular"
+    return "Classic"
+
 
 TRAIT_SLOT_SPECS: tuple[dict[str, Any], ...] = (
     {"index": 0, "key": "character", "label": "Character", "table": ON_CHAIN_CHARACTER_BYTES, "source": "character"},
@@ -54,6 +67,9 @@ TRAIT_SLOT_SPECS: tuple[dict[str, Any], ...] = (
     {"index": 14, "key": "hair", "label": "Hair", "table": HAIR_BYTES, "source": "pick"},
     {"index": 15, "key": "mutation", "label": "Mutation", "source": "retired"},
     {"index": 16, "key": "drift", "label": "Drift", "source": "retired"},
+    # HEAD_SHAPE is not a compositing slot — derived from the "head" pick's variant name.
+    {"index": 19, "key": "head_shape", "label": "HeadShape", "table": HEAD_SHAPE_BYTES, "source": "head_shape_derived"},
+    {"index": 20, "key": "hat", "label": "Hat", "table": HAT_BYTES, "source": "pick"},
 )
 
 # Reverse maps for decode (first name wins on collision).
@@ -188,6 +204,8 @@ def encode_traits(
             raw = character_key(character)
         elif slot["source"] == "palette":
             raw = str(palette_key or "SIGNAL").upper()
+        elif slot["source"] == "head_shape_derived":
+            raw = derive_head_shape(_pick_variant_name(render_picks, "head"))
         else:
             raw = _pick_variant_name(render_picks, slot["key"])
 

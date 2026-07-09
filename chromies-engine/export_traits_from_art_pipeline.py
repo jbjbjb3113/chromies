@@ -367,6 +367,9 @@ def build_compatibility_from_art(traits: dict[str, Any], config: dict[str, Any])
             "Zombie_Hooded",
             "Zombie_Hoodie",
         ],
+        "hatSuppressesHair": "any hat variant name other than 'None' (facial hair/beard/mustache/tattoo untouched)",
+        "hatHoodMutuallyExclusive": True,
+        "hatHoodExclusionPriority": "hood wins — hat is suppressed to None on collision (documented default pending JB confirmation)",
         "character_specific": {
             "Chubby": ["suppress_shirt", "force_body_Chubby", "suppress_bodytattoo", "delete_neck"],
             "SideProfile": ["suppress_body", "suppress_bodytattoo", "default_sp_shirt_if_none", "sp_necklace_only"],

@@ -64,7 +64,19 @@ const TRAIT_SLOTS = [
   { index: 14, key: "hair", label: "Hair", table: TRAIT_BYTE_TABLES.hair, source: "pick" },
   { index: 15, key: "mutation", label: "Mutation", source: "retired" },
   { index: 16, key: "drift", label: "Drift", source: "retired" },
+  // HEAD_SHAPE is not a compositing slot — it's derived from the "head" slot's picked
+  // variant name (Angular vs Classic head art). Pipeline-only; no contract change.
+  { index: 19, key: "head_shape", label: "HeadShape", table: TRAIT_BYTE_TABLES.head_shape, source: "head_shape_derived" },
+  { index: 20, key: "hat", label: "Hat", table: TRAIT_BYTE_TABLES.hat, source: "pick" },
 ];
+
+const ANGULAR_HEAD_VARIANTS = new Set(["Male_Angular", "Female_Angular"]);
+
+function deriveHeadShape(headVariantName) {
+  if (!headVariantName) return "None";
+  if (ANGULAR_HEAD_VARIANTS.has(headVariantName)) return "Angular";
+  return "Classic";
+}
 
 const payloadDedupeLog = [];
 
@@ -141,6 +153,7 @@ function encodeTraits({ character, paletteKey, picks, warnings }) {
     let raw;
     if (slot.source === "character") raw = characterKey(character);
     else if (slot.source === "palette") raw = paletteKey;
+    else if (slot.source === "head_shape_derived") raw = deriveHeadShape(pickValue(picks, "head", null));
     else raw = pickValue(picks, slot.key);
 
     const byteVal = lookupByte(slot.table, raw, `${slot.label} [${slot.index}]`, warnings);

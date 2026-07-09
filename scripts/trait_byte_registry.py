@@ -26,7 +26,25 @@ ENCODED_SLOTS: tuple[tuple[int, str], ...] = (
     (12, "earrings"),
     (13, "glasses"),
     (14, "hair"),
+    (20, "hat"),
 )
+
+# HEAD_SHAPE (byte 19) is NOT a compositing slot in traits.json — it is a derived
+# attribute of the "head" slot's picked variant name (Angular vs Classic head art).
+# Fixed enum table (never grows from traits.json variant scanning like ENCODED_SLOTS).
+DERIVED_SLOTS: tuple[tuple[int, str, dict[str, int]], ...] = (
+    (19, "head_shape", {"None": 0, "Classic": 1, "Angular": 2}),
+)
+
+ANGULAR_HEAD_VARIANTS: tuple[str, ...] = ("Male_Angular", "Female_Angular")
+
+
+def derive_head_shape(head_variant_name: str | None) -> str:
+    if not head_variant_name:
+        return "None"
+    if head_variant_name in ANGULAR_HEAD_VARIANTS:
+        return "Angular"
+    return "Classic"
 
 LEGACY_TRAIT_BYTES: dict[str, dict[str, int]] = {
     "hood": {"None": 0, "Classic": 1},
@@ -116,6 +134,8 @@ def bootstrap_trait_registry() -> dict[str, Any]:
             if next_byte > 255:
                 raise ValueError(f"Slot {slot} exceeds uint8 capacity")
         slots_out[slot] = {"index": idx, "bytes": {name: mapping[name] for name in names}}
+    for idx, slot, table in DERIVED_SLOTS:
+        slots_out[slot] = {"index": idx, "bytes": dict(table)}
     return {
         "version": 1,
         "description": "On-chain trait variant bytes per slot. Compiled to JS/Python mint encoders.",
@@ -159,6 +179,15 @@ def validate_trait_registry(registry: dict[str, Any]) -> None:
                 raise ValueError(f"duplicate byte {byte_val} in {slot}: {used[byte_val]} and {name}")
             used[byte_val] = name
 
+    for idx, slot, table in DERIVED_SLOTS:
+        entry = registry["slots"].get(slot)
+        if not entry:
+            raise ValueError(f"trait-byte-registry missing derived slot {slot}")
+        if entry["index"] != idx:
+            raise ValueError(f"derived slot {slot} index mismatch")
+        if entry["bytes"] != table:
+            raise ValueError(f"derived slot {slot} bytes drifted from fixed enum: {entry['bytes']} != {table}")
+
 
 def write_trait_artifacts(registry: dict[str, Any], palette_byte_map: dict[str, int]) -> None:
     gen_dir = ART_PIPELINE / "generated"
@@ -171,10 +200,15 @@ def write_trait_artifacts(registry: dict[str, Any], palette_byte_map: dict[str, 
     for _idx, slot in ENCODED_SLOTS:
         table = registry["slots"][slot]["bytes"]
         trait_lines.append(f"  {slot}: Object.freeze({json.dumps(table, sort_keys=True)}),")
+    for _idx, slot, _table in DERIVED_SLOTS:
+        table = registry["slots"][slot]["bytes"]
+        trait_lines.append(f"  {slot}: Object.freeze({json.dumps(table, sort_keys=True)}),")
     trait_lines.append("});")
     trait_lines.append("")
     trait_lines.append("const TRAIT_SLOT_INDEX = Object.freeze({")
     for idx, slot in ENCODED_SLOTS:
+        trait_lines.append(f"  {slot}: {idx},")
+    for idx, slot, _table in DERIVED_SLOTS:
         trait_lines.append(f"  {slot}: {idx},")
     trait_lines.append("});")
     trait_lines.append("module.exports = { TRAIT_BYTE_TABLES, TRAIT_SLOT_INDEX };")
@@ -251,6 +285,11 @@ module.exports = {{
         "character_bytes": ON_CHAIN_CHARACTER_BYTES,
         "gender_suffix_characters": list(GENDER_SUFFIX_CHARACTERS),
     }
+    for _idx, slot, _table in DERIVED_SLOTS:
+        py_trait["slots"][slot] = {
+            "index": registry["slots"][slot]["index"],
+            "bytes": registry["slots"][slot]["bytes"],
+        }
     (ENGINE_DATA / "on_chain_trait_bytes.json").write_text(
         json.dumps(py_trait, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )

@@ -220,6 +220,35 @@
       },
       "index": 14
     },
+    "hat": {
+      "bytes": {
+        "Chubby_Bandana": 0,
+        "Chubby_Baseball": 1,
+        "Chubby_Beanie": 2,
+        "Chubby_Bucket": 3,
+        "Chubby_Cowboy": 4,
+        "Female_Bandana": 5,
+        "Female_Baseball": 6,
+        "Female_Beanie": 7,
+        "Female_Bucket": 8,
+        "Female_Cowboy": 9,
+        "Male_Bandana": 10,
+        "Male_Baseball": 11,
+        "Male_Beanie": 12,
+        "Male_Bucket": 13,
+        "Male_Cowboy": 14,
+        "None": 15
+      },
+      "index": 20
+    },
+    "head_shape": {
+      "bytes": {
+        "Angular": 2,
+        "Classic": 1,
+        "None": 0
+      },
+      "index": 19
+    },
     "hood": {
       "bytes": {
         "Chubby_Classic": 2,
