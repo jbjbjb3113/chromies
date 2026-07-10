@@ -88,7 +88,7 @@ function FeaturedToken({ src, label }) {
 }
 
 const MINT_BTN_CLASS =
-  "inline-block border border-[#8a8780] bg-paper px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal shadow-sm transition-colors hover:border-ink hover:bg-paper/95";
+  "inline-block border border-[var(--chroma-muted)] bg-paper px-8 py-3 text-xs uppercase tracking-[0.2em] text-signal shadow-sm transition-colors hover:border-ink hover:bg-paper/95";
 
 function FlowArrow() {
   return (

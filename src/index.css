@@ -7,6 +7,23 @@
   font-style: normal;
 }
 
+/* Spectrum palette tokens — site-branding only. Not palette-registry citizens
+   (see src/data/chromies-palettes.js and src/art/paletteFamilies.ts for the
+   actual on-chain trait palettes; those must not reference these). */
+:root {
+  --chroma-bg: #E3E5E4;
+  --chroma-ink: #1A1B1E;
+  --chroma-muted: #6B6E6C;
+  --chroma-red: #E5484D;
+  --chroma-orange: #F76B15;
+  --chroma-yellow: #FFC53D;
+  --chroma-green: #46A758;
+  --chroma-teal: #12A594;
+  --chroma-blue: #3E63DD;
+  --chroma-purple: #8E4EC6;
+  --chroma-pink: #D6409F;
+}
+
 @theme {
   --color-ink: #0d0d0d;
   --color-ink-soft: #141414;

@@ -32,7 +32,7 @@ export default function SplashScreen({ visible, onDismiss }) {
       className={`fixed inset-0 z-50 transition-opacity duration-[250ms] ease-out ${
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
-      style={{ backgroundColor: visible ? "#0d0d0d" : "#000000" }}
+      style={{ backgroundColor: visible ? "var(--chroma-ink)" : "#000000" }}
     >
       {/* Click-anywhere dismiss layer — sits above grid, below content */}
       <button
@@ -66,7 +66,7 @@ export default function SplashScreen({ visible, onDismiss }) {
       </div>
 
       <div className="pointer-events-none relative z-10 flex min-h-full flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,45,138,0.35)] sm:text-8xl">
+        <h1 className="text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_40px_var(--chroma-pink)] sm:text-8xl">
           CHROMIES
         </h1>
         <p className="mt-4 font-mono text-[10px] tracking-[0.2em] text-neutral-400 sm:text-xs">
