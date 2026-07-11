@@ -67,15 +67,13 @@ function shortenError(error) {
 
 function MintStatus({ mintOpen, totalSupply, maxSupply, price, chainId, isConnected }) {
   const onRobinhood = chainId === robinhoodChain.id;
-  const deployed = isChromiesCommemorativeDeployed(chainId);
   const wrongNetwork = isConnected && !onRobinhood;
+  // mintOpen resolves to a live value once the (always-on, chain-pinned) contract read
+  // completes — this no longer depends on the wallet's own active chain, so a first-time
+  // visitor with no wallet connected still sees real price/supply/mintOpen data.
+  const dataLoaded = mintOpen !== undefined;
 
-  let headline = mintOpen ? "Mint Open" : "Not Yet Open";
-  if (wrongNetwork) {
-    headline = "Wrong Network";
-  } else if (!deployed) {
-    headline = "Coming Soon";
-  }
+  const headline = !dataLoaded ? "Loading…" : mintOpen ? "Mint Open" : "Not Yet Open";
 
   return (
     <div className="mx-auto max-w-xl border border-ink bg-white px-6 py-8">
@@ -89,16 +87,10 @@ function MintStatus({ mintOpen, totalSupply, maxSupply, price, chainId, isConnec
         <p className="mt-4 text-sm text-ink/70">
           The Chain Launch Edition mints on{" "}
           <strong className="text-ink">Robinhood Chain</strong>. Switch your wallet network
-          to continue.
+          to mint — supply and price below are live regardless of your current network.
         </p>
       )}
-      {!wrongNetwork && !deployed && (
-        <p className="mt-4 text-sm text-ink/70">
-          The commemorative contract hasn&apos;t been deployed to Robinhood Chain mainnet
-          yet — check back for the go-live announcement.
-        </p>
-      )}
-      {deployed && onRobinhood && (
+      {dataLoaded && (
         <>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm text-ink/70">
             <span>
@@ -181,7 +173,13 @@ export default function LaunchEdition() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const onRobinhood = chainId === robinhoodChain.id;
-  const contractAddress = onRobinhood ? getChromiesCommemorativeAddress(chainId) : null;
+  // Deliberately NOT gated on onRobinhood — this is a single-network (Robinhood Chain
+  // mainnet) mint, so the live contract state (price/supply/mintOpen) must render for
+  // every visitor, including before a wallet connects or while it's on a different chain.
+  // Only the mint ACTION itself (handleMint) requires the wallet to actually be on
+  // Robinhood Chain. Each read below pins chainId: robinhoodChain.id so wagmi queries
+  // that chain's public client regardless of the wallet's currently active network.
+  const contractAddress = getChromiesCommemorativeAddress(robinhoodChain.id);
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
 
@@ -193,11 +191,36 @@ export default function LaunchEdition() {
   const { data: contractData, refetch: refetchContract } = useReadContracts({
     contracts: contractAddress
       ? [
-          { address: contractAddress, abi: chromiesCommemorativeAbi, functionName: "mintOpen" },
-          { address: contractAddress, abi: chromiesCommemorativeAbi, functionName: "totalSupply" },
-          { address: contractAddress, abi: chromiesCommemorativeAbi, functionName: "MAX_SUPPLY" },
-          { address: contractAddress, abi: chromiesCommemorativeAbi, functionName: "MINT_PRICE" },
-          { address: contractAddress, abi: chromiesCommemorativeAbi, functionName: "MAX_PER_WALLET" },
+          {
+            address: contractAddress,
+            abi: chromiesCommemorativeAbi,
+            functionName: "mintOpen",
+            chainId: robinhoodChain.id,
+          },
+          {
+            address: contractAddress,
+            abi: chromiesCommemorativeAbi,
+            functionName: "totalSupply",
+            chainId: robinhoodChain.id,
+          },
+          {
+            address: contractAddress,
+            abi: chromiesCommemorativeAbi,
+            functionName: "MAX_SUPPLY",
+            chainId: robinhoodChain.id,
+          },
+          {
+            address: contractAddress,
+            abi: chromiesCommemorativeAbi,
+            functionName: "MINT_PRICE",
+            chainId: robinhoodChain.id,
+          },
+          {
+            address: contractAddress,
+            abi: chromiesCommemorativeAbi,
+            functionName: "MAX_PER_WALLET",
+            chainId: robinhoodChain.id,
+          },
           ...(address
             ? [
                 {
@@ -205,6 +228,7 @@ export default function LaunchEdition() {
                   abi: chromiesCommemorativeAbi,
                   functionName: "walletMinted",
                   args: [address],
+                  chainId: robinhoodChain.id,
                 },
               ]
             : []),
