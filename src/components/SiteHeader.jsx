@@ -28,6 +28,9 @@ export default function SiteHeader() {
               <NavLink to="/mint" className={navLinkClass}>
                 Mint
               </NavLink>
+              <NavLink to="/launch-edition" className={navLinkClass}>
+                Chain Launch
+              </NavLink>
               <NavLink to="/market" className={navLinkClass}>
                 Pixel Marketplace
               </NavLink>

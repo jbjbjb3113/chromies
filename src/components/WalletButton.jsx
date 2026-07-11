@@ -19,6 +19,7 @@ export default function WalletButton({
   className = "",
   compact = false,
   connectClassName = defaultButtonClass,
+  requiredChain = DEFAULT_CHAIN,
 }) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -26,7 +27,7 @@ export default function WalletButton({
   const { switchChain, isPending: isSwitching } = useSwitchChain();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
 
-  const onWrongNetwork = isConnected && chainId !== DEFAULT_CHAIN.id;
+  const onWrongNetwork = isConnected && chainId !== requiredChain.id;
 
   if (!isConnected) {
     return (
@@ -42,16 +43,18 @@ export default function WalletButton({
   }
 
   if (onWrongNetwork) {
+    const switchLabel = isSwitching ? "Switching…" : `Switch to ${requiredChain.name}`;
+
     if (compact) {
       return (
         <div className={`flex items-center gap-2 ${className}`}>
           <button
             type="button"
-            onClick={() => switchChain({ chainId: DEFAULT_CHAIN.id })}
+            onClick={() => switchChain({ chainId: requiredChain.id })}
             disabled={isSwitching}
             className={connectClassName}
           >
-            {isSwitching ? "Switching…" : "Switch to Sepolia"}
+            {switchLabel}
           </button>
         </div>
       );
@@ -60,15 +63,15 @@ export default function WalletButton({
     return (
       <div className={`flex flex-col items-center gap-2 ${className}`}>
         <span className="text-xs font-semibold text-red-600">
-          Please switch to Sepolia testnet
+          Please switch to {requiredChain.name}
         </span>
         <button
           type="button"
-          onClick={() => switchChain({ chainId: DEFAULT_CHAIN.id })}
+          onClick={() => switchChain({ chainId: requiredChain.id })}
           disabled={isSwitching}
           className="border border-signal bg-signal px-4 py-2 text-xs font-bold uppercase tracking-widest text-ink transition-colors hover:bg-transparent hover:text-signal disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSwitching ? "Switching…" : "Switch to Sepolia"}
+          {switchLabel}
         </button>
       </div>
     );

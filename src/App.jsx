@@ -10,6 +10,7 @@ import Burn from "./pages/Burn.jsx";
 import Inscribe from "./pages/Inscribe.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import Canvas from "./pages/Canvas.jsx";
+import LaunchEdition from "./pages/LaunchEdition.jsx";
 import PixelChroma from "./PixelChroma.jsx";
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
       <Route path="/faq" element={<FAQ />} />
       <Route path="/lab" element={<Lab />} />
       <Route path="/canvas" element={<Canvas />} />
+      <Route path="/launch-edition" element={<LaunchEdition />} />
       <Route path="/pixel-chroma" element={<PixelChroma />} />
     </Routes>
   );
