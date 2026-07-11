@@ -1,0 +1,14 @@
+{
+  "schema_version": 2,
+  "document": "chromies-engine/reports/KNOWN_DRIFT.md",
+  "gate": "per-target: mainnet deploy requires live 80-ID palette read-back showing zero drift vs palette-registry.json at HEAD for the deploy target; waivers below do not apply outside their tagged target",
+  "ruling_reference": "JB, 2026-07-11 (agent chat) - option A, per-target scoping",
+  "waived_palette_ids": [28, 29, 32, 33, 34],
+  "waivers": [
+    { "id": 28, "target": "sepolia" },
+    { "id": 29, "target": "sepolia" },
+    { "id": 32, "target": "sepolia" },
+    { "id": 33, "target": "sepolia" },
+    { "id": 34, "target": "sepolia" }
+  ]
+}
