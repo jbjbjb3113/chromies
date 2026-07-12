@@ -1,0 +1,149 @@
+{
+  "schema_version": "2.0.0",
+  "duplicate_group_count": 13,
+  "duplicate_groups": [
+    {
+      "sha256": "1c044d225b66329ec488ed710d4d11ab3b6a8f9d311fe7b1ad4ba42022e16bf8",
+      "paths": [
+        "ACCESSORY_None.png",
+        "BEARD_None.png",
+        "BODYTATTOO_None.png",
+        "BODY_None.png",
+        "EARRINGS_None.png",
+        "GLASSES_None.png",
+        "HAIR_None.png",
+        "HOOD_None.png",
+        "MASK_None.png",
+        "MUSTACHE_None.png",
+        "NECKLACE_None.png",
+        "SHIRT_None.png",
+        "TATTOO_None.png",
+        "female/HOOD_Female_None.png"
+      ],
+      "count": 14
+    },
+    {
+      "sha256": "13429c2a016f14f1b2ed78792f67496f3655151c6e272769c7481ecb1d6d7d7f",
+      "paths": [
+        "EXPRESSION_None.png",
+        "EYES_None.png",
+        "HAT_None.png"
+      ],
+      "count": 3
+    },
+    {
+      "sha256": "8ba2003dc6765eee0230959d157c9654f013cb19b2983c388e836df4a62456ae",
+      "paths": [
+        "chubby/ACCESSORY_Chubby_Cigarette.png",
+        "female/ACCESSORY_Female_Cigarette.png",
+        "male/ACCESSORY_Male_Cigarette.png"
+      ],
+      "count": 3
+    },
+    {
+      "sha256": "8e61ec72d61255af1ffceb524306c1696cc0dd5bbfb644b9e44a0e30cae6b4be",
+      "paths": [
+        "sideprofile/SP_GLASSES_Shades.png",
+        "sideprofile/SP_GLASSES_Shades_Female.png",
+        "sideprofile/SP_Shades.png"
+      ],
+      "count": 3
+    },
+    {
+      "sha256": "0a91175842b9fb1098930c8355a53389ceb94cea65ee69baa681116acb453217",
+      "paths": [
+        "HOOD_Classic.png",
+        "female/HOOD_Female_Classic.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "19ee348b81d5d13e9629c257e887566a0adeff16ae4d7986fae928ca539f2954",
+      "paths": [
+        "SideProfile_Female/SP_NECK_HeroA_Female.png",
+        "sideprofile/SP_HEAD_HeroA_Female.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "2bede2ac45c988a586b4a14badb79ea93f7a7bdf0896305fecedbc215737b8c0",
+      "paths": [
+        "BEARD_Full.png",
+        "BEARD_Goat.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "636794d33062f6b3832374e614cbf26f3ed9e88601650dd479ff718344e4c212",
+      "paths": [
+        "female/EYES_Female_Stoned.png",
+        "male/EYES_Male_Stoned.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "64b81dcfa70b5faf6d6b90498ac4561d7543b4b55d45ca76cc90059f54df07f9",
+      "paths": [
+        "female/Mustache_Female_Thick.png",
+        "male/MUSTACHE_Male_Thick.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "862448a8052d9cf7cf4b6f049bcf91d62553fd9586d6018f6168b2cbd1be17f2",
+      "paths": [
+        "female/Mustache_Female_DanPalmer.png",
+        "male/MUSTACHE_Male_DanPalmer.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "c25c9c3a7a78b1c555cd7989b9e3446dc23c9439eaeff3a0bfd15060dc2e6ba2",
+      "paths": [
+        "sideprofile/SP_HAIR_Afro.png",
+        "sideprofile/SP_HAIR_Afro_Female.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "e1a9289acf249cc3bc344a524f2dfb2c54f3718abd753a1ed16dd51eb2c0b94b",
+      "paths": [
+        "female/EYES_Female_WideOpen.png",
+        "male/EYES_Male_WideOpen.png"
+      ],
+      "count": 2
+    },
+    {
+      "sha256": "fcfe3326e317823923dff08b7ca20a1ccdd76baa09a90da02ace7d87f11d6117",
+      "paths": [
+        "sideprofile/SP_HOOD_Classic.png",
+        "sideprofile/SP_HOOD_Classic_Female.png"
+      ],
+      "count": 2
+    }
+  ],
+  "notes": [
+    "Shared transparent None PNGs are expected; dedupe only in derived_assets if needed.",
+    "BEARD_Full and BEARD_Goat are pixel-identical \u2014 verify intent before separate rarity."
+  ],
+  "shared_none_layer_group": {
+    "sha256": "1c044d225b66329ec488ed710d4d11ab3b6a8f9d311fe7b1ad4ba42022e16bf8",
+    "paths": [
+      "ACCESSORY_None.png",
+      "BEARD_None.png",
+      "BODYTATTOO_None.png",
+      "BODY_None.png",
+      "EARRINGS_None.png",
+      "GLASSES_None.png",
+      "HAIR_None.png",
+      "HOOD_None.png",
+      "MASK_None.png",
+      "MUSTACHE_None.png",
+      "NECKLACE_None.png",
+      "SHIRT_None.png",
+      "TATTOO_None.png",
+      "female/HOOD_Female_None.png"
+    ],
+    "count": 14
+  }
+}

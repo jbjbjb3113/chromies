@@ -1,0 +1,115 @@
+{
+  "version": 2,
+  "description": "Validation thresholds for Chromies art-pipeline compositor output.",
+  "source": "Derived from engine_data/anchors.json and art_schema v2.0.0",
+  "modes": {
+    "lenient": {
+      "pixel": {
+        "max_orphans": 999,
+        "max_non_binary_alpha": 999,
+        "fail_on_edge_touch": false
+      },
+      "palette": {
+        "max_distinct_colors": 64,
+        "min_distinct_hues": 1,
+        "require_in_palette": false
+      },
+      "silhouette": {
+        "min_bbox_width": 10,
+        "max_bbox_width": 64,
+        "min_bbox_height": 20,
+        "max_bbox_height": 64,
+        "min_asymmetry_pct": 0.0,
+        "min_defects": 0,
+        "require_width_breaks": false,
+        "allow_full_canvas_bbox": true,
+        "check_forehead_mark": false,
+        "check_mask_zone": false
+      },
+      "side_profile": {
+        "min_bbox_width": 10,
+        "max_bbox_width": 64,
+        "min_bbox_height": 20,
+        "max_bbox_height": 64,
+        "min_asymmetry_pct": 0.0,
+        "min_defects": 0,
+        "require_width_breaks": false,
+        "allow_full_canvas_bbox": true
+      }
+    },
+    "art_pipeline": {
+      "pixel": {
+        "max_orphans": 0,
+        "max_non_binary_alpha": 0,
+        "fail_on_edge_touch": false,
+        "full_canvas_opaque_pixels": 4096,
+        "notes": "Edge-touch allowed — body/hood/shirt layers are full-bleed 64x64 art."
+      },
+      "palette": {
+        "max_distinct_colors": 24,
+        "min_distinct_hues": 1,
+        "require_in_palette": true,
+        "notes": "Allowed colors come from chromies-config PALETTES role families (drawColors output)."
+      },
+      "silhouette": {
+        "min_bbox_width": 18,
+        "max_bbox_width": 64,
+        "min_bbox_height": 28,
+        "max_bbox_height": 64,
+        "min_asymmetry_pct": 0.0,
+        "min_defects": 1,
+        "require_width_breaks": false,
+        "allow_full_canvas_bbox": true,
+        "check_forehead_mark": false,
+        "check_mask_zone": false,
+        "notes": "Full-canvas bbox OK. Mark/mask checks gated until MARK_* art exists."
+      },
+      "side_profile": {
+        "min_bbox_width": 16,
+        "max_bbox_width": 64,
+        "min_bbox_height": 24,
+        "max_bbox_height": 64,
+        "min_asymmetry_pct": 0.0,
+        "min_defects": 0,
+        "require_width_breaks": false,
+        "allow_full_canvas_bbox": true,
+        "notes": "Side-profile uses independent silhouette expectations."
+      }
+    },
+    "strict": {
+      "pixel": {
+        "max_orphans": 0,
+        "max_non_binary_alpha": 0,
+        "fail_on_edge_touch": true
+      },
+      "palette": {
+        "max_distinct_colors": 16,
+        "min_distinct_hues": 3,
+        "require_in_palette": true
+      },
+      "silhouette": {
+        "min_bbox_width": 30,
+        "max_bbox_width": 46,
+        "min_bbox_height": 48,
+        "max_bbox_height": 60,
+        "min_asymmetry_pct": 8.0,
+        "min_defects": 3,
+        "max_defects": 7,
+        "require_width_breaks": true,
+        "allow_full_canvas_bbox": false,
+        "check_forehead_mark": true,
+        "check_mask_zone": true
+      },
+      "side_profile": {
+        "min_bbox_width": 24,
+        "max_bbox_width": 56,
+        "min_bbox_height": 36,
+        "max_bbox_height": 64,
+        "min_asymmetry_pct": 4.0,
+        "min_defects": 1,
+        "require_width_breaks": false,
+        "allow_full_canvas_bbox": true
+      }
+    }
+  }
+}

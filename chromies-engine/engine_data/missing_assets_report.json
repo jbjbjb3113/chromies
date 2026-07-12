@@ -1,0 +1,200 @@
+{
+  "schema_version": "2.0.0",
+  "traits_json_missing_on_disk": [
+    {
+      "slot": "shirt",
+      "variant": "SP_Tank_Female",
+      "file": "SP_SHIRT_Tank_Female.png",
+      "side_profile": true
+    },
+    {
+      "slot": "beard",
+      "variant": "SP_Full",
+      "file": "SP_BEARD_Full.png",
+      "side_profile": true
+    },
+    {
+      "slot": "beard",
+      "variant": "SP_Goat",
+      "file": "SP_BEARD_Goat.png",
+      "side_profile": true
+    },
+    {
+      "slot": "hair",
+      "variant": "SP_Pompadour",
+      "file": "SP_HAIR_Pompadour.png",
+      "side_profile": true
+    },
+    {
+      "slot": "hair",
+      "variant": "SP_Dreads",
+      "file": "SP_HAIR_Dreads.png",
+      "side_profile": true
+    },
+    {
+      "slot": "hair",
+      "variant": "SP_Surfer",
+      "file": "SP_HAIR_Surfer.png",
+      "side_profile": true
+    },
+    {
+      "slot": "hair",
+      "variant": "SP_FadeRight",
+      "file": "SP_HAIR_FadeRight.png",
+      "side_profile": true
+    },
+    {
+      "slot": "hair",
+      "variant": "SP_Pompadour_Female",
+      "file": "SP_HAIR_Pompadour_Female.png",
+      "side_profile": true
+    },
+    {
+      "slot": "hat",
+      "variant": "Male_Baseball",
+      "file": "male/HAT_Male_Baseball.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Male_Cowboy",
+      "file": "male/HAT_Male_Cowboy.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Male_Bandana",
+      "file": "male/HAT_Male_Bandana.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Male_Beanie",
+      "file": "male/HAT_Male_Beanie.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Female_Baseball",
+      "file": "female/HAT_Female_Baseball.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Female_Cowboy",
+      "file": "female/HAT_Female_Cowboy.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Female_Bucket",
+      "file": "female/HAT_Female_Bucket.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Female_Bandana",
+      "file": "female/HAT_Female_Bandana.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Female_Beanie",
+      "file": "female/HAT_Female_Beanie.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Chubby_Baseball",
+      "file": "chubby/HAT_Chubby_Baseball.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Chubby_Cowboy",
+      "file": "chubby/HAT_Chubby_Cowboy.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Chubby_Bucket",
+      "file": "chubby/HAT_Chubby_Bucket.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Chubby_Bandana",
+      "file": "chubby/HAT_Chubby_Bandana.png",
+      "side_profile": false
+    },
+    {
+      "slot": "hat",
+      "variant": "Chubby_Beanie",
+      "file": "chubby/HAT_Chubby_Beanie.png",
+      "side_profile": false
+    }
+  ],
+  "missing_count": 22,
+  "gated_slots": [
+    {
+      "slot": "forehead_mark",
+      "status": "gated",
+      "reason": "No MARK_* layer exists in art-pipeline/components or traits.json",
+      "engine_action": "omit_from_appearance_roll_until_art_exists"
+    },
+    {
+      "slot": "mask",
+      "status": "gated",
+      "reason": "Only MASK_None.png exists; no visible mask variants on disk",
+      "engine_action": "force_None_or_omit_from_metadata",
+      "on_disk_variants": [
+        "None"
+      ]
+    }
+  ],
+  "unreferenced_on_disk_count": 37,
+  "unreferenced_on_disk_sample": [
+    "EXPRESSION_Pouting.png",
+    "ExpressionMasters.png",
+    "HAIR_Flattop.png",
+    "HEAD_HeroB.png",
+    "HEAD_HeroC.png",
+    "HOOD_Classic - Copy.png",
+    "MasterHead V2.png",
+    "NECKLACE_Chain.png",
+    "NECK_HeroB.png",
+    "SP_HEAD_HeroA_Male.png",
+    "SideProfile_Male/SP_EYES_SquintLeft_Male.png",
+    "SideProfile_Male/SP_EYES_SquintRight_Male.png",
+    "SideProfile_Male/SP_EYES_Stoned_Male.png",
+    "SideProfile_Male/SP_EYES_Straight_Male.png",
+    "female/EYES_Female_WideOpen.png",
+    "legendary/NORMIE_0045_Snowfro-export.png",
+    "legendary/NORMIE_7409_PIV-export.png",
+    "sideprofile/SP_EARRINGS_Dangler_Female.png",
+    "sideprofile/SP_EARRINGS_Flower_Female.png",
+    "sideprofile/SP_EARRINGS_Stud_Female.png",
+    "sideprofile/SP_Earring.png",
+    "sideprofile/SP_GLASSES_Shades_Female.png",
+    "sideprofile/SP_HAIR_AZVet_Female.png",
+    "sideprofile/SP_HAIR_Afro_Female - Copy.png",
+    "sideprofile/SP_HAIR_Afro_Female.png",
+    "sideprofile/SP_HAIR_FadeRight_Female.png",
+    "sideprofile/SP_HAIR_Mohawk_Female.png",
+    "sideprofile/SP_HAIR_MrT_Female.png",
+    "sideprofile/SP_HAIR_Surfer_Female.png",
+    "sideprofile/SP_HEAD_HeroA_Female.png",
+    "sideprofile/SP_HOOD_Classic_Female.png",
+    "sideprofile/SP_SHIRT_Classic.png",
+    "sideprofile/SP_SHIRT_Crew_Female.png",
+    "sideprofile/SP_SHIRT_Flannel_Female.png",
+    "sideprofile/SP_Shades.png",
+    "sideprofile/SP_TATTOO_Slashes.png",
+    "sideprofile/SP_TATTOO_TearDrops.png"
+  ],
+  "recommendations": [
+    "Do not enable forehead_mark in engine until MARK_* art is authored.",
+    "Treat mask slot as None-only until non-None mask PNGs exist.",
+    "Side-profile missing refs (SP_SHIRT_Tank_Female, etc.) should gate those variants in SideProfile pool."
+  ]
+}

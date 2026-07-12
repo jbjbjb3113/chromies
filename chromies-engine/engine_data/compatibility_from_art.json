@@ -1,0 +1,628 @@
+{
+  "schema_version": "2.0.0",
+  "variant_groups": {
+    "tank": [
+      {
+        "slot": "shirt",
+        "variant": "Tank"
+      },
+      {
+        "slot": "body",
+        "variant": "Tank"
+      }
+    ],
+    "tank_female": [
+      {
+        "slot": "shirt",
+        "variant": "Tank_Female"
+      },
+      {
+        "slot": "body",
+        "variant": "Female_Tank"
+      }
+    ]
+  },
+  "forced_slots_by_archetype": {
+    "HeroA:Male": {
+      "head": "HeroA",
+      "neck": "HeroA"
+    },
+    "Chubby:Male": {
+      "head": "Chubby",
+      "body": "Chubby"
+    },
+    "HeroA:Female": {
+      "head": "HeroA_Female",
+      "neck": "HeroA_Female",
+      "body": "Female"
+    },
+    "Alien:Non-Binary": {
+      "head": "Alien",
+      "neck": "Alien",
+      "body": "Alien",
+      "eyes": "Alien",
+      "hat": "None",
+      "hair": "None",
+      "beard": "None",
+      "mustache": "None",
+      "hood": "None",
+      "glasses": "None"
+    },
+    "Cat:None": {
+      "head": "Cat",
+      "neck": "HeroA",
+      "beard": "None",
+      "mustache": "None",
+      "hat": "None"
+    },
+    "Zombie:None": {
+      "head": "Zombie",
+      "body": "Zombie",
+      "hat": "None"
+    },
+    "Agent:None": {
+      "head": "Agent",
+      "neck": "Agent",
+      "body": "Agent",
+      "eyes": "None",
+      "hat": "None",
+      "expression": "None",
+      "tattoo": "None",
+      "beard": "None",
+      "mustache": "None"
+    },
+    "SideProfile:Male": {
+      "head": "SP_HeroA_Male",
+      "body": "None",
+      "eyes": "None",
+      "bodytattoo": "None",
+      "hat": "None"
+    },
+    "SideProfile:Female": {
+      "head": "SP_HeroA_Female",
+      "neck": "SP_HeroA_Female",
+      "body": "None",
+      "bodytattoo": "None",
+      "hat": "None"
+    }
+  },
+  "coverage_rules": {
+    "hoodCoversTorso": [
+      "Classic",
+      "SP_Classic",
+      "SP_Classic_Female",
+      "SP_Classic_Male",
+      "Female_Classic",
+      "Female_Hooded",
+      "Male_Hooded",
+      "Chubby_Classic",
+      "Zombie_Classic",
+      "Zombie_Hooded",
+      "Zombie_Hoodie"
+    ],
+    "hoodSuppressesHair": [
+      "Female_Classic",
+      "Female_Hooded",
+      "Male_Hooded",
+      "Chubby_Classic",
+      "SP_Classic_Female",
+      "SP_Classic_Male",
+      "Zombie_Classic",
+      "Zombie_Hooded",
+      "Zombie_Hoodie"
+    ],
+    "hatSuppressesHair": "any hat variant name other than 'None' (facial hair/beard/mustache/tattoo untouched)",
+    "hatHoodMutuallyExclusive": true,
+    "hatHoodExclusionPriority": "hood wins \u2014 hat is suppressed to None on collision (documented default pending JB confirmation)",
+    "character_specific": {
+      "Chubby": [
+        "suppress_shirt",
+        "force_body_Chubby",
+        "suppress_bodytattoo",
+        "delete_neck"
+      ],
+      "SideProfile": [
+        "suppress_body",
+        "suppress_bodytattoo",
+        "default_sp_shirt_if_none",
+        "sp_necklace_only"
+      ],
+      "Alien": [
+        "force_body_Alien"
+      ],
+      "Zombie": [
+        "force_body_Zombie",
+        "delete_neck",
+        "skip_rgb_knockout"
+      ],
+      "Agent": [
+        "skip_rgb_knockout"
+      ],
+      "LegendaryHead": [
+        "suppress_hair_beard_mustache_eyes_expression_mask_glasses"
+      ]
+    },
+    "anti_none_stack_characters": [
+      "HeroA",
+      "Chubby",
+      "Zombie",
+      "Alien"
+    ],
+    "tank_female_group": "tank_female",
+    "tank_group": "tank"
+  },
+  "slot_variant_pools_by_archetype": {
+    "HeroA:Male": {
+      "glasses": {
+        "Shades": 6,
+        "Neo": 6,
+        "VR": 6,
+        "DFrameFilled": 6,
+        "3DGlasses": 6,
+        "DFrame": 16,
+        "PiratePatch": 5,
+        "None": 48
+      },
+      "necklace": [
+        "Male_Chain",
+        "Male_Chromies",
+        "Male_HappyFace",
+        "Male_Normies",
+        "Male_Pendent",
+        "None"
+      ],
+      "hair": {
+        "Male_Afro": 25,
+        "Male_AZVet": 7,
+        "Male_Buns": 7,
+        "Male_Dreads": 10,
+        "Male_FadeRight": 7,
+        "Male_FlatTop": 10,
+        "Male_Mohawk": 15,
+        "Male_MrT": 10,
+        "Male_Pompadour": 15,
+        "Male_Surfer": 13,
+        "None": 5,
+        "Male_TheAvatar": 0.56
+      },
+      "eyes": {
+        "Male_CrossEyed": 20,
+        "Male_SquintLeft": 20,
+        "Male_SquintRight": 20,
+        "Male_Stoned": 20,
+        "Male_Straight": 20,
+        "Male_WideOpen": 20
+      },
+      "expression": {
+        "Male_Frown": 20,
+        "Male_Neutral": 20,
+        "Male_Pouting": 20,
+        "Male_Smile": 20,
+        "Male_Smirk": 20
+      },
+      "beard": {
+        "Male_Full": 15,
+        "Male_Goat": 15,
+        "None": 60
+      },
+      "mustache": {
+        "Male_DanPalmer": 15,
+        "Male_Thick": 15,
+        "None": 60
+      },
+      "tattoo": {
+        "Male_Dradle": 15,
+        "Male_Scar": 15,
+        "Male_Stars": 15,
+        "Male_Thug": 15,
+        "None": 50
+      },
+      "bodytattoo": {
+        "Male_AkuHeart": 15,
+        "Male_Normies": 15,
+        "None": 70
+      },
+      "accessory": {
+        "Male_Cigarette": 10,
+        "Male_Cigarette_Flipped": 10,
+        "None": 80
+      },
+      "hood": {
+        "Classic": 20,
+        "Male_Hooded": 0.6,
+        "None": 79.4
+      }
+    },
+    "Chubby:Male": {
+      "hair": {
+        "Chubby_Afro": 10,
+        "Chubby_AZVet": 10,
+        "Chubby_Buns": 10,
+        "Chubby_Dreads": 10,
+        "Chubby_FadeRight": 10,
+        "Chubby_FlatTop": 10,
+        "Chubby_Mohawk": 10,
+        "Chubby_MrT": 10,
+        "Chubby_Pompadour": 10,
+        "Chubby_Surfer": 10,
+        "None": 10,
+        "Chubby_TheAvatar": 0.5
+      },
+      "glasses": {
+        "Chubby_3DGlasses": 6,
+        "Chubby_DFrameFilled": 6,
+        "Chubby_Shades": 6,
+        "Chubby_VR": 6,
+        "Chubby_NEO": 6,
+        "Chubby_DFrame": 16,
+        "Chubby_PiratePatch": 5,
+        "None": 48
+      },
+      "beard": {
+        "Chubby_Full": 15,
+        "Chubby_Goat": 15,
+        "None": 70
+      },
+      "mustache": {
+        "Chubby_DanPalmer": 15,
+        "Chubby_Thick": 15,
+        "None": 70
+      },
+      "eyes": {
+        "Chubby_CrossEyed": 20,
+        "Chubby_Squint_Left": 20,
+        "Chubby_Squint_Right": 20,
+        "Chubby_Squint_Straight": 20,
+        "Chubby_Stoned": 20
+      },
+      "expression": {
+        "Chubby_Front": 25,
+        "Chubby_Neutral": 25,
+        "Chubby_Pouting": 25,
+        "Chubby_Smile": 25
+      },
+      "tattoo": {
+        "Chubby_AkuHeart": 15,
+        "Chubby_Marks": 15,
+        "Chubby_Scar": 15,
+        "Chubby_Tears": 15,
+        "None": 50
+      },
+      "earrings": {
+        "Chubby_Stud": 20,
+        "None": 80
+      },
+      "necklace": {
+        "Chubby_Chromies": 15,
+        "Chubby_Normies": 15,
+        "Chubby_X": 15,
+        "None": 55
+      },
+      "shirt": [
+        "None"
+      ],
+      "hood": {
+        "Chubby_Classic": 4,
+        "None": 96
+      },
+      "accessory": {
+        "Chubby_Cigarette": 15,
+        "None": 85
+      }
+    },
+    "HeroA:Female": {
+      "hair": {
+        "Female_Afro": 11,
+        "Female_Dreads": 11,
+        "Female_FadeRight": 11,
+        "Female_FlatTop": 11,
+        "Female_Mohawk": 11,
+        "Female_MrT": 11,
+        "Female_Pompadour": 11,
+        "Female_Surfer": 11,
+        "None": 12,
+        "Female_TheAvatar": 0.45
+      },
+      "glasses": {
+        "Female_3DGlasses": 6,
+        "Female_DFrameFilled": 6,
+        "Female_Shades": 6,
+        "Female_VR": 6,
+        "Female_Neo": 6,
+        "Female_DFrame": 16,
+        "Female_PiratePatch": 5,
+        "None": 48
+      },
+      "necklace": {
+        "Female_Chain": 15,
+        "Female_Ornate": 10,
+        "Female_Ornate_Alt": 10,
+        "Female_Flower": 10,
+        "Female_Opal": 10,
+        "Female_UpsideDownCross": 8,
+        "Female_Chromies": 10,
+        "Female_HeyKoolAid": 8,
+        "Female_Normies": 8,
+        "Female_Pendent": 8,
+        "None": 55
+      },
+      "eyes": {
+        "Female_CrissCrossed": 20,
+        "Female_LookLeft": 20,
+        "Female_LookRight": 20,
+        "Female_Stoned": 20,
+        "Female_Straight": 20
+      },
+      "expression": {
+        "Female_Smile": 25,
+        "Female_Frown": 25,
+        "Female_Neutral": 25,
+        "Female_Pouting": 25,
+        "Female_Smirk": 25
+      },
+      "shirt": {
+        "Crew_Female": 40,
+        "Tank_Female": 20,
+        "Flannel_Female": 20,
+        "None": 20
+      },
+      "tattoo": {
+        "Female_AkuHeart": 15,
+        "Female_Scar": 15,
+        "Female_Tears": 15,
+        "Female_Thug": 15,
+        "None": 50
+      },
+      "hood": {
+        "Female_Classic": 7.5,
+        "Female_Hooded": 0.6,
+        "Female_None": 91.9
+      },
+      "earrings": {
+        "Female_Stud": 20,
+        "None": 80
+      },
+      "accessory": {
+        "Female_Cigarette": 15,
+        "None": 85
+      },
+      "beard": {
+        "Female_Full": 8,
+        "Female_Goat": 8,
+        "None": 70
+      },
+      "mustache": {
+        "Female_DanPalmer": 8,
+        "Female_Thick": 8,
+        "None": 70
+      }
+    },
+    "Alien:Non-Binary": {},
+    "Cat:None": {},
+    "Zombie:None": {
+      "hair": [
+        "None"
+      ],
+      "beard": [
+        "None"
+      ],
+      "mustache": [
+        "None"
+      ],
+      "eyes": [
+        "None"
+      ],
+      "expression": [
+        "None"
+      ],
+      "tattoo": [
+        "None"
+      ],
+      "bodytattoo": {
+        "None": 55,
+        "Normies": 15,
+        "AkuHeart": 15,
+        "Pyramid": 15
+      },
+      "earrings": [
+        "None"
+      ],
+      "shirt": [
+        "None"
+      ],
+      "accessory": {
+        "Zombie_Cigarette": 15,
+        "None": 85
+      },
+      "glasses": {
+        "Zombie_Shades": 10,
+        "Zombie_VR": 10,
+        "Zombie_DFrameFilled": 10,
+        "Zombie_Neo": 10,
+        "Zombie_PiratePatch": 10,
+        "None": 50
+      },
+      "necklace": {
+        "Zombie_Normies": 15,
+        "Zombie_HeyKoolAid": 15,
+        "Zombie_Chromies": 15,
+        "None": 55
+      },
+      "hood": {
+        "Zombie_Classic": 4,
+        "Zombie_Hooded": 4,
+        "Zombie_Hoodie": 4,
+        "None": 88
+      }
+    },
+    "Agent:None": {
+      "hair": {
+        "Male_Afro": 25,
+        "Male_AZVet": 7,
+        "Male_Buns": 7,
+        "Male_Dreads": 10,
+        "Male_FadeRight": 7,
+        "Male_FlatTop": 10,
+        "Male_Mohawk": 15,
+        "Male_MrT": 10,
+        "Male_Pompadour": 15,
+        "Male_Surfer": 13,
+        "None": 5
+      },
+      "glasses": {
+        "Shades": 25,
+        "Neo": 25,
+        "VR": 10,
+        "None": 40
+      },
+      "hood": {
+        "Classic": 20,
+        "None": 80
+      },
+      "shirt": {
+        "Crew": 40,
+        "Tank": 20,
+        "None": 40
+      },
+      "necklace": {
+        "Male_Chain": 15,
+        "Male_Chromies": 15,
+        "Male_HappyFace": 15,
+        "Male_Normies": 15,
+        "Male_Pendent": 15,
+        "None": 25
+      }
+    },
+    "SideProfile:Male": {
+      "hair": {
+        "SP_Mohawk_Male": 15,
+        "SP_Afro_Male": 20,
+        "SP_Dreads_Male": 10,
+        "SP_Surfer_Male": 13,
+        "SP_MrT_Male": 10,
+        "SP_FadeRight_Male": 7,
+        "SP_AZVet_Male": 7,
+        "None": 10
+      },
+      "expression": {
+        "SP_Smile_Male": 45,
+        "SP_Smirk_Male": 35
+      },
+      "beard": {
+        "SP_Full_Male": 30,
+        "SP_Goat_Male": 30,
+        "SP_Chop_Male": 30,
+        "None": 20
+      },
+      "mustache": {
+        "SP_Thick_Male": 30,
+        "None": 20
+      },
+      "glasses": {
+        "SP_DFrame_Male": 10,
+        "SP_DFrameFilled_Male": 10,
+        "SP_Shades_Male": 10,
+        "SP_Neo_Male": 10,
+        "None": 60
+      },
+      "necklace": {
+        "SP_Chain_Male": 15,
+        "None": 85
+      },
+      "earrings": {
+        "SP_Stud_Male": 15,
+        "SP_Flower_Male": 10,
+        "None": 75
+      },
+      "tattoo": {
+        "SP_AkuHeart_Male": 15,
+        "SP_Eagle_Male": 15,
+        "SP_Scar_Male": 15,
+        "SP_Tears_Male": 15,
+        "None": 40
+      },
+      "shirt": {
+        "SP_Crew_Male": 35,
+        "SP_Flannel_Male": 20,
+        "SP_FlannelDark_Male": 10,
+        "None": 35
+      },
+      "hood": {
+        "SP_Classic_Male": 20,
+        "None": 80
+      },
+      "accessory": {
+        "SP_Cigarette_Male": 15,
+        "None": 85
+      }
+    },
+    "SideProfile:Female": {
+      "hair": {
+        "SP_Mohawk_Female": 15,
+        "SP_Afro_Female": 20,
+        "SP_Dreads_Female": 10,
+        "SP_Surfer_Female": 13,
+        "SP_MrT_Female": 10,
+        "SP_FadeRight_Female": 7,
+        "SP_AZVet_Female": 7,
+        "None": 10
+      },
+      "expression": {
+        "SP_Smile_Female": 45,
+        "SP_Smirk_Female": 35
+      },
+      "eyes": {
+        "SP_SquintLeft_Female": 25,
+        "SP_SquintRight_Female": 25,
+        "SP_Straight_Female": 25,
+        "SP_Stoned_Female": 25
+      },
+      "beard": [
+        "None"
+      ],
+      "mustache": [
+        "None"
+      ],
+      "glasses": {
+        "SP_DFrame_Female": 10,
+        "SP_DFrameFilled_Female": 10,
+        "SP_Shades_Female": 10,
+        "SP_Neo_Female": 10,
+        "None": 60
+      },
+      "necklace": {
+        "SP_Chain_Female": 15,
+        "None": 85
+      },
+      "earrings": {
+        "SP_Stud_Female": 15,
+        "SP_Flower_Female": 10,
+        "None": 75
+      },
+      "tattoo": {
+        "SP_AkuHeart_Female": 15,
+        "SP_Eagle_Female": 15,
+        "SP_Scar_Female": 15,
+        "SP_Tears_Female": 15,
+        "None": 40
+      },
+      "shirt": {
+        "SP_Crew_Female": 35,
+        "SP_Flannel_Female": 20,
+        "SP_FlannelDark_Female": 10,
+        "None": 35
+      },
+      "hood": {
+        "SP_Classic_Female": 20,
+        "None": 80
+      },
+      "accessory": {
+        "SP_Cigarette_Female": 15,
+        "None": 85
+      }
+    }
+  },
+  "conflicts_to_deprecate": [
+    "Abstract forge head_shape/mask_type/forehead_mark taxonomy in chromies-engine/traits/rarity.json"
+  ]
+}

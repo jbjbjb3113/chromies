@@ -1,0 +1,947 @@
+{
+  "schema_version": "2.0.0",
+  "palette_weights": {
+    "SIGNAL": 30,
+    "ACID": 16,
+    "CYAN": 16,
+    "GHOST": 14,
+    "BLOOD": 14,
+    "MOSS": 10,
+    "SIGNAL_BLONDE": 25,
+    "SIGNAL_GREY": 15,
+    "SIGNAL_RED": 15,
+    "ACID_BLONDE": 8,
+    "ACID_GREY": 4,
+    "ACID_RED": 4,
+    "CYAN_BLONDE": 8,
+    "CYAN_GREY": 4,
+    "CYAN_RED": 4,
+    "GHOST_BLONDE": 7,
+    "GHOST_GREY": 3,
+    "GHOST_RED": 3,
+    "BLOOD_BLONDE": 7,
+    "BLOOD_GREY": 3,
+    "BLOOD_RED": 3,
+    "MOSS_BLONDE": 5,
+    "MOSS_GREY": 2,
+    "MOSS_RED": 2,
+    "SIGNAL_SHIRT_RED": 20,
+    "SIGNAL_SHIRT_PURPLE": 15,
+    "SIGNAL_SHIRT_ORANGE": 15,
+    "SIGNAL_SHIRT_OLIVE": 15,
+    "SIGNAL_SHIRT_GREEN": 15,
+    "SIGNAL_SHIRT_GOLD": 10,
+    "SIGNAL_SHIRT_BLUE": 15,
+    "ACID_SHIRT_RED": 4,
+    "ACID_SHIRT_PURPLE": 3,
+    "ACID_SHIRT_ORANGE": 3,
+    "ACID_SHIRT_OLIVE": 3,
+    "ACID_SHIRT_GREEN": 3,
+    "ACID_SHIRT_GOLD": 2,
+    "ACID_SHIRT_BLUE": 3,
+    "CYAN_SHIRT_RED": 4,
+    "CYAN_SHIRT_PURPLE": 3,
+    "CYAN_SHIRT_ORANGE": 3,
+    "CYAN_SHIRT_OLIVE": 3,
+    "CYAN_SHIRT_GREEN": 3,
+    "CYAN_SHIRT_GOLD": 2,
+    "CYAN_SHIRT_BLUE": 3,
+    "GHOST_SHIRT_RED": 4,
+    "GHOST_SHIRT_PURPLE": 3,
+    "GHOST_SHIRT_ORANGE": 3,
+    "GHOST_SHIRT_OLIVE": 3,
+    "GHOST_SHIRT_GREEN": 3,
+    "GHOST_SHIRT_GOLD": 2,
+    "GHOST_SHIRT_BLUE": 3,
+    "BLOOD_SHIRT_RED": 4,
+    "BLOOD_SHIRT_PURPLE": 3,
+    "BLOOD_SHIRT_ORANGE": 3,
+    "BLOOD_SHIRT_OLIVE": 3,
+    "BLOOD_SHIRT_GREEN": 3,
+    "BLOOD_SHIRT_GOLD": 2,
+    "BLOOD_SHIRT_BLUE": 3,
+    "MOSS_SHIRT_RED": 2,
+    "MOSS_SHIRT_PURPLE": 1,
+    "MOSS_SHIRT_ORANGE": 1,
+    "MOSS_SHIRT_OLIVE": 1,
+    "MOSS_SHIRT_GREEN": 1,
+    "MOSS_SHIRT_GOLD": 1,
+    "MOSS_SHIRT_BLUE": 1,
+    "CAT": 0,
+    "ALIEN": 0,
+    "ZOMBIE": 0,
+    "AGENT": 0,
+    "GOLD": 0
+  },
+  "slot_default_weights": {
+    "hood": {
+      "Classic": 20.0,
+      "Female_Classic": 0.0,
+      "Female_Hooded": 0.0,
+      "Male_Hooded": 0.0,
+      "Female_None": 0.0,
+      "Chubby_Classic": 0.0,
+      "Zombie_Classic": 0.0,
+      "Zombie_Hooded": 0.0,
+      "Zombie_Hoodie": 0.0,
+      "None": 80.0
+    },
+    "shirt": {
+      "Crew": 40.0,
+      "Tank": 20.0,
+      "Tank_Female": 20.0,
+      "Crew_Female": 0.0,
+      "Flannel_Female": 0.0,
+      "None": 20.0
+    },
+    "body": {
+      "Tank": 1.0,
+      "Default": 9.0,
+      "Alien": 0.0,
+      "Female_Tank": 0.0,
+      "Female": 0.0,
+      "None": 0.0,
+      "Chubby": 0.0,
+      "Zombie": 0.0,
+      "Agent": 0.0
+    },
+    "bodytattoo": {
+      "UnderArmour": 15.0,
+      "AkuHeart": 10.0,
+      "Pyramid": 10.0,
+      "Male_AkuHeart": 0.0,
+      "None": 60.0
+    },
+    "necklace": {
+      "Male_Chain": 15.0,
+      "Female_Chain": 15.0,
+      "Female_Ornate": 10.0,
+      "Female_Ornate_Alt": 0.0,
+      "Female_Flower": 10.0,
+      "Female_UpsideDownCross": 8.0,
+      "Female_Opal": 10.0,
+      "Female_Chromies": 0.0,
+      "Female_HeyKoolAid": 0.0,
+      "Female_Pendent": 0.0,
+      "Male_Chromies": 10.0,
+      "Male_HappyFace": 8.0,
+      "Male_Pendent": 8.0,
+      "Chubby_Chromies": 0.0,
+      "Chubby_X": 0.0,
+      "Zombie_HeyKoolAid": 0.0,
+      "Zombie_Chromies": 0.0,
+      "None": 70.0
+    },
+    "neck": {
+      "HeroA": 0.0,
+      "HeroA_Female": 0.0,
+      "Alien": 0.0,
+      "Agent": 0.0
+    },
+    "head": {
+      "HeroA": 0.0,
+      "Male_Angular": 0.0,
+      "HeroA_Female": 0.0,
+      "Female_Angular": 0.0,
+      "Cat": 0.0,
+      "Alien": 0.0,
+      "Chubby": 0.0,
+      "Zombie": 0.0,
+      "Agent": 0.0
+    },
+    "tattoo": {
+      "Signal": 25.0,
+      "Thug": 15.0,
+      "Marks": 15.0,
+      "Scar": 10.0,
+      "Chubby_AkuHeart": 0.0,
+      "Chubby_Marks": 0.0,
+      "Chubby_Scar": 0.0,
+      "Chubby_Tears": 0.0,
+      "Female_AkuHeart": 0.0,
+      "Female_Scar": 0.0,
+      "Female_Tears": 0.0,
+      "Female_Thug": 0.0,
+      "Male_Dradle": 0.0,
+      "Male_Scar": 0.0,
+      "Male_Stars": 0.0,
+      "Male_Thug": 0.0,
+      "None": 75.0
+    },
+    "mask": {
+      "None": 100.0
+    },
+    "beard": {
+      "Full": 20.0,
+      "Goat": 20.0,
+      "Chubby_Full": 0.0,
+      "Chubby_Goat": 0.0,
+      "Female_Full": 0.0,
+      "Female_Goat": 0.0,
+      "Male_Full": 0.0,
+      "Male_Goat": 0.0,
+      "None": 60.0
+    },
+    "mustache": {
+      "Thick": 30.0,
+      "Chubby_DanPalmer": 0.0,
+      "Chubby_Thick": 0.0,
+      "Female_DanPalmer": 0.0,
+      "Female_Thick": 0.0,
+      "Male_DanPalmer": 0.0,
+      "Male_Thick": 0.0,
+      "None": 70.0
+    },
+    "eyes": {
+      "Signal": 100.0,
+      "BlackEye": 15.0,
+      "MakeUp": 12.0,
+      "RunningMascara": 10.0,
+      "Stoned": 8.0,
+      "Alien": 0.0,
+      "Chubby_Signal": 0.0,
+      "Female_CrissCrossed": 0.0,
+      "Female_LookLeft": 0.0,
+      "Female_LookRight": 0.0,
+      "Female_Stoned": 0.0,
+      "Female_Straight": 0.0,
+      "Chubby_CrossEyed": 0.0,
+      "Chubby_Squint_Left": 0.0,
+      "Chubby_Squint_Right": 0.0,
+      "Chubby_Squint_Straight": 0.0,
+      "Chubby_Stoned": 0.0,
+      "Male_CrossEyed": 0.0,
+      "Male_SquintLeft": 0.0,
+      "Male_SquintRight": 0.0,
+      "Male_Stoned": 0.0,
+      "Male_Straight": 0.0,
+      "Male_WideOpen": 0.0,
+      "None": 0.0
+    },
+    "expression": {
+      "None": 100.0,
+      "Smile": 20.0,
+      "Frown": 20.0,
+      "Neutral": 20.0,
+      "Chubby_Front": 0.0,
+      "Female_Smile": 0.0,
+      "Female_Frown": 0.0,
+      "Female_Neutral": 0.0,
+      "Female_Pouting": 0.0,
+      "Female_Smirk": 0.0,
+      "Male_Frown": 0.0,
+      "Male_Neutral": 0.0,
+      "Male_Pouting": 0.0,
+      "Male_Smile": 0.0,
+      "Male_Smirk": 0.0,
+      "Chubby_Neutral": 0.0,
+      "Chubby_Pouting": 0.0,
+      "Chubby_Smile": 0.0
+    },
+    "earrings": {
+      "Stud": 30.0,
+      "Chubby_Stud": 0.0,
+      "Female_Stud": 0.0,
+      "None": 70.0
+    },
+    "glasses": {
+      "Shades": 25.0,
+      "Neo": 25.0,
+      "VR": 10.0,
+      "DFrame": 0.0,
+      "DFrameFilled": 0.0,
+      "3DGlasses": 0.0,
+      "PiratePatch": 0.0,
+      "Chubby_3DGlasses": 0.0,
+      "Chubby_DFrame": 0.0,
+      "Chubby_DFrameFilled": 0.0,
+      "Chubby_PiratePatch": 0.0,
+      "Chubby_Shades": 0.0,
+      "Chubby_VR": 0.0,
+      "Chubby_NEO": 0.0,
+      "Zombie_Shades": 0.0,
+      "Zombie_VR": 0.0,
+      "Zombie_DFrameFilled": 0.0,
+      "Zombie_Neo": 0.0,
+      "Zombie_PiratePatch": 0.0,
+      "Female_3DGlasses": 0.0,
+      "Female_DFrame": 0.0,
+      "Female_DFrameFilled": 0.0,
+      "Female_PiratePatch": 0.0,
+      "Female_Shades": 0.0,
+      "Female_VR": 0.0,
+      "Female_Neo": 0.0,
+      "None": 40.0
+    },
+    "hair": {
+      "Mohawk": 15.0,
+      "Pompadour": 15.0,
+      "MrT": 10.0,
+      "Afro": 25.0,
+      "Dreads": 10.0,
+      "Surfer": 13.0,
+      "FadeRight": 7.0,
+      "Buns": 7.0,
+      "AZVet": 7.0,
+      "Female_Afro": 0.0,
+      "Female_Dreads": 0.0,
+      "Female_FadeRight": 0.0,
+      "Female_FlatTop": 0.0,
+      "Female_Mohawk": 0.0,
+      "Female_MrT": 0.0,
+      "Female_Pompadour": 0.0,
+      "Female_Surfer": 0.0,
+      "Female_TheAvatar": 0.0,
+      "Male_Afro": 0.0,
+      "Male_AZVet": 0.0,
+      "Male_Buns": 0.0,
+      "Male_Dreads": 0.0,
+      "Male_FadeRight": 0.0,
+      "Male_FlatTop": 0.0,
+      "Male_Mohawk": 0.0,
+      "Male_MrT": 0.0,
+      "Male_Pompadour": 0.0,
+      "Male_Surfer": 0.0,
+      "Male_TheAvatar": 0.0,
+      "Chubby_Afro": 0.0,
+      "Chubby_AZVet": 0.0,
+      "Chubby_Buns": 0.0,
+      "Chubby_Dreads": 0.0,
+      "Chubby_FadeRight": 0.0,
+      "Chubby_FlatTop": 0.0,
+      "Chubby_Mohawk": 0.0,
+      "Chubby_MrT": 0.0,
+      "Chubby_Pompadour": 0.0,
+      "Chubby_Surfer": 0.0,
+      "Chubby_TheAvatar": 0.0,
+      "None": 5.0
+    },
+    "hat": {
+      "None": 0.0,
+      "Male_Baseball": 0.0,
+      "Male_Cowboy": 0.0,
+      "Male_Bucket": 0.0,
+      "Male_Bandana": 0.0,
+      "Male_Beanie": 0.0,
+      "Female_Baseball": 0.0,
+      "Female_Cowboy": 0.0,
+      "Female_Bucket": 0.0,
+      "Female_Bandana": 0.0,
+      "Female_Beanie": 0.0,
+      "Chubby_Baseball": 0.0,
+      "Chubby_Cowboy": 0.0,
+      "Chubby_Bucket": 0.0,
+      "Chubby_Bandana": 0.0,
+      "Chubby_Beanie": 0.0
+    },
+    "accessory": {
+      "None": 100.0,
+      "Chubby_Cigarette": 0.0,
+      "Female_Cigarette": 0.0,
+      "Male_Cigarette": 0.0,
+      "Male_Cigarette_Flipped": 0.0,
+      "Zombie_Cigarette": 0.0
+    }
+  },
+  "character_weights": [
+    {
+      "archetype_key": "HeroA:Male",
+      "name": "HeroA",
+      "gender": "Male",
+      "weight": 440,
+      "relative_probability": 0.406654,
+      "forcedSlots": {
+        "head": "HeroA",
+        "neck": "HeroA"
+      },
+      "slotVariantPool": {
+        "glasses": {
+          "Shades": 6.0,
+          "Neo": 6.0,
+          "VR": 6.0,
+          "DFrameFilled": 6.0,
+          "3DGlasses": 6.0,
+          "DFrame": 16.0,
+          "PiratePatch": 5.0,
+          "None": 48.0
+        },
+        "necklace": {
+          "Male_Chain": 1.0,
+          "Male_Chromies": 1.0,
+          "Male_HappyFace": 1.0,
+          "Male_Normies": 1.0,
+          "Male_Pendent": 1.0,
+          "None": 1.0
+        },
+        "hair": {
+          "Male_Afro": 25.0,
+          "Male_AZVet": 7.0,
+          "Male_Buns": 7.0,
+          "Male_Dreads": 10.0,
+          "Male_FadeRight": 7.0,
+          "Male_FlatTop": 10.0,
+          "Male_Mohawk": 15.0,
+          "Male_MrT": 10.0,
+          "Male_Pompadour": 15.0,
+          "Male_Surfer": 13.0,
+          "None": 5.0,
+          "Male_TheAvatar": 0.56
+        },
+        "eyes": {
+          "Male_CrossEyed": 20.0,
+          "Male_SquintLeft": 20.0,
+          "Male_SquintRight": 20.0,
+          "Male_Stoned": 20.0,
+          "Male_Straight": 20.0,
+          "Male_WideOpen": 20.0
+        },
+        "expression": {
+          "Male_Frown": 20.0,
+          "Male_Neutral": 20.0,
+          "Male_Pouting": 20.0,
+          "Male_Smile": 20.0,
+          "Male_Smirk": 20.0
+        },
+        "beard": {
+          "Male_Full": 15.0,
+          "Male_Goat": 15.0,
+          "None": 60.0
+        },
+        "mustache": {
+          "Male_DanPalmer": 15.0,
+          "Male_Thick": 15.0,
+          "None": 60.0
+        },
+        "tattoo": {
+          "Male_Dradle": 15.0,
+          "Male_Scar": 15.0,
+          "Male_Stars": 15.0,
+          "Male_Thug": 15.0,
+          "None": 50.0
+        },
+        "bodytattoo": {
+          "Male_AkuHeart": 15.0,
+          "Male_Normies": 15.0,
+          "None": 70.0
+        },
+        "accessory": {
+          "Male_Cigarette": 10.0,
+          "Male_Cigarette_Flipped": 10.0,
+          "None": 80.0
+        },
+        "hood": {
+          "Classic": 20.0,
+          "Male_Hooded": 0.6,
+          "None": 79.4
+        }
+      }
+    },
+    {
+      "archetype_key": "Chubby:Male",
+      "name": "Chubby",
+      "gender": "Male",
+      "weight": 136,
+      "relative_probability": 0.125693,
+      "forcedSlots": {
+        "head": "Chubby",
+        "body": "Chubby"
+      },
+      "slotVariantPool": {
+        "hair": {
+          "Chubby_Afro": 10.0,
+          "Chubby_AZVet": 10.0,
+          "Chubby_Buns": 10.0,
+          "Chubby_Dreads": 10.0,
+          "Chubby_FadeRight": 10.0,
+          "Chubby_FlatTop": 10.0,
+          "Chubby_Mohawk": 10.0,
+          "Chubby_MrT": 10.0,
+          "Chubby_Pompadour": 10.0,
+          "Chubby_Surfer": 10.0,
+          "None": 10.0,
+          "Chubby_TheAvatar": 0.5
+        },
+        "glasses": {
+          "Chubby_3DGlasses": 6.0,
+          "Chubby_DFrameFilled": 6.0,
+          "Chubby_Shades": 6.0,
+          "Chubby_VR": 6.0,
+          "Chubby_NEO": 6.0,
+          "Chubby_DFrame": 16.0,
+          "Chubby_PiratePatch": 5.0,
+          "None": 48.0
+        },
+        "beard": {
+          "Chubby_Full": 15.0,
+          "Chubby_Goat": 15.0,
+          "None": 70.0
+        },
+        "mustache": {
+          "Chubby_DanPalmer": 15.0,
+          "Chubby_Thick": 15.0,
+          "None": 70.0
+        },
+        "eyes": {
+          "Chubby_CrossEyed": 20.0,
+          "Chubby_Squint_Left": 20.0,
+          "Chubby_Squint_Right": 20.0,
+          "Chubby_Squint_Straight": 20.0,
+          "Chubby_Stoned": 20.0
+        },
+        "expression": {
+          "Chubby_Front": 25.0,
+          "Chubby_Neutral": 25.0,
+          "Chubby_Pouting": 25.0,
+          "Chubby_Smile": 25.0
+        },
+        "tattoo": {
+          "Chubby_AkuHeart": 15.0,
+          "Chubby_Marks": 15.0,
+          "Chubby_Scar": 15.0,
+          "Chubby_Tears": 15.0,
+          "None": 50.0
+        },
+        "earrings": {
+          "Chubby_Stud": 20.0,
+          "None": 80.0
+        },
+        "necklace": {
+          "Chubby_Chromies": 15.0,
+          "Chubby_Normies": 15.0,
+          "Chubby_X": 15.0,
+          "None": 55.0
+        },
+        "shirt": {
+          "None": 1.0
+        },
+        "hood": {
+          "Chubby_Classic": 4.0,
+          "None": 96.0
+        },
+        "accessory": {
+          "Chubby_Cigarette": 15.0,
+          "None": 85.0
+        }
+      }
+    },
+    {
+      "archetype_key": "HeroA:Female",
+      "name": "HeroA",
+      "gender": "Female",
+      "weight": 441,
+      "relative_probability": 0.407579,
+      "forcedSlots": {
+        "head": "HeroA_Female",
+        "neck": "HeroA_Female",
+        "body": "Female"
+      },
+      "slotVariantPool": {
+        "hair": {
+          "Female_Afro": 11.0,
+          "Female_Dreads": 11.0,
+          "Female_FadeRight": 11.0,
+          "Female_FlatTop": 11.0,
+          "Female_Mohawk": 11.0,
+          "Female_MrT": 11.0,
+          "Female_Pompadour": 11.0,
+          "Female_Surfer": 11.0,
+          "None": 12.0,
+          "Female_TheAvatar": 0.45
+        },
+        "glasses": {
+          "Female_3DGlasses": 6.0,
+          "Female_DFrameFilled": 6.0,
+          "Female_Shades": 6.0,
+          "Female_VR": 6.0,
+          "Female_Neo": 6.0,
+          "Female_DFrame": 16.0,
+          "Female_PiratePatch": 5.0,
+          "None": 48.0
+        },
+        "necklace": {
+          "Female_Chain": 15.0,
+          "Female_Ornate": 10.0,
+          "Female_Ornate_Alt": 10.0,
+          "Female_Flower": 10.0,
+          "Female_Opal": 10.0,
+          "Female_UpsideDownCross": 8.0,
+          "Female_Chromies": 10.0,
+          "Female_HeyKoolAid": 8.0,
+          "Female_Normies": 8.0,
+          "Female_Pendent": 8.0,
+          "None": 55.0
+        },
+        "eyes": {
+          "Female_CrissCrossed": 20.0,
+          "Female_LookLeft": 20.0,
+          "Female_LookRight": 20.0,
+          "Female_Stoned": 20.0,
+          "Female_Straight": 20.0
+        },
+        "expression": {
+          "Female_Smile": 25.0,
+          "Female_Frown": 25.0,
+          "Female_Neutral": 25.0,
+          "Female_Pouting": 25.0,
+          "Female_Smirk": 25.0
+        },
+        "shirt": {
+          "Crew_Female": 40.0,
+          "Tank_Female": 20.0,
+          "Flannel_Female": 20.0,
+          "None": 20.0
+        },
+        "tattoo": {
+          "Female_AkuHeart": 15.0,
+          "Female_Scar": 15.0,
+          "Female_Tears": 15.0,
+          "Female_Thug": 15.0,
+          "None": 50.0
+        },
+        "hood": {
+          "Female_Classic": 7.5,
+          "Female_Hooded": 0.6,
+          "Female_None": 91.9
+        },
+        "earrings": {
+          "Female_Stud": 20.0,
+          "None": 80.0
+        },
+        "accessory": {
+          "Female_Cigarette": 15.0,
+          "None": 85.0
+        },
+        "beard": {
+          "Female_Full": 8.0,
+          "Female_Goat": 8.0,
+          "None": 70.0
+        },
+        "mustache": {
+          "Female_DanPalmer": 8.0,
+          "Female_Thick": 8.0,
+          "None": 70.0
+        }
+      }
+    },
+    {
+      "archetype_key": "Alien:Non-Binary",
+      "name": "Alien",
+      "gender": "Non-Binary",
+      "weight": 6,
+      "relative_probability": 0.005545,
+      "forcedSlots": {
+        "head": "Alien",
+        "neck": "Alien",
+        "body": "Alien",
+        "eyes": "Alien",
+        "hat": "None",
+        "hair": "None",
+        "beard": "None",
+        "mustache": "None",
+        "hood": "None",
+        "glasses": "None"
+      },
+      "slotVariantPool": {}
+    },
+    {
+      "archetype_key": "Cat:None",
+      "name": "Cat",
+      "gender": null,
+      "weight": 0,
+      "relative_probability": 0.0,
+      "forcedSlots": {
+        "head": "Cat",
+        "neck": "HeroA",
+        "beard": "None",
+        "mustache": "None",
+        "hat": "None"
+      },
+      "slotVariantPool": {}
+    },
+    {
+      "archetype_key": "Zombie:None",
+      "name": "Zombie",
+      "gender": null,
+      "weight": 18,
+      "relative_probability": 0.016636,
+      "forcedSlots": {
+        "head": "Zombie",
+        "body": "Zombie",
+        "hat": "None"
+      },
+      "slotVariantPool": {
+        "hair": {
+          "None": 1.0
+        },
+        "beard": {
+          "None": 1.0
+        },
+        "mustache": {
+          "None": 1.0
+        },
+        "eyes": {
+          "None": 1.0
+        },
+        "expression": {
+          "None": 1.0
+        },
+        "tattoo": {
+          "None": 1.0
+        },
+        "bodytattoo": {
+          "None": 55.0,
+          "Normies": 15.0,
+          "AkuHeart": 15.0,
+          "Pyramid": 15.0
+        },
+        "earrings": {
+          "None": 1.0
+        },
+        "shirt": {
+          "None": 1.0
+        },
+        "accessory": {
+          "Zombie_Cigarette": 15.0,
+          "None": 85.0
+        },
+        "glasses": {
+          "Zombie_Shades": 10.0,
+          "Zombie_VR": 10.0,
+          "Zombie_DFrameFilled": 10.0,
+          "Zombie_Neo": 10.0,
+          "Zombie_PiratePatch": 10.0,
+          "None": 50.0
+        },
+        "necklace": {
+          "Zombie_Normies": 15.0,
+          "Zombie_HeyKoolAid": 15.0,
+          "Zombie_Chromies": 15.0,
+          "None": 55.0
+        },
+        "hood": {
+          "Zombie_Classic": 4.0,
+          "Zombie_Hooded": 4.0,
+          "Zombie_Hoodie": 4.0,
+          "None": 88.0
+        }
+      }
+    },
+    {
+      "archetype_key": "Agent:None",
+      "name": "Agent",
+      "gender": null,
+      "weight": 6,
+      "relative_probability": 0.005545,
+      "forcedSlots": {
+        "head": "Agent",
+        "neck": "Agent",
+        "body": "Agent",
+        "eyes": "None",
+        "hat": "None",
+        "expression": "None",
+        "tattoo": "None",
+        "beard": "None",
+        "mustache": "None"
+      },
+      "slotVariantPool": {
+        "hair": {
+          "Male_Afro": 25.0,
+          "Male_AZVet": 7.0,
+          "Male_Buns": 7.0,
+          "Male_Dreads": 10.0,
+          "Male_FadeRight": 7.0,
+          "Male_FlatTop": 10.0,
+          "Male_Mohawk": 15.0,
+          "Male_MrT": 10.0,
+          "Male_Pompadour": 15.0,
+          "Male_Surfer": 13.0,
+          "None": 5.0
+        },
+        "glasses": {
+          "Shades": 25.0,
+          "Neo": 25.0,
+          "VR": 10.0,
+          "None": 40.0
+        },
+        "hood": {
+          "Classic": 20.0,
+          "None": 80.0
+        },
+        "shirt": {
+          "Crew": 40.0,
+          "Tank": 20.0,
+          "None": 40.0
+        },
+        "necklace": {
+          "Male_Chain": 15.0,
+          "Male_Chromies": 15.0,
+          "Male_HappyFace": 15.0,
+          "Male_Normies": 15.0,
+          "Male_Pendent": 15.0,
+          "None": 25.0
+        }
+      }
+    },
+    {
+      "archetype_key": "SideProfile:Male",
+      "name": "SideProfile",
+      "gender": "Male",
+      "weight": 20,
+      "relative_probability": 0.018484,
+      "forcedSlots": {
+        "head": "SP_HeroA_Male",
+        "body": "None",
+        "eyes": "None",
+        "bodytattoo": "None",
+        "hat": "None"
+      },
+      "slotVariantPool": {
+        "hair": {
+          "SP_Mohawk_Male": 15.0,
+          "SP_Afro_Male": 20.0,
+          "SP_Dreads_Male": 10.0,
+          "SP_Surfer_Male": 13.0,
+          "SP_MrT_Male": 10.0,
+          "SP_FadeRight_Male": 7.0,
+          "SP_AZVet_Male": 7.0,
+          "None": 10.0
+        },
+        "expression": {
+          "SP_Smile_Male": 45.0,
+          "SP_Smirk_Male": 35.0
+        },
+        "beard": {
+          "SP_Full_Male": 30.0,
+          "SP_Goat_Male": 30.0,
+          "SP_Chop_Male": 30.0,
+          "None": 20.0
+        },
+        "mustache": {
+          "SP_Thick_Male": 30.0,
+          "None": 20.0
+        },
+        "glasses": {
+          "SP_DFrame_Male": 10.0,
+          "SP_DFrameFilled_Male": 10.0,
+          "SP_Shades_Male": 10.0,
+          "SP_Neo_Male": 10.0,
+          "None": 60.0
+        },
+        "necklace": {
+          "SP_Chain_Male": 15.0,
+          "None": 85.0
+        },
+        "earrings": {
+          "SP_Stud_Male": 15.0,
+          "SP_Flower_Male": 10.0,
+          "None": 75.0
+        },
+        "tattoo": {
+          "SP_AkuHeart_Male": 15.0,
+          "SP_Eagle_Male": 15.0,
+          "SP_Scar_Male": 15.0,
+          "SP_Tears_Male": 15.0,
+          "None": 40.0
+        },
+        "shirt": {
+          "SP_Crew_Male": 35.0,
+          "SP_Flannel_Male": 20.0,
+          "SP_FlannelDark_Male": 10.0,
+          "None": 35.0
+        },
+        "hood": {
+          "SP_Classic_Male": 20.0,
+          "None": 80.0
+        },
+        "accessory": {
+          "SP_Cigarette_Male": 15.0,
+          "None": 85.0
+        }
+      }
+    },
+    {
+      "archetype_key": "SideProfile:Female",
+      "name": "SideProfile",
+      "gender": "Female",
+      "weight": 15,
+      "relative_probability": 0.013863,
+      "forcedSlots": {
+        "head": "SP_HeroA_Female",
+        "neck": "SP_HeroA_Female",
+        "body": "None",
+        "bodytattoo": "None",
+        "hat": "None"
+      },
+      "slotVariantPool": {
+        "hair": {
+          "SP_Mohawk_Female": 15.0,
+          "SP_Afro_Female": 20.0,
+          "SP_Dreads_Female": 10.0,
+          "SP_Surfer_Female": 13.0,
+          "SP_MrT_Female": 10.0,
+          "SP_FadeRight_Female": 7.0,
+          "SP_AZVet_Female": 7.0,
+          "None": 10.0
+        },
+        "expression": {
+          "SP_Smile_Female": 45.0,
+          "SP_Smirk_Female": 35.0
+        },
+        "eyes": {
+          "SP_SquintLeft_Female": 25.0,
+          "SP_SquintRight_Female": 25.0,
+          "SP_Straight_Female": 25.0,
+          "SP_Stoned_Female": 25.0
+        },
+        "beard": {
+          "None": 1.0
+        },
+        "mustache": {
+          "None": 1.0
+        },
+        "glasses": {
+          "SP_DFrame_Female": 10.0,
+          "SP_DFrameFilled_Female": 10.0,
+          "SP_Shades_Female": 10.0,
+          "SP_Neo_Female": 10.0,
+          "None": 60.0
+        },
+        "necklace": {
+          "SP_Chain_Female": 15.0,
+          "None": 85.0
+        },
+        "earrings": {
+          "SP_Stud_Female": 15.0,
+          "SP_Flower_Female": 10.0,
+          "None": 75.0
+        },
+        "tattoo": {
+          "SP_AkuHeart_Female": 15.0,
+          "SP_Eagle_Female": 15.0,
+          "SP_Scar_Female": 15.0,
+          "SP_Tears_Female": 15.0,
+          "None": 40.0
+        },
+        "shirt": {
+          "SP_Crew_Female": 35.0,
+          "SP_Flannel_Female": 20.0,
+          "SP_FlannelDark_Female": 10.0,
+          "None": 35.0
+        },
+        "hood": {
+          "SP_Classic_Female": 20.0,
+          "None": 80.0
+        },
+        "accessory": {
+          "SP_Cigarette_Female": 15.0,
+          "None": 85.0
+        }
+      }
+    }
+  ],
+  "notes": [
+    "Character slotVariantPool overrides traits.json default weights at roll time.",
+    "Normie palette entries excluded.",
+    "Side-profile variant weights apply only under SideProfile archetype."
+  ]
+}

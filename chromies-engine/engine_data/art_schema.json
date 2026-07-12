@@ -1,0 +1,1089 @@
+{
+  "schema_version": "2.0.0",
+  "generated_at": "2026-07-09T19:24:24.604752+00:00",
+  "principles": {
+    "art_is_source_of_truth": true,
+    "read_only_art_root": "X:\\Cursor\\Homies\\art-pipeline\\components",
+    "identity_dna": "Separate deterministic PRNG stream; never modifies source PNGs.",
+    "deterministic_generation": "Preserve tokenId/seed-based rolls matching art-pipeline/generate.js."
+  },
+  "sources": {
+    "traits_json": "X:\\Cursor\\Homies\\art-pipeline\\traits.json",
+    "chromies_config_js": "X:\\Cursor\\Homies\\art-pipeline\\chromies-config.js",
+    "components_dir": "X:\\Cursor\\Homies\\art-pipeline\\components"
+  },
+  "roles": [
+    "background",
+    "mask_dark",
+    "mask_mid",
+    "highlight",
+    "skin_shadow_deep",
+    "skin_shadow",
+    "skin_mid",
+    "skin_light",
+    "skin_highlight",
+    "hood",
+    "eye_socket",
+    "eye_glow",
+    "eye_signal",
+    "hair_dark",
+    "hair_mid",
+    "hair_bright"
+  ],
+  "settings": {
+    "grid": 64,
+    "componentsDir": "./components",
+    "outputDir": "./output",
+    "traitsFile": "./traits.json",
+    "bgKnockoutThreshold": 20
+  },
+  "palette_families": [
+    "SIGNAL",
+    "ACID",
+    "CYAN",
+    "GHOST",
+    "BLOOD",
+    "MOSS",
+    "SIGNAL_BLONDE",
+    "SIGNAL_GREY",
+    "SIGNAL_RED",
+    "ACID_BLONDE",
+    "ACID_GREY",
+    "ACID_RED",
+    "CYAN_BLONDE",
+    "CYAN_GREY",
+    "CYAN_RED",
+    "GHOST_BLONDE",
+    "GHOST_GREY",
+    "GHOST_RED",
+    "BLOOD_BLONDE",
+    "BLOOD_GREY",
+    "BLOOD_RED",
+    "MOSS_BLONDE",
+    "MOSS_GREY",
+    "MOSS_RED",
+    "SIGNAL_SHIRT_RED",
+    "SIGNAL_SHIRT_PURPLE",
+    "SIGNAL_SHIRT_ORANGE",
+    "SIGNAL_SHIRT_OLIVE",
+    "SIGNAL_SHIRT_GREEN",
+    "SIGNAL_SHIRT_GOLD",
+    "SIGNAL_SHIRT_BLUE",
+    "ACID_SHIRT_RED",
+    "ACID_SHIRT_PURPLE",
+    "ACID_SHIRT_ORANGE",
+    "ACID_SHIRT_OLIVE",
+    "ACID_SHIRT_GREEN",
+    "ACID_SHIRT_GOLD",
+    "ACID_SHIRT_BLUE",
+    "CYAN_SHIRT_RED",
+    "CYAN_SHIRT_PURPLE",
+    "CYAN_SHIRT_ORANGE",
+    "CYAN_SHIRT_OLIVE",
+    "CYAN_SHIRT_GREEN",
+    "CYAN_SHIRT_GOLD",
+    "CYAN_SHIRT_BLUE",
+    "GHOST_SHIRT_RED",
+    "GHOST_SHIRT_PURPLE",
+    "GHOST_SHIRT_ORANGE",
+    "GHOST_SHIRT_OLIVE",
+    "GHOST_SHIRT_GREEN",
+    "GHOST_SHIRT_GOLD",
+    "GHOST_SHIRT_BLUE",
+    "BLOOD_SHIRT_RED",
+    "BLOOD_SHIRT_PURPLE",
+    "BLOOD_SHIRT_ORANGE",
+    "BLOOD_SHIRT_OLIVE",
+    "BLOOD_SHIRT_GREEN",
+    "BLOOD_SHIRT_GOLD",
+    "BLOOD_SHIRT_BLUE",
+    "MOSS_SHIRT_RED",
+    "MOSS_SHIRT_PURPLE",
+    "MOSS_SHIRT_ORANGE",
+    "MOSS_SHIRT_OLIVE",
+    "MOSS_SHIRT_GREEN",
+    "MOSS_SHIRT_GOLD",
+    "MOSS_SHIRT_BLUE",
+    "CAT",
+    "ALIEN",
+    "ZOMBIE",
+    "AGENT",
+    "GOLD"
+  ],
+  "palette_count": 71,
+  "character_archetypes": [
+    {
+      "name": "HeroA",
+      "gender": "Male",
+      "weight": 440,
+      "palettePool": null,
+      "forcedSlots": {
+        "head": "HeroA",
+        "neck": "HeroA"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "glasses": {
+          "Shades": 6,
+          "Neo": 6,
+          "VR": 6,
+          "DFrameFilled": 6,
+          "3DGlasses": 6,
+          "DFrame": 16,
+          "PiratePatch": 5,
+          "None": 48
+        },
+        "necklace": [
+          "Male_Chain",
+          "Male_Chromies",
+          "Male_HappyFace",
+          "Male_Normies",
+          "Male_Pendent",
+          "None"
+        ],
+        "hair": {
+          "Male_Afro": 25,
+          "Male_AZVet": 7,
+          "Male_Buns": 7,
+          "Male_Dreads": 10,
+          "Male_FadeRight": 7,
+          "Male_FlatTop": 10,
+          "Male_Mohawk": 15,
+          "Male_MrT": 10,
+          "Male_Pompadour": 15,
+          "Male_Surfer": 13,
+          "None": 5,
+          "Male_TheAvatar": 0.56
+        },
+        "eyes": {
+          "Male_CrossEyed": 20,
+          "Male_SquintLeft": 20,
+          "Male_SquintRight": 20,
+          "Male_Stoned": 20,
+          "Male_Straight": 20,
+          "Male_WideOpen": 20
+        },
+        "expression": {
+          "Male_Frown": 20,
+          "Male_Neutral": 20,
+          "Male_Pouting": 20,
+          "Male_Smile": 20,
+          "Male_Smirk": 20
+        },
+        "beard": {
+          "Male_Full": 15,
+          "Male_Goat": 15,
+          "None": 60
+        },
+        "mustache": {
+          "Male_DanPalmer": 15,
+          "Male_Thick": 15,
+          "None": 60
+        },
+        "tattoo": {
+          "Male_Dradle": 15,
+          "Male_Scar": 15,
+          "Male_Stars": 15,
+          "Male_Thug": 15,
+          "None": 50
+        },
+        "bodytattoo": {
+          "Male_AkuHeart": 15,
+          "Male_Normies": 15,
+          "None": 70
+        },
+        "accessory": {
+          "Male_Cigarette": 10,
+          "Male_Cigarette_Flipped": 10,
+          "None": 80
+        },
+        "hood": {
+          "Classic": 20,
+          "Male_Hooded": 0.6,
+          "None": 79.4
+        }
+      },
+      "archetype_key": "HeroA:Male",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "Chubby",
+      "gender": "Male",
+      "weight": 136,
+      "palettePool": null,
+      "forcedSlots": {
+        "head": "Chubby",
+        "body": "Chubby"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "hair": {
+          "Chubby_Afro": 10,
+          "Chubby_AZVet": 10,
+          "Chubby_Buns": 10,
+          "Chubby_Dreads": 10,
+          "Chubby_FadeRight": 10,
+          "Chubby_FlatTop": 10,
+          "Chubby_Mohawk": 10,
+          "Chubby_MrT": 10,
+          "Chubby_Pompadour": 10,
+          "Chubby_Surfer": 10,
+          "None": 10,
+          "Chubby_TheAvatar": 0.5
+        },
+        "glasses": {
+          "Chubby_3DGlasses": 6,
+          "Chubby_DFrameFilled": 6,
+          "Chubby_Shades": 6,
+          "Chubby_VR": 6,
+          "Chubby_NEO": 6,
+          "Chubby_DFrame": 16,
+          "Chubby_PiratePatch": 5,
+          "None": 48
+        },
+        "beard": {
+          "Chubby_Full": 15,
+          "Chubby_Goat": 15,
+          "None": 70
+        },
+        "mustache": {
+          "Chubby_DanPalmer": 15,
+          "Chubby_Thick": 15,
+          "None": 70
+        },
+        "eyes": {
+          "Chubby_CrossEyed": 20,
+          "Chubby_Squint_Left": 20,
+          "Chubby_Squint_Right": 20,
+          "Chubby_Squint_Straight": 20,
+          "Chubby_Stoned": 20
+        },
+        "expression": {
+          "Chubby_Front": 25,
+          "Chubby_Neutral": 25,
+          "Chubby_Pouting": 25,
+          "Chubby_Smile": 25
+        },
+        "tattoo": {
+          "Chubby_AkuHeart": 15,
+          "Chubby_Marks": 15,
+          "Chubby_Scar": 15,
+          "Chubby_Tears": 15,
+          "None": 50
+        },
+        "earrings": {
+          "Chubby_Stud": 20,
+          "None": 80
+        },
+        "necklace": {
+          "Chubby_Chromies": 15,
+          "Chubby_Normies": 15,
+          "Chubby_X": 15,
+          "None": 55
+        },
+        "shirt": [
+          "None"
+        ],
+        "hood": {
+          "Chubby_Classic": 4,
+          "None": 96
+        },
+        "accessory": {
+          "Chubby_Cigarette": 15,
+          "None": 85
+        }
+      },
+      "archetype_key": "Chubby:Male",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "HeroA",
+      "gender": "Female",
+      "weight": 441,
+      "palettePool": null,
+      "forcedSlots": {
+        "head": "HeroA_Female",
+        "neck": "HeroA_Female",
+        "body": "Female"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "hair": {
+          "Female_Afro": 11,
+          "Female_Dreads": 11,
+          "Female_FadeRight": 11,
+          "Female_FlatTop": 11,
+          "Female_Mohawk": 11,
+          "Female_MrT": 11,
+          "Female_Pompadour": 11,
+          "Female_Surfer": 11,
+          "None": 12,
+          "Female_TheAvatar": 0.45
+        },
+        "glasses": {
+          "Female_3DGlasses": 6,
+          "Female_DFrameFilled": 6,
+          "Female_Shades": 6,
+          "Female_VR": 6,
+          "Female_Neo": 6,
+          "Female_DFrame": 16,
+          "Female_PiratePatch": 5,
+          "None": 48
+        },
+        "necklace": {
+          "Female_Chain": 15,
+          "Female_Ornate": 10,
+          "Female_Ornate_Alt": 10,
+          "Female_Flower": 10,
+          "Female_Opal": 10,
+          "Female_UpsideDownCross": 8,
+          "Female_Chromies": 10,
+          "Female_HeyKoolAid": 8,
+          "Female_Normies": 8,
+          "Female_Pendent": 8,
+          "None": 55
+        },
+        "eyes": {
+          "Female_CrissCrossed": 20,
+          "Female_LookLeft": 20,
+          "Female_LookRight": 20,
+          "Female_Stoned": 20,
+          "Female_Straight": 20
+        },
+        "expression": {
+          "Female_Smile": 25,
+          "Female_Frown": 25,
+          "Female_Neutral": 25,
+          "Female_Pouting": 25,
+          "Female_Smirk": 25
+        },
+        "shirt": {
+          "Crew_Female": 40,
+          "Tank_Female": 20,
+          "Flannel_Female": 20,
+          "None": 20
+        },
+        "tattoo": {
+          "Female_AkuHeart": 15,
+          "Female_Scar": 15,
+          "Female_Tears": 15,
+          "Female_Thug": 15,
+          "None": 50
+        },
+        "hood": {
+          "Female_Classic": 7.5,
+          "Female_Hooded": 0.6,
+          "Female_None": 91.9
+        },
+        "earrings": {
+          "Female_Stud": 20,
+          "None": 80
+        },
+        "accessory": {
+          "Female_Cigarette": 15,
+          "None": 85
+        },
+        "beard": {
+          "Female_Full": 8,
+          "Female_Goat": 8,
+          "None": 70
+        },
+        "mustache": {
+          "Female_DanPalmer": 8,
+          "Female_Thick": 8,
+          "None": 70
+        }
+      },
+      "archetype_key": "HeroA:Female",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "Alien",
+      "gender": "Non-Binary",
+      "weight": 6,
+      "palettePool": [
+        "ALIEN"
+      ],
+      "forcedSlots": {
+        "head": "Alien",
+        "neck": "Alien",
+        "body": "Alien",
+        "eyes": "Alien",
+        "hat": "None",
+        "hair": "None",
+        "beard": "None",
+        "mustache": "None",
+        "hood": "None",
+        "glasses": "None"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {},
+      "archetype_key": "Alien:Non-Binary",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "Cat",
+      "gender": null,
+      "weight": 0,
+      "palettePool": [
+        "CAT"
+      ],
+      "forcedSlots": {
+        "head": "Cat",
+        "neck": "HeroA",
+        "beard": "None",
+        "mustache": "None",
+        "hat": "None"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {},
+      "archetype_key": "Cat:None",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "Zombie",
+      "gender": null,
+      "weight": 18,
+      "palettePool": [
+        "ZOMBIE"
+      ],
+      "forcedSlots": {
+        "head": "Zombie",
+        "body": "Zombie",
+        "hat": "None"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "hair": [
+          "None"
+        ],
+        "beard": [
+          "None"
+        ],
+        "mustache": [
+          "None"
+        ],
+        "eyes": [
+          "None"
+        ],
+        "expression": [
+          "None"
+        ],
+        "tattoo": [
+          "None"
+        ],
+        "bodytattoo": {
+          "None": 55,
+          "Normies": 15,
+          "AkuHeart": 15,
+          "Pyramid": 15
+        },
+        "earrings": [
+          "None"
+        ],
+        "shirt": [
+          "None"
+        ],
+        "accessory": {
+          "Zombie_Cigarette": 15,
+          "None": 85
+        },
+        "glasses": {
+          "Zombie_Shades": 10,
+          "Zombie_VR": 10,
+          "Zombie_DFrameFilled": 10,
+          "Zombie_Neo": 10,
+          "Zombie_PiratePatch": 10,
+          "None": 50
+        },
+        "necklace": {
+          "Zombie_Normies": 15,
+          "Zombie_HeyKoolAid": 15,
+          "Zombie_Chromies": 15,
+          "None": 55
+        },
+        "hood": {
+          "Zombie_Classic": 4,
+          "Zombie_Hooded": 4,
+          "Zombie_Hoodie": 4,
+          "None": 88
+        }
+      },
+      "archetype_key": "Zombie:None",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "Agent",
+      "gender": null,
+      "weight": 6,
+      "palettePool": [
+        "AGENT"
+      ],
+      "forcedSlots": {
+        "head": "Agent",
+        "neck": "Agent",
+        "body": "Agent",
+        "eyes": "None",
+        "hat": "None",
+        "expression": "None",
+        "tattoo": "None",
+        "beard": "None",
+        "mustache": "None"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "hair": {
+          "Male_Afro": 25,
+          "Male_AZVet": 7,
+          "Male_Buns": 7,
+          "Male_Dreads": 10,
+          "Male_FadeRight": 7,
+          "Male_FlatTop": 10,
+          "Male_Mohawk": 15,
+          "Male_MrT": 10,
+          "Male_Pompadour": 15,
+          "Male_Surfer": 13,
+          "None": 5
+        },
+        "glasses": {
+          "Shades": 25,
+          "Neo": 25,
+          "VR": 10,
+          "None": 40
+        },
+        "hood": {
+          "Classic": 20,
+          "None": 80
+        },
+        "shirt": {
+          "Crew": 40,
+          "Tank": 20,
+          "None": 40
+        },
+        "necklace": {
+          "Male_Chain": 15,
+          "Male_Chromies": 15,
+          "Male_HappyFace": 15,
+          "Male_Normies": 15,
+          "Male_Pendent": 15,
+          "None": 25
+        }
+      },
+      "archetype_key": "Agent:None",
+      "render_pipeline": "front_facing"
+    },
+    {
+      "name": "SideProfile",
+      "gender": "Male",
+      "weight": 20,
+      "palettePool": null,
+      "forcedSlots": {
+        "head": "SP_HeroA_Male",
+        "body": "None",
+        "eyes": "None",
+        "bodytattoo": "None",
+        "hat": "None"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "hair": {
+          "SP_Mohawk_Male": 15,
+          "SP_Afro_Male": 20,
+          "SP_Dreads_Male": 10,
+          "SP_Surfer_Male": 13,
+          "SP_MrT_Male": 10,
+          "SP_FadeRight_Male": 7,
+          "SP_AZVet_Male": 7,
+          "None": 10
+        },
+        "expression": {
+          "SP_Smile_Male": 45,
+          "SP_Smirk_Male": 35
+        },
+        "beard": {
+          "SP_Full_Male": 30,
+          "SP_Goat_Male": 30,
+          "SP_Chop_Male": 30,
+          "None": 20
+        },
+        "mustache": {
+          "SP_Thick_Male": 30,
+          "None": 20
+        },
+        "glasses": {
+          "SP_DFrame_Male": 10,
+          "SP_DFrameFilled_Male": 10,
+          "SP_Shades_Male": 10,
+          "SP_Neo_Male": 10,
+          "None": 60
+        },
+        "necklace": {
+          "SP_Chain_Male": 15,
+          "None": 85
+        },
+        "earrings": {
+          "SP_Stud_Male": 15,
+          "SP_Flower_Male": 10,
+          "None": 75
+        },
+        "tattoo": {
+          "SP_AkuHeart_Male": 15,
+          "SP_Eagle_Male": 15,
+          "SP_Scar_Male": 15,
+          "SP_Tears_Male": 15,
+          "None": 40
+        },
+        "shirt": {
+          "SP_Crew_Male": 35,
+          "SP_Flannel_Male": 20,
+          "SP_FlannelDark_Male": 10,
+          "None": 35
+        },
+        "hood": {
+          "SP_Classic_Male": 20,
+          "None": 80
+        },
+        "accessory": {
+          "SP_Cigarette_Male": 15,
+          "None": 85
+        }
+      },
+      "archetype_key": "SideProfile:Male",
+      "render_pipeline": "side_profile"
+    },
+    {
+      "name": "SideProfile",
+      "gender": "Female",
+      "weight": 15,
+      "palettePool": null,
+      "forcedSlots": {
+        "head": "SP_HeroA_Female",
+        "neck": "SP_HeroA_Female",
+        "body": "None",
+        "bodytattoo": "None",
+        "hat": "None"
+      },
+      "slotWeightOverrides": {},
+      "slotVariantPool": {
+        "hair": {
+          "SP_Mohawk_Female": 15,
+          "SP_Afro_Female": 20,
+          "SP_Dreads_Female": 10,
+          "SP_Surfer_Female": 13,
+          "SP_MrT_Female": 10,
+          "SP_FadeRight_Female": 7,
+          "SP_AZVet_Female": 7,
+          "None": 10
+        },
+        "expression": {
+          "SP_Smile_Female": 45,
+          "SP_Smirk_Female": 35
+        },
+        "eyes": {
+          "SP_SquintLeft_Female": 25,
+          "SP_SquintRight_Female": 25,
+          "SP_Straight_Female": 25,
+          "SP_Stoned_Female": 25
+        },
+        "beard": [
+          "None"
+        ],
+        "mustache": [
+          "None"
+        ],
+        "glasses": {
+          "SP_DFrame_Female": 10,
+          "SP_DFrameFilled_Female": 10,
+          "SP_Shades_Female": 10,
+          "SP_Neo_Female": 10,
+          "None": 60
+        },
+        "necklace": {
+          "SP_Chain_Female": 15,
+          "None": 85
+        },
+        "earrings": {
+          "SP_Stud_Female": 15,
+          "SP_Flower_Female": 10,
+          "None": 75
+        },
+        "tattoo": {
+          "SP_AkuHeart_Female": 15,
+          "SP_Eagle_Female": 15,
+          "SP_Scar_Female": 15,
+          "SP_Tears_Female": 15,
+          "None": 40
+        },
+        "shirt": {
+          "SP_Crew_Female": 35,
+          "SP_Flannel_Female": 20,
+          "SP_FlannelDark_Female": 10,
+          "None": 35
+        },
+        "hood": {
+          "SP_Classic_Female": 20,
+          "None": 80
+        },
+        "accessory": {
+          "SP_Cigarette_Female": 15,
+          "None": 85
+        }
+      },
+      "archetype_key": "SideProfile:Female",
+      "render_pipeline": "side_profile"
+    }
+  ],
+  "archetype_hierarchy": {
+    "Agent": [
+      "Agent:None"
+    ],
+    "Alien": [
+      "Alien:Non-Binary"
+    ],
+    "Cat": [
+      "Cat:None"
+    ],
+    "Chubby": [
+      "Chubby:Male"
+    ],
+    "HeroA": [
+      "HeroA:Female",
+      "HeroA:Male"
+    ],
+    "SideProfile": [
+      "SideProfile:Female",
+      "SideProfile:Male"
+    ],
+    "Zombie": [
+      "Zombie:None"
+    ]
+  },
+  "trait_slots": [
+    "hood",
+    "shirt",
+    "body",
+    "bodytattoo",
+    "necklace",
+    "neck",
+    "head",
+    "tattoo",
+    "mask",
+    "beard",
+    "mustache",
+    "eyes",
+    "expression",
+    "earrings",
+    "glasses",
+    "hair",
+    "hat",
+    "accessory"
+  ],
+  "gated_slots": {
+    "forehead_mark": {
+      "status": "gated",
+      "reason": "No MARK_* layer exists in art-pipeline/components or traits.json",
+      "engine_action": "omit_from_appearance_roll_until_art_exists"
+    },
+    "mask": {
+      "status": "gated",
+      "reason": "Only MASK_None.png exists; no visible mask variants on disk",
+      "engine_action": "force_None_or_omit_from_metadata",
+      "on_disk_variants": [
+        "None"
+      ]
+    }
+  },
+  "side_profile_pipeline": {
+    "independent": true,
+    "characters": [
+      {
+        "name": "SideProfile",
+        "gender": "Male",
+        "weight": 20,
+        "palettePool": null,
+        "forcedSlots": {
+          "head": "SP_HeroA_Male",
+          "body": "None",
+          "eyes": "None",
+          "bodytattoo": "None",
+          "hat": "None"
+        },
+        "slotWeightOverrides": {},
+        "slotVariantPool": {
+          "hair": {
+            "SP_Mohawk_Male": 15,
+            "SP_Afro_Male": 20,
+            "SP_Dreads_Male": 10,
+            "SP_Surfer_Male": 13,
+            "SP_MrT_Male": 10,
+            "SP_FadeRight_Male": 7,
+            "SP_AZVet_Male": 7,
+            "None": 10
+          },
+          "expression": {
+            "SP_Smile_Male": 45,
+            "SP_Smirk_Male": 35
+          },
+          "beard": {
+            "SP_Full_Male": 30,
+            "SP_Goat_Male": 30,
+            "SP_Chop_Male": 30,
+            "None": 20
+          },
+          "mustache": {
+            "SP_Thick_Male": 30,
+            "None": 20
+          },
+          "glasses": {
+            "SP_DFrame_Male": 10,
+            "SP_DFrameFilled_Male": 10,
+            "SP_Shades_Male": 10,
+            "SP_Neo_Male": 10,
+            "None": 60
+          },
+          "necklace": {
+            "SP_Chain_Male": 15,
+            "None": 85
+          },
+          "earrings": {
+            "SP_Stud_Male": 15,
+            "SP_Flower_Male": 10,
+            "None": 75
+          },
+          "tattoo": {
+            "SP_AkuHeart_Male": 15,
+            "SP_Eagle_Male": 15,
+            "SP_Scar_Male": 15,
+            "SP_Tears_Male": 15,
+            "None": 40
+          },
+          "shirt": {
+            "SP_Crew_Male": 35,
+            "SP_Flannel_Male": 20,
+            "SP_FlannelDark_Male": 10,
+            "None": 35
+          },
+          "hood": {
+            "SP_Classic_Male": 20,
+            "None": 80
+          },
+          "accessory": {
+            "SP_Cigarette_Male": 15,
+            "None": 85
+          }
+        },
+        "archetype_key": "SideProfile:Male",
+        "render_pipeline": "side_profile"
+      },
+      {
+        "name": "SideProfile",
+        "gender": "Female",
+        "weight": 15,
+        "palettePool": null,
+        "forcedSlots": {
+          "head": "SP_HeroA_Female",
+          "neck": "SP_HeroA_Female",
+          "body": "None",
+          "bodytattoo": "None",
+          "hat": "None"
+        },
+        "slotWeightOverrides": {},
+        "slotVariantPool": {
+          "hair": {
+            "SP_Mohawk_Female": 15,
+            "SP_Afro_Female": 20,
+            "SP_Dreads_Female": 10,
+            "SP_Surfer_Female": 13,
+            "SP_MrT_Female": 10,
+            "SP_FadeRight_Female": 7,
+            "SP_AZVet_Female": 7,
+            "None": 10
+          },
+          "expression": {
+            "SP_Smile_Female": 45,
+            "SP_Smirk_Female": 35
+          },
+          "eyes": {
+            "SP_SquintLeft_Female": 25,
+            "SP_SquintRight_Female": 25,
+            "SP_Straight_Female": 25,
+            "SP_Stoned_Female": 25
+          },
+          "beard": [
+            "None"
+          ],
+          "mustache": [
+            "None"
+          ],
+          "glasses": {
+            "SP_DFrame_Female": 10,
+            "SP_DFrameFilled_Female": 10,
+            "SP_Shades_Female": 10,
+            "SP_Neo_Female": 10,
+            "None": 60
+          },
+          "necklace": {
+            "SP_Chain_Female": 15,
+            "None": 85
+          },
+          "earrings": {
+            "SP_Stud_Female": 15,
+            "SP_Flower_Female": 10,
+            "None": 75
+          },
+          "tattoo": {
+            "SP_AkuHeart_Female": 15,
+            "SP_Eagle_Female": 15,
+            "SP_Scar_Female": 15,
+            "SP_Tears_Female": 15,
+            "None": 40
+          },
+          "shirt": {
+            "SP_Crew_Female": 35,
+            "SP_Flannel_Female": 20,
+            "SP_FlannelDark_Female": 10,
+            "None": 35
+          },
+          "hood": {
+            "SP_Classic_Female": 20,
+            "None": 80
+          },
+          "accessory": {
+            "SP_Cigarette_Female": 15,
+            "None": 85
+          }
+        },
+        "archetype_key": "SideProfile:Female",
+        "render_pipeline": "side_profile"
+      }
+    ],
+    "asset_prefix": "SP_",
+    "folders": [
+      "SP_HEAD_HeroA_Male.png",
+      "SideProfile_Female",
+      "SideProfile_Male",
+      "sideprofile"
+    ]
+  },
+  "excluded_assets_summary": {
+    "normie_path_count": 6,
+    "reference_only_count": 9,
+    "normie_palette_names": [
+      "NORMIE_ACK",
+      "NORMIE_DEEKAY",
+      "NORMIE_DOPEMIND",
+      "NORMIE_JACKBUTCHER",
+      "NORMIE_PIV",
+      "NORMIE_SERC",
+      "NORMIE_SNOWFRO",
+      "NORMIE_TIMPERS",
+      "NORMIE_UPCOMING2"
+    ]
+  },
+  "excluded_assets": {
+    "paths": [
+      {
+        "path": "BODYTATTOO_Normies.png",
+        "reason": "normie_reference_only",
+        "sha256": "967851f78ac5d3b468afb837a621b54b683fe2f481ae8fac296c263778fd8ec8"
+      },
+      {
+        "path": "chubby/NECKLACE_Chubby_Normies.png",
+        "reason": "normie_reference_only",
+        "sha256": "c009c972fc16f6a54cc0322b3074d0d6b9b4a5562cbee29e694d2f8eab67ec67"
+      },
+      {
+        "path": "female/NECKLACE_Female_Normies.png",
+        "reason": "normie_reference_only",
+        "sha256": "bfc72667026ba6ef6a5e705e353dc22e837076ef5a04c65c38a6919e8e22ff7f"
+      },
+      {
+        "path": "male/BODYTATTOO_Male_Normies.png",
+        "reason": "normie_reference_only",
+        "sha256": "37ed9110c6b4a8023d9cbf98d7dadb5cfbaa286e7b95f3068ad4a004e0e5971e"
+      },
+      {
+        "path": "male/NECKLACE_Male_Normies.png",
+        "reason": "normie_reference_only",
+        "sha256": "c81cad7439b65cf3446e07e3f5ffe876698984b8c47c73475b6f952fe70d6ce7"
+      },
+      {
+        "path": "zombie/NECKLACE_Zombie_Normies.png",
+        "reason": "normie_reference_only",
+        "sha256": "f7336130e254b7e84385121d5d01a8625d9b6743a725b6fa741f727d1424e9e4"
+      }
+    ],
+    "reference_only_paths": [
+      {
+        "path": "legendary/NORMIE_0045_Snowfro-export.png",
+        "reason": "normie_reference_only",
+        "sha256": "27569c173df1b852bdca43e11a38eec0659fc9f976525c60a9557037bed4e889",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_0045_Snowfro.png",
+        "reason": "normie_reference_only",
+        "sha256": "8bdcd936e753954f9bef121b6b8043bd7c0ae9b6d834671f3d942a5262b0fdea",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_0603_ACK.png",
+        "reason": "normie_reference_only",
+        "sha256": "8d84cd06bd14caadf6f88af19538c08ef99193705ead81d6786421bccf10075a",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_4354_Serc.png",
+        "reason": "normie_reference_only",
+        "sha256": "85c51e9bd9f8667abb04cc32793afdff9766489c221ed74ac936fa46c2b58a42",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_4698_JackButcher.png",
+        "reason": "normie_reference_only",
+        "sha256": "535f642bc4c2bd7561746f6b06a2aec2759074db0255e77921990d751ebd4ab4",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_5974_Timpers.png",
+        "reason": "normie_reference_only",
+        "sha256": "090dbeb0f277e1678c05128b6bb4b8d115bb780388f61d2361209626a2ddb025",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_6576_Deekay.png",
+        "reason": "normie_reference_only",
+        "sha256": "5eb5fcd868ec9cb5a7efb4c2e8831b6df36117ab30d8cd1117cf327d944915dc",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_7409_PIV-export.png",
+        "reason": "normie_reference_only",
+        "sha256": "63a5ad055dace300e48abfce9bc66b95d4148bb3e26e20476c9a0426e47261a4",
+        "note": "legendary normie export \u2014 negative reference"
+      },
+      {
+        "path": "legendary/NORMIE_7409_PIV.png",
+        "reason": "normie_reference_only",
+        "sha256": "8389404b965cea7dc7b490005f1a5cd0d47638c41bd7eeb4072ad06a7f9580e1",
+        "note": "legendary normie export \u2014 negative reference"
+      }
+    ],
+    "normie_palette_names": [
+      "NORMIE_ACK",
+      "NORMIE_DEEKAY",
+      "NORMIE_DOPEMIND",
+      "NORMIE_JACKBUTCHER",
+      "NORMIE_PIV",
+      "NORMIE_SERC",
+      "NORMIE_SNOWFRO",
+      "NORMIE_TIMPERS",
+      "NORMIE_UPCOMING2"
+    ],
+    "policy": "Normie-named assets are exclusion/reference lists only; never composited as Chromies."
+  },
+  "inventory_summary": {
+    "png_count": 342,
+    "referenced_in_traits_json": 305
+  }
+}
