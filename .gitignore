@@ -4,10 +4,13 @@ node_modules/
 .env.*.local
 .ponder/
 ponder-env.d.ts
-# Ponder codegen output lives at the repo root only (contracts/generated/
-# holds real, committed Solidity source -- e.g. ChromaPaletteData.sol -- and
-# must not be swept up by this rule).
-/generated/
+# Matches Ponder codegen (root generated/) and chromies-engine's derived
+# test-fixture output (chromies-engine/generated/) at any depth, but NOT
+# contracts/generated/, which holds real, committed Solidity source --
+# e.g. ChromaPaletteData.sol.
+generated/
+!contracts/generated/
+!contracts/generated/**
 dist/
 coverage/
 
