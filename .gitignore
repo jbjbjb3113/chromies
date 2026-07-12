@@ -4,7 +4,10 @@ node_modules/
 .env.*.local
 .ponder/
 ponder-env.d.ts
-generated/
+# Ponder codegen output lives at the repo root only (contracts/generated/
+# holds real, committed Solidity source -- e.g. ChromaPaletteData.sol -- and
+# must not be swept up by this rule).
+/generated/
 dist/
 coverage/
 
