@@ -350,8 +350,8 @@ export default function LaunchEdition() {
             original Chromies collection. 0.0169 ETH, max 2 per wallet.
           </p>
           <p className="mx-auto mt-3 max-w-xl text-sm font-medium text-ink/60">
-            Holders at snapshot receive whitelist access and free ETH-edition Chromies at
-            main launch.
+            Holders at snapshot receive whitelist access and TWO free ETH-edition Chromies
+            per commemorative at main launch.
           </p>
 
           <div className="mt-10">
