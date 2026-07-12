@@ -111,14 +111,18 @@ function MintStatus({ mintOpen, totalSupply, maxSupply, price, chainId, isConnec
               </span>
             </div>
             <div className="flex items-baseline justify-center gap-2">
-              <span className="font-symtext text-xl font-black text-ink">100</span>
+              <span className="font-symtext text-xl font-black text-ink">
+                {maxSupply !== undefined ? maxSupply.toString() : "100"}
+              </span>
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink/50">
                 Supply
               </span>
             </div>
             <div className="flex items-baseline justify-center gap-2">
               <span className="font-symtext text-xl font-black text-ink">
-                {totalSupply !== undefined ? (100n - totalSupply).toString() : "—"}
+                {totalSupply !== undefined && maxSupply !== undefined
+                  ? (maxSupply - totalSupply).toString()
+                  : "—"}
               </span>
               <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink/50">
                 Remaining
@@ -235,7 +239,10 @@ export default function LaunchEdition() {
             : []),
         ]
       : [],
-    query: { enabled: Boolean(contractAddress) },
+    // Polls on a fixed interval (not just after the current wallet's own mint)
+    // so every visitor — including anyone who never connects a wallet — sees
+    // live totalSupply as other wallets mint, instead of a stale one-shot read.
+    query: { enabled: Boolean(contractAddress), refetchInterval: 12_000 },
   });
 
   const mintOpen = contractData?.[0]?.result;
@@ -308,10 +315,20 @@ export default function LaunchEdition() {
     return quantity > 1 ? `Mint ${quantity} — ${priceLabel}` : `Mint — ${priceLabel}`;
   })();
 
+  // "Remaining" here mirrors the same global-supply figure shown in MintStatus
+  // above (maxSupply - totalSupply) — not the per-wallet allowance, which is
+  // already surfaced separately by QuantitySelector's "N remaining for this
+  // wallet" label. Both cards must derive from the same totalSupply/maxSupply
+  // read so they never drift apart after a mint.
+  const remainingSupply =
+    totalSupply !== undefined && maxSupply !== undefined
+      ? maxSupply - totalSupply
+      : undefined;
+
   const infoCards = [
     { value: formatEth(totalPrice), label: quantity > 1 ? `Total (${quantity}×)` : "Price" },
     { value: maxSupply !== undefined ? String(maxSupply) : "100", label: "Supply" },
-    { value: maxQuantity > 0 ? String(maxQuantity) : "0", label: "Remaining" },
+    { value: remainingSupply !== undefined ? String(remainingSupply) : "—", label: "Remaining" },
   ];
 
   const showQuantity = isConnected && maxQuantity > 0 && mintOpen;
