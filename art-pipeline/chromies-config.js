@@ -938,9 +938,11 @@ const CHARACTERS = [
         None: 70,
       },
       accessory: {
-        Male_Cigarette: 10,
-        Male_Cigarette_Flipped: 10,
-        None: 80,
+        // 2026-07-12 (JB ruling, FINAL): target 3% aggregate cigarette rate
+        // across the collection. Was 10/10/80 (20% non-None for this pool).
+        Male_Cigarette: 1.5,
+        Male_Cigarette_Flipped: 1.5,
+        None: 97,
       },
       hood: {
         Classic: 20,
@@ -1050,8 +1052,9 @@ const CHARACTERS = [
         None: 93.1,
       },
       accessory: {
-        Chubby_Cigarette: 15,
-        None: 85,
+        // 2026-07-12 (JB ruling, FINAL): target 3% aggregate cigarette rate. Was 15/85.
+        Chubby_Cigarette: 3,
+        None: 97,
       },
     },
   },
@@ -1148,8 +1151,9 @@ const CHARACTERS = [
         None: 80,
       },
       accessory: {
-        Female_Cigarette: 15,
-        None: 85,
+        // 2026-07-12 (JB ruling, FINAL): target 3% aggregate cigarette rate. Was 15/85.
+        Female_Cigarette: 3,
+        None: 97,
       },
       beard: {
         Female_Full: 8,
@@ -1227,8 +1231,9 @@ const CHARACTERS = [
       earrings: ["None"],
       shirt: ["None"],
       accessory: {
-        Zombie_Cigarette: 15,
-        None: 85,
+        // 2026-07-12 (JB ruling, FINAL): target 3% aggregate cigarette rate. Was 15/85.
+        Zombie_Cigarette: 3,
+        None: 97,
       },
       glasses: {
         Zombie_Shades: 10,
@@ -1376,8 +1381,9 @@ const CHARACTERS = [
       },
       hood: { SP_Classic_Male: 20, None: 80 },
       accessory: {
-        SP_Cigarette_Male: 15,
-        None: 85,
+        // 2026-07-12 (JB ruling, FINAL): target 3% aggregate cigarette rate. Was 15/85.
+        SP_Cigarette_Male: 3,
+        None: 97,
       },
     },
     slotWeightOverrides: {},
@@ -1448,8 +1454,9 @@ const CHARACTERS = [
       },
       hood: { SP_Classic_Female: 20, None: 80 },
       accessory: {
-        SP_Cigarette_Female: 15,
-        None: 85,
+        // 2026-07-12 (JB ruling, FINAL): target 3% aggregate cigarette rate. Was 15/85.
+        SP_Cigarette_Female: 3,
+        None: 97,
       },
     },
     slotWeightOverrides: {},

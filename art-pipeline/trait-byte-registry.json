@@ -325,7 +325,7 @@
     "hat": {
       "index": 20,
       "bytes": {
-        "Chubby_Bandana": 0,
+        "Chubby_Bandana": 15,
         "Chubby_Baseball": 1,
         "Chubby_Beanie": 2,
         "Chubby_Bucket": 3,
@@ -340,7 +340,7 @@
         "Male_Beanie": 12,
         "Male_Bucket": 13,
         "Male_Cowboy": 14,
-        "None": 15
+        "None": 0
       }
     },
     "head_shape": {
@@ -349,6 +349,13 @@
         "None": 0,
         "Classic": 1,
         "Angular": 2
+      }
+    },
+    "accessory": {
+      "index": 21,
+      "bytes": {
+        "None": 0,
+        "Cigarette": 1
       }
     }
   }

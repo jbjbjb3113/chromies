@@ -19,7 +19,14 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from engine.batch_guards import character_key
-from engine.mint_payload import TRAIT_SLOT_SPECS, _pick_variant_name, decode_traits, encode_traits
+from engine.mint_payload import (
+    TRAIT_SLOT_SPECS,
+    _pick_variant_name,
+    decode_traits,
+    derive_accessory,
+    derive_head_shape,
+    encode_traits,
+)
 from engine.payload_pipeline import generate_chromie_payload
 
 
@@ -33,6 +40,10 @@ def expected_trait_values(result) -> dict[str, str]:
             out[key] = character_key(result.character)
         elif slot["source"] == "palette":
             out[key] = str(result.palette_key or "SIGNAL").upper()
+        elif slot["source"] == "head_shape_derived":
+            out[key] = derive_head_shape(_pick_variant_name(result.render_picks, "head"))
+        elif slot["source"] == "accessory_derived":
+            out[key] = derive_accessory(_pick_variant_name(result.render_picks, "accessory"))
         else:
             out[key] = _pick_variant_name(result.render_picks, key)
     return out
@@ -54,10 +65,10 @@ def check_seed(seed: int) -> list[str]:
         render_picks=result.render_picks,
     )
     if reencoded.bytes != result.payload.traits_packed[:32]:
-        # total_pixels bytes [17:19] may differ if we only compare trait slots — compare slots 0-16
+        # total_pixels bytes [17:19] are packed after this encode call — compare trait slots only
         for slot in TRAIT_SLOT_SPECS:
             idx = slot["index"]
-            if idx > 16:
+            if idx in (17, 18):
                 continue
             if reencoded.bytes[idx] != result.payload.traits_packed[idx]:
                 errors.append(

@@ -32,11 +32,30 @@ ENCODED_SLOTS: tuple[tuple[int, str], ...] = (
 # HEAD_SHAPE (byte 19) is NOT a compositing slot in traits.json — it is a derived
 # attribute of the "head" slot's picked variant name (Angular vs Classic head art).
 # Fixed enum table (never grows from traits.json variant scanning like ENCODED_SLOTS).
+#
+# ACCESSORY (byte 21, ratified 2026-07-12 per JB ruling) collapses every
+# per-character/orientation "accessory" pick to a single on-chain concept.
+# Today the only non-None accessory concept is "holding a cigarette" — 7 named
+# traits.json variants (Chubby_Cigarette, Female_Cigarette, Male_Cigarette,
+# Male_Cigarette_Flipped, SP_Cigarette_Female, SP_Cigarette_Male,
+# Zombie_Cigarette) all collapse to byte 1. Any future non-cigarette accessory
+# concept must get its own byte value, not reuse 1.
 DERIVED_SLOTS: tuple[tuple[int, str, dict[str, int]], ...] = (
     (19, "head_shape", {"None": 0, "Classic": 1, "Angular": 2}),
+    (21, "accessory", {"None": 0, "Cigarette": 1}),
 )
 
 ANGULAR_HEAD_VARIANTS: tuple[str, ...] = ("Male_Angular", "Female_Angular")
+
+CIGARETTE_ACCESSORY_VARIANTS: tuple[str, ...] = (
+    "Chubby_Cigarette",
+    "Female_Cigarette",
+    "Male_Cigarette",
+    "Male_Cigarette_Flipped",
+    "SP_Cigarette_Female",
+    "SP_Cigarette_Male",
+    "Zombie_Cigarette",
+)
 
 
 def derive_head_shape(head_variant_name: str | None) -> str:
@@ -45,6 +64,14 @@ def derive_head_shape(head_variant_name: str | None) -> str:
     if head_variant_name in ANGULAR_HEAD_VARIANTS:
         return "Angular"
     return "Classic"
+
+
+def derive_accessory(accessory_variant_name: str | None) -> str:
+    if not accessory_variant_name:
+        return "None"
+    if accessory_variant_name in CIGARETTE_ACCESSORY_VARIANTS:
+        return "Cigarette"
+    return "None"
 
 LEGACY_TRAIT_BYTES: dict[str, dict[str, int]] = {
     "hood": {"None": 0, "Classic": 1},

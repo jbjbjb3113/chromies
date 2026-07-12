@@ -1,38 +1,90 @@
 # Chromies Session Handoff
 
-Last updated: 2026-07-05
+Last updated: 2026-07-08
 
-## Pipeline — FROZEN
+## Status board
 
-Do **not** regenerate mint/reveal merkle or change trait generation until legendary-finals gate clears.
+### Legendaries (9 slots)
+
+| Token | Normie | Status |
+|------:|--------|--------|
+| 45 | Snowfro | **Verified** — palette + final PNG |
+| 264 | Timpers | **Verified** — palette + final PNG |
+| 603 | a.c.k. | **Verified** — palette + final PNG |
+| 1173 | Deekay | **Verified** — palette + final PNG |
+| 1294 | PIV | **Verified** — palette + final PNG |
+| 4698 | Jack Butcher | **Delivered** — conforming pass done; **palette ruling pending** (registry ID 31 not written) |
+| 2222 | DOPEMIND | **Awaiting DOPEMIND hexes** — palette wired, PNG pending |
+| 4354 | Serc | **Awaiting Serc file** |
+| 3792 | UPCOMING2 | **Open** — concept pending |
+
+**Score: 5/9 fully verified.**
+
+### Encoder fix
+
+**Closed, CI-gated.**
+
+- Split-authority defect fixed: compiled palette + trait byte tables from registry
+- `PayloadDedupeGuard` ratified (full + pixel keys)
+- CI: `check_mint_encoder.py`, `traits_parity_check.py` (1011 baseline)
+- Reports: `reports/ENCODER_AUDIT.md`, `reports/testrun_2000_post_encoder_fix_report.md`
+
+### Model B
+
+**Design gate open** — 4 rulings pending (holder inscribe, vocabulary, two passes, isSealed break). See Model B §12 items 1/6/7/8. **Do not act without JB.**
+
+### Mint data
+
+**Non-legendary 5,141 FROZEN for the Robinhood Chain commemorative re-do only**
+(JB ruling, 2026-07-12) — see `chromies-engine/reports/ROBINHOOD_DATASET_FREEZE_RULING.md`.
+`art-pipeline/output/mint-data.json` + `public/data/mint-data.json` were promoted
+to this state (5,150 records: the newly-frozen 5,141 non-legendary + the 9
+pre-existing, still-gated legendary rows, untouched). Reveal merkle root:
+`0xb17659ae0e19720a50a2c90d16c6445029140596486ea6d808d363212ac73e7e`.
+
+**Main ETH 5,150 launch dataset is still blocked on legendaries** — this
+promotion does not lift that gate (see "Pipeline — FROZEN" below); it only
+supplies fresh input to `scripts/robinhood/select-commemorative-100.js`.
+
+---
+
+## Still open (awaiting JB — do not act)
+
+1. **#4698 merge ruling:** (a) as-applied per `merge_report.json` (includes 6.71 and transitive 11.18 merges, visually verified) vs (b) strict ≤6 only (13 colors, also fits). Registry ID 31 waits.
+2. **Model B §12** items 1, 6, 7, 8.
+
+---
+
+## Pipeline — FROZEN (main ETH 5,150 launch)
+
+Do **not** treat the main-collection dataset as final, or change trait
+generation further, until legendary-finals gate clears. (The 2026-07-12
+Robinhood-scoped freeze above did require a reveal-merkle regen to keep
+`output/`/`public/data/` in sync — see the ruling doc — but that is not a
+main-collection launch decision.)
 
 **Locked systems (do not change without explicit unlock):**
 
-- `art-pipeline/generate.js` — dedupe guard, combo cap (60), anti-None-stacking, Female hood/hair weights
+- `art-pipeline/generate.js` — dedupe guard, combo cap (60), anti-None-stacking, Female hood/hair weights, `PayloadDedupeGuard` reroll stream
 - `art-pipeline/chromies-config.js` — trait weights, palette tables, legendary token map
-- `art-pipeline/legendary-finals.js` + `legendary-token-ids.js` — injection path only (no placeholder PNGs in repo)
+- `art-pipeline/legendary-finals.js` + `legendary-token-ids.js` — injection path only
 - `art-pipeline/snapshot-holders.js` + `generate-merkle.js` — Tier 2 = Brain Rots ∪ Akutars
-- Trait bytes **15/16 retired** (unused); bytes **17/18** = Total Pixels (unchanged)
-- Mutation / pixel-mutation system removed from pipeline and contracts
+- Trait bytes **15/16 retired**; bytes **17/18** = Total Pixels
+- Mint encoder artifacts compiled from `palette-registry.json` + `trait-byte-registry.json` — no hand-maintained byte tables
 
 **Legendary-finals gate (blocking regen):**
 
 | Slot | Token | Status |
 |------|-------|--------|
-| DOPEMIND | #2222 | Palette wired (`NORMIE_DOPEMIND.gpl`); **PNG pending** |
+| DOPEMIND | #2222 | Palette wired; **PNG + hexes pending** |
 | UPCOMING2 | #3792 | Concept pending |
-| Other 7 finals | various | **9/9 PNGs missing** — `verify-legendary-finals.js --check-missing` hard-fails |
-
-Run gate check:
-
-```powershell
-cd X:\Cursor\Homies\art-pipeline
-node verify-legendary-finals.js --check-missing
-```
+| Serc | #4354 | **File pending** |
+| Jack Butcher | #4698 | Conforming pass delivered; **palette merge ruling pending** |
+| Other verified | 45, 264, 603, 1173, 1294 | **5/9 complete** |
 
 ---
 
-## Contract batch (this run — local, not yet redeployed Sepolia)
+## Contract batch (local, not yet redeployed Sepolia)
 
 ### Economics (locked)
 
@@ -44,21 +96,7 @@ node verify-legendary-finals.js --check-missing
 
 - **Total supply:** 5,150
 - **Team reserve:** 200 (owner `mint()` only, tokens 4,951–5,150)
-- **Community mint cap:** 4,950 (= 5,150 − 200)
-
-### Rollover
-
-No explicit phase handoff function. Unsold Tier 1/2 supply rolls into Public implicitly:
-
-- Allowlist phases enforce `mintedAllowlistOne/Two` caps (2,500 / 1,000).
-- Public mints only check per-wallet cap + community cap (`totalSupply + 1 ≤ 4,950`).
-- Unsold allowlist allocation remains mintable in Public until community cap is hit.
-
-### Mutation removal
-
-Deleted from contracts: `revealTokenData`, `updateTrait`, `setTraitUpdater`, `shiftMutationTier`, renderer mutation pixel swap, Mutation/Drift JSON attributes. Stored pixels render verbatim.
-
-**Tests:** `forge test -vv` → **80 passed** (was ~79 prior session).
+- **Community mint cap:** 4,950
 
 ---
 
@@ -66,78 +104,29 @@ Deleted from contracts: `revealTokenData`, `updateTrait`, `setTraitUpdater`, `sh
 
 | Contract | Address |
 |----------|---------|
-| ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
-| Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
-| ChromaCanvasV2 | `0x684b85535eDFA1C14a16987c6Da20FEf63378c9a` |
-| ChromaRenderer | `0xa43f589f399654037fCEB7644707d2566c5b424b` |
-| PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
-
-**Merkle roots (unchanged on-chain):**
-
-- Tier 1: `0xcceafb12d73e8308dd30198441ec75aec79f825221be9645e174220231781c39`
-- Tier 2: `0xd582654aae27faf95fbd5d648a9bb2fc5b0d4f7b5154e419cfb59b6d154bb2ac` (Brain Rots only — **August snapshot** will regen with Akutars)
-- Reveal: `0x3b2d5fa07025cadfea3aea5cd5c1fe160a33ca586f14e2e7de6881b87de1c74d`
-
----
-
-## Akutar → Tier 2 wiring
-
-- Akutars contract: `0xaaD35C2DadbE77f97301617D82e661776c891Fa9`
-- `snapshot-holders.js` merges Brain Rots ∪ Akutars → `tier2-holders.json`
-- Dry-run (no merkle regen yet): Akutars **4,787**, overlap **21**, merged Tier 2 **6,946**, Normies∩T2 **371**
-- **August snapshot pass:** rerun snapshot + `generate-merkle.js`, deploy new Tier 2 root to Sepolia/mainnet
-
----
-
-## Site / frontend (this run)
-
-- **Copy scrub:** Landing flow (Mint → Reveal → Burn → Earn AP → Customize → Inscribe), FAQ AP/burn/inscribe framing, no Mutation Tier / Pristine / purification language
-- **Mint page:** reads prices + caps from chain; `chroma-contract.js` fallbacks: 0.0025 / 0.0035 / 0.0045 ETH, max **5** all phases
-- **Token metadata:** `public/tokens/*.json` — no Mutation/Drift attributes
-- **Untouched:** `PixelChroma.jsx`, Normie-mirror art tools, `.sol` mirror files
-
----
-
-## Parked decisions
-
-1. **Burn-into-locked** — whether burns can target already-inscribed tokens (not implemented)
-2. **15% community allocation** — economics TBD; team reserve (200) is the only reserved slice today
+| ChromaStorage | `0x557933b09005C6254d3884A1F93a03e740920A42` |
+| Chroma | `0x8162114c056DfC49045c04C66f1E03b761d81eD5` |
+| ChromaCanvasV2 | `0xa2e15dF33b21dDB62190B2Cd8C08e63350608DfB` |
+| ChromaPaletteData | `0x4Ff9Ef71A403579DdfCaC5294792306ebD38F0a7` |
+| ChromaRenderer | `0x7680D210ed242330877b31D9749a92307484Aae1` |
+| PixelMarketplace | `0x8D0b8327bcC96eF62b3de94687490298a52D3079` |
 
 ---
 
 ## Regen → deploy runbook
 
-Execute only after legendary-finals gate passes (9 PNGs + DOPEMIND palette verified + #3792 concept).
+Execute only after legendary-finals gate passes.
 
 ```powershell
 cd X:\Cursor\Homies\art-pipeline
-
-# 1. Verify legendary gate
 node verify-legendary-finals.js --check-missing
-
-# 2. Trait frequency sanity
 node trait-frequency-dry-run.js
-
-# 3. Generate collection + bridge mint data
 node generate.js --count 5150 --start 1
 node bridge-mint-data.js --count 5150 --start 1
 node generate-reveal-merkle.js
-
-# 4. August only — refresh allowlists
-node snapshot-holders.js
-node generate-merkle.js
-
-# 5. Foundry
-cd X:\Cursor\Homies
-$env:PRIVATE_KEY = (Get-Content .env | Select-String "PRIVATE_KEY").ToString().Split("=",2)[1]
-$env:SEPOLIA_RPC_URL = (Get-Content .env | Select-String "SEPOLIA_RPC_URL").ToString().Split("=",2)[1]
-C:\Foundry\foundry_nightly_win32_amd64\forge.exe test -vv
-C:\Foundry\foundry_nightly_win32_amd64\forge.exe script script/RedeployChroma.s.sol --rpc-url $env:SEPOLIA_RPC_URL --broadcast
-
-# 6. Update src/lib/chroma-contract.js addresses + abis/Chroma.ts from new deploy
-# 7. Upload metadata/images; set revealedBaseURI on Chroma
-# 8. Smoke: mint → reveal → inscribe on Sepolia
 ```
+
+**Runtime reference (post encoder fix, local):** ~21s payload-only / 2000 tokens; ~60s full preview render + contact sheets / 2000; ~2.5 min projected for 5150 full preview. Must run from `art-pipeline/` cwd (or scripts that chdir there).
 
 ---
 
@@ -145,14 +134,9 @@ C:\Foundry\foundry_nightly_win32_amd64\forge.exe script script/RedeployChroma.s.
 
 | Path | Role |
 |------|------|
-| `contracts/Chroma.sol` | Mint phases, rollover caps, reveal/inscribe |
-| `contracts/ChromaCanvasV2.sol` | Per-token AP, burn, canvas |
-| `contracts/ChromaRenderer.sol` | On-chain SVG + JSON (no Mutation) |
-| `art-pipeline/chromies-config.js` | Weights, palettes, legendary map |
-| `art-pipeline/snapshot-holders.js` | Tier 2 holder merge |
-| `src/lib/chroma-contract.js` | Frontend addresses + mint constants |
-| `CHECKLIST.md` | Launch checklist |
-
-## Foundry
-
-`C:\Foundry\foundry_nightly_win32_amd64\forge.exe`
+| `art-pipeline/bridge-mint-data.js` | Mint payload + `PayloadDedupeGuard` |
+| `art-pipeline/trait-byte-registry.json` | Trait variant byte source of truth |
+| `scripts/compile_palette_registry.py` | Compiles palette + trait encoder artifacts |
+| `scripts/check_mint_encoder.py` | CI diff gate |
+| `chromies-engine/scripts/traits_parity_check.py` | TraitsHex semantic round-trip (1011 seeds) |
+| `reports/ENCODER_AUDIT.md` | Split-authority audit |

@@ -12,16 +12,21 @@ const fs = require("fs");
 const path = require("path");
 const { MerkleTree } = require("merkletreejs");
 const keccak256 = require("keccak256");
-const { encodeAbiParameters, hexToBytes } = require("viem");
+const { encodeAbiParameters } = require("viem");
 
 const OUTPUT_DIR = path.join(__dirname, "output");
 const MINT_DATA_PATH = path.join(OUTPUT_DIR, "mint-data.json");
 const ROOT_OUT = path.join(OUTPUT_DIR, "reveal-merkle-root.txt");
 const PROOFS_OUT = path.join(OUTPUT_DIR, "reveal-merkle-proofs.json");
 
+// NOTE (2026-07-12): previously converted pixelsHex/traitsHex to Uint8Array via
+// viem's hexToBytes before calling encodeAbiParameters — that throws
+// "x.replace is not a function" on current viem, since the `bytes` ABI type
+// expects a hex string, not a Uint8Array. Pass the hex strings directly
+// (mirrors art-pipeline/candidate-merkle.js's fix).
 function leafHash(tokenId, pixelsHex, traitsHex) {
-  const pixels = hexToBytes(pixelsHex.startsWith("0x") ? pixelsHex : `0x${pixelsHex}`);
-  const traits = hexToBytes(traitsHex.startsWith("0x") ? traitsHex : `0x${traitsHex}`);
+  const pixels = pixelsHex.startsWith("0x") ? pixelsHex : `0x${pixelsHex}`;
+  const traits = traitsHex.startsWith("0x") ? traitsHex : `0x${traitsHex}`;
   const encoded = encodeAbiParameters(
     [{ type: "uint256" }, { type: "bytes" }, { type: "bytes" }],
     [BigInt(tokenId), pixels, traits]

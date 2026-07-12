@@ -13,8 +13,9 @@ const TRAIT_BYTE_TABLES = Object.freeze({
   earrings: Object.freeze({"Chubby_Stud": 2, "Female_Stud": 3, "None": 0, "SP_Flower_Female": 4, "SP_Flower_Male": 5, "SP_Stud_Female": 6, "SP_Stud_Male": 7, "Stud": 1}),
   glasses: Object.freeze({"3DGlasses": 4, "Chubby_3DGlasses": 5, "Chubby_DFrame": 6, "Chubby_DFrameFilled": 7, "Chubby_NEO": 8, "Chubby_PiratePatch": 9, "Chubby_Shades": 10, "Chubby_VR": 11, "DFrame": 12, "DFrameFilled": 13, "Female_3DGlasses": 14, "Female_DFrame": 15, "Female_DFrameFilled": 16, "Female_Neo": 17, "Female_PiratePatch": 18, "Female_Shades": 19, "Female_VR": 20, "Neo": 2, "None": 0, "PiratePatch": 21, "SP_DFrameFilled_Female": 22, "SP_DFrameFilled_Male": 23, "SP_DFrame_Female": 24, "SP_DFrame_Male": 25, "SP_Neo": 26, "SP_Neo_Female": 27, "SP_Neo_Male": 28, "SP_Shades": 29, "SP_Shades_Female": 30, "SP_Shades_Male": 31, "Shades": 1, "VR": 3, "Zombie_DFrameFilled": 32, "Zombie_Neo": 33, "Zombie_PiratePatch": 34, "Zombie_Shades": 35, "Zombie_VR": 36}),
   hair: Object.freeze({"AZVet": 8, "Afro": 4, "Buns": 9, "Chubby_AZVet": 10, "Chubby_Afro": 11, "Chubby_Buns": 12, "Chubby_Dreads": 13, "Chubby_FadeRight": 14, "Chubby_FlatTop": 15, "Chubby_Mohawk": 16, "Chubby_MrT": 17, "Chubby_Pompadour": 18, "Chubby_Surfer": 19, "Chubby_TheAvatar": 20, "Dreads": 5, "FadeRight": 7, "Female_Afro": 21, "Female_Dreads": 22, "Female_FadeRight": 23, "Female_FlatTop": 24, "Female_Mohawk": 25, "Female_MrT": 26, "Female_Pompadour": 27, "Female_Surfer": 28, "Female_TheAvatar": 29, "Male_AZVet": 30, "Male_Afro": 31, "Male_Buns": 32, "Male_Dreads": 33, "Male_FadeRight": 34, "Male_FlatTop": 35, "Male_Mohawk": 36, "Male_MrT": 37, "Male_Pompadour": 38, "Male_Surfer": 39, "Male_TheAvatar": 40, "Mohawk": 1, "MrT": 3, "None": 0, "Pompadour": 2, "SP_AZVet_Female": 41, "SP_AZVet_Male": 42, "SP_Afro": 43, "SP_Afro_Female": 44, "SP_Afro_Male": 45, "SP_Dreads": 46, "SP_Dreads_Female": 47, "SP_Dreads_Male": 48, "SP_FadeRight": 49, "SP_FadeRight_Female": 50, "SP_FadeRight_Male": 51, "SP_Mohawk": 52, "SP_Mohawk_Female": 53, "SP_Mohawk_Male": 54, "SP_MrT": 55, "SP_MrT_Female": 56, "SP_MrT_Male": 57, "SP_Pompadour": 58, "SP_Pompadour_Female": 59, "SP_Surfer": 60, "SP_Surfer_Female": 61, "SP_Surfer_Male": 62, "Surfer": 6}),
-  hat: Object.freeze({"Chubby_Bandana": 0, "Chubby_Baseball": 1, "Chubby_Beanie": 2, "Chubby_Bucket": 3, "Chubby_Cowboy": 4, "Female_Bandana": 5, "Female_Baseball": 6, "Female_Beanie": 7, "Female_Bucket": 8, "Female_Cowboy": 9, "Male_Bandana": 10, "Male_Baseball": 11, "Male_Beanie": 12, "Male_Bucket": 13, "Male_Cowboy": 14, "None": 15}),
+  hat: Object.freeze({"Chubby_Bandana": 15, "Chubby_Baseball": 1, "Chubby_Beanie": 2, "Chubby_Bucket": 3, "Chubby_Cowboy": 4, "Female_Bandana": 5, "Female_Baseball": 6, "Female_Beanie": 7, "Female_Bucket": 8, "Female_Cowboy": 9, "Male_Bandana": 10, "Male_Baseball": 11, "Male_Beanie": 12, "Male_Bucket": 13, "Male_Cowboy": 14, "None": 0}),
   head_shape: Object.freeze({"Angular": 2, "Classic": 1, "None": 0}),
+  accessory: Object.freeze({"Cigarette": 1, "None": 0}),
 });
 
 const TRAIT_SLOT_INDEX = Object.freeze({
@@ -33,5 +34,6 @@ const TRAIT_SLOT_INDEX = Object.freeze({
   hair: 14,
   hat: 20,
   head_shape: 19,
+  accessory: 21,
 });
 module.exports = { TRAIT_BYTE_TABLES, TRAIT_SLOT_INDEX };
