@@ -1,0 +1,4 @@
+pillow>=10.4.0
+numpy>=1.26.0,<3
+pydantic>=2.6.0,<3
+pytest>=8.0.0
