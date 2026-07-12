@@ -32,25 +32,37 @@ export const robinhoodChain = defineChain({
 });
 
 /**
- * Live mainnet ChromiesCommemorative — deployed + seeded (100/100) 2026-07-11.
- * See chromies-engine/reports/ROBINHOOD_MAINNET_DEPLOY.md for the full deploy report.
+ * Live mainnet ChromiesCommemorative — RE-DEPLOYED + reseeded (100/100) 2026-07-12
+ * (the "Robinhood commemorative RE-DO"): new selection seed
+ * "chromies-commemorative-redo-v2-2026-07-12" against the frozen non-legendary
+ * 5,141 dataset, new ChromiesCommemorative + ChromaRendererRobinhood pair, wired
+ * to the SAME already-verified ChromaPaletteData (0xb3ad67d60C44E6db461f8957AF7a2f664c01275a).
+ * The prior 2026-07-11 deploy (0x10953E4975C35529a5034D54eBC9266cec0CE69D) is
+ * retired — its funds were withdrawn and mintOpen was never left open on it, but
+ * its address is intentionally NOT reused below; do not point the frontend at it.
+ * See chromies-engine/reports/ROBINHOOD_MAINNET_DEPLOY.md (original) and the RE-DO
+ * report (chromies-engine/reports/ROBINHOOD_COMMEMORATIVE_REDO.md) for full detail.
  * mintOpen is false until JB flips it manually — the page must render an "opening soon"
  * state, not an error, until then (see LaunchEdition.jsx MintStatus/mintDisabledReason).
  *
  * CAUTION — address collision across chains, do not assume an address implies a chain:
  * the deployer address ran an equivalent sequence of prior transactions on both Robinhood
  * testnet (46630) and mainnet (4663), so CREATE nonces lined up and produced IDENTICAL
- * contract addresses on both chains for unrelated contracts:
- *   0xb3ad67d60C44E6db461f8957AF7a2f664c01275a — mainnet ChromaPaletteData (this deploy)
+ * contract addresses on both chains for unrelated contracts (from the ORIGINAL 2026-07-11
+ * deploy sequence, still true/historical, not re-checked for the RE-DO's new addresses
+ * below since testnet nonces were not advanced in lockstep with mainnet's RE-DO run):
+ *   0xb3ad67d60C44E6db461f8957AF7a2f664c01275a — mainnet ChromaPaletteData (still live,
+ *                                                  reused as-is by the RE-DO renderer)
  *                                                  AND testnet's old dry-run ChromaStorage
- *   0x9d868268a8774EdA4D257A856aD9EF0aAfAAf437 — mainnet ChromaRenderer (this deploy)
+ *   0x9d868268a8774EdA4D257A856aD9EF0aAfAAf437 — mainnet ChromaRenderer (retired,
+ *                                                  original 2026-07-11 deploy)
  *                                                  AND testnet's old dry-run ChromaRenderer
  * These are genuinely different contracts on genuinely different chains that happen to
  * share an address. Every address below MUST stay keyed by chain id (as this map already
  * does) — never hardcode an address without also pinning the chain id it's valid on.
  */
 export const CHROMIES_COMMEMORATIVE_ADDRESS = {
-  [robinhoodChain.id]: "0x10953E4975C35529a5034D54eBC9266cec0CE69D",
+  [robinhoodChain.id]: "0x3C8C9615889762bDcF9647a3C86C74aFA498a158",
 };
 
 export { chromiesCommemorativeAbi };
