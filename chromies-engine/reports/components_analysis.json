@@ -1,0 +1,1665 @@
+{
+  "category_counts": {
+    "side_profile_layer": 100,
+    "hair": 42,
+    "necklace": 28,
+    "glasses": 27,
+    "eyes": 25,
+    "tattoo": 24,
+    "expression": 21,
+    "reference_normie": 14,
+    "head": 12,
+    "body": 10,
+    "hood": 10,
+    "beard": 9,
+    "mustache": 8,
+    "accessory": 6,
+    "clothing_shirt": 6,
+    "uncategorized": 5,
+    "earrings": 4,
+    "palette": 1,
+    "mask": 1
+  },
+  "traits_by_category": {
+    "accessory": [
+      "Chubby_Cigarette",
+      "Female_Cigarette",
+      "Male_Cigarette",
+      "Male_Cigarette_Flipped",
+      "None",
+      "Zombie_Cigarette"
+    ],
+    "body": [
+      "Agent",
+      "Alien",
+      "Chubby",
+      "Default",
+      "Female",
+      "Female_Tank",
+      "None",
+      "Tank",
+      "Zombie"
+    ],
+    "head": [
+      "ALien",
+      "Agent",
+      "Cat",
+      "Chubby",
+      "Female_Hero_A",
+      "HeroA",
+      "HeroB",
+      "HeroC",
+      "MasterHead V2",
+      "Zombie"
+    ],
+    "necklace": [
+      "ALien",
+      "Agent",
+      "Chain",
+      "Chain_Female Ornate",
+      "Chubby_Chromies",
+      "Chubby_Normies",
+      "Chubby_X",
+      "Female_Chain",
+      "Female_Chromies",
+      "Female_Flower",
+      "Female_HeyKoolAid",
+      "Female_Normies",
+      "Female_Opal",
+      "Female_Ornate",
+      "Female_Pendent",
+      "Female_UpsideDownCross",
+      "HeroA",
+      "HeroA_Female",
+      "HeroB",
+      "Male_Chain",
+      "Male_Chromies",
+      "Male_HappyFace",
+      "Male_Normies",
+      "Male_Pendent",
+      "None",
+      "Zombie_Chromies",
+      "Zombie_HeyKoolAid",
+      "Zombie_Normies"
+    ],
+    "eyes": [
+      "Alien",
+      "BlackEye",
+      "Chubby_CrossEyed",
+      "Chubby_Signal",
+      "Chubby_Squint_Left",
+      "Chubby_Squint_Right",
+      "Chubby_Squint_Straight",
+      "Chubby_Stoned",
+      "Female_CrissCrossed",
+      "Female_LookLRight",
+      "Female_LookLeft",
+      "Female_Stoned",
+      "Female_Straight",
+      "Female_WideOpen",
+      "MakeUp",
+      "Male_CrossEyed",
+      "Male_SquintLeft",
+      "Male_SquintRight",
+      "Male_Stoned",
+      "Male_Straight",
+      "Male_WideOpen",
+      "None",
+      "RunningMascara",
+      "Signal",
+      "Stoned"
+    ],
+    "beard": [
+      "Chubby_Full",
+      "Chubby_Goat",
+      "Female_Full",
+      "Female_Goat",
+      "Full",
+      "Goat",
+      "Male_Full",
+      "Male_Goat",
+      "None"
+    ],
+    "tattoo": [
+      "AkuHeart",
+      "Chubby_AkuHeart",
+      "Chubby_Marks",
+      "Chubby_Scar",
+      "Chubby_Tears",
+      "Female_AkuHeart",
+      "Female_Scar",
+      "Female_Tears",
+      "Female_Thug",
+      "Male_AkuHeart",
+      "Male_Dradle",
+      "Male_Normies",
+      "Male_Scar",
+      "Male_Stars",
+      "Male_Thug",
+      "Marks",
+      "None",
+      "Normies",
+      "Pyramid",
+      "Scar",
+      "Signal",
+      "Thug",
+      "UnderArmour"
+    ],
+    "earrings": [
+      "EARRING_Chubby_Stud",
+      "Female_Stud",
+      "None",
+      "Stud"
+    ],
+    "expression": [
+      "Chubby_Front",
+      "Chubby_Neutral",
+      "Chubby_Pouting",
+      "Chubby_Smile",
+      "ExpressionMasters",
+      "Female_Frown",
+      "Female_Neutral",
+      "Female_Pouting",
+      "Female_Smile",
+      "Female_Smirk",
+      "Frown",
+      "Male_Frown",
+      "Male_Neutral",
+      "Male_Pouting",
+      "Male_Smile",
+      "Male_Smirk",
+      "Neutral",
+      "None",
+      "Pouting",
+      "Smile"
+    ],
+    "glasses": [
+      "3DGlasses",
+      "CHubby_NEO",
+      "Chubby_3DGlasses",
+      "Chubby_DFrame",
+      "Chubby_DFrameFilled",
+      "Chubby_PiratePatch",
+      "Chubby_Shades",
+      "Chubby_VR",
+      "DFrame",
+      "DFrameFilled",
+      "Female_3DGlasses",
+      "Female_DFrame",
+      "Female_DFrameFilled",
+      "Female_Neo",
+      "Female_PiratePatch",
+      "Female_Shades",
+      "Female_VR",
+      "Neo",
+      "None",
+      "PiratePatch",
+      "Shades",
+      "VR",
+      "Zombie_DFrameFilled",
+      "Zombie_Neo",
+      "Zombie_PiratePatch",
+      "Zombie_Shades",
+      "Zombie_VR"
+    ],
+    "hair": [
+      "AZVet",
+      "Afro",
+      "Buns",
+      "Chubby_AZVet",
+      "Chubby_Afro",
+      "Chubby_Buns",
+      "Chubby_Dreads",
+      "Chubby_FadeRight",
+      "Chubby_FlatTop",
+      "Chubby_Mohawk",
+      "Chubby_MrT",
+      "Chubby_Pompadour",
+      "Chubby_Surfer",
+      "Chubby_TheAvatar",
+      "Dreads",
+      "FadeRight",
+      "Female_Afro",
+      "Female_Dreads",
+      "Female_FadeRight",
+      "Female_FlatTop",
+      "Female_Mohawk",
+      "Female_MrT",
+      "Female_Pompadour",
+      "Female_Surfer",
+      "Female_TheAvatar",
+      "Flattop",
+      "Male_AZVet",
+      "Male_Afro",
+      "Male_Buns",
+      "Male_Dreads",
+      "Male_FadeRight",
+      "Male_FlatTop",
+      "Male_Mohawk",
+      "Male_MrT",
+      "Male_Pompadour",
+      "Male_Surfer",
+      "Male_TheAvatar",
+      "Mohawk",
+      "MrT",
+      "None",
+      "Pompadour",
+      "Surfer"
+    ],
+    "hood": [
+      "Chubby_Classic",
+      "Classic",
+      "Classic - Copy",
+      "Female_Classic",
+      "Female_Hooded",
+      "Female_None",
+      "None",
+      "Zombie_Classic",
+      "Zombie_Hooded",
+      "Zombie_Hoodie"
+    ],
+    "mustache": [
+      "Chubby_DanPalmer",
+      "Chubby_Thick",
+      "Male_DanPalmer",
+      "Male_Thick",
+      "Mustache_Female_DanPalmer",
+      "Mustache_Female_Thick",
+      "None",
+      "Thick"
+    ],
+    "clothing_shirt": [
+      "Crew",
+      "Crew_Female",
+      "Female_Flannel",
+      "None",
+      "Tank",
+      "Tank_Female"
+    ],
+    "reference_normie": [
+      "NORMIE_0045_Snowfro",
+      "NORMIE_0045_Snowfro-export",
+      "NORMIE_0603_ACK",
+      "NORMIE_4354_Serc",
+      "NORMIE_4698_JackButcher",
+      "NORMIE_5974_Timpers",
+      "NORMIE_6576_Deekay",
+      "NORMIE_7409_PIV",
+      "NORMIE_7409_PIV-export"
+    ],
+    "mask": [
+      "None"
+    ],
+    "side_profile_layer": [
+      "ACCESSORY_Cigarette_Female",
+      "ACCESSORY_Cigarette_Male",
+      "BEARD_Female_Chop",
+      "BEARD_Female_Full",
+      "BEARD_Female_Goat",
+      "BEARD_Male_Chop",
+      "BEARD_Male_Full",
+      "BEARD_Male_Goat",
+      "EARRINGS_Dangler_Female",
+      "EARRINGS_Flower_Female",
+      "EARRINGS_Stud_Female",
+      "EARRING_Female_Flower",
+      "EARRING_Female_Stud",
+      "EARRING_Male_Flower",
+      "EARRING_Male_Stud",
+      "EXPRESSION_Neutral_Male",
+      "EXPRESSION_Smile_Female",
+      "EXPRESSION_Smile_Male",
+      "EXPRESSION_Smirk_Female",
+      "EXPRESSION_Smirk_Male",
+      "EYES_SquintLeft_Female",
+      "EYES_SquintLeft_Male",
+      "EYES_SquintRight_Female",
+      "EYES_SquintRight_Male",
+      "EYES_Stoned_Female",
+      "EYES_Stoned_Male",
+      "EYES_Straight_Female",
+      "EYES_Straight_Male",
+      "Earring",
+      "GLASSES_DFrameFilled_Female",
+      "GLASSES_DFrameFilled_Male",
+      "GLASSES_DFrame_Female",
+      "GLASSES_DFrame_Male",
+      "GLASSES_Neo",
+      "GLASSES_Neo_Female",
+      "GLASSES_Neo_Male",
+      "GLASSES_Shades",
+      "GLASSES_Shades_Female",
+      "GLASSES_Shades_Male",
+      "HAIR_AZVet_Female",
+      "HAIR_AZVet_Male",
+      "HAIR_Afro",
+      "HAIR_Afro_Female",
+      "HAIR_Afro_Female - Copy",
+      "HAIR_Afro_Male",
+      "HAIR_Dreads_Female",
+      "HAIR_Dreads_Male",
+      "HAIR_FadeRight_Female",
+      "HAIR_FadeRight_Male",
+      "HAIR_Mohawk",
+      "HAIR_Mohawk_Female",
+      "HAIR_Mohawk_Male",
+      "HAIR_MrT",
+      "HAIR_MrT_Female",
+      "HAIR_MrT_Male",
+      "HAIR_Surfer_Female",
+      "HAIR_Surfer_Male",
+      "HEAD_HeroA",
+      "HEAD_HeroA_Female",
+      "HEAD_HeroA_Male",
+      "HOOD_Classic",
+      "HOOD_Classic_Female",
+      "HOOD_Classic_Male",
+      "MUSTACHE_Female_Thick",
+      "MUSTACHE_Male_Thick",
+      "NECKLACE_Chain_Female",
+      "NECKLACE_Chain_Male",
+      "NECK_HeroA",
+      "NECK_HeroA_Female",
+      "SHIRT_Classic",
+      "SHIRT_Crew_Female",
+      "SHIRT_Crew_Male",
+      "SHIRT_FlannelDark_Female",
+      "SHIRT_FlannelDark_Male",
+      "SHIRT_Flannel_Female",
+      "SHIRT_Flannel_Male",
+      "Shades",
+      "TATTOO_AkuHeart_Female",
+      "TATTOO_AkuHeart_Male",
+      "TATTOO_Eagle_Female",
+      "TATTOO_Eagle_Male",
+      "TATTOO_Scar_Female",
+      "TATTOO_Scar_Male",
+      "TATTOO_Slashes",
+      "TATTOO_TearDrops",
+      "TATTOO_Tears_Female",
+      "TATTOO_Tears_Male"
+    ]
+  },
+  "mirror_pairs": [],
+  "mirror_pair_count": 0,
+  "body_morph_counts": {
+    "default": 70,
+    "agent": 3,
+    "alien": 4,
+    "chubby": 45,
+    "female": 57,
+    "legendary": 15,
+    "male": 45,
+    "sideprofile": 29,
+    "sideprofile_female": 35,
+    "sideprofile_male": 35,
+    "zombie": 15
+  },
+  "non_64_assets": [
+    "legendary\\NORMIE_0045_Snowfro-export.png",
+    "legendary\\NORMIE_7409_PIV-export.png"
+  ],
+  "empty_assets": [
+    "ACCESSORY_None.png",
+    "BEARD_None.png",
+    "BODY_None.png",
+    "BODYTATTOO_None.png",
+    "EARRINGS_None.png",
+    "EXPRESSION_None.png",
+    "EYES_None.png",
+    "female\\HOOD_Female_None.png",
+    "GLASSES_None.png",
+    "HAIR_None.png",
+    "HOOD_None.png",
+    "MASK_None.png",
+    "MUSTACHE_None.png",
+    "NECKLACE_None.png",
+    "SHIRT_None.png",
+    "TATTOO_None.png"
+  ],
+  "partial_alpha_assets": [],
+  "edge_touch_assets": [
+    "Agent\\BODY_Agent.png",
+    "alien\\BODY_Alien.png",
+    "Chubby\\ACCESSORY_Chubby_Cigarette.png",
+    "Chubby\\BODY_Chubby.png",
+    "Chubby\\HAIR_Chubby_Afro.png",
+    "Chubby\\HOOD_Chubby_Classic.png",
+    "female\\ACCESSORY_Female_Cigarette.png",
+    "female\\BODY_Female.png",
+    "female\\BODY_Female_Tank.png",
+    "female\\HOOD_Female_Classic.png",
+    "female\\HOOD_Female_Hooded.png",
+    "female\\SHIRT_Crew_Female.png",
+    "female\\SHIRT_Female_Flannel.png",
+    "female\\SHIRT_Tank_Female.png",
+    "HOOD_Classic - Copy.png",
+    "HOOD_Classic.png",
+    "legendary\\NORMIE_0045_Snowfro.png",
+    "legendary\\NORMIE_4354_Serc.png",
+    "legendary\\NORMIE_4698_JackButcher.png",
+    "legendary\\NORMIE_5974_Timpers.png",
+    "legendary\\NORMIE_6576_Deekay.png",
+    "legendary\\NORMIE_7409_PIV.png",
+    "male\\ACCESSORY_Male_Cigarette.png",
+    "male\\ACCESSORY_Male_Cigarette_Flipped.png",
+    "male\\BODY_Default.png",
+    "male\\BODY_Tank.png",
+    "male\\SHIRT_Crew.png",
+    "male\\SHIRT_Tank.png",
+    "MasterHead V2.png",
+    "sideprofile\\SP_HEAD_HeroA.png",
+    "sideprofile\\SP_HOOD_Classic.png",
+    "sideprofile\\SP_HOOD_Classic_Female.png",
+    "sideprofile\\SP_SHIRT_Classic.png",
+    "sideprofile\\SP_SHIRT_Crew_Female.png",
+    "sideprofile\\SP_SHIRT_Flannel_Female.png",
+    "SideProfile_Female\\SP_HOOD_Classic_Female.png",
+    "SideProfile_Female\\SP_SHIRT_Crew_Female.png",
+    "SideProfile_Female\\SP_SHIRT_Flannel_Female.png",
+    "SideProfile_Female\\SP_SHIRT_FlannelDark_Female.png",
+    "SideProfile_Male\\SP_ACCESSORY_Cigarette_Male.png",
+    "SideProfile_Male\\SP_HOOD_Classic_Male.png",
+    "SideProfile_Male\\SP_SHIRT_Crew_Male.png",
+    "SideProfile_Male\\SP_SHIRT_Flannel_Male.png",
+    "SideProfile_Male\\SP_SHIRT_FlannelDark_Male.png",
+    "zombie\\BODY_Zombie.png",
+    "zombie\\HOOD_Zombie_Classic.png",
+    "zombie\\HOOD_Zombie_Hooded.png",
+    "zombie\\HOOD_Zombie_Hoodie.png"
+  ],
+  "constitution_violations_sample": [
+    {
+      "path": "ACCESSORY_None.png",
+      "category": "accessory",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "Agent\\BODY_Agent.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "alien\\BODY_Alien.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "alien\\EYES_Alien.png",
+      "category": "eyes",
+      "issues": [
+        "orphans_8"
+      ]
+    },
+    {
+      "path": "BEARD_None.png",
+      "category": "beard",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "BODY_None.png",
+      "category": "body",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "BODYTATTOO_None.png",
+      "category": "tattoo",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "Chubby\\ACCESSORY_Chubby_Cigarette.png",
+      "category": "accessory",
+      "issues": [
+        "edge_touch",
+        "orphans_25"
+      ]
+    },
+    {
+      "path": "Chubby\\BODY_Chubby.png",
+      "category": "body",
+      "issues": [
+        "edge_touch",
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "Chubby\\EXPRESSION_Chubby_Front.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "Chubby\\EXPRESSION_Chubby_Pouting.png",
+      "category": "expression",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "Chubby\\EXPRESSION_Chubby_Smile.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "Chubby\\GLASSES_CHubby_NEO.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "Chubby\\HAIR_Chubby_Afro.png",
+      "category": "hair",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "Chubby\\HAIR_Chubby_Buns.png",
+      "category": "hair",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "Chubby\\HAIR_Chubby_Dreads.png",
+      "category": "hair",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "Chubby\\HAIR_Chubby_FadeRight.png",
+      "category": "hair",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "Chubby\\HOOD_Chubby_Classic.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "Chubby\\NECKLACE_Chubby_Chromies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_9"
+      ]
+    },
+    {
+      "path": "Chubby\\NECKLACE_Chubby_Normies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_6"
+      ]
+    },
+    {
+      "path": "Chubby\\NECKLACE_Chubby_X.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_9"
+      ]
+    },
+    {
+      "path": "Chubby\\TATTOO_Chubby_Marks.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "Chubby\\TATTOO_Chubby_Scar.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_8"
+      ]
+    },
+    {
+      "path": "Chubby\\TATTOO_Chubby_Tears.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_6"
+      ]
+    },
+    {
+      "path": "EARRINGS_None.png",
+      "category": "earrings",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "EARRINGS_Stud.png",
+      "category": "earrings",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "EXPRESSION_Frown.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "EXPRESSION_None.png",
+      "category": "expression",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "EXPRESSION_Pouting.png",
+      "category": "expression",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "EXPRESSION_Smile.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "EYES_None.png",
+      "category": "eyes",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "EYES_RunningMascara.png",
+      "category": "eyes",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "EYES_Stoned.png",
+      "category": "eyes",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "female\\ACCESSORY_Female_Cigarette.png",
+      "category": "accessory",
+      "issues": [
+        "edge_touch",
+        "orphans_25"
+      ]
+    },
+    {
+      "path": "female\\BODY_Female.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "female\\BODY_Female_Tank.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "female\\EARRINGS_Female_Stud.png",
+      "category": "earrings",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "female\\EXPRESSION_Female_Frown.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "female\\EXPRESSION_Female_Pouting.png",
+      "category": "expression",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "female\\EXPRESSION_Female_Smile.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "female\\EXPRESSION_Female_Smirk.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "female\\GLASSES_Female_DFrameFilled.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "female\\GLASSES_Female_Neo.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "female\\GLASSES_Female_PiratePatch.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "female\\GLASSES_Female_Shades.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "female\\GLASSES_Female_VR.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "female\\HAIR_Female_Dreads.png",
+      "category": "hair",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "female\\HAIR_Female_FadeRight.png",
+      "category": "hair",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "female\\HOOD_Female_Classic.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "female\\HOOD_Female_Hooded.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch",
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "female\\HOOD_Female_None.png",
+      "category": "hood",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Chain_Female Ornate.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Chain.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Chromies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Flower.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_14"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_HeyKoolAid.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Normies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Opal.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_8"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Ornate.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_Pendent.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "female\\NECKLACE_Female_UpsideDownCross.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_13"
+      ]
+    },
+    {
+      "path": "female\\SHIRT_Crew_Female.png",
+      "category": "clothing_shirt",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "female\\SHIRT_Female_Flannel.png",
+      "category": "clothing_shirt",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "female\\SHIRT_Tank_Female.png",
+      "category": "clothing_shirt",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "female\\TATTOO_Female_Scar.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_7"
+      ]
+    },
+    {
+      "path": "female\\TATTOO_Female_Tears.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_6"
+      ]
+    },
+    {
+      "path": "GLASSES_Neo.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "GLASSES_None.png",
+      "category": "glasses",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "HAIR_Buns.png",
+      "category": "hair",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "HAIR_Dreads.png",
+      "category": "hair",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "HAIR_FadeRight.png",
+      "category": "hair",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "HAIR_None.png",
+      "category": "hair",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "HEAD_HeroC.png",
+      "category": "head",
+      "issues": [
+        "orphans_16"
+      ]
+    },
+    {
+      "path": "HOOD_Classic - Copy.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "HOOD_Classic.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "HOOD_None.png",
+      "category": "hood",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_0045_Snowfro.png",
+      "category": "reference_normie",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_0603_ACK.png",
+      "category": "reference_normie",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_4354_Serc.png",
+      "category": "reference_normie",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_4698_JackButcher.png",
+      "category": "reference_normie",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_5974_Timpers.png",
+      "category": "reference_normie",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_6576_Deekay.png",
+      "category": "reference_normie",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "legendary\\NORMIE_7409_PIV.png",
+      "category": "reference_normie",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "male\\ACCESSORY_Male_Cigarette.png",
+      "category": "accessory",
+      "issues": [
+        "edge_touch",
+        "orphans_25"
+      ]
+    },
+    {
+      "path": "male\\ACCESSORY_Male_Cigarette_Flipped.png",
+      "category": "accessory",
+      "issues": [
+        "edge_touch",
+        "orphans_25"
+      ]
+    },
+    {
+      "path": "male\\BODY_Default.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "male\\BODY_Tank.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "male\\EXPRESSION_Male_Frown.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "male\\EXPRESSION_Male_Pouting.png",
+      "category": "expression",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "male\\EXPRESSION_Male_Smile.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "male\\EXPRESSION_Male_Smirk.png",
+      "category": "expression",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "male\\HAIR_Male_Buns.png",
+      "category": "hair",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "male\\HAIR_Male_Dreads.png",
+      "category": "hair",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "male\\HAIR_Male_FadeRight.png",
+      "category": "hair",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "male\\NECKLACE_Male_Chain.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_16"
+      ]
+    },
+    {
+      "path": "male\\NECKLACE_Male_Chromies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "male\\NECKLACE_Male_HappyFace.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "male\\NECKLACE_Male_Normies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "male\\NECKLACE_Male_Pendent.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "male\\SHIRT_Crew.png",
+      "category": "clothing_shirt",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "male\\SHIRT_Tank.png",
+      "category": "clothing_shirt",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "male\\TATTOO_Male_Scar.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "male\\TATTOO_Male_Stars.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "male\\TATTOO_Male_Thug.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_7"
+      ]
+    },
+    {
+      "path": "MASK_None.png",
+      "category": "mask",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "MasterHead V2.png",
+      "category": "head",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "MUSTACHE_None.png",
+      "category": "mustache",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "NECKLACE_Chain.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_9"
+      ]
+    },
+    {
+      "path": "NECKLACE_None.png",
+      "category": "necklace",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "SHIRT_None.png",
+      "category": "clothing_shirt",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HAIR_AZVet_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HAIR_FadeRight_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HAIR_Mohawk.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HAIR_Mohawk_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HAIR_Surfer_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HEAD_HeroA.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HOOD_Classic.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_HOOD_Classic_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_SHIRT_Classic.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_SHIRT_Crew_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_SHIRT_Flannel_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_TATTOO_Slashes.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_21"
+      ]
+    },
+    {
+      "path": "sideprofile\\SP_TATTOO_TearDrops.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_ACCESSORY_Cigarette_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_BEARD_Female_Chop.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_EARRING_Female_Stud.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_EXPRESSION_Smile_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_2"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_EXPRESSION_Smirk_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_HAIR_Afro_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_HAIR_AZVet_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_HAIR_FadeRight_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_HAIR_Mohawk_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_HAIR_Surfer_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_HOOD_Classic_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_NECKLACE_Chain_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_7"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_SHIRT_Crew_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_SHIRT_Flannel_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_SHIRT_FlannelDark_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_TATTOO_Scar_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "SideProfile_Female\\SP_TATTOO_Tears_Female.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_ACCESSORY_Cigarette_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch",
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_BEARD_Male_Chop.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_EARRING_Male_Stud.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_EXPRESSION_Smile_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_8"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_EXPRESSION_Smirk_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_3"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_HAIR_AZVet_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_HAIR_FadeRight_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_HAIR_Mohawk_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_HAIR_Surfer_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_HOOD_Classic_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_NECKLACE_Chain_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_7"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_SHIRT_Crew_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch",
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_SHIRT_Flannel_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_SHIRT_FlannelDark_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_TATTOO_Scar_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "SideProfile_Male\\SP_TATTOO_Tears_Male.png",
+      "category": "side_profile_layer",
+      "issues": [
+        "orphans_5"
+      ]
+    },
+    {
+      "path": "TATTOO_Marks.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_4"
+      ]
+    },
+    {
+      "path": "TATTOO_None.png",
+      "category": "tattoo",
+      "issues": [
+        "empty"
+      ]
+    },
+    {
+      "path": "TATTOO_Scar.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_8"
+      ]
+    },
+    {
+      "path": "TATTOO_Thug.png",
+      "category": "tattoo",
+      "issues": [
+        "orphans_8"
+      ]
+    },
+    {
+      "path": "zombie\\ACCESSORY_Zombie_Cigarette.png",
+      "category": "accessory",
+      "issues": [
+        "orphans_17"
+      ]
+    },
+    {
+      "path": "zombie\\BODY_Zombie.png",
+      "category": "body",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "zombie\\GLASSES_Zombie_Neo.png",
+      "category": "glasses",
+      "issues": [
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "zombie\\HOOD_Zombie_Classic.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "zombie\\HOOD_Zombie_Hooded.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch"
+      ]
+    },
+    {
+      "path": "zombie\\HOOD_Zombie_Hoodie.png",
+      "category": "hood",
+      "issues": [
+        "edge_touch",
+        "orphans_1"
+      ]
+    },
+    {
+      "path": "zombie\\NECKLACE_Zombie_Chromies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_12"
+      ]
+    },
+    {
+      "path": "zombie\\NECKLACE_Zombie_HeyKoolAid.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    },
+    {
+      "path": "zombie\\NECKLACE_Zombie_Normies.png",
+      "category": "necklace",
+      "issues": [
+        "orphans_10"
+      ]
+    }
+  ]
+}

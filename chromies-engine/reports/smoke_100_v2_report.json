@@ -1,0 +1,238 @@
+{
+  "generated_at": "2026-07-06T13:14:17.733805+00:00",
+  "validation_mode": "art_pipeline",
+  "count": 100,
+  "seed_start": 1,
+  "token_start": 1,
+  "output_dir": "X:\\Cursor\\Homies\\chromies-engine\\generated\\smoke_100_v2",
+  "source_art": {
+    "root": "X:\\Cursor\\Homies\\art-pipeline\\components",
+    "file_count": 353,
+    "hash_before": "7fdd33580f604615f4a058ac0447b080422ff7e7a13b7c8f5738fb54bd6a3da2",
+    "hash_after": "7fdd33580f604615f4a058ac0447b080422ff7e7a13b7c8f5738fb54bd6a3da2",
+    "unchanged": true,
+    "write_violations": []
+  },
+  "buckets": {
+    "passed": 100
+  },
+  "pass_count": 100,
+  "review_count": 0,
+  "reject_count": 0,
+  "top_reject_reasons": [],
+  "reject_examples": [],
+  "duplicate_trait_vectors": [],
+  "duplicate_trait_vector_count": 0,
+  "near_duplicate_combos": [
+    {
+      "near_dup_combo_key": "HeroA_Male|Male_Buns|None|Crew",
+      "token_a": 21,
+      "token_b": 25,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_FadeRight|Female_DFrame|None",
+      "token_a": 19,
+      "token_b": 26,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_FadeRight|None|Tank_Female",
+      "token_a": 3,
+      "token_b": 36,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_MrT|None|Crew_Female",
+      "token_a": 47,
+      "token_b": 57,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_MrT|None|Crew_Female",
+      "token_a": 47,
+      "token_b": 60,
+      "count": 3
+    },
+    {
+      "near_dup_combo_key": "HeroA_Male|None|DFrame|Tank_Female",
+      "token_a": 18,
+      "token_b": 61,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "Chubby_Male|Chubby_Afro|Chubby_DFrame|None",
+      "token_a": 33,
+      "token_b": 65,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_FadeRight|Female_Neo|Crew_Female",
+      "token_a": 29,
+      "token_b": 67,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "Chubby_Male|Chubby_MrT|Chubby_DFrame|None",
+      "token_a": 63,
+      "token_b": 69,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_Afro|None|Tank_Female",
+      "token_a": 41,
+      "token_b": 75,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Male|Male_Dreads|None|None",
+      "token_a": 49,
+      "token_b": 79,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|None|None|Flannel_Female",
+      "token_a": 34,
+      "token_b": 85,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Female|Female_Mohawk|None|Crew_Female",
+      "token_a": 4,
+      "token_b": 92,
+      "count": 2
+    },
+    {
+      "near_dup_combo_key": "HeroA_Male|Male_Afro|None|Tank",
+      "token_a": 11,
+      "token_b": 93,
+      "count": 2
+    }
+  ],
+  "near_duplicate_combo_count": 14,
+  "duplicate_prevention": {
+    "dedupe_reroll_total": 0,
+    "combo_cap_reroll_total": 0,
+    "event_count": 0,
+    "events": [],
+    "logged_events": []
+  },
+  "identity_strength": {
+    "min": 65,
+    "max": 71,
+    "average": 69.02,
+    "histogram": {
+      "60-69": 66,
+      "70-79": 34
+    },
+    "totals": [
+      69,
+      70,
+      70,
+      69,
+      67,
+      69,
+      70,
+      69,
+      68,
+      70,
+      69,
+      70,
+      68,
+      70,
+      69,
+      65,
+      68,
+      70,
+      70,
+      70,
+      68,
+      67,
+      67,
+      69,
+      69,
+      69,
+      67,
+      69,
+      70,
+      69,
+      69,
+      66,
+      70,
+      69,
+      69,
+      69,
+      70,
+      70,
+      69,
+      69,
+      69,
+      68,
+      69,
+      66,
+      69,
+      70,
+      69,
+      70,
+      69,
+      70,
+      70,
+      69,
+      69,
+      69,
+      70,
+      69,
+      69,
+      69,
+      69,
+      68,
+      68,
+      69,
+      69,
+      70,
+      67,
+      69,
+      69,
+      69,
+      69,
+      70,
+      69,
+      70,
+      70,
+      69,
+      70,
+      69,
+      70,
+      70,
+      70,
+      69,
+      68,
+      69,
+      68,
+      70,
+      71,
+      69,
+      70,
+      70,
+      69,
+      69,
+      68,
+      70,
+      69,
+      68,
+      70,
+      69,
+      70,
+      70,
+      69,
+      67
+    ]
+  },
+  "average_pixel_count": 4096.0,
+  "average_color_count": 13.21,
+  "min_pixel_count": 4096,
+  "max_pixel_count": 4096,
+  "calibration_notes": {
+    "v1_review_explanation": "Smoke v1 sent 21 tokens to review solely because Identity Strength totals fell in band 62-68 (below pass threshold 69). All had passing hard validation. v2 uses trigger-based review (weak subscores, orphans, legibility) instead of a narrow total-score band."
+  }
+}

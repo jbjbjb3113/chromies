@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-07-06T13:07:15.074135+00:00",
+  "validation_mode": "art_pipeline",
+  "count": 100,
+  "seed_start": 1,
+  "token_start": 1,
+  "output_dir": "X:\\Cursor\\Homies\\chromies-engine\\generated\\smoke_100",
+  "source_art": {
+    "root": "X:\\Cursor\\Homies\\art-pipeline\\components",
+    "file_count": 353,
+    "hash_before": "7fdd33580f604615f4a058ac0447b080422ff7e7a13b7c8f5738fb54bd6a3da2",
+    "hash_after": "7fdd33580f604615f4a058ac0447b080422ff7e7a13b7c8f5738fb54bd6a3da2",
+    "unchanged": true,
+    "write_violations": []
+  },
+  "buckets": {
+    "passed": 79,
+    "review": 21
+  },
+  "pass_count": 79,
+  "review_count": 21,
+  "reject_count": 0,
+  "top_reject_reasons": [
+    [
+      "IDENTITY_STRENGTH_REVIEW",
+      21
+    ]
+  ],
+  "reject_examples": [
+    {
+      "token_id": 5,
+      "seed": 5,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 67 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 9,
+      "seed": 9,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 68 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 13,
+      "seed": 13,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 68 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 16,
+      "seed": 16,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 65 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 17,
+      "seed": 17,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 68 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 21,
+      "seed": 21,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 68 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 22,
+      "seed": 22,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 67 (review band 62-68)"
+      ]
+    },
+    {
+      "token_id": 23,
+      "seed": 23,
+      "bucket": "review",
+      "reason": "IDENTITY_STRENGTH_REVIEW",
+      "reasons": [
+        "Identity Strength total 67 (review band 62-68)"
+      ]
+    }
+  ],
+  "duplicate_trait_vectors": [],
+  "duplicate_trait_vector_count": 0,
+  "average_pixel_count": 4096.0,
+  "average_color_count": 13.2,
+  "min_pixel_count": 4096,
+  "max_pixel_count": 4096
+}

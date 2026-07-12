@@ -1,0 +1,301 @@
+{
+  "seeds": [
+    {
+      "seed": 1,
+      "token_id": 1,
+      "palette_key": "SIGNAL_SHIRT_OLIVE",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"SIGNAL_SHIRT_OLIVE\"",
+        "Hood [2]: unknown value \"Female_None\"",
+        "Shirt [3]: unknown value \"Crew_Female\"",
+        "Eyes [11]: unknown value \"Female_Stoned\"",
+        "Glasses [13]: unknown value \"Female_3DGlasses\"",
+        "Hair [14]: unknown value \"Female_Afro\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "20b4012dbbe7c7a36f2e1b3c6665297630692806d4812acda4f8f15c594d29ff",
+      "compositor_preview_sha256": "20b4012dbbe7c7a36f2e1b3c6665297630692806d4812acda4f8f15c594d29ff",
+      "previews_match": true,
+      "differing_pixels": 0,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 5,
+      "token_id": 1,
+      "palette_key": "BLOOD_BLONDE",
+      "palette_id": 18,
+      "encode_warnings": [
+        "Tattoo [7]: unknown value \"Male_Stars\"",
+        "Eyes [11]: unknown value \"Male_Straight\"",
+        "Glasses [13]: unknown value \"DFrame\"",
+        "Hair [14]: unknown value \"Male_Dreads\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "387df14906f2a1caf50f0f24f78f3aa413fee0c09581a32300d3c8752edc1436",
+      "compositor_preview_sha256": "387df14906f2a1caf50f0f24f78f3aa413fee0c09581a32300d3c8752edc1436",
+      "previews_match": true,
+      "differing_pixels": 0,
+      "palette_roundtrip": "encodable_match"
+    },
+    {
+      "seed": 42,
+      "token_id": 1,
+      "palette_key": "SIGNAL_SHIRT_ORANGE",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"SIGNAL_SHIRT_ORANGE\"",
+        "Body [4]: unknown value \"Chubby\"",
+        "Tattoo [7]: unknown value \"Chubby_Scar\"",
+        "Mustache [10]: unknown value \"Chubby_Thick\"",
+        "Eyes [11]: unknown value \"Chubby_Squint_Right\"",
+        "Hair [14]: unknown value \"Chubby_FadeRight\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "e431ddbd08579baaa6194d93496d7161762ce52ec6184dd20a7cc0a63750a33c",
+      "compositor_preview_sha256": "d514672247ffe1d9e8f29dcf66cdd443504525112bb92ea17638654ba83a5c65",
+      "previews_match": false,
+      "differing_pixels": 925,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 123,
+      "token_id": 1,
+      "palette_key": "ACID_SHIRT_BLUE",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"ACID_SHIRT_BLUE\"",
+        "Tattoo [7]: unknown value \"Male_Stars\"",
+        "Beard [9]: unknown value \"Male_Goat\"",
+        "Eyes [11]: unknown value \"Male_WideOpen\"",
+        "Hair [14]: unknown value \"Male_Dreads\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "8cd437f9010d586b7f8769fc197580714188b041814a2addad51edefb32caf0d",
+      "compositor_preview_sha256": "828bda8c4f1c84624fec78c85bb6e7c421998ca99d7599f52244be6231c42208",
+      "previews_match": false,
+      "differing_pixels": 2238,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 999,
+      "token_id": 1,
+      "palette_key": "SIGNAL_SHIRT_GOLD",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"SIGNAL_SHIRT_GOLD\"",
+        "Hood [2]: unknown value \"Female_None\"",
+        "Shirt [3]: unknown value \"Crew_Female\"",
+        "Tattoo [7]: unknown value \"Female_AkuHeart\"",
+        "Eyes [11]: unknown value \"Female_Straight\"",
+        "Glasses [13]: unknown value \"Female_DFrame\"",
+        "Hair [14]: unknown value \"Female_Dreads\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "780fff60b846ee2b29f2c51afbe47cac4e7458cef6d8727eb0977cd5bc1e54fc",
+      "compositor_preview_sha256": "780fff60b846ee2b29f2c51afbe47cac4e7458cef6d8727eb0977cd5bc1e54fc",
+      "previews_match": true,
+      "differing_pixels": 0,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 12345,
+      "token_id": 1,
+      "palette_key": "SIGNAL_SHIRT_GOLD",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"SIGNAL_SHIRT_GOLD\"",
+        "Tattoo [7]: unknown value \"Male_Thug\"",
+        "Beard [9]: unknown value \"Male_Full\"",
+        "Mustache [10]: unknown value \"Male_DanPalmer\"",
+        "Eyes [11]: unknown value \"Male_Stoned\"",
+        "Hair [14]: unknown value \"Male_Surfer\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "350e4282a263117e970efa2175f95fe50da797a8748dcbc6683c4c6aa3b8196c",
+      "compositor_preview_sha256": "106e43a4d52feca88c728650b4eed2ba7521b28d713b1765f1258428c3b62516",
+      "previews_match": false,
+      "differing_pixels": 211,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 7777,
+      "token_id": 1,
+      "palette_key": "GHOST_SHIRT_RED",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"GHOST_SHIRT_RED\"",
+        "Hood [2]: unknown value \"Female_None\"",
+        "Shirt [3]: unknown value \"Flannel_Female\"",
+        "Beard [9]: unknown value \"Female_Goat\"",
+        "Eyes [11]: unknown value \"Female_LookLeft\"",
+        "Hair [14]: unknown value \"Female_Dreads\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "5edb33dc936b9d38b6bf882775cbbcc6c5cbfd5bf6736c117c3d63d014028687",
+      "compositor_preview_sha256": "fe7a02dcdd663c6436ceb88ca95d10633c05ec0f86589bb3ec69ac7b2d790b35",
+      "previews_match": false,
+      "differing_pixels": 2249,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 4242,
+      "token_id": 1,
+      "palette_key": "BLOOD_SHIRT_ORANGE",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"BLOOD_SHIRT_ORANGE\"",
+        "Mustache [10]: unknown value \"Male_Thick\"",
+        "Eyes [11]: unknown value \"Male_Stoned\"",
+        "Hair [14]: unknown value \"Male_Afro\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "7267cae8a1545be2abab9e4cf99f5caa27021a5b20da110e217082b25d70f674",
+      "compositor_preview_sha256": "5f6fd5e6facb903aa17cfe403de8decf432b2500600e884eb9ef51c991192866",
+      "previews_match": false,
+      "differing_pixels": 2241,
+      "palette_roundtrip": "not_encodable"
+    },
+    {
+      "seed": 100,
+      "token_id": 1,
+      "palette_key": "BLOOD",
+      "palette_id": 4,
+      "encode_warnings": [
+        "Hood [2]: unknown value \"Female_None\"",
+        "Shirt [3]: unknown value \"Flannel_Female\"",
+        "Tattoo [7]: unknown value \"Female_AkuHeart\"",
+        "Eyes [11]: unknown value \"Female_LookRight\"",
+        "Glasses [13]: unknown value \"Female_DFrame\"",
+        "Hair [14]: unknown value \"Female_Dreads\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "58a034a396a6b8fecff51b4d9b4e8d693c3907e83f9464a8dc16031c277dff5e",
+      "compositor_preview_sha256": "58a034a396a6b8fecff51b4d9b4e8d693c3907e83f9464a8dc16031c277dff5e",
+      "previews_match": true,
+      "differing_pixels": 0,
+      "palette_roundtrip": "encodable_match"
+    },
+    {
+      "seed": 500,
+      "token_id": 1,
+      "palette_key": "SIGNAL_SHIRT_ORANGE",
+      "palette_id": 0,
+      "encode_warnings": [
+        "Palette [1]: unknown value \"SIGNAL_SHIRT_ORANGE\"",
+        "Hood [2]: unknown value \"Female_None\"",
+        "Eyes [11]: unknown value \"Female_CrissCrossed\"",
+        "Hair [14]: unknown value \"Female_FadeRight\""
+      ],
+      "role_buffer_match": true,
+      "payload_preview_sha256": "53c8a757473d38c28a3e56c54fe1baf5064ce44c1d9acfc3f5724f110f3a744d",
+      "compositor_preview_sha256": "a18742d2224cac359d6ab376ef4826fa0bca92a2f025854312ab8e2c79c0e559",
+      "previews_match": false,
+      "differing_pixels": 211,
+      "palette_roundtrip": "not_encodable"
+    }
+  ],
+  "palette_audit": {
+    "summary": {
+      "encodable_match": 28,
+      "encodable_mismatch": 10,
+      "not_encodable": 42
+    },
+    "not_encodable": [
+      "ACID_SHIRT_BLUE",
+      "ACID_SHIRT_GOLD",
+      "ACID_SHIRT_GREEN",
+      "ACID_SHIRT_OLIVE",
+      "ACID_SHIRT_ORANGE",
+      "ACID_SHIRT_PURPLE",
+      "ACID_SHIRT_RED",
+      "BLOOD_SHIRT_BLUE",
+      "BLOOD_SHIRT_GOLD",
+      "BLOOD_SHIRT_GREEN",
+      "BLOOD_SHIRT_OLIVE",
+      "BLOOD_SHIRT_ORANGE",
+      "BLOOD_SHIRT_PURPLE",
+      "BLOOD_SHIRT_RED",
+      "CYAN_SHIRT_BLUE",
+      "CYAN_SHIRT_GOLD",
+      "CYAN_SHIRT_GREEN",
+      "CYAN_SHIRT_OLIVE",
+      "CYAN_SHIRT_ORANGE",
+      "CYAN_SHIRT_PURPLE",
+      "CYAN_SHIRT_RED",
+      "GHOST_SHIRT_BLUE",
+      "GHOST_SHIRT_GOLD",
+      "GHOST_SHIRT_GREEN",
+      "GHOST_SHIRT_OLIVE",
+      "GHOST_SHIRT_ORANGE",
+      "GHOST_SHIRT_PURPLE",
+      "GHOST_SHIRT_RED",
+      "MOSS_SHIRT_BLUE",
+      "MOSS_SHIRT_GOLD",
+      "MOSS_SHIRT_GREEN",
+      "MOSS_SHIRT_OLIVE",
+      "MOSS_SHIRT_ORANGE",
+      "MOSS_SHIRT_PURPLE",
+      "MOSS_SHIRT_RED",
+      "SIGNAL_SHIRT_BLUE",
+      "SIGNAL_SHIRT_GOLD",
+      "SIGNAL_SHIRT_GREEN",
+      "SIGNAL_SHIRT_OLIVE",
+      "SIGNAL_SHIRT_ORANGE",
+      "SIGNAL_SHIRT_PURPLE",
+      "SIGNAL_SHIRT_RED"
+    ],
+    "encodable_mismatch": [
+      {
+        "palette_key": "GOLD",
+        "byte": 27,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_ACK",
+        "byte": 29,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_DEEKAY",
+        "byte": 33,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_DOPEMIND",
+        "byte": 35,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_JACKBUTCHER",
+        "byte": 31,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_PIV",
+        "byte": 34,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_SERC",
+        "byte": 30,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_SNOWFRO",
+        "byte": 28,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_TIMPERS",
+        "byte": 32,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      },
+      {
+        "palette_key": "NORMIE_UPCOMING2",
+        "byte": 36,
+        "notes": "Encoded byte maps to different on-chain colors than pipeline palette table."
+      }
+    ]
+  }
+}

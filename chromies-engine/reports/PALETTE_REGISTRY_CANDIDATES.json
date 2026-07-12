@@ -1,0 +1,1857 @@
+{
+  "generated_at": "2026-07-06T20:40:19.605186+00:00",
+  "schema_version": "1.0.0",
+  "roles": [
+    "background",
+    "mask_dark",
+    "mask_mid",
+    "highlight",
+    "skin_shadow_deep",
+    "skin_shadow",
+    "skin_mid",
+    "skin_light",
+    "skin_highlight",
+    "hood",
+    "eye_socket",
+    "eye_glow",
+    "eye_signal",
+    "hair_dark",
+    "hair_mid",
+    "hair_bright"
+  ],
+  "shirt_palettes": [
+    {
+      "name": "ACID_SHIRT_BLUE",
+      "parent_base": "ACID",
+      "shirt_color": "BLUE",
+      "proposed_palette_id": 51,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#0f4a55"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "ACID_SHIRT_GOLD",
+      "parent_base": "ACID",
+      "shirt_color": "GOLD",
+      "proposed_palette_id": 50,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#a4b81e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "ACID_SHIRT_GREEN",
+      "parent_base": "ACID",
+      "shirt_color": "GREEN",
+      "proposed_palette_id": 49,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#1c5410"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "ACID_SHIRT_OLIVE",
+      "parent_base": "ACID",
+      "shirt_color": "OLIVE",
+      "proposed_palette_id": 48,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#4a520e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "ACID_SHIRT_ORANGE",
+      "parent_base": "ACID",
+      "shirt_color": "ORANGE",
+      "proposed_palette_id": 47,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#7a4e12"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "ACID_SHIRT_PURPLE",
+      "parent_base": "ACID",
+      "shirt_color": "PURPLE",
+      "proposed_palette_id": 46,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#4a1554"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "ACID_SHIRT_RED",
+      "parent_base": "ACID",
+      "shirt_color": "RED",
+      "proposed_palette_id": 45,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0f1a16",
+          "child_rgb": "#6e2014"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_BLUE",
+      "parent_base": "BLOOD",
+      "shirt_color": "BLUE",
+      "proposed_palette_id": 72,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#1e1450"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_GOLD",
+      "parent_base": "BLOOD",
+      "shirt_color": "GOLD",
+      "proposed_palette_id": 71,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#b8921e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_GREEN",
+      "parent_base": "BLOOD",
+      "shirt_color": "GREEN",
+      "proposed_palette_id": 70,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#1e440c"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_OLIVE",
+      "parent_base": "BLOOD",
+      "shirt_color": "OLIVE",
+      "proposed_palette_id": 69,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#523a0e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_ORANGE",
+      "parent_base": "BLOOD",
+      "shirt_color": "ORANGE",
+      "proposed_palette_id": 68,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#8a3a10"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_PURPLE",
+      "parent_base": "BLOOD",
+      "shirt_color": "PURPLE",
+      "proposed_palette_id": 67,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#581030"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "BLOOD_SHIRT_RED",
+      "parent_base": "BLOOD",
+      "shirt_color": "RED",
+      "proposed_palette_id": 66,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#180806",
+          "child_rgb": "#8a1a12"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_BLUE",
+      "parent_base": "CYAN",
+      "shirt_color": "BLUE",
+      "proposed_palette_id": 58,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#16307a"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_GOLD",
+      "parent_base": "CYAN",
+      "shirt_color": "GOLD",
+      "proposed_palette_id": 57,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#9a9428"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_GREEN",
+      "parent_base": "CYAN",
+      "shirt_color": "GREEN",
+      "proposed_palette_id": 56,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#0e4434"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_OLIVE",
+      "parent_base": "CYAN",
+      "shirt_color": "OLIVE",
+      "proposed_palette_id": 55,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#3a4418"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_ORANGE",
+      "parent_base": "CYAN",
+      "shirt_color": "ORANGE",
+      "proposed_palette_id": 54,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#7a3e1a"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_PURPLE",
+      "parent_base": "CYAN",
+      "shirt_color": "PURPLE",
+      "proposed_palette_id": 53,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#3a1560"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "CYAN_SHIRT_RED",
+      "parent_base": "CYAN",
+      "shirt_color": "RED",
+      "proposed_palette_id": 52,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#0e1a26",
+          "child_rgb": "#6e1428"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_BLUE",
+      "parent_base": "GHOST",
+      "shirt_color": "BLUE",
+      "proposed_palette_id": 65,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#252050"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_GOLD",
+      "parent_base": "GHOST",
+      "shirt_color": "GOLD",
+      "proposed_palette_id": 64,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#9a8a32"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_GREEN",
+      "parent_base": "GHOST",
+      "shirt_color": "GREEN",
+      "proposed_palette_id": 63,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#1a4028"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_OLIVE",
+      "parent_base": "GHOST",
+      "shirt_color": "OLIVE",
+      "proposed_palette_id": 62,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#44401e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_ORANGE",
+      "parent_base": "GHOST",
+      "shirt_color": "ORANGE",
+      "proposed_palette_id": 61,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#6e3a20"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_PURPLE",
+      "parent_base": "GHOST",
+      "shirt_color": "PURPLE",
+      "proposed_palette_id": 60,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#3e1a5e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "GHOST_SHIRT_RED",
+      "parent_base": "GHOST",
+      "shirt_color": "RED",
+      "proposed_palette_id": 59,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#3d3445",
+          "child_rgb": "#5c1a2e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_BLUE",
+      "parent_base": "MOSS",
+      "shirt_color": "BLUE",
+      "proposed_palette_id": 79,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#14384a"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_GOLD",
+      "parent_base": "MOSS",
+      "shirt_color": "GOLD",
+      "proposed_palette_id": 78,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#a89e28"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_GREEN",
+      "parent_base": "MOSS",
+      "shirt_color": "GREEN",
+      "proposed_palette_id": 77,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#2a5414"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_OLIVE",
+      "parent_base": "MOSS",
+      "shirt_color": "OLIVE",
+      "proposed_palette_id": 76,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#4a4a10"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_ORANGE",
+      "parent_base": "MOSS",
+      "shirt_color": "ORANGE",
+      "proposed_palette_id": 75,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#7a4a16"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_PURPLE",
+      "parent_base": "MOSS",
+      "shirt_color": "PURPLE",
+      "proposed_palette_id": 74,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#4a1e3a"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "MOSS_SHIRT_RED",
+      "parent_base": "MOSS",
+      "shirt_color": "RED",
+      "proposed_palette_id": 73,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c2618",
+          "child_rgb": "#6e2812"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_BLUE",
+      "parent_base": "SIGNAL",
+      "shirt_color": "BLUE",
+      "proposed_palette_id": 44,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#211a67"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_GOLD",
+      "parent_base": "SIGNAL",
+      "shirt_color": "GOLD",
+      "proposed_palette_id": 43,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#b3a92d"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_GREEN",
+      "parent_base": "SIGNAL",
+      "shirt_color": "GREEN",
+      "proposed_palette_id": 42,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#144311"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_OLIVE",
+      "parent_base": "SIGNAL",
+      "shirt_color": "OLIVE",
+      "proposed_palette_id": 41,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#4c3d13"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_ORANGE",
+      "parent_base": "SIGNAL",
+      "shirt_color": "ORANGE",
+      "proposed_palette_id": 40,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#74411d"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_PURPLE",
+      "parent_base": "SIGNAL",
+      "shirt_color": "PURPLE",
+      "proposed_palette_id": 39,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#55153e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    },
+    {
+      "name": "SIGNAL_SHIRT_RED",
+      "parent_base": "SIGNAL",
+      "shirt_color": "RED",
+      "proposed_palette_id": 38,
+      "slot_diffs": [
+        {
+          "role_index": 9,
+          "role_name": "hood",
+          "parent_rgb": "#1c1c26",
+          "child_rgb": "#79241e"
+        }
+      ],
+      "diff_role_indices": [
+        9
+      ],
+      "only_hood_diff": true,
+      "encodable_today": false,
+      "encoded_byte_today": null
+    }
+  ],
+  "normie_palettes": [
+    {
+      "name": "NORMIE_SNOWFRO",
+      "on_chain_byte": 28,
+      "wraparound_base_id": 2,
+      "wraparound_family": "CYAN",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#0a0e14",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#152028",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#d8eef5",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#1a1008",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_ACK",
+      "on_chain_byte": 29,
+      "wraparound_base_id": 3,
+      "wraparound_family": "GHOST",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#1f1a22",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#322a36",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#fafafa",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#5a4030",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_SERC",
+      "on_chain_byte": 30,
+      "wraparound_base_id": 4,
+      "wraparound_family": "BLOOD",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#100404",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#220808",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#f5d8d2",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#3a2a1c",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_JACKBUTCHER",
+      "on_chain_byte": 31,
+      "wraparound_base_id": 5,
+      "wraparound_family": "MOSS",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#0e1208",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#1c2515",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#ebe2c8",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#2a1c0a",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_TIMPERS",
+      "on_chain_byte": 32,
+      "wraparound_base_id": 6,
+      "wraparound_family": "id_6",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#1a0d0e",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#2a1518",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#f0eae0",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#4c270f",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_DEEKAY",
+      "on_chain_byte": 33,
+      "wraparound_base_id": 7,
+      "wraparound_family": "id_7",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#1a0d0e",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#2a1518",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#f0eae0",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#4c270f",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_PIV",
+      "on_chain_byte": 34,
+      "wraparound_base_id": 8,
+      "wraparound_family": "id_8",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#1a0d0e",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#2a1518",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#f0eae0",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#4c270f",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_DOPEMIND",
+      "on_chain_byte": 35,
+      "wraparound_base_id": 9,
+      "wraparound_family": "id_9",
+      "pipeline_vs_wrapped_diff_count": 15,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#0a1410",
+          "child_rgb": "#141414"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#152620",
+          "child_rgb": "#242424"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#e8f5d8",
+          "child_rgb": "#f5f5f5"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#3a2a1c",
+          "child_rgb": "#2a2b2c"
+        },
+        {
+          "role_index": 5,
+          "role_name": "skin_shadow",
+          "parent_rgb": "#7a5a3e",
+          "child_rgb": "#363739"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    },
+    {
+      "name": "NORMIE_UPCOMING2",
+      "on_chain_byte": 36,
+      "wraparound_base_id": 10,
+      "wraparound_family": "id_10",
+      "pipeline_vs_wrapped_diff_count": 16,
+      "pipeline_vs_wrapped_diffs": [
+        {
+          "role_index": 0,
+          "role_name": "background",
+          "parent_rgb": "#e3e5e4",
+          "child_rgb": "#e8e8e8"
+        },
+        {
+          "role_index": 1,
+          "role_name": "mask_dark",
+          "parent_rgb": "#0a1410",
+          "child_rgb": "#1a1a1a"
+        },
+        {
+          "role_index": 2,
+          "role_name": "mask_mid",
+          "parent_rgb": "#152620",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 3,
+          "role_name": "highlight",
+          "parent_rgb": "#e8f5d8",
+          "child_rgb": "#f0f0f0"
+        },
+        {
+          "role_index": 4,
+          "role_name": "skin_shadow_deep",
+          "parent_rgb": "#3a2a1c",
+          "child_rgb": "#3a3a3a"
+        }
+      ],
+      "requires_explicit_registry_entry": true
+    }
+  ],
+  "hair_variant_palettes": [
+    {
+      "name": "SIGNAL_BLONDE",
+      "on_chain_byte": 6,
+      "parent_base": "SIGNAL",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#4d051b",
+          "child_rgb": "#3d2e00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#9b2352",
+          "child_rgb": "#8c6914"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#db5a91",
+          "child_rgb": "#e8b84b"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "SIGNAL_GREY",
+      "on_chain_byte": 7,
+      "parent_base": "SIGNAL",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#4d051b",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#9b2352",
+          "child_rgb": "#707070"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#db5a91",
+          "child_rgb": "#c0c0c0"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "SIGNAL_RED",
+      "on_chain_byte": 8,
+      "parent_base": "SIGNAL",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#4d051b",
+          "child_rgb": "#3d0a00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#9b2352",
+          "child_rgb": "#8c2200"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#db5a91",
+          "child_rgb": "#d94f1e"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "ACID_BLONDE",
+      "on_chain_byte": 9,
+      "parent_base": "ACID",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#1f3a14",
+          "child_rgb": "#3d2e00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#52a01e",
+          "child_rgb": "#8c6914"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#9be042",
+          "child_rgb": "#e8b84b"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "ACID_GREY",
+      "on_chain_byte": 10,
+      "parent_base": "ACID",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#1f3a14",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#52a01e",
+          "child_rgb": "#707070"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#9be042",
+          "child_rgb": "#c0c0c0"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "ACID_RED",
+      "on_chain_byte": 11,
+      "parent_base": "ACID",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#1f3a14",
+          "child_rgb": "#3d0a00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#52a01e",
+          "child_rgb": "#8c2200"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#9be042",
+          "child_rgb": "#d94f1e"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "CYAN_BLONDE",
+      "on_chain_byte": 12,
+      "parent_base": "CYAN",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#0d2a3a",
+          "child_rgb": "#3d2e00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#1e6a90",
+          "child_rgb": "#8c6914"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#4ec3e8",
+          "child_rgb": "#e8b84b"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "CYAN_GREY",
+      "on_chain_byte": 13,
+      "parent_base": "CYAN",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#0d2a3a",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#1e6a90",
+          "child_rgb": "#707070"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#4ec3e8",
+          "child_rgb": "#c0c0c0"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "CYAN_RED",
+      "on_chain_byte": 14,
+      "parent_base": "CYAN",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#0d2a3a",
+          "child_rgb": "#3d0a00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#1e6a90",
+          "child_rgb": "#8c2200"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#4ec3e8",
+          "child_rgb": "#d94f1e"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "GHOST_BLONDE",
+      "on_chain_byte": 15,
+      "parent_base": "GHOST",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#2a2030",
+          "child_rgb": "#3d2e00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#6a5a8a",
+          "child_rgb": "#8c6914"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#a8a0c8",
+          "child_rgb": "#e8b84b"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "GHOST_GREY",
+      "on_chain_byte": 16,
+      "parent_base": "GHOST",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#2a2030",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#6a5a8a",
+          "child_rgb": "#707070"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#a8a0c8",
+          "child_rgb": "#c0c0c0"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "GHOST_RED",
+      "on_chain_byte": 17,
+      "parent_base": "GHOST",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#2a2030",
+          "child_rgb": "#3d0a00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#6a5a8a",
+          "child_rgb": "#8c2200"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#a8a0c8",
+          "child_rgb": "#d94f1e"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "BLOOD_BLONDE",
+      "on_chain_byte": 18,
+      "parent_base": "BLOOD",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#3a0606",
+          "child_rgb": "#3d2e00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#8a1818",
+          "child_rgb": "#8c6914"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#d83838",
+          "child_rgb": "#e8b84b"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "BLOOD_GREY",
+      "on_chain_byte": 19,
+      "parent_base": "BLOOD",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#3a0606",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#8a1818",
+          "child_rgb": "#707070"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#d83838",
+          "child_rgb": "#c0c0c0"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "BLOOD_RED",
+      "on_chain_byte": 20,
+      "parent_base": "BLOOD",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#3a0606",
+          "child_rgb": "#3d0a00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#8a1818",
+          "child_rgb": "#8c2200"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#d83838",
+          "child_rgb": "#d94f1e"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "MOSS_BLONDE",
+      "on_chain_byte": 21,
+      "parent_base": "MOSS",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#283018",
+          "child_rgb": "#3d2e00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#5a6830",
+          "child_rgb": "#8c6914"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#8a9848",
+          "child_rgb": "#e8b84b"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "MOSS_GREY",
+      "on_chain_byte": 22,
+      "parent_base": "MOSS",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#283018",
+          "child_rgb": "#2a2a2a"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#5a6830",
+          "child_rgb": "#707070"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#8a9848",
+          "child_rgb": "#c0c0c0"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    },
+    {
+      "name": "MOSS_RED",
+      "on_chain_byte": 23,
+      "parent_base": "MOSS",
+      "slot_diffs": [
+        {
+          "role_index": 13,
+          "role_name": "hair_dark",
+          "parent_rgb": "#283018",
+          "child_rgb": "#3d0a00"
+        },
+        {
+          "role_index": 14,
+          "role_name": "hair_mid",
+          "parent_rgb": "#5a6830",
+          "child_rgb": "#8c2200"
+        },
+        {
+          "role_index": 15,
+          "role_name": "hair_bright",
+          "parent_rgb": "#8a9848",
+          "child_rgb": "#d94f1e"
+        }
+      ],
+      "diff_role_indices": [
+        13,
+        14,
+        15
+      ],
+      "hair_slot_only": true
+    }
+  ],
+  "pattern_summary": {
+    "shirt_palettes_count": 42,
+    "all_shirt_only_hood_diff": true,
+    "unique_diff_slots_across_shirts": [
+      9
+    ],
+    "hood_diff_count": 42
+  },
+  "proposed_shirt_color_table": {
+    "SIGNAL": {
+      "RED": "#79241e",
+      "PURPLE": "#55153e",
+      "ORANGE": "#74411d",
+      "OLIVE": "#4c3d13",
+      "GREEN": "#144311",
+      "GOLD": "#b3a92d",
+      "BLUE": "#211a67"
+    },
+    "ACID": {
+      "RED": "#6e2014",
+      "PURPLE": "#4a1554",
+      "ORANGE": "#7a4e12",
+      "OLIVE": "#4a520e",
+      "GREEN": "#1c5410",
+      "GOLD": "#a4b81e",
+      "BLUE": "#0f4a55"
+    },
+    "CYAN": {
+      "RED": "#6e1428",
+      "PURPLE": "#3a1560",
+      "ORANGE": "#7a3e1a",
+      "OLIVE": "#3a4418",
+      "GREEN": "#0e4434",
+      "GOLD": "#9a9428",
+      "BLUE": "#16307a"
+    },
+    "GHOST": {
+      "RED": "#5c1a2e",
+      "PURPLE": "#3e1a5e",
+      "ORANGE": "#6e3a20",
+      "OLIVE": "#44401e",
+      "GREEN": "#1a4028",
+      "GOLD": "#9a8a32",
+      "BLUE": "#252050"
+    },
+    "BLOOD": {
+      "RED": "#8a1a12",
+      "PURPLE": "#581030",
+      "ORANGE": "#8a3a10",
+      "OLIVE": "#523a0e",
+      "GREEN": "#1e440c",
+      "GOLD": "#b8921e",
+      "BLUE": "#1e1450"
+    },
+    "MOSS": {
+      "RED": "#6e2812",
+      "PURPLE": "#4a1e3a",
+      "ORANGE": "#7a4a16",
+      "OLIVE": "#4a4a10",
+      "GREEN": "#2a5414",
+      "GOLD": "#a89e28",
+      "BLUE": "#14384a"
+    }
+  },
+  "proposed_id_allocation": {
+    "existing_bytes": "0-37 unchanged",
+    "shirt_palette_ids": "38-79",
+    "next_free_after_shirts": 80
+  },
+  "recommended_representation": "role_slot_remap",
+  "recommendation_rationale": "All 42 shirt palettes differ from their parent base family at exactly role index 9 (hood) only. Hair BLONDE/GREY/RED variants use a separate pattern (indices 13-15) already encoded as full palette IDs 6-23."
+}

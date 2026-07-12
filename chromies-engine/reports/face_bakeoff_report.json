@@ -1,0 +1,205 @@
+{
+  "generated_at": "2026-07-06T16:00:48.009119+00:00",
+  "method": "Identical compositor seeds; only head overlay swapped (Classic=HeroA, Angular/Rugged=v2.1)",
+  "families": {
+    "Classic": "art-pipeline HeroA head (read-only)",
+    "Angular": "X:\\Cursor\\Homies\\chromies-engine\\derived_assets\\face_forge\\v2_1\\HEAD_Angular_*_v2_1.png",
+    "Rugged": "X:\\Cursor\\Homies\\chromies-engine\\derived_assets\\face_forge\\v2_1\\HEAD_Rugged_*_v2_1.png"
+  },
+  "seeds": {
+    "random": [
+      7,
+      23,
+      42,
+      101,
+      256,
+      512,
+      777,
+      999
+    ],
+    "hair": 42,
+    "accessories": 128,
+    "skin_tones": 314
+  },
+  "sheets": {
+    "random": "reports\\face_bakeoff_random.png",
+    "hair": "reports\\face_bakeoff_hair.png",
+    "accessories": "reports\\face_bakeoff_accessories.png",
+    "skin_tones": "reports\\face_bakeoff_skin_tones.png",
+    "blind": "reports\\face_bakeoff_blind.png"
+  },
+  "blind_answer_key": [
+    {
+      "set": 1,
+      "seed": 7,
+      "column_order": [
+        "Angular",
+        "Rugged",
+        "Classic"
+      ]
+    },
+    {
+      "set": 2,
+      "seed": 23,
+      "column_order": [
+        "Rugged",
+        "Angular",
+        "Classic"
+      ]
+    },
+    {
+      "set": 3,
+      "seed": 42,
+      "column_order": [
+        "Classic",
+        "Rugged",
+        "Angular"
+      ]
+    },
+    {
+      "set": 4,
+      "seed": 101,
+      "column_order": [
+        "Classic",
+        "Angular",
+        "Rugged"
+      ]
+    },
+    {
+      "set": 5,
+      "seed": 256,
+      "column_order": [
+        "Angular",
+        "Rugged",
+        "Classic"
+      ]
+    },
+    {
+      "set": 6,
+      "seed": 512,
+      "column_order": [
+        "Classic",
+        "Angular",
+        "Rugged"
+      ]
+    },
+    {
+      "set": 7,
+      "seed": 777,
+      "column_order": [
+        "Rugged",
+        "Classic",
+        "Angular"
+      ]
+    },
+    {
+      "set": 8,
+      "seed": 999,
+      "column_order": [
+        "Rugged",
+        "Angular",
+        "Classic"
+      ]
+    }
+  ],
+  "random_rows": [
+    {
+      "seed": 7,
+      "palette": "CYAN"
+    },
+    {
+      "seed": 23,
+      "palette": "BLOOD_SHIRT_RED"
+    },
+    {
+      "seed": 42,
+      "palette": "SIGNAL_SHIRT_ORANGE"
+    },
+    {
+      "seed": 101,
+      "palette": "SIGNAL_SHIRT_PURPLE"
+    },
+    {
+      "seed": 256,
+      "palette": "GHOST_SHIRT_RED"
+    },
+    {
+      "seed": 512,
+      "palette": "BLOOD_GREY"
+    },
+    {
+      "seed": 777,
+      "palette": "GHOST"
+    },
+    {
+      "seed": 999,
+      "palette": "SIGNAL_SHIRT_GOLD"
+    }
+  ],
+  "hair_rows": [
+    {
+      "hair": "Male_Afro"
+    },
+    {
+      "hair": "Male_Mohawk"
+    },
+    {
+      "hair": "Male_Pompadour"
+    },
+    {
+      "hair": "Male_FlatTop"
+    },
+    {
+      "hair": "Male_Dreads"
+    }
+  ],
+  "accessory_rows": [
+    {
+      "case": "Clean"
+    },
+    {
+      "case": "Glasses"
+    },
+    {
+      "case": "Beard"
+    },
+    {
+      "case": "Glasses + Beard"
+    },
+    {
+      "case": "Hoodie"
+    },
+    {
+      "case": "Necklace"
+    },
+    {
+      "case": "Tank"
+    }
+  ],
+  "skin_rows": [
+    {
+      "palette": "SIGNAL"
+    },
+    {
+      "palette": "SIGNAL_SHIRT_RED"
+    },
+    {
+      "palette": "CYAN"
+    },
+    {
+      "palette": "BLOOD"
+    },
+    {
+      "palette": "GHOST"
+    }
+  ],
+  "evaluation_prompts": [
+    "Can the face family be identified before noticing the hairstyle?",
+    "Does the face still read as HeroA?",
+    "Do existing hairstyles still fit naturally?",
+    "Do glasses still align perfectly?",
+    "Do beards still align correctly?",
+    "Is anything visually uncanny?",
+    "Do the three families increase perceived diversity?"
+  ]
+}
