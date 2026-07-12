@@ -10,6 +10,7 @@ import { decodeEventLog, formatEther, zeroAddress } from "viem";
 import SiteHeader from "../components/SiteHeader.jsx";
 import SiteFooter from "../components/SiteFooter.jsx";
 import WalletButton from "../components/WalletButton.jsx";
+import SpectrumWordmark from "../components/SpectrumWordmark.jsx";
 import {
   chromiesCommemorativeAbi,
   getChromiesCommemorativeAddress,
@@ -325,7 +326,7 @@ export default function LaunchEdition() {
             Chain Launch Edition
           </div>
           <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">
-            CHROMIES: ROBINHOOD CHAIN COMMEMORATIVE
+            <SpectrumWordmark text="CHROMIES" />: ROBINHOOD CHAIN COMMEMORATIVE
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
             The canonical first 100 — fully on-chain, rendered by the same engine as the

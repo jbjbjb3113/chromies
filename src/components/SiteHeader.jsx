@@ -1,21 +1,7 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import WalletButton from "./WalletButton.jsx";
-
-// Spectrum tokens, red -> pink, one per letter (8 letters, 8 tokens — exact
-// match). Kept in sync with the same treatment on the home splash
-// (src/pages/MintingSoon.jsx).
-const WORDMARK = "CHROMIES";
-const SPECTRUM_TOKENS = [
-  "--chroma-red",
-  "--chroma-orange",
-  "--chroma-yellow",
-  "--chroma-green",
-  "--chroma-teal",
-  "--chroma-blue",
-  "--chroma-purple",
-  "--chroma-pink",
-];
+import SpectrumWordmark from "./SpectrumWordmark.jsx";
 
 export default function SiteHeader() {
   const navLinkClass = ({ isActive }) =>
@@ -26,18 +12,11 @@ export default function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-30 border-b border-ink bg-paper/95 text-ink backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-        <Link
-          to="/"
-          className="shrink-0 font-symtext text-sm font-bold uppercase tracking-[0.15em]"
-        >
-          {WORDMARK.split("").map((letter, i) => (
-            <span
-              key={`${letter}-${i}`}
-              style={{ color: `var(${SPECTRUM_TOKENS[i % SPECTRUM_TOKENS.length]})` }}
-            >
-              {letter}
-            </span>
-          ))}
+        <Link to="/" className="shrink-0">
+          <SpectrumWordmark
+            text="CHROMIES"
+            className="font-symtext text-sm font-bold uppercase tracking-[0.15em]"
+          />
         </Link>
         <div className="flex min-w-0 items-center gap-4 sm:gap-6">
           <nav
