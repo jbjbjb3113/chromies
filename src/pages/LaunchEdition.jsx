@@ -450,6 +450,43 @@ export default function LaunchEdition() {
         </div>
       </section>
 
+      <section className="border-b border-ink bg-white px-6 py-20">
+        <div className="mx-auto max-w-[65ch]">
+          <h2 className="text-left">
+            <SpectrumWordmark
+              text="FROM THE ARTIST"
+              className="font-symtext text-2xl font-black uppercase tracking-tight sm:text-3xl"
+            />
+          </h2>
+          <div className="mt-6 text-left text-base leading-relaxed text-ink/80">
+            <p>
+              I've been drawing these characters pixel by pixel for a long time. Every
+              face, every haircut, every stupid cigarette — mine, one at a time, 64×64.
+            </p>
+            <p className="mt-4">
+              This started as an idea for the Normies hackathon — build something fast,
+              ship it, see what sticks. Then it turned into something better: the first
+              100 Chromies ever sealed on-chain, minted the same week Robinhood Chain
+              itself was born. Not a preview, not a promo — the canonical first hundred,
+              pulled from the same collection that ships on Ethereum as 5,150.
+            </p>
+            <p className="mt-4">
+              Everything is rendered by the contract itself. No servers, no IPFS, no
+              links that die. If the internet burned down tomorrow, these would still
+              draw themselves from the chain. That's the whole point — art that doesn't
+              need me, or anyone, to keep existing.
+            </p>
+            <p className="mt-4">
+              If you're holding one at snapshot, you're first in line for the main
+              launch: whitelist access and two free ETH-edition Chromies per
+              commemorative.
+            </p>
+            <p className="mt-4">The first hundred. It starts here.</p>
+            <p className="mt-8 font-bold text-ink">— JB</p>
+          </div>
+        </div>
+      </section>
+
       <SiteFooter />
     </div>
   );
