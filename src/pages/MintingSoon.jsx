@@ -62,7 +62,7 @@ export default function MintingSoon() {
             letterSpacing: "0.3em",
           }}
         >
-          5,150 FULLY ON-CHAIN
+          FULLY ON-CHAIN
         </p>
 
         <p

@@ -266,7 +266,7 @@ export default function Landing() {
       <footer className="border-t border-ink bg-ink text-white">
         <div className="mx-auto max-w-[960px] px-5 py-16 sm:px-6">
           <p className="text-center text-sm tracking-wide text-neutral-400">
-            5,150 faces. Reveal cheap. Inscribe when ready.
+            On-chain faces. Reveal cheap. Inscribe when ready.
           </p>
           <div className="mt-8 flex justify-center">
             <a

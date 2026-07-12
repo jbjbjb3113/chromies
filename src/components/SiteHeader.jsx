@@ -2,6 +2,21 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import WalletButton from "./WalletButton.jsx";
 
+// Spectrum tokens, red -> pink, one per letter (8 letters, 8 tokens — exact
+// match). Kept in sync with the same treatment on the home splash
+// (src/pages/MintingSoon.jsx).
+const WORDMARK = "CHROMIES";
+const SPECTRUM_TOKENS = [
+  "--chroma-red",
+  "--chroma-orange",
+  "--chroma-yellow",
+  "--chroma-green",
+  "--chroma-teal",
+  "--chroma-blue",
+  "--chroma-purple",
+  "--chroma-pink",
+];
+
 export default function SiteHeader() {
   const navLinkClass = ({ isActive }) =>
     `shrink-0 text-xs uppercase tracking-widest transition-colors hover:text-signal ${
@@ -13,9 +28,16 @@ export default function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
         <Link
           to="/"
-          className="shrink-0 font-symtext text-sm font-bold uppercase tracking-[0.15em] text-ink"
+          className="shrink-0 font-symtext text-sm font-bold uppercase tracking-[0.15em]"
         >
-          CHROMIES
+          {WORDMARK.split("").map((letter, i) => (
+            <span
+              key={`${letter}-${i}`}
+              style={{ color: `var(${SPECTRUM_TOKENS[i % SPECTRUM_TOKENS.length]})` }}
+            >
+              {letter}
+            </span>
+          ))}
         </Link>
         <div className="flex min-w-0 items-center gap-4 sm:gap-6">
           <nav
@@ -25,9 +47,15 @@ export default function SiteHeader() {
               <NavLink to="/faq" className={navLinkClass}>
                 FAQ
               </NavLink>
-              <NavLink to="/mint" className={navLinkClass}>
-                Mint
-              </NavLink>
+              <span
+                className="shrink-0 cursor-not-allowed text-xs uppercase tracking-widest"
+                style={{ color: "var(--chroma-muted)" }}
+                title="Coming soon"
+                aria-disabled="true"
+              >
+                Mint{" "}
+                <span className="text-[0.65em] tracking-normal">(Coming soon)</span>
+              </span>
               <NavLink to="/launch-edition" className={navLinkClass}>
                 Chain Launch
               </NavLink>

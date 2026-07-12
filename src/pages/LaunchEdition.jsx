@@ -325,11 +325,15 @@ export default function LaunchEdition() {
             Chain Launch Edition
           </div>
           <h1 className="text-5xl font-black tracking-tighter sm:text-7xl">
-            CHROMIES ON ROBINHOOD CHAIN
+            CHROMIES: ROBINHOOD CHAIN COMMEMORATIVE
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base font-medium text-ink/70 sm:text-lg">
-            A 100-piece commemorative edition marking the Chromies launch on Robinhood Chain.
-            Same on-chain rendering engine, new home.
+            The canonical first 100 — fully on-chain, rendered by the same engine as the
+            original Chromies collection. 0.0169 ETH, max 2 per wallet.
+          </p>
+          <p className="mx-auto mt-3 max-w-xl text-sm font-medium text-ink/60">
+            Holders at snapshot receive whitelist access and free ETH-edition Chromies at
+            main launch.
           </p>
 
           <div className="mt-10">
