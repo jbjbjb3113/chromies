@@ -5,19 +5,27 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IChromaCanvas} from "./IChromaCanvas.sol";
+import {IChromaPaletteData} from "./IChromaPaletteData.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
 import {IChromaToken} from "./IChromaToken.sol";
+import {ChromaRendererPngLib} from "./ChromaRendererPngLib.sol";
 import {ChromaRendererSvgLib} from "./ChromaRendererSvgLib.sol";
 
 contract ChromaRenderer is Ownable {
     using Strings for uint256;
 
+    /// @dev Universal collection background — renderer-level only (not payload / registry slot 0).
+    string internal constant UNIVERSAL_BACKGROUND = "#e3e5e4";
+    bytes3 internal constant UNIVERSAL_BACKGROUND_RGB = 0xE3E5E4;
+
     IChromaStorage public immutable chromaStorage;
+    IChromaPaletteData public immutable paletteData;
     IChromaCanvas public chromaCanvas;
     IChromaToken public chroma;
 
-    constructor(address storageAddress, address initialOwner) Ownable(initialOwner) {
+    constructor(address storageAddress, address paletteDataAddress, address initialOwner) Ownable(initialOwner) {
         chromaStorage = IChromaStorage(storageAddress);
+        paletteData = IChromaPaletteData(paletteDataAddress);
     }
 
     function setCanvas(address canvasAddress) external onlyOwner {
@@ -28,41 +36,95 @@ contract ChromaRenderer is Ownable {
         chroma = IChromaToken(chromaAddress);
     }
 
+    /// @notice Secondary path renderer — used by `/chroma/:id/image.svg` API and dev tooling.
     function renderSVG(uint256 tokenId) public view returns (string memory) {
-        ChromaRendererSvgLib.SvgRenderContext memory ctx = _loadSvgContext(tokenId);
-        bytes memory body = ChromaRendererSvgLib.buildBody(ctx);
-        return ChromaRendererSvgLib.wrapSvg(ctx.palette[0], body);
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        ChromaRendererSvgLib.SvgRenderContext memory ctx = _loadSvgContext(tokenId, traits);
+        return string(ChromaRendererSvgLib.buildSvgBytes(ctx));
     }
 
-    function _loadSvgContext(uint256 tokenId)
+    /// @notice Primary tokenURI image shell — SVG wrapper embedding indexed PNG (base64).
+    function renderImageShell(uint256 tokenId) public view returns (string memory) {
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        return string(_buildImageShellBytes(tokenId, traits));
+    }
+
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        bytes memory shell = _buildImageShellBytes(tokenId, traits);
+        bytes memory json = _encodeTokenJson(tokenId, traits, shell);
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+    }
+
+    function _buildImageShellBytes(uint256 tokenId, bytes memory traits) internal view returns (bytes memory) {
+        ChromaRendererPngLib.RenderContext memory ctx = _loadPngContext(tokenId, traits);
+        bytes memory png = ChromaRendererPngLib.buildPng(ctx);
+        return ChromaRendererPngLib.buildImageShellSvg(png);
+    }
+
+    function _loadPngContext(uint256 tokenId, bytes memory traits)
+        internal
+        view
+        returns (ChromaRendererPngLib.RenderContext memory ctx)
+    {
+        ctx.pixels = chromaStorage.getPixels(tokenId);
+        ctx.paletteRgb = ChromaRendererPngLib.paletteHexToRgb(_paletteForRender(traits));
+        ctx.paletteRgb[0] = UNIVERSAL_BACKGROUND_RGB;
+        (ctx.diffIndexes, ctx.diffColors) = _getDiff(tokenId);
+    }
+
+    function _loadSvgContext(uint256 tokenId, bytes memory traits)
         internal
         view
         returns (ChromaRendererSvgLib.SvgRenderContext memory ctx)
     {
         ctx.tokenId = tokenId;
-        bytes memory traits = chromaStorage.getTraits(tokenId);
         ctx.pixels = chromaStorage.getPixels(tokenId);
-        ctx.palette = _paletteForToken(traits);
+        ctx.palette = _paletteForRender(traits);
         (ctx.diffIndexes, ctx.diffColors) = _getDiff(tokenId);
     }
 
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
+    /// @dev Measurement hook — PNG path artifacts + phase gas for profiling.
+    function profileRenderParts(uint256 tokenId)
+        external
+        view
+        returns (
+            ChromaRendererPngLib.RenderContext memory ctx,
+            bytes memory png,
+            bytes memory shell,
+            uint256 crcGas,
+            ChromaRendererPngLib.PhaseGas memory phases
+        )
+    {
         bytes memory traits = chromaStorage.getTraits(tokenId);
-        string memory svg = renderSVG(tokenId);
-        bytes memory json = _encodeTokenJson(tokenId, traits, svg);
-        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+        ctx = _loadPngContext(tokenId, traits);
+        phases = ChromaRendererPngLib.profilePhases(ctx);
+        crcGas = phases.crcRuntime;
+        png = ChromaRendererPngLib.buildPng(ctx);
+        shell = ChromaRendererPngLib.buildImageShellSvg(png);
     }
 
-    function _encodeTokenJson(uint256 tokenId, bytes memory traits, string memory svg)
+    function profileTokenJsonParts(uint256 tokenId, bytes memory shellBytes)
+        external
+        view
+        returns (bytes memory traits, bytes memory json, string memory uri)
+    {
+        traits = chromaStorage.getTraits(tokenId);
+        json = _encodeTokenJson(tokenId, traits, shellBytes);
+        uri = string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+    }
+
+    function _encodeTokenJson(uint256 tokenId, bytes memory traits, bytes memory shellBytes)
         internal
         view
         returns (bytes memory)
     {
-        string memory image = string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(bytes(svg))));
+        string memory image =
+            string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(shellBytes)));
         bytes memory coreTraits = abi.encodePacked(
             _jsonAttribute("Character", _characterLabel(uint8(traits[0]))),
             ",",
-            _jsonAttribute("Palette", _paletteName(uint8(traits[1]))),
+            _jsonAttribute("Palette", paletteData.paletteName(uint8(traits[1]))),
             ",",
             _jsonAttribute("Hood", _hoodLabel(uint8(traits[2]))),
             ",",
@@ -92,9 +154,11 @@ contract ChromaRenderer is Ownable {
         );
 
         return abi.encodePacked(
-            '{"name":"Chroma #',
-            tokenId.toString(),
-            '","description":"Chroma is a fully on-chain 64x64 indexed-color NFT.","image":"',
+            '{"name":"',
+            _tokenName(tokenId),
+            '","description":"',
+            _tokenDescription(),
+            '","image":"',
             image,
             '","attributes":[',
             coreTraits,
@@ -109,11 +173,22 @@ contract ChromaRenderer is Ownable {
         );
     }
 
+    /// @dev ETH-collection name string, UNCHANGED. Override in a chain-specific
+    /// subclass (e.g. Robinhood Chain deployment) rather than editing this default.
+    function _tokenName(uint256 tokenId) internal view virtual returns (string memory) {
+        return string(abi.encodePacked("Chroma #", tokenId.toString()));
+    }
+
+    /// @dev ETH-collection description string, UNCHANGED. Override in a chain-specific
+    /// subclass (e.g. Robinhood Chain deployment) rather than editing this default.
+    function _tokenDescription() internal view virtual returns (string memory) {
+        return "Chroma is a fully on-chain 64x64 indexed-color NFT.";
+    }
+
     function _getDiff(uint256 tokenId) internal view returns (uint16[] memory diffIndexes, uint8[] memory diffColors) {
         if (address(chromaCanvas) == address(0)) {
             return (new uint16[](0), new uint8[](0));
         }
-        // Canvas diff arrays are passed through to SVG rendering; no ownerOf check needed here.
         return chromaCanvas.getDiff(tokenId);
     }
 
@@ -168,185 +243,14 @@ contract ChromaRenderer is Ownable {
         );
     }
 
-    function _paletteForToken(bytes memory traits) internal pure returns (string[16] memory palette) {
-        return _paletteColors(uint8(traits[1]));
+    function _paletteForToken(bytes memory traits) internal view returns (string[16] memory palette) {
+        return paletteData.paletteColors(uint8(traits[1]));
     }
 
-    function _paletteColors(uint8 paletteId) internal pure returns (string[16] memory palette) {
-        if (paletteId == 26) {
-            return [
-                "#e3e5e4", "#0e0d08", "#27261d", "#481213", "#403e31", "#61472f", "#535342", "#646451",
-                "#76745b", "#7f7e7a", "#a0855a", "#858869", "#999c81", "#adb195", "#c2c4ba", "#c2c4ba"
-            ];
-        }
-        if (paletteId == 27) {
-            return [
-                "#e8e0c8", "#3d2e00", "#5c4600", "#fff8e0", "#7a5c00", "#a07800", "#c49a00", "#d4aa00",
-                "#e8c840", "#c49a00", "#5c4400", "#c8960a", "#ffd700", "#9a7400", "#b08800", "#e8c020"
-            ];
-        }
-        if (paletteId == 37) {
-            return [
-                "#e3e5e4", "#0a0a0a", "#191919", "#f5f5f5", "#2d2d2d", "#505050", "#737373", "#969696",
-                "#b9b9b9", "#1e1e1e", "#0f0f0f", "#5a5a5a", "#c8c8c8", "#141414", "#464646", "#828282"
-            ];
-        }
-        uint8 id = paletteId % 26;
-        if (id == 0) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#4d051b", "#9b2352", "#db5a91"
-            ];
-        }
-        if (id == 1) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#1f3a14", "#52a01e", "#9be042"
-            ];
-        }
-        if (id == 2) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8"
-            ];
-        }
-        if (id == 3) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8"
-            ];
-        }
-        if (id == 4) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#3a0606", "#8a1818", "#d83838"
-            ];
-        }
-        if (id == 5) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#283018", "#5a6830", "#8a9848"
-            ];
-        }
-        if (id == 6) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 7) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 8) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 9) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 10) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 11) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 12) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 13) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 14) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 15) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 16) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 17) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 18) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 19) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 20) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 21) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 22) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 23) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 24) {
-            return [
-                "#e3e5e4", "#0f0c08", "#1e1a12", "#e8dfc8", "#1a1510", "#3d3428", "#6b5e4a", "#9a8a72",
-                "#c8b89a", "#2a2218", "#0a0e08", "#4a7a20", "#8ac830", "#1a1510", "#4a3e2e", "#7a6a52"
-            ];
-        }
-
-        return [
-            "#e1e5e0", "#080704", "#1d1a05", "#c8c39b", "#2c280f", "#5e593d", "#877f51", "#9e9662",
-            "#b8b17e", "#211e0c", "#131412", "#55523b", "#fdfbfb", "#383525", "#5d5840", "#b2ac78"
-        ];
+    /// @dev Palette for raster output — slot 0 forced to universal background per collection ruling.
+    function _paletteForRender(bytes memory traits) internal view returns (string[16] memory palette) {
+        palette = _paletteForToken(traits);
+        palette[0] = UNIVERSAL_BACKGROUND;
     }
 
     function _characterLabel(uint8 value) internal pure returns (string memory) {
@@ -356,39 +260,6 @@ contract ChromaRenderer is Ownable {
         if (value == 4) return "Agent";
         if (value == 8) return "Zombie";
         return "Human";
-    }
-
-    function _paletteName(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "SIGNAL";
-        if (value == 1) return "ACID";
-        if (value == 2) return "CYAN";
-        if (value == 3) return "GHOST";
-        if (value == 4) return "BLOOD";
-        if (value == 5) return "MOSS";
-        if (value == 6) return "SIGNAL_BLONDE";
-        if (value == 7) return "SIGNAL_GREY";
-        if (value == 8) return "SIGNAL_RED";
-        if (value == 9) return "ACID_BLONDE";
-        if (value == 10) return "ACID_GREY";
-        if (value == 11) return "ACID_RED";
-        if (value == 12) return "CYAN_BLONDE";
-        if (value == 13) return "CYAN_GREY";
-        if (value == 14) return "CYAN_RED";
-        if (value == 15) return "GHOST_BLONDE";
-        if (value == 16) return "GHOST_GREY";
-        if (value == 17) return "GHOST_RED";
-        if (value == 18) return "BLOOD_BLONDE";
-        if (value == 19) return "BLOOD_GREY";
-        if (value == 20) return "BLOOD_RED";
-        if (value == 21) return "MOSS_BLONDE";
-        if (value == 22) return "MOSS_GREY";
-        if (value == 23) return "MOSS_RED";
-        if (value == 24) return "CAT";
-        if (value == 25) return "ALIEN";
-        if (value == 26) return "ZOMBIE";
-        if (value == 27) return "GOLD";
-        if (value == 37) return "AGENT";
-        return "SIGNAL";
     }
 
     function _hoodLabel(uint8 value) internal pure returns (string memory) {
