@@ -10,6 +10,7 @@ import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
 import {TraitFixtures} from "./Chroma.t.sol";
 import {ChromaTestHelpers} from "./ChromaTestHelpers.sol";
+import {ChromaFixtures} from "./ChromaFixtures.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
@@ -269,7 +270,7 @@ contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
     }
 
     function test_BurnCount_TraitInTokenURI() external {
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
         renderer.setCanvas(address(canvas));
         renderer.setChroma(address(chroma));
         chroma.setRenderer(address(renderer));
@@ -574,7 +575,7 @@ contract ChromaCanvasV2Test is Test, ChromaTestHelpers {
     }
 
     function _setupRenderer() internal returns (ChromaRenderer renderer) {
-        renderer = new ChromaRenderer(address(storageContract), address(this));
+        renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
         renderer.setCanvas(address(canvas));
         renderer.setChroma(address(chroma));
         chroma.setRenderer(address(renderer));

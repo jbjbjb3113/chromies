@@ -5,6 +5,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {TraitFixtures, WriterCaller} from "./Chroma.t.sol";
+import {ChromaFixtures} from "./ChromaFixtures.sol";
 
 contract ChromaRendererDensityTest {
     function test_TokenURI_RealisticPixelDensity_1000() external {
@@ -22,7 +23,7 @@ contract ChromaRendererDensityTest {
     function test_RenderSVG_RealisticPixelDensity_MatchesLegacyAlgorithm() external {
         WriterCaller writer = new WriterCaller();
         ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
         bytes memory pixels = _pixelsWithNonZeroCount(1641);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(1641);
@@ -37,7 +38,7 @@ contract ChromaRendererDensityTest {
     function _assertTokenURIForDensity(uint256 tokenId, uint256 pixelCount) internal {
         WriterCaller writer = new WriterCaller();
         ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
         bytes memory pixels = _pixelsWithNonZeroCount(pixelCount);
         bytes memory traits = TraitFixtures.traitsWithTotalPixels(uint16(pixelCount));

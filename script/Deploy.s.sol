@@ -6,6 +6,7 @@ import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {Chroma} from "../contracts/Chroma.sol";
 import {ChromaCanvasV2} from "../contracts/ChromaCanvasV2.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
+import {ChromaPaletteData} from "../contracts/generated/ChromaPaletteData.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
 
 contract DeployScript is Script {
@@ -26,7 +27,7 @@ contract DeployScript is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        ChromaStorage chromaStorage = new ChromaStorage(deployer, address(0));
+        ChromaStorage chromaStorage = new ChromaStorage(deployer, deployer);
         Chroma chroma = new Chroma(address(chromaStorage), deployer, deployer, ROYALTY_BPS);
         chromaStorage.setWriter(address(chroma));
 
@@ -35,7 +36,8 @@ contract DeployScript is Script {
         PixelMarketplace pixelMarketplace = new PixelMarketplace();
         chromaCanvas.setOperatorApproval(address(pixelMarketplace), true);
 
-        ChromaRenderer chromaRenderer = new ChromaRenderer(address(chromaStorage), deployer);
+        ChromaPaletteData paletteData = new ChromaPaletteData();
+        ChromaRenderer chromaRenderer = new ChromaRenderer(address(chromaStorage), address(paletteData), deployer);
         chromaRenderer.setCanvas(address(chromaCanvas));
         chromaRenderer.setChroma(address(chroma));
         chroma.setRenderer(address(chromaRenderer));
@@ -51,6 +53,7 @@ contract DeployScript is Script {
         console2.log("Chroma:", address(chroma));
         console2.log("ChromaCanvasV2:", address(chromaCanvas));
         console2.log("ChromaRenderer:", address(chromaRenderer));
+        console2.log("ChromaPaletteData:", address(paletteData));
         console2.log("PixelMarketplace:", address(pixelMarketplace));
         console2.log("MerkleRootOne:", vm.toString(MERKLE_ROOT_ONE));
         console2.log("MerkleRootTwo:", vm.toString(MERKLE_ROOT_TWO));

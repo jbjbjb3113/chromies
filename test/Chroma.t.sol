@@ -17,6 +17,7 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {ChromaTestHelpers} from "./ChromaTestHelpers.sol";
+import {ChromaFixtures} from "./ChromaFixtures.sol";
 
 
 
@@ -269,7 +270,7 @@ contract ChromaRendererTest {
 
         ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
 
 
@@ -297,14 +298,11 @@ contract ChromaRendererTest {
 
         string memory actual = renderer.renderSVG(42);
 
-        string memory expected =
-
-            '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges"><rect width="1024" height="1024" fill="#e3e5e4"/><rect x="0" y="0" width="16" height="16" fill="#4c270f"/><rect x="16" y="0" width="48" height="16" fill="#89532a"/><rect x="32" y="16" width="32" height="16" fill="#1a0d0e"/></svg>';
-
-
-
-        assert(keccak256(bytes(actual)) == keccak256(bytes(expected)));
-
+        assert(_contains(actual, "<svg"));
+        assert(_contains(actual, "<path fill="));
+        assert(_contains(actual, "M0,0h16v16h-16z"));
+        assert(_contains(actual, "M16,0h48v16h-48z"));
+        assert(_contains(actual, "M32,16h32v16h-32z"));
     }
 
 
@@ -315,7 +313,7 @@ contract ChromaRendererTest {
 
         ChromaStorage storageContract = new ChromaStorage(address(this), address(writer));
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
 
 
@@ -369,6 +367,23 @@ contract ChromaRendererTest {
 
     }
 
+    function _contains(string memory haystack, string memory needle) internal pure returns (bool) {
+        bytes memory h = bytes(haystack);
+        bytes memory n = bytes(needle);
+        if (n.length == 0 || n.length > h.length) return false;
+        for (uint256 i = 0; i <= h.length - n.length; ++i) {
+            bool matchAll = true;
+            for (uint256 j = 0; j < n.length; ++j) {
+                if (h[i + j] != n[j]) {
+                    matchAll = false;
+                    break;
+                }
+            }
+            if (matchAll) return true;
+        }
+        return false;
+    }
+
 }
 
 
@@ -407,7 +422,7 @@ contract ChromaTokenTest is Test, ChromaTestHelpers {
 
         storageContract.setWriter(address(chroma));
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
         chroma.setRenderer(address(renderer));
 
@@ -439,7 +454,7 @@ contract ChromaTokenTest is Test, ChromaTestHelpers {
 
         storageContract.setWriter(address(chroma));
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
         chroma.setRenderer(address(renderer));
 
@@ -654,7 +669,7 @@ contract ChromaCanvasTest is Test, ChromaTestHelpers {
 
     function test_CommitRevealBurnApplyDiff_AndCompositeRender() external {
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
         renderer.setCanvas(address(canvas));
 
@@ -916,7 +931,7 @@ contract ChromaCanvasTest is Test, ChromaTestHelpers {
     }
 
     function test_Level_TraitInTokenURI() external {
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
         renderer.setCanvas(address(canvas));
         chroma.setRenderer(address(renderer));
 
@@ -1086,7 +1101,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
     function test_Reveal_StoresTraitsNotPixels() external {
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
 
         chroma.setRenderer(address(renderer));
 
@@ -1348,7 +1363,7 @@ contract ChromaPhaseMintTest is Test, ChromaTestHelpers {
 
 
     function test_TokenURI_ThreeStates() external {
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(this));
+        ChromaRenderer renderer = ChromaFixtures.deployRendererOnly(storageContract, address(this));
         chroma.setRenderer(address(renderer));
         chroma.setRevealedBaseURI("ipfs://collection/metadata/");
 

@@ -4,8 +4,10 @@ pragma solidity ^0.8.24;
 import {Script, console2} from "forge-std/Script.sol";
 import {Chroma} from "../contracts/Chroma.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
+import {ChromaPaletteData} from "../contracts/generated/ChromaPaletteData.sol";
 
-/// @notice Redeploy ChromaRenderer only and point the live Chroma contract at it.
+/// @notice Redeploy ChromaRenderer + ChromaPaletteData (split stack) and wire Chroma.
+/// @dev Prefer script/RedeployPaletteStack.s.sol for full migration runbook + Etherscan steps.
 contract RedeployRendererScript is Script {
     function run() external {
         bytes memory keyBytes = vm.envBytes("PRIVATE_KEY");
@@ -18,7 +20,8 @@ contract RedeployRendererScript is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        ChromaRenderer renderer = new ChromaRenderer(storageAddress, deployer);
+        ChromaPaletteData paletteData = new ChromaPaletteData();
+        ChromaRenderer renderer = new ChromaRenderer(storageAddress, address(paletteData), deployer);
         renderer.setCanvas(canvasAddress);
         renderer.setChroma(chromaAddress);
 
@@ -27,6 +30,7 @@ contract RedeployRendererScript is Script {
 
         vm.stopBroadcast();
 
+        console2.log("ChromaPaletteData:", address(paletteData));
         console2.log("ChromaRenderer:", address(renderer));
         console2.log("Chroma:", chromaAddress);
         console2.log("ChromaStorage:", storageAddress);

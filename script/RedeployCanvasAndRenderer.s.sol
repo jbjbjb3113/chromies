@@ -6,6 +6,7 @@ import {Chroma} from "../contracts/Chroma.sol";
 import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {ChromaCanvasV2} from "../contracts/ChromaCanvasV2.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
+import {ChromaPaletteData} from "../contracts/generated/ChromaPaletteData.sol";
 
 /// @notice Minimal redeploy: fresh ChromaCanvasV2 + ChromaRenderer wired to existing Chroma/Storage.
 contract RedeployCanvasAndRendererScript is Script {
@@ -27,7 +28,8 @@ contract RedeployCanvasAndRendererScript is Script {
         ChromaCanvasV2 canvas = new ChromaCanvasV2(chromaAddress, storageAddress, deployer);
         canvas.setOperatorApproval(marketplaceAddress, true);
 
-        ChromaRenderer renderer = new ChromaRenderer(storageAddress, deployer);
+        ChromaPaletteData paletteData = new ChromaPaletteData();
+        ChromaRenderer renderer = new ChromaRenderer(storageAddress, address(paletteData), deployer);
         renderer.setCanvas(address(canvas));
         renderer.setChroma(chromaAddress);
 

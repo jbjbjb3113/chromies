@@ -6,6 +6,7 @@ import {ChromaStorage} from "../contracts/ChromaStorage.sol";
 import {Chroma} from "../contracts/Chroma.sol";
 import {ChromaCanvasV2} from "../contracts/ChromaCanvasV2.sol";
 import {ChromaRenderer} from "../contracts/ChromaRenderer.sol";
+import {ChromaPaletteData} from "../contracts/generated/ChromaPaletteData.sol";
 import {PixelMarketplace} from "../contracts/PixelMarketplace.sol";
 
 /// @notice Redeploy Chroma stack with inscribe bake + lock-only paths.
@@ -27,7 +28,7 @@ contract RedeployChromaScript is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        ChromaStorage storageContract = new ChromaStorage(deployer, address(0));
+        ChromaStorage storageContract = new ChromaStorage(deployer, deployer);
         Chroma chroma = new Chroma(address(storageContract), deployer, deployer, ROYALTY_BPS);
         storageContract.setWriter(address(chroma));
 
@@ -36,7 +37,8 @@ contract RedeployChromaScript is Script {
         PixelMarketplace marketplace = new PixelMarketplace();
         canvas.setOperatorApproval(address(marketplace), true);
 
-        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), deployer);
+        ChromaPaletteData paletteData = new ChromaPaletteData();
+        ChromaRenderer renderer = new ChromaRenderer(address(storageContract), address(paletteData), deployer);
         renderer.setCanvas(address(canvas));
         renderer.setChroma(address(chroma));
 
@@ -51,6 +53,7 @@ contract RedeployChromaScript is Script {
         console2.log("ChromaStorage:", address(storageContract));
         console2.log("Chroma:", address(chroma));
         console2.log("ChromaCanvasV2:", address(canvas));
+        console2.log("ChromaPaletteData:", address(paletteData));
         console2.log("ChromaRenderer:", address(renderer));
         console2.log("PixelMarketplace:", address(marketplace));
         console2.log("RevealRoot:", vm.toString(revealRoot));
