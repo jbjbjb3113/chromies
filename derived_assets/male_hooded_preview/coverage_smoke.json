@@ -1,0 +1,102 @@
+[
+  {
+    "tokenId": 4,
+    "palette": "SIGNAL",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token4_SIGNAL.png"
+  },
+  {
+    "tokenId": 8,
+    "palette": "ACID",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token8_ACID.png"
+  },
+  {
+    "tokenId": 10,
+    "palette": "CYAN",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token10_CYAN.png"
+  },
+  {
+    "tokenId": 12,
+    "palette": "GHOST",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token12_GHOST.png"
+  },
+  {
+    "tokenId": 13,
+    "palette": "BLOOD",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token13_BLOOD.png"
+  },
+  {
+    "tokenId": 16,
+    "palette": "MOSS",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token16_MOSS.png"
+  },
+  {
+    "tokenId": 17,
+    "palette": "SIGNAL_BLONDE",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token17_SIGNAL_BLONDE.png"
+  },
+  {
+    "tokenId": 18,
+    "palette": "BLOOD_BLONDE",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token18_BLOOD_BLONDE.png"
+  },
+  {
+    "tokenId": 21,
+    "palette": "SIGNAL_SHIRT_RED",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token21_SIGNAL_SHIRT_RED.png"
+  },
+  {
+    "tokenId": 26,
+    "palette": "ACID_SHIRT_BLUE",
+    "hood": "Male_Hooded",
+    "shirt": "None",
+    "body": "None",
+    "hair": "None",
+    "necklace": "None",
+    "file": "derived_assets/male_hooded_preview/token26_ACID_SHIRT_BLUE.png"
+  }
+]

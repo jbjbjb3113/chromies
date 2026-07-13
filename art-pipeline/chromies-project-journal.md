@@ -287,11 +287,12 @@ PixelMarketplace -> AP listings between tokens
 ### Contract addresses (Sepolia testnet — current)
 | Contract | Address |
 |----------|---------|
-| ChromaStorage | `0x78ee267c09be83eee64050e21ecc2ffe8296ae38` |
-| Chroma | `0xba4c3797a18958877f895b69ca4a67b914949f5d` |
-| ChromaCanvasV2 | `0x684b85535eDFA1C14a16987c6Da20FEf63378c9a` |
-| ChromaRenderer | `0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30` |
-| PixelMarketplace | `0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d` |
+| ChromaStorage | `0x557933b09005C6254d3884A1F93a03e740920A42` |
+| Chroma | `0x8162114c056DfC49045c04C66f1E03b761d81eD5` |
+| ChromaCanvasV2 | `0xa2e15dF33b21dDB62190B2Cd8C08e63350608DfB` |
+| ChromaPaletteData | `0x4Ff9Ef71A403579DdfCaC5294792306ebD38F0a7` |
+| ChromaRenderer | `0xA86f6fa692Ca016F885F82757D2382d8696bFE6d` |
+| PixelMarketplace | `0x8D0b8327bcC96eF62b3de94687490298a52D3079` |
 
 ### Deprecated Sepolia addresses (do not use)
 | Contract | Address | Notes |

@@ -1,0 +1,205 @@
+{
+  "fullGroups": 11,
+  "extra": 12,
+  "groups": [
+    {
+      "group": 1,
+      "ids": [
+        2,
+        873
+      ],
+      "vis": [
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_LookLeft|glasses:None|hair:None|hood:Female_None|mask:None|mustache:None|necklace:None|pal:BLOOD_SHIRT_GREEN|shirt:Crew_Female|tattoo:Female_Thug",
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_LookLeft|glasses:None|hair:None|hood:Female_None|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_RED|shirt:Crew_Female|tattoo:Female_Thug"
+      ],
+      "pals": [
+        "BLOOD_SHIRT_GREEN",
+        "SIGNAL_SHIRT_RED"
+      ],
+      "palByte": 0,
+      "cls": "encoding_collapse",
+      "th": "0x0100000000000000000000000000000000067700000000000000000000000000",
+      "traitLines": "character=HeroA_Female(1)\\npalette=BLOOD_SHIRT_GREEN(0)\\nhood=Female_None(0)\\nshirt=Crew_Female(0)\\nbody=None(0)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=Female_Thug(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=Female_LookLeft(0)\\nearrings=None(0)\\nglasses=None(0)\\nhair=None(0)"
+    },
+    {
+      "group": 2,
+      "ids": [
+        48,
+        1207
+      ],
+      "vis": [
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_LookRight|glasses:Female_Shades|hair:None|hood:Female_Classic|mask:None|mustache:None|necklace:None|pal:CYAN_SHIRT_GREEN|shirt:None|tattoo:None",
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_CrissCrossed|glasses:Female_Shades|hair:None|hood:Female_Classic|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_PURPLE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "CYAN_SHIRT_GREEN",
+        "SIGNAL_SHIRT_PURPLE"
+      ],
+      "palByte": 0,
+      "cls": "encoding_collapse",
+      "th": "0x0100000000000000000000000000000000072100000000000000000000000000",
+      "traitLines": "character=HeroA_Female(1)\\npalette=CYAN_SHIRT_GREEN(0)\\nhood=Female_Classic(0)\\nshirt=None(0)\\nbody=None(0)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=Female_LookRight(0)\\nearrings=None(0)\\nglasses=Female_Shades(0)\\nhair=None(0)"
+    },
+    {
+      "group": 3,
+      "ids": [
+        61,
+        1319
+      ],
+      "vis": [
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_LookLeft|glasses:None|hair:Female_Dreads|hood:Female_None|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_OLIVE|shirt:Crew_Female|tattoo:None",
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:Female_Stud|eyes:Female_LookLeft|glasses:None|hair:Female_Dreads|hood:Female_None|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_ORANGE|shirt:Crew_Female|tattoo:None"
+      ],
+      "pals": [
+        "SIGNAL_SHIRT_OLIVE",
+        "SIGNAL_SHIRT_ORANGE"
+      ],
+      "palByte": 0,
+      "cls": "encoding_collapse",
+      "th": "0x0100000000000000000000000000000000085800000000000000000000000000",
+      "traitLines": "character=HeroA_Female(1)\\npalette=SIGNAL_SHIRT_OLIVE(0)\\nhood=Female_None(0)\\nshirt=Crew_Female(0)\\nbody=None(0)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=Female_LookLeft(0)\\nearrings=None(0)\\nglasses=None(0)\\nhair=Female_Dreads(0)"
+    },
+    {
+      "group": 4,
+      "ids": [
+        62,
+        1578
+      ],
+      "vis": [
+        "beard:None|body:Zombie|bodytattoo:None|char:Zombie|earrings:None|eyes:None|glasses:Zombie_Neo|hair:None|hood:None|mask:None|mustache:None|necklace:Zombie_Normies|pal:ZOMBIE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "ZOMBIE"
+      ],
+      "palByte": 26,
+      "cls": "roll_space",
+      "th": "0x081a00000600000000000000000000000006e600000000000000000000000000",
+      "traitLines": "character=Zombie(8)\\npalette=ZOMBIE(26)\\nhood=None(0)\\nshirt=None(0)\\nbody=Zombie(6)\\nbodytattoo=None(0)\\nnecklace=Zombie_Normies(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=None(0)\\nearrings=None(0)\\nglasses=Zombie_Neo(0)\\nhair=None(0)"
+    },
+    {
+      "group": 5,
+      "ids": [
+        91,
+        431,
+        1505
+      ],
+      "vis": [
+        "beard:None|body:Zombie|bodytattoo:AkuHeart|char:Zombie|earrings:None|eyes:None|glasses:Zombie_Shades|hair:None|hood:None|mask:None|mustache:None|necklace:None|pal:ZOMBIE|shirt:None|tattoo:None",
+        "beard:None|body:Zombie|bodytattoo:AkuHeart|char:Zombie|earrings:None|eyes:None|glasses:Zombie_VR|hair:None|hood:None|mask:None|mustache:None|necklace:None|pal:ZOMBIE|shirt:None|tattoo:None",
+        "beard:None|body:Zombie|bodytattoo:AkuHeart|char:Zombie|earrings:None|eyes:None|glasses:Zombie_PiratePatch|hair:None|hood:None|mask:None|mustache:None|necklace:None|pal:ZOMBIE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "ZOMBIE"
+      ],
+      "palByte": 26,
+      "cls": "visual_space",
+      "th": "0x081a00000602000000000000000000000006e600000000000000000000000000",
+      "traitLines": "character=Zombie(8)\\npalette=ZOMBIE(26)\\nhood=None(0)\\nshirt=None(0)\\nbody=Zombie(6)\\nbodytattoo=AkuHeart(2)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=None(0)\\nearrings=None(0)\\nglasses=Zombie_Shades(0)\\nhair=None(0)"
+    },
+    {
+      "group": 6,
+      "ids": [
+        99,
+        1956
+      ],
+      "vis": [
+        "beard:None|body:Zombie|bodytattoo:None|char:Zombie|earrings:None|eyes:None|glasses:Zombie_PiratePatch|hair:None|hood:None|mask:None|mustache:None|necklace:Zombie_Chromies|pal:ZOMBIE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "ZOMBIE"
+      ],
+      "palByte": 26,
+      "cls": "roll_space",
+      "th": "0x081a00000600000000000000000000000006e800000000000000000000000000",
+      "traitLines": "character=Zombie(8)\\npalette=ZOMBIE(26)\\nhood=None(0)\\nshirt=None(0)\\nbody=Zombie(6)\\nbodytattoo=None(0)\\nnecklace=Zombie_Chromies(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=None(0)\\nearrings=None(0)\\nglasses=Zombie_PiratePatch(0)\\nhair=None(0)"
+    },
+    {
+      "group": 7,
+      "ids": [
+        429,
+        749
+      ],
+      "vis": [
+        "beard:None|body:Zombie|bodytattoo:None|char:Zombie|earrings:None|eyes:None|glasses:Zombie_VR|hair:None|hood:None|mask:None|mustache:None|necklace:None|pal:ZOMBIE|shirt:None|tattoo:None",
+        "beard:None|body:Zombie|bodytattoo:None|char:Zombie|earrings:None|eyes:None|glasses:Zombie_PiratePatch|hair:None|hood:None|mask:None|mustache:None|necklace:None|pal:ZOMBIE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "ZOMBIE"
+      ],
+      "palByte": 26,
+      "cls": "visual_space",
+      "th": "0x081a00000600000000000000000000000006e600000000000000000000000000",
+      "traitLines": "character=Zombie(8)\\npalette=ZOMBIE(26)\\nhood=None(0)\\nshirt=None(0)\\nbody=Zombie(6)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=None(0)\\nearrings=None(0)\\nglasses=Zombie_VR(0)\\nhair=None(0)"
+    },
+    {
+      "group": 8,
+      "ids": [
+        506,
+        1853
+      ],
+      "vis": [
+        "beard:None|body:Zombie|bodytattoo:None|char:Zombie|earrings:None|eyes:None|glasses:Zombie_DFrameFilled|hair:None|hood:None|mask:None|mustache:None|necklace:None|pal:ZOMBIE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "ZOMBIE"
+      ],
+      "palByte": 26,
+      "cls": "roll_space",
+      "th": "0x081a00000600000000000000000000000006e800000000000000000000000000",
+      "traitLines": "character=Zombie(8)\\npalette=ZOMBIE(26)\\nhood=None(0)\\nshirt=None(0)\\nbody=Zombie(6)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=None(0)\\nearrings=None(0)\\nglasses=Zombie_DFrameFilled(0)\\nhair=None(0)"
+    },
+    {
+      "group": 9,
+      "ids": [
+        576,
+        788
+      ],
+      "vis": [
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_Stoned|glasses:None|hair:Female_Afro|hood:Female_None|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_BLUE|shirt:Flannel_Female|tattoo:None",
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_Stoned|glasses:None|hair:Female_Afro|hood:Female_None|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_RED|shirt:Flannel_Female|tattoo:None"
+      ],
+      "pals": [
+        "SIGNAL_SHIRT_BLUE",
+        "SIGNAL_SHIRT_RED"
+      ],
+      "palByte": 0,
+      "cls": "encoding_collapse",
+      "th": "0x0100000000000000000000000000000000086600000000000000000000000000",
+      "traitLines": "character=HeroA_Female(1)\\npalette=SIGNAL_SHIRT_BLUE(0)\\nhood=Female_None(0)\\nshirt=Flannel_Female(0)\\nbody=None(0)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=Female_Stoned(0)\\nearrings=None(0)\\nglasses=None(0)\\nhair=Female_Afro(0)"
+    },
+    {
+      "group": 10,
+      "ids": [
+        642,
+        955
+      ],
+      "vis": [
+        "beard:None|body:None|bodytattoo:None|char:HeroA_Female|earrings:None|eyes:Female_Straight|glasses:Female_Neo|hair:None|hood:Female_Classic|mask:None|mustache:None|necklace:None|pal:SIGNAL_SHIRT_RED|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "SIGNAL_SHIRT_RED"
+      ],
+      "palByte": 0,
+      "cls": "roll_space",
+      "th": "0x0100000000000000000000000000000000072100000000000000000000000000",
+      "traitLines": "character=HeroA_Female(1)\\npalette=SIGNAL_SHIRT_RED(0)\\nhood=Female_Classic(0)\\nshirt=None(0)\\nbody=None(0)\\nbodytattoo=None(0)\\nnecklace=None(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=Female_Straight(0)\\nearrings=None(0)\\nglasses=Female_Neo(0)\\nhair=None(0)"
+    },
+    {
+      "group": 11,
+      "ids": [
+        661,
+        1039
+      ],
+      "vis": [
+        "beard:None|body:Zombie|bodytattoo:Pyramid|char:Zombie|earrings:None|eyes:None|glasses:Zombie_Neo|hair:None|hood:None|mask:None|mustache:None|necklace:Zombie_HeyKoolAid|pal:ZOMBIE|shirt:None|tattoo:None"
+      ],
+      "pals": [
+        "ZOMBIE"
+      ],
+      "palByte": 26,
+      "cls": "roll_space",
+      "th": "0x081a00000603000000000000000000000006e800000000000000000000000000",
+      "traitLines": "character=Zombie(8)\\npalette=ZOMBIE(26)\\nhood=None(0)\\nshirt=None(0)\\nbody=Zombie(6)\\nbodytattoo=Pyramid(3)\\nnecklace=Zombie_HeyKoolAid(0)\\ntattoo=None(0)\\nmask=None(0)\\nbeard=None(0)\\nmustache=None(0)\\neyes=None(0)\\nearrings=None(0)\\nglasses=Zombie_Neo(0)\\nhair=None(0)"
+    }
+  ]
+}

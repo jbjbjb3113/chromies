@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const LINKS = [
   { label: "Twitter / X", href: "#" },
@@ -13,6 +14,12 @@ export default function SiteFooter() {
           chromies<span className="text-signal">.art</span>
         </span>
         <nav className="flex items-center gap-6">
+          <Link
+            to="/provenance"
+            className="text-sm font-medium text-neutral-400 transition-colors hover:text-signal"
+          >
+            Provenance
+          </Link>
           {LINKS.map((link) => (
             <a
               key={link.label}

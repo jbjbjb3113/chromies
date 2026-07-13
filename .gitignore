@@ -31,3 +31,14 @@ run-latest.json
 .verify-worktrees/
 .verify-tmp-*/
 .verify-worktree/
+
+.tmp_*
+.foundry-bin/
+__pycache__/
+*.lnk
+*.aseprite
+art-pipeline/lora-pipeline/dataset/
+art-pipeline/lora-pipeline/output/
+.verify-tmp-*/
+.verify-worktrees/
+.verify-worktree/

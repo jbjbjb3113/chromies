@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_SERC_Lifegiver
+Channels: RGBA
+#
+  0   0   0   0	background (transparent)
+ 10  18   8 255	mask_dark (deep forest shadow)
+ 22  38  16 255	mask_mid (dark moss)
+240 230 180 255	highlight (warm sunlight)
+ 45  28  10 255	skin_shadow_deep (deep earth)
+ 90  55  20 255	skin_shadow (rich soil)
+140  95  40 255	skin_mid (warm amber earth)
+185 140  70 255	skin_light (golden ochre)
+220 185 110 255	skin_highlight (warm light)
+ 25  55  20 255	hood/shirt (deep forest green)
+ 12  25  10 255	eye_socket (darkest green-black)
+ 60 120  40 255	eye_glow (living green)
+ 80 180  50 255	eye_signal (vibrant life green)
+ 15  40  12 255	hair_dark (deep evergreen)
+ 35  85  25 255	hair_mid (forest green)
+ 70 140  45 255	hair_bright (fresh growth green)

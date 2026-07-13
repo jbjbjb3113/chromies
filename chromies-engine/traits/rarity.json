@@ -1,0 +1,177 @@
+{
+  "schema_version": "1.0.0",
+  "roll_order_version": 3,
+  "categories": {
+    "head_shape": {
+      "required": true,
+      "values": {
+        "Taper": 34,
+        "Broad": 20,
+        "Slim": 18,
+        "Angular": 14,
+        "Crest": 9,
+        "Split": 5
+      }
+    },
+    "mask_type": {
+      "required": true,
+      "values": {
+        "Halfplate": 28,
+        "Muzzle": 18,
+        "Visor-jaw": 14,
+        "Strapped": 14,
+        "Fractured": 10,
+        "Openface": 12,
+        "Phantom": 4
+      }
+    },
+    "eyes": {
+      "required": true,
+      "values": {
+        "Wedge": 24,
+        "Uneven": 18,
+        "Hollow": 14,
+        "Glow": 12,
+        "Monocular": 10,
+        "Cross-scarred": 9,
+        "Twin-dot offset": 8,
+        "Void": 5
+      }
+    },
+    "hair": {
+      "required": true,
+      "values": {
+        "Sidefall": 26,
+        "Offset spikes": 18,
+        "Asym undercut": 15,
+        "Hood-hair hybrid": 10,
+        "Braided tail": 9,
+        "Crest lock": 8,
+        "Windblown": 8,
+        "Bald + scalp mark": 6
+      }
+    },
+    "forehead_mark": {
+      "required": true,
+      "values": {
+        "Bar": 22,
+        "Twin dots": 18,
+        "Chevron": 15,
+        "Slash": 14,
+        "Ring": 11,
+        "Sigil A": 6,
+        "Sigil B": 5,
+        "Sigil C": 4,
+        "Burn": 3,
+        "Prism": 2
+      }
+    },
+    "body_type": {
+      "required": true,
+      "values": {
+        "Standard": 40,
+        "Lean": 22,
+        "Bulk": 16,
+        "Slouch": 12,
+        "Hover": 7,
+        "Warped": 3
+      }
+    },
+    "clothing_torso": {
+      "required": true,
+      "values": {
+        "Wrap": 18,
+        "Utility vest": 16,
+        "Highcollar": 14,
+        "Drape": 12,
+        "Plated": 10,
+        "Hooded": 10,
+        "Harness": 8,
+        "Tattered": 6,
+        "Regalia": 4,
+        "Bare-plated": 2
+      }
+    },
+    "clothing_overlayer": {
+      "required": false,
+      "roll_chance": 0.3,
+      "values": {
+        "Sash": 30,
+        "Half-cloak": 25,
+        "Strap kit": 25,
+        "Shoulder plate": 15,
+        "Banner": 5
+      }
+    },
+    "accessory_count": {
+      "required": false,
+      "values": {
+        "0": 55,
+        "1": 35,
+        "2": 10
+      }
+    },
+    "accessory": {
+      "required": false,
+      "values": {
+        "Ear tag": 18,
+        "Cheek plate": 16,
+        "Antenna stub": 14,
+        "Chain": 14,
+        "Toolbelt": 12,
+        "Backmount": 10,
+        "Eyepatch": 10,
+        "Halo fragment": 6
+      }
+    },
+    "drift_tier": {
+      "required": true,
+      "values": {
+        "Stable": 90,
+        "Drift I": 7,
+        "Drift II": 2.5,
+        "Anomaly": 0.5
+      }
+    },
+    "palette_family": {
+      "required": true,
+      "values": {
+        "Ember": 18,
+        "Tide": 18,
+        "Verdant": 18,
+        "Ash": 18,
+        "Violet Hour": 10,
+        "Signal": 10,
+        "Rust": 6,
+        "Polar": 2
+      }
+    },
+    "background": {
+      "required": true,
+      "metadata_only": true,
+      "values": {
+        "Solid": 78,
+        "Duotone split": 14,
+        "Gradient band": 6,
+        "Void black": 2
+      }
+    },
+    "mouth": {
+      "required": false,
+      "derived": true,
+      "values": {
+        "None": 40,
+        "Seam": 30,
+        "Grim": 20,
+        "Snarl": 10
+      }
+    },
+    "hair_side": {
+      "required": false,
+      "values": {
+        "L": 50,
+        "R": 50
+      }
+    }
+  }
+}

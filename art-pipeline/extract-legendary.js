@@ -12,6 +12,7 @@ const fs = require("fs");
 const path = require("path");
 const { PNG } = require("pngjs");
 const { PALETTES, ROLES, SETTINGS } = require("./chromies-config");
+const { guardedWriteFileSync } = require("./lib/art-safety");
 
 const GRID = SETTINGS.grid;
 const PX = GRID * GRID;
@@ -28,6 +29,7 @@ function parseArgs(argv) {
     palette: DEFAULT_PALETTE,
     fit: DEFAULT_FIT,
     help: false,
+    force: false,
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -52,6 +54,10 @@ function parseArgs(argv) {
       result.fit = args[++i].toLowerCase();
       continue;
     }
+    if (a === "--force") {
+      result.force = true;
+      continue;
+    }
     throw new Error(`Unknown argument: ${a}`);
   }
 
@@ -66,9 +72,7 @@ function printUsage() {
 Options:
   --palette, -p   Palette key (default: SIGNAL). e.g. SIGNAL, NORMIE_ACK, NORMIE_SNOWFRO
   --fit           Resize mode: cover | contain | stretch (default: cover)
-                  cover   — scale to fill 64×64, center-crop overflow
-                  contain — scale to fit inside 64×64, pad with transparency
-                  stretch — stretch source to 64×64
+  --force         Allow writes under components/ (required; legendary heads also need manifest update)
 
 Examples:
   node extract-legendary.js --input art/snowfro.png --output components/legendary/NORMIE_0045_Snowfro.png --palette SIGNAL
@@ -296,7 +300,7 @@ function main() {
 
   const outDir = path.dirname(outputAbs);
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(outputAbs, writeIndexBufferPng(buf, paletteColors));
+  guardedWriteFileSync(outputAbs, writeIndexBufferPng(buf, paletteColors), { force: parsed.force });
 
   printSummary({
     inputAbs,

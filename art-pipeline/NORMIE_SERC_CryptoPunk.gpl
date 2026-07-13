@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_SERC_CryptoPunk
+Channels: RGBA
+#
+  0   0   0   0	background (transparent)
+  0   0   0 255	mask_dark (pure punk black)
+ 20  20  20 255	mask_mid (near black)
+255 255 255 255	highlight (pure white)
+ 86  56  26 255	skin_shadow_deep #56381a
+113  63  29 255	skin_shadow #713f1d
+139  83  44 255	skin_mid #8b532c
+187 145 110 255	skin_light #bb916e
+219 177 128 255	skin_highlight #dbb180
+ 50  50  50 255	hood/shirt (dark grey)
+  0   0   0 255	eye_socket (black)
+100 100 100 255	eye_glow (mid grey)
+200 200 200 255	eye_signal (light grey)
+ 30  30  30 255	hair_dark
+ 70  70  70 255	hair_mid
+ 130 130 130 255	hair_bright

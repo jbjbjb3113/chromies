@@ -38,6 +38,9 @@ export default function SiteHeader() {
               <NavLink to="/launch-edition" className={navLinkClass}>
                 Chain Launch
               </NavLink>
+              <NavLink to="/provenance" className={navLinkClass}>
+                Provenance
+              </NavLink>
               <NavLink to="/market" className={navLinkClass}>
                 Pixel Marketplace
               </NavLink>

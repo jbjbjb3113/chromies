@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0.0",
+  "max_repairs_before_reroll": 3,
+  "pairs": [
+    {
+      "traits": ["Split", "Offset spikes"],
+      "note": "Split head excludes symmetric hair styles",
+      "resolution": {"yield": "hair", "fallback": "Sidefall"}
+    },
+    {
+      "traits": ["Split", "Windblown"],
+      "resolution": {"yield": "hair", "fallback": "Sidefall"}
+    },
+    {
+      "traits": ["Phantom", "Tattered"],
+      "note": "Dither budget: max 1 dithered layer per identity",
+      "resolution": {"yield": "clothing_torso", "fallback": "Wrap"}
+    },
+    {
+      "traits": ["Muzzle", "Chain"],
+      "note": "Muzzle excludes chin accessories",
+      "resolution": {"yield": "accessory", "fallback": null, "remove": true}
+    },
+    {
+      "traits": ["Fractured", "Cheek plate"],
+      "resolution": {"yield": "accessory", "fallback": null, "remove": true}
+    },
+    {
+      "traits": ["Monocular", "Eyepatch"],
+      "resolution": {"yield": "accessory", "fallback": null, "remove": true}
+    },
+    {
+      "traits": ["Hollow", "Phantom"],
+      "resolution": {"yield": "eyes", "fallback": "Wedge"}
+    },
+    {
+      "traits": ["Void", "Halfplate"],
+      "note": "Void requires Visor-jaw or Phantom mask",
+      "resolution": {"yield": "eyes", "fallback": "Wedge"}
+    },
+    {
+      "traits": ["Crest lock", "Broad"],
+      "note": "Crest lock requires Crest head",
+      "resolution": {"yield": "hair", "fallback": "Sidefall"}
+    },
+    {
+      "traits": ["Hood-hair hybrid", "Utility vest"],
+      "note": "Hood-hair requires hood-class clothing",
+      "resolution": {"yield": "hair", "fallback": "Sidefall"}
+    },
+    {
+      "traits": ["Hooded", "Offset spikes"],
+      "resolution": {"yield": "hair", "fallback": "Sidefall"}
+    },
+    {
+      "traits": ["Hooded", "Windblown"],
+      "resolution": {"yield": "hair", "fallback": "Sidefall"}
+    },
+    {
+      "traits": ["Antenna stub", "Hooded"],
+      "resolution": {"yield": "accessory", "fallback": null, "remove": true}
+    },
+    {
+      "traits": ["Regalia", "Ash"],
+      "note": "Regalia excludes Ash palette family",
+      "resolution": {"yield": "palette_family", "fallback": "Ember"}
+    },
+    {
+      "traits": ["Bald + scalp mark", "Bar"],
+      "note": "Forces extended forehead mark variant at render time",
+      "resolution": {"yield": "forehead_mark", "fallback": "Burn"}
+    },
+    {
+      "traits": ["Drift II", "Standard"],
+      "note": "Warped body allowed only at Drift II+",
+      "resolution": {"yield": "body_type", "fallback": "Lean"}
+    }
+  ],
+  "conditional": [
+    {
+      "when": {"mask_type": "Openface"},
+      "allow_mouth_roll": true
+    },
+    {
+      "when": {"mask_type_not": "Openface"},
+      "force_mouth": "None"
+    },
+    {
+      "when": {"drift_tier": "Drift II"},
+      "allow_body": ["Warped"],
+      "allow_mark": ["Prism"]
+    }
+  ]
+}

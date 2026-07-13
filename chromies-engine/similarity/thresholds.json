@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "normies": {
+    "pixel_iou_reject": 0.80,
+    "pixel_iou_flag": 0.70,
+    "silhouette_iou_reject": 0.85,
+    "silhouette_iou_flag": 0.75,
+    "phash_hamming_reject": 10,
+    "phash_hamming_flag": 16,
+    "face_vector_reject": 0.06,
+    "face_vector_flag": 0.10
+  },
+  "collection": {
+    "phash_hamming_reject": 6,
+    "phash_hamming_flag": 10,
+    "silhouette_iou_reject": 0.97,
+    "silhouette_iou_flag": 0.94
+  }
+}

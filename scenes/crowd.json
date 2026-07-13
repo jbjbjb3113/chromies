@@ -1,0 +1,20 @@
+{
+  "canvas": [272, 272],
+  "background": "#e3e5e4",
+  "fps": 12,
+  "seconds": 6,
+  "scale": 4,
+  "sprites": [
+    {"token": 4, "pos": [4, 160], "row": "back", "anims": [{"type": "bob", "phase": 10, "half_period": 6}]},
+    {"token": 3, "pos": [44, 160], "row": "back", "anims": [{"type": "bob", "phase": 1, "half_period": 6}]},
+    {"token": 1, "pos": [84, 160], "row": "back", "anims": [{"type": "bob", "phase": 0, "half_period": 6}]},
+    {"token": 32, "pos": [124, 160], "row": "back", "anims": [{"type": "bob", "phase": 11, "half_period": 6}]},
+    {"token": 15, "pos": [164, 160], "row": "back", "anims": [{"type": "bob", "phase": 4, "half_period": 6}]},
+    {"token": 76, "pos": [204, 160], "row": "back", "anims": [{"type": "bob", "phase": 3, "half_period": 6}]},
+    {"token": 12, "pos": [24, 184], "row": "front", "anims": [{"type": "bob", "phase": 3, "half_period": 6}]},
+    {"token": 11, "pos": [64, 184], "row": "front", "anims": [{"type": "bob", "phase": 2, "half_period": 6}]},
+    {"token": 6, "pos": [104, 184], "row": "front", "anims": [{"type": "bob", "phase": 11, "half_period": 6}]},
+    {"token": 207, "pos": [144, 184], "row": "front", "anims": [{"type": "bob", "phase": 1, "half_period": 6}]},
+    {"token": 108, "pos": [184, 184], "row": "front", "anims": [{"type": "bob", "phase": 10, "half_period": 6}]}
+  ]
+}

@@ -1,0 +1,564 @@
+{
+  "zeroRolls": [
+    {
+      "slot": "hair",
+      "name": "SP_AZVet_Female",
+      "expected_naive": 2.11
+    },
+    {
+      "slot": "tattoo",
+      "name": "Scar",
+      "expected_naive": 0.79
+    },
+    {
+      "slot": "eyes",
+      "name": "Signal",
+      "expected_naive": 0
+    },
+    {
+      "slot": "eyes",
+      "name": "BlackEye",
+      "expected_naive": 0
+    },
+    {
+      "slot": "eyes",
+      "name": "MakeUp",
+      "expected_naive": 0
+    },
+    {
+      "slot": "eyes",
+      "name": "RunningMascara",
+      "expected_naive": 0
+    },
+    {
+      "slot": "eyes",
+      "name": "Stoned",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "Mohawk",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "Pompadour",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "MrT",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "Afro",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "Dreads",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "Surfer",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "FadeRight",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "Buns",
+      "expected_naive": 0
+    },
+    {
+      "slot": "hair",
+      "name": "AZVet",
+      "expected_naive": 0
+    }
+  ],
+  "starved": [
+    {
+      "slot": "body",
+      "name": "Agent",
+      "actual": 1,
+      "expected_naive": 11.09,
+      "rate_pct": 9
+    },
+    {
+      "slot": "body",
+      "name": "Default",
+      "actual": 129,
+      "expected_naive": 731.98,
+      "rate_pct": 17.6
+    },
+    {
+      "slot": "shirt",
+      "name": "SP_Flannel_Female",
+      "actual": 1,
+      "expected_naive": 5.55,
+      "rate_pct": 18
+    },
+    {
+      "slot": "body",
+      "name": "Female",
+      "actual": 165,
+      "expected_naive": 815.16,
+      "rate_pct": 20.2
+    },
+    {
+      "slot": "bodytattoo",
+      "name": "Normies",
+      "actual": 13,
+      "expected_naive": 59.43,
+      "rate_pct": 21.9
+    },
+    {
+      "slot": "hair",
+      "name": "SP_Mohawk_Female",
+      "actual": 1,
+      "expected_naive": 4.52,
+      "rate_pct": 22.1
+    },
+    {
+      "slot": "earrings",
+      "name": "SP_Stud_Female",
+      "actual": 1,
+      "expected_naive": 4.16,
+      "rate_pct": 24
+    },
+    {
+      "slot": "bodytattoo",
+      "name": "Pyramid",
+      "actual": 28,
+      "expected_naive": 113.86,
+      "rate_pct": 24.6
+    },
+    {
+      "slot": "bodytattoo",
+      "name": "Male_Normies",
+      "actual": 31,
+      "expected_naive": 122,
+      "rate_pct": 25.4
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Flower",
+      "actual": 15,
+      "expected_naive": 54.27,
+      "rate_pct": 27.6
+    },
+    {
+      "slot": "eyes",
+      "name": "SP_Stoned_Female",
+      "actual": 2,
+      "expected_naive": 6.93,
+      "rate_pct": 28.9
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Normies",
+      "actual": 13,
+      "expected_naive": 42.9,
+      "rate_pct": 30.3
+    },
+    {
+      "slot": "bodytattoo",
+      "name": "Male_AkuHeart",
+      "actual": 38,
+      "expected_naive": 122,
+      "rate_pct": 31.1
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_HeyKoolAid",
+      "actual": 14,
+      "expected_naive": 42.9,
+      "rate_pct": 32.6
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Ornate_Alt",
+      "actual": 18,
+      "expected_naive": 53.63,
+      "rate_pct": 33.6
+    },
+    {
+      "slot": "bodytattoo",
+      "name": "UnderArmour",
+      "actual": 59,
+      "expected_naive": 163.31,
+      "rate_pct": 36.1
+    },
+    {
+      "slot": "earrings",
+      "name": "SP_Flower_Female",
+      "actual": 1,
+      "expected_naive": 2.77,
+      "rate_pct": 36.1
+    },
+    {
+      "slot": "glasses",
+      "name": "SP_Neo_Female",
+      "actual": 1,
+      "expected_naive": 2.77,
+      "rate_pct": 36.1
+    },
+    {
+      "slot": "bodytattoo",
+      "name": "AkuHeart",
+      "actual": 42,
+      "expected_naive": 113.86,
+      "rate_pct": 36.9
+    },
+    {
+      "slot": "hair",
+      "name": "Chubby_AZVet",
+      "actual": 9,
+      "expected_naive": 22.75,
+      "rate_pct": 39.6
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Ornate",
+      "actual": 22,
+      "expected_naive": 54.27,
+      "rate_pct": 40.5
+    },
+    {
+      "slot": "necklace",
+      "name": "Male_Chain",
+      "actual": 44,
+      "expected_naive": 105.15,
+      "rate_pct": 41.8
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Chain",
+      "actual": 34,
+      "expected_naive": 81.41,
+      "rate_pct": 41.8
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Chromies",
+      "actual": 23,
+      "expected_naive": 53.63,
+      "rate_pct": 42.9
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_UpsideDownCross",
+      "actual": 19,
+      "expected_naive": 43.42,
+      "rate_pct": 43.8
+    },
+    {
+      "slot": "necklace",
+      "name": "Male_Normies",
+      "actual": 25,
+      "expected_naive": 56.86,
+      "rate_pct": 44
+    },
+    {
+      "slot": "necklace",
+      "name": "Female_Opal",
+      "actual": 26,
+      "expected_naive": 54.27,
+      "rate_pct": 47.9
+    },
+    {
+      "slot": "necklace",
+      "name": "SP_Chain_Female",
+      "actual": 2,
+      "expected_naive": 4.16,
+      "rate_pct": 48.1
+    },
+    {
+      "slot": "tattoo",
+      "name": "SP_Eagle_Female",
+      "actual": 2,
+      "expected_naive": 4.16,
+      "rate_pct": 48.1
+    },
+    {
+      "slot": "necklace",
+      "name": "Male_Chromies",
+      "actual": 35,
+      "expected_naive": 70.65,
+      "rate_pct": 49.5
+    }
+  ],
+  "silhouetteDistinct": 46,
+  "charDist": {
+    "Chubby_Male": 230,
+    "HeroA_Female": 837,
+    "HeroA_Male": 824,
+    "Zombie": 27,
+    "SideProfile_Female": 25,
+    "SideProfile_Male": 42,
+    "Alien": 9,
+    "Agent": 6
+  },
+  "hoodCounts": {
+    "Chubby_Classic": 13,
+    "Female_None": 767,
+    "None": 940,
+    "Classic": 186,
+    "Female_Classic": 64,
+    "Female_Hooded": 6,
+    "SP_Classic_Female": 7,
+    "Zombie_Classic": 4,
+    "Zombie_Hooded": 2,
+    "SP_Classic_Male": 9,
+    "Zombie_Hoodie": 2
+  },
+  "slotRolls": {
+    "hood": {
+      "Chubby_Classic": 13,
+      "Female_None": 767,
+      "None": 940,
+      "Classic": 186,
+      "Female_Classic": 64,
+      "Female_Hooded": 6,
+      "SP_Classic_Female": 7,
+      "Zombie_Classic": 4,
+      "Zombie_Hooded": 2,
+      "SP_Classic_Male": 9,
+      "Zombie_Hoodie": 2
+    },
+    "shirt": {
+      "None": 821,
+      "Crew_Female": 293,
+      "Flannel_Female": 167,
+      "Tank": 171,
+      "Crew": 245,
+      "Tank_Female": 252,
+      "SP_Crew_Female": 14,
+      "SP_Flannel_Male": 7,
+      "SP_Crew_Male": 24,
+      "SP_FlannelDark_Female": 3,
+      "SP_Flannel_Female": 1,
+      "SP_FlannelDark_Male": 2
+    },
+    "body": {
+      "Chubby": 230,
+      "None": 1019,
+      "Tank": 170,
+      "Female": 165,
+      "Female_Tank": 250,
+      "Zombie": 27,
+      "Default": 129,
+      "Alien": 9,
+      "Agent": 1
+    },
+    "bodytattoo": {
+      "None": 1789,
+      "AkuHeart": 42,
+      "Normies": 13,
+      "UnderArmour": 59,
+      "Pyramid": 28,
+      "Male_Normies": 31,
+      "Male_AkuHeart": 38
+    },
+    "necklace": {
+      "None": 1499,
+      "Female_HeyKoolAid": 14,
+      "Chubby_Chromies": 33,
+      "Female_Ornate": 22,
+      "Zombie_Chromies": 4,
+      "Male_HappyFace": 34,
+      "Female_Opal": 26,
+      "Male_Chain": 44,
+      "Female_Chromies": 23,
+      "Male_Pendent": 33,
+      "Female_Chain": 34,
+      "Female_Ornate_Alt": 18,
+      "Zombie_Normies": 5,
+      "Male_Chromies": 35,
+      "Male_Normies": 25,
+      "Chubby_X": 35,
+      "Female_Normies": 13,
+      "Chubby_Normies": 36,
+      "Female_UpsideDownCross": 19,
+      "Female_Flower": 15,
+      "SP_Chain_Male": 5,
+      "Female_Pendent": 23,
+      "SP_Chain_Female": 2,
+      "Zombie_HeyKoolAid": 3
+    },
+    "tattoo": {
+      "Chubby_Tears": 34,
+      "Female_Thug": 113,
+      "None": 919,
+      "Chubby_AkuHeart": 39,
+      "Female_Tears": 107,
+      "Male_Dradle": 125,
+      "Male_Thug": 112,
+      "Chubby_Scar": 23,
+      "Male_Scar": 110,
+      "Female_AkuHeart": 104,
+      "SP_Eagle_Male": 6,
+      "Male_Stars": 105,
+      "Female_Scar": 125,
+      "SP_Eagle_Female": 2,
+      "SP_AkuHeart_Male": 8,
+      "SP_Tears_Female": 3,
+      "Chubby_Marks": 41,
+      "Signal": 3,
+      "SP_Tears_Male": 6,
+      "SP_AkuHeart_Female": 5,
+      "Marks": 1,
+      "SP_Scar_Male": 3,
+      "Thug": 2,
+      "SP_Scar_Female": 4
+    },
+    "mask": {
+      "None": 2000
+    },
+    "beard": {
+      "Chubby_Full": 48,
+      "None": 1434,
+      "Male_Goat": 162,
+      "Female_Full": 72,
+      "Male_Full": 142,
+      "Female_Goat": 77,
+      "Chubby_Goat": 31,
+      "SP_Chop_Male": 9,
+      "SP_Goat_Male": 10,
+      "SP_Full_Male": 15
+    },
+    "mustache": {
+      "Chubby_DanPalmer": 37,
+      "None": 1483,
+      "Female_Thick": 68,
+      "Male_Thick": 136,
+      "Male_DanPalmer": 144,
+      "Female_DanPalmer": 65,
+      "SP_Thick_Male": 30,
+      "Chubby_Thick": 37
+    },
+    "eyes": {
+      "Chubby_Squint_Right": 45,
+      "Female_LookLeft": 164,
+      "Female_LookRight": 164,
+      "Male_SquintRight": 128,
+      "Female_Straight": 147,
+      "Chubby_Stoned": 57,
+      "Male_WideOpen": 139,
+      "Male_Straight": 141,
+      "None": 79,
+      "Female_Stoned": 163,
+      "Male_SquintLeft": 157,
+      "Female_CrissCrossed": 198,
+      "SP_Straight_Female": 8,
+      "Chubby_Squint_Left": 39,
+      "Chubby_CrossEyed": 40,
+      "Male_Stoned": 119,
+      "Male_CrossEyed": 137,
+      "Alien": 9,
+      "SP_SquintLeft_Female": 11,
+      "Chubby_Squint_Straight": 49,
+      "SP_SquintRight_Female": 4,
+      "SP_Stoned_Female": 2
+    },
+    "earrings": {
+      "None": 1497,
+      "Stud": 248,
+      "Chubby_Stud": 55,
+      "Female_Stud": 188,
+      "SP_Flower_Male": 4,
+      "SP_Stud_Male": 6,
+      "SP_Flower_Female": 1,
+      "SP_Stud_Female": 1
+    },
+    "glasses": {
+      "Chubby_DFrameFilled": 15,
+      "None": 888,
+      "Female_Neo": 54,
+      "Female_DFrame": 140,
+      "Zombie_Shades": 7,
+      "Female_VR": 66,
+      "Female_Shades": 56,
+      "3DGlasses": 53,
+      "Chubby_DFrame": 37,
+      "SP_Neo_Male": 6,
+      "Female_3DGlasses": 62,
+      "DFrame": 135,
+      "VR": 50,
+      "Neo": 58,
+      "Shades": 59,
+      "PiratePatch": 38,
+      "DFrameFilled": 54,
+      "Female_DFrameFilled": 69,
+      "Zombie_Neo": 7,
+      "Female_PiratePatch": 45,
+      "Zombie_PiratePatch": 3,
+      "Chubby_NEO": 15,
+      "SP_DFrameFilled_Male": 3,
+      "Chubby_3DGlasses": 13,
+      "Chubby_VR": 16,
+      "SP_DFrame_Male": 3,
+      "Zombie_VR": 6,
+      "SP_Shades_Male": 2,
+      "Chubby_PiratePatch": 10,
+      "Zombie_DFrameFilled": 3,
+      "Chubby_Shades": 17,
+      "SP_DFrame_Female": 2,
+      "SP_Shades_Female": 3,
+      "SP_DFrameFilled_Female": 4,
+      "SP_Neo_Female": 1
+    },
+    "hair": {
+      "None": 262,
+      "Female_Surfer": 84,
+      "Male_Surfer": 89,
+      "Female_FadeRight": 92,
+      "Female_Mohawk": 77,
+      "Male_Mohawk": 106,
+      "Chubby_FadeRight": 33,
+      "Male_MrT": 52,
+      "Male_AZVet": 54,
+      "Male_TheAvatar": 2,
+      "Female_Afro": 88,
+      "Female_MrT": 76,
+      "Male_Dreads": 76,
+      "Female_FlatTop": 84,
+      "SP_Dreads_Female": 3,
+      "Chubby_Pompadour": 21,
+      "SP_FadeRight_Male": 3,
+      "Male_Afro": 150,
+      "Chubby_Buns": 14,
+      "Male_Buns": 53,
+      "Male_Pompadour": 117,
+      "Male_FadeRight": 42,
+      "Female_Pompadour": 87,
+      "Female_Dreads": 75,
+      "Male_FlatTop": 62,
+      "SP_Dreads_Male": 5,
+      "Chubby_FlatTop": 22,
+      "Chubby_Mohawk": 27,
+      "SP_MrT_Female": 4,
+      "Chubby_Surfer": 28,
+      "Chubby_Dreads": 23,
+      "SP_Afro_Male": 8,
+      "Chubby_Afro": 12,
+      "Chubby_AZVet": 9,
+      "SP_MrT_Male": 4,
+      "SP_FadeRight_Female": 2,
+      "SP_Surfer_Male": 7,
+      "SP_AZVet_Male": 6,
+      "Chubby_MrT": 16,
+      "SP_Surfer_Female": 7,
+      "Female_TheAvatar": 4,
+      "SP_Mohawk_Male": 7,
+      "SP_Mohawk_Female": 1,
+      "SP_Afro_Female": 5,
+      "Chubby_TheAvatar": 1
+    }
+  }
+}

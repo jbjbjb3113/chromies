@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_SERC_StarryNight
+Channels: RGBA
+#
+  0   0   0   0	background (transparent)
+  8  10  25 255	mask_dark (midnight blue-black)
+ 15  20  45 255	mask_mid (deep night blue)
+240 235 180 255	highlight (bright moonlight gold)
+ 20  30  70 255	skin_shadow_deep (deep indigo)
+ 35  55 110 255	skin_shadow (rich cobalt)
+ 55  85 150 255	skin_mid (Van Gogh blue)
+ 85 120 185 255	skin_light (swirling sky blue)
+ 140 175 220 255	skin_highlight (pale moonlit blue)
+ 12  18  50 255	hood/shirt (dark prussian blue)
+  8  10  30 255	eye_socket (near black blue)
+ 180 155  40 255	eye_glow (golden yellow)
+ 230 210  60 255	eye_signal (bright star gold)
+ 18  25  65 255	hair_dark (dark night blue)
+ 40  65 120 255	hair_mid (cobalt swirl)
+ 100 140 200 255	hair_bright (light sky blue)

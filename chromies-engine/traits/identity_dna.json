@@ -1,0 +1,89 @@
+{
+  "schema_version": "1.0.0",
+  "roll_order_version": 1,
+  "description": "Identity DNA — non-visual traits rolled from an independent PRNG stream spawned by the forge seed.",
+  "categories": {
+    "temperament": {
+      "required": true,
+      "values": {
+        "Wary": 18,
+        "Bold": 16,
+        "Laconic": 14,
+        "Mercurial": 12,
+        "Stoic": 12,
+        "Curious": 11,
+        "Defiant": 10,
+        "Gentle": 7
+      }
+    },
+    "origin_signal": {
+      "required": true,
+      "values": {
+        "Static burst": 16,
+        "Deep band": 15,
+        "Fractured relay": 14,
+        "Harmonic drift": 13,
+        "Null carrier": 12,
+        "Prism echo": 11,
+        "Rust tide": 10,
+        "Void whisper": 9
+      }
+    },
+    "alignment": {
+      "required": true,
+      "values": {
+        "Anchor": 22,
+        "Drift": 20,
+        "Pulse": 18,
+        "Mirror": 14,
+        "Split": 13,
+        "Open loop": 13
+      }
+    },
+    "memory_affinity": {
+      "required": true,
+      "values": {
+        "Episodic": 20,
+        "Pattern": 18,
+        "Sensory": 16,
+        "Relational": 14,
+        "Archive": 16,
+        "Fleeting": 16
+      }
+    },
+    "voice_profile": {
+      "required": true,
+      "values": {
+        "Low static": 18,
+        "Bright clip": 16,
+        "Layered": 15,
+        "Monotone": 14,
+        "Staccato": 13,
+        "Warm hum": 12,
+        "Fractured": 12
+      }
+    },
+    "embodiment_bias": {
+      "required": true,
+      "values": {
+        "Grounded": 22,
+        "Light": 18,
+        "Tethered": 16,
+        "Fragmented": 14,
+        "Fluid": 15,
+        "Rigid": 15
+      }
+    },
+    "continuity_class": {
+      "required": true,
+      "values": {
+        "Stable": 35,
+        "Fading": 18,
+        "Recursive": 15,
+        "Forked": 12,
+        "Singular": 12,
+        "Echoing": 8
+      }
+    }
+  }
+}

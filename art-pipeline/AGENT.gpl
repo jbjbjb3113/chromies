@@ -1,0 +1,20 @@
+GIMP Palette
+Name: AGENT
+Channels: RGBA
+#
+  0   0   0   0	background (transparent)
+ 10  10  10 255	mask_dark
+ 25  25  25 255	mask_mid
+245 245 245 255	highlight
+ 45  45  45 255	skin_shadow_deep
+ 80  80  80 255	skin_shadow
+115 115 115 255	skin_mid
+150 150 150 255	skin_light
+185 185 185 255	skin_highlight
+ 30  30  30 255	hood/shirt
+ 15  15  15 255	eye_socket
+ 90  90  90 255	eye_glow
+200 200 200 255	eye_signal
+ 20  20  20 255	hair_dark
+ 70  70  70 255	hair_mid
+130 130 130 255	hair_bright

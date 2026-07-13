@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_SERC_Bloodline
+Channels: RGBA
+#
+  0   0   0   0	background (transparent)
+  8   4   4 255	mask_dark (near black)
+ 20  10  10 255	mask_mid (deep black-red)
+220 200 200 255	highlight (pale warm white)
+ 45   8   8 255	skin_shadow_deep (darkest blood red)
+ 85  15  15 255	skin_shadow (deep crimson)
+ 130  25  25 255	skin_mid (rich red)
+ 170  45  35 255	skin_light (warm red)
+ 200  80  60 255	skin_highlight (ember glow)
+ 12   6   6 255	hood/shirt (near black)
+  6   3   3 255	eye_socket (pure black)
+ 160  20  20 255	eye_glow (blood red)
+ 220  30  30 255	eye_signal (vivid red)
+ 15   5   5 255	hair_dark (black-red)
+ 50  10  10 255	hair_mid (dark crimson)
+ 100  18  18 255	hair_bright (deep red)

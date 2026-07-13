@@ -4,7 +4,7 @@ import { createPublicClient, http } from "viem";
 import { sepolia } from "viem/chains";
 import { chromaAbi } from "../abis/Chroma.ts";
 
-const CHROMA = "0xba4c3797a18958877f895b69ca4a67b914949f5d";
+const CHROMA = "0x8162114c056DfC49045c04C66f1E03b761d81eD5";
 const tokenId = BigInt(process.argv[2] ?? "2");
 
 function loadRow(id) {

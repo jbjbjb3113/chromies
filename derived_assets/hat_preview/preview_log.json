@@ -1,0 +1,202 @@
+[
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 29,
+    "palette": "SIGNAL",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token29_SIGNAL.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 33,
+    "palette": "ACID",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token33_ACID.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 36,
+    "palette": "CYAN",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token36_CYAN.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 38,
+    "palette": "GHOST",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token38_GHOST.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 39,
+    "palette": "BLOOD",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token39_BLOOD.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 41,
+    "palette": "MOSS",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token41_MOSS.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 43,
+    "palette": "SIGNAL_BLONDE",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token43_SIGNAL_BLONDE.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 44,
+    "palette": "BLOOD_GREY",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token44_BLOOD_GREY.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 45,
+    "palette": "CYAN_RED",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token45_CYAN_RED.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Classic",
+    "tokenId": 46,
+    "palette": "ACID_SHIRT_BLUE",
+    "head": "HeroA",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Classic_token46_ACID_SHIRT_BLUE.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 29,
+    "palette": "SIGNAL",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token29_SIGNAL.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 33,
+    "palette": "ACID",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token33_ACID.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 36,
+    "palette": "CYAN",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token36_CYAN.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 38,
+    "palette": "GHOST",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token38_GHOST.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 39,
+    "palette": "BLOOD",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token39_BLOOD.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 41,
+    "palette": "MOSS",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token41_MOSS.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 43,
+    "palette": "SIGNAL_BLONDE",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token43_SIGNAL_BLONDE.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 44,
+    "palette": "BLOOD_GREY",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token44_BLOOD_GREY.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 45,
+    "palette": "CYAN_RED",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token45_CYAN_RED.png"
+  },
+  {
+    "hat": "Male_Bucket",
+    "shape": "Angular",
+    "tokenId": 46,
+    "palette": "ACID_SHIRT_BLUE",
+    "head": "Male_Angular",
+    "hood": "None",
+    "hair": "None",
+    "file": "derived_assets/hat_preview/Male_Bucket_Angular_token46_ACID_SHIRT_BLUE.png"
+  }
+]

@@ -1,0 +1,482 @@
+{
+  "version": "v2.1",
+  "generated_at": "2026-07-06T15:45:26.062394+00:00",
+  "pass_type": "pixel_polish_only",
+  "experimental": true,
+  "registered_in_generator": false,
+  "source": "derived_assets/face_forge/v2",
+  "candidates": [
+    {
+      "family": "angular",
+      "gender": "male",
+      "output_path": "derived_assets\\face_forge\\v2_1\\HEAD_Angular_Male_v2_1.png",
+      "polish_stats": {
+        "isolated_speckles": 13,
+        "harsh_jumps": 3,
+        "staircase": 0,
+        "brow": 17,
+        "cheeks": 1,
+        "jaw_edges": 2,
+        "nose": 0,
+        "neck": 1,
+        "highlights": 1,
+        "symmetry": 16,
+        "final_speckles": 0,
+        "final_jumps": 0
+      }
+    },
+    {
+      "family": "rugged",
+      "gender": "male",
+      "output_path": "derived_assets\\face_forge\\v2_1\\HEAD_Rugged_Male_v2_1.png",
+      "polish_stats": {
+        "isolated_speckles": 12,
+        "harsh_jumps": 7,
+        "staircase": 0,
+        "brow": 16,
+        "cheeks": 0,
+        "jaw_edges": 1,
+        "nose": 6,
+        "neck": 6,
+        "highlights": 0,
+        "symmetry": 12,
+        "final_speckles": 2,
+        "final_jumps": 0
+      }
+    },
+    {
+      "family": "angular",
+      "gender": "female",
+      "output_path": "derived_assets\\face_forge\\v2_1\\HEAD_Angular_Female_v2_1.png",
+      "polish_stats": {
+        "isolated_speckles": 17,
+        "harsh_jumps": 5,
+        "staircase": 0,
+        "brow": 20,
+        "cheeks": 1,
+        "jaw_edges": 0,
+        "nose": 4,
+        "neck": 5,
+        "highlights": 0,
+        "symmetry": 28,
+        "final_speckles": 1,
+        "final_jumps": 0
+      }
+    },
+    {
+      "family": "rugged",
+      "gender": "female",
+      "output_path": "derived_assets\\face_forge\\v2_1\\HEAD_Rugged_Female_v2_1.png",
+      "polish_stats": {
+        "isolated_speckles": 21,
+        "harsh_jumps": 5,
+        "staircase": 0,
+        "brow": 23,
+        "cheeks": 1,
+        "jaw_edges": 5,
+        "nose": 2,
+        "neck": 9,
+        "highlights": 0,
+        "symmetry": 26,
+        "final_speckles": 1,
+        "final_jumps": 0
+      }
+    }
+  ],
+  "compatibility_validation": {
+    "angular_male": [
+      {
+        "case": "base",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 553
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "glasses",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 553
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "beard",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 553
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "hoodie",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 553
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "tank",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 553
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "necklace",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 553
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      }
+    ],
+    "rugged_male": [
+      {
+        "case": "base",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 554
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "glasses",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 554
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "beard",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 554
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "hoodie",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 554
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "tank",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 554
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "necklace",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 554
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      }
+    ],
+    "angular_female": [
+      {
+        "case": "base",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 604
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "glasses",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 604
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "beard",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 604
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "hoodie",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 604
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "tank",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 604
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "necklace",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 604
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      }
+    ],
+    "rugged_female": [
+      {
+        "case": "base",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 605
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "glasses",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 605
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "beard",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 605
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "hoodie",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 605
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "tank",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 605
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      },
+      {
+        "case": "necklace",
+        "passes": true,
+        "head_overlay": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0,
+          "pixel_count": 605
+        },
+        "composed_preview": {
+          "pixel_pass": true,
+          "palette_pass": true,
+          "orphans": 0
+        },
+        "passes_validators": true
+      }
+    ]
+  },
+  "all_compatibility_pass": true,
+  "compare_sheet": "reports\\face_forge_v2_1_compare.png"
+}

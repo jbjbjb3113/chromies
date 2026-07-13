@@ -1,0 +1,322 @@
+[
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 4,
+    "palette": "SIGNAL",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token4_SIGNAL.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 8,
+    "palette": "ACID",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token8_ACID.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 10,
+    "palette": "CYAN",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token10_CYAN.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 12,
+    "palette": "GHOST",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token12_GHOST.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 13,
+    "palette": "BLOOD",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token13_BLOOD.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 16,
+    "palette": "MOSS",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token16_MOSS.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 17,
+    "palette": "SIGNAL_BLONDE",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token17_SIGNAL_BLONDE.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 18,
+    "palette": "BLOOD_GREY",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token18_BLOOD_GREY.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 21,
+    "palette": "CYAN_RED",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token21_CYAN_RED.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Classic",
+    "tokenId": 26,
+    "palette": "ACID_SHIRT_BLUE",
+    "head": "HeroA",
+    "file": "derived_assets/angular_preview/Male_Classic_token26_ACID_SHIRT_BLUE.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 4,
+    "palette": "SIGNAL",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token4_SIGNAL.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 8,
+    "palette": "ACID",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token8_ACID.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 10,
+    "palette": "CYAN",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token10_CYAN.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 12,
+    "palette": "GHOST",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token12_GHOST.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 13,
+    "palette": "BLOOD",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token13_BLOOD.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 16,
+    "palette": "MOSS",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token16_MOSS.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 17,
+    "palette": "SIGNAL_BLONDE",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token17_SIGNAL_BLONDE.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 18,
+    "palette": "BLOOD_GREY",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token18_BLOOD_GREY.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 21,
+    "palette": "CYAN_RED",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token21_CYAN_RED.png"
+  },
+  {
+    "archetype": "HeroA/Male",
+    "shape": "Angular",
+    "tokenId": 26,
+    "palette": "ACID_SHIRT_BLUE",
+    "head": "Male_Angular",
+    "file": "derived_assets/angular_preview/Male_Angular_token26_ACID_SHIRT_BLUE.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 2,
+    "palette": "SIGNAL",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token2_SIGNAL.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 3,
+    "palette": "ACID",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token3_ACID.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 5,
+    "palette": "CYAN",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token5_CYAN.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 7,
+    "palette": "GHOST",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token7_GHOST.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 11,
+    "palette": "BLOOD",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token11_BLOOD.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 19,
+    "palette": "MOSS",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token19_MOSS.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 20,
+    "palette": "SIGNAL_BLONDE",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token20_SIGNAL_BLONDE.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 22,
+    "palette": "BLOOD_GREY",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token22_BLOOD_GREY.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 23,
+    "palette": "CYAN_RED",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token23_CYAN_RED.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Classic",
+    "tokenId": 24,
+    "palette": "ACID_SHIRT_BLUE",
+    "head": "HeroA_Female",
+    "file": "derived_assets/angular_preview/Female_Classic_token24_ACID_SHIRT_BLUE.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 2,
+    "palette": "SIGNAL",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token2_SIGNAL.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 3,
+    "palette": "ACID",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token3_ACID.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 5,
+    "palette": "CYAN",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token5_CYAN.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 7,
+    "palette": "GHOST",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token7_GHOST.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 11,
+    "palette": "BLOOD",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token11_BLOOD.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 19,
+    "palette": "MOSS",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token19_MOSS.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 20,
+    "palette": "SIGNAL_BLONDE",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token20_SIGNAL_BLONDE.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 22,
+    "palette": "BLOOD_GREY",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token22_BLOOD_GREY.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 23,
+    "palette": "CYAN_RED",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token23_CYAN_RED.png"
+  },
+  {
+    "archetype": "HeroA/Female",
+    "shape": "Angular",
+    "tokenId": 24,
+    "palette": "ACID_SHIRT_BLUE",
+    "head": "Female_Angular",
+    "file": "derived_assets/angular_preview/Female_Angular_token24_ACID_SHIRT_BLUE.png"
+  }
+]

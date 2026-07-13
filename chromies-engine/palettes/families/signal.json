@@ -1,0 +1,31 @@
+{
+  "family": "Signal",
+  "description": "High-contrast cyan-magenta signal read; highest-saturation mark glows against deep void shadows.",
+  "slots": {
+    "outline": "#0a0a12",
+    "skin_mask": ["#3d5a6c", "#5a8a9e", "#7ec4d8"],
+    "hair": ["#1a2840", "#2d4a6e", "#4a7ab8"],
+    "clothing": ["#12182a", "#1e2d4a", "#3a5080"],
+    "accent": ["#00e5ff", "#ff3d9a"],
+    "accessory": ["#c8d4e8", "#8899aa"],
+    "forehead_mark": "#00ffcc"
+  },
+  "colors": [
+    "#0a0a12",
+    "#3d5a6c",
+    "#5a8a9e",
+    "#7ec4d8",
+    "#1a2840",
+    "#2d4a6e",
+    "#4a7ab8",
+    "#12182a",
+    "#1e2d4a",
+    "#3a5080",
+    "#00e5ff",
+    "#ff3d9a",
+    "#c8d4e8",
+    "#8899aa",
+    "#00ffcc"
+  ],
+  "transparent": true
+}

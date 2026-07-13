@@ -15,10 +15,10 @@ import { sepolia } from "viem/chains";
 import { chromaAbi } from "../abis/Chroma.ts";
 import { chromaCanvasV2Abi } from "../abis/ChromaCanvasV2.ts";
 
-const CHROMA = "0xba4c3797a18958877f895b69ca4a67b914949f5d" as const;
-const CANVAS = (process.env.CANVAS_ADDRESS ?? "0x684b85535eDFA1C14a16987c6Da20FEf63378c9a") as `0x${string}`;
-const RENDERER = "0xb00b210b2dAeF9D2c4c7016f46d62D5312EF3A30" as const;
-const STORAGE = "0x78ee267c09be83eee64050e21ecc2ffe8296ae38" as const;
+const CHROMA = "0x8162114c056DfC49045c04C66f1E03b761d81eD5" as const;
+const CANVAS = (process.env.CANVAS_ADDRESS ?? "0xa2e15dF33b21dDB62190B2Cd8C08e63350608DfB") as `0x${string}`;
+const RENDERER = "0x7680D210ed242330877b31D9749a92307484Aae1" as const;
+const STORAGE = "0x557933b09005C6254d3884A1F93a03e740920A42" as const;
 const EMPTY = "0x" as const;
 
 const canvasGetter = [{ type: "function", name: "canvas", stateMutability: "view", inputs: [], outputs: [{ type: "address" }] }] as const;

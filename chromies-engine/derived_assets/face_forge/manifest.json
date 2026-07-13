@@ -1,0 +1,436 @@
+{
+  "generated_at": "2026-07-06T14:53:27.475763+00:00",
+  "source_heads": {
+    "male": "X:\\Cursor\\Homies\\art-pipeline\\components\\male\\HEAD_HeroA.png",
+    "female": "X:\\Cursor\\Homies\\art-pipeline\\components\\female\\HEAD_Female_Hero_A.png"
+  },
+  "candidates": [
+    {
+      "family": "angular",
+      "gender": "male",
+      "source_head": "X:\\Cursor\\Homies\\art-pipeline\\components\\male\\HEAD_HeroA.png",
+      "output_path": "derived_assets\\face_forge\\angular\\HEAD_Angular_Male.png",
+      "notes": [
+        "narrowed lower jaw",
+        "sharpened cheekbone shadows",
+        "intensified brow ridge"
+      ]
+    },
+    {
+      "family": "rugged",
+      "gender": "male",
+      "source_head": "X:\\Cursor\\Homies\\art-pipeline\\components\\male\\HEAD_HeroA.png",
+      "output_path": "derived_assets\\face_forge\\rugged\\HEAD_Rugged_Male.png",
+      "notes": [
+        "widened jaw line",
+        "heavier brow mass",
+        "weathered cheek detail"
+      ]
+    },
+    {
+      "family": "angular",
+      "gender": "female",
+      "source_head": "X:\\Cursor\\Homies\\art-pipeline\\components\\female\\HEAD_Female_Hero_A.png",
+      "output_path": "derived_assets\\face_forge\\angular\\HEAD_Angular_Female.png",
+      "notes": [
+        "narrowed lower jaw",
+        "sharpened cheekbone shadows",
+        "intensified brow ridge"
+      ]
+    },
+    {
+      "family": "rugged",
+      "gender": "female",
+      "source_head": "X:\\Cursor\\Homies\\art-pipeline\\components\\female\\HEAD_Female_Hero_A.png",
+      "output_path": "derived_assets\\face_forge\\rugged\\HEAD_Rugged_Female.png",
+      "notes": [
+        "widened jaw line",
+        "heavier brow mass",
+        "weathered cheek detail"
+      ]
+    }
+  ],
+  "validation": {
+    "angular_male": {
+      "previews": [
+        {
+          "hair": "Male_Afro",
+          "eyes": "Male_Straight",
+          "palette": "SIGNAL_SHIRT_RED",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 571
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Dreads",
+          "eyes": "Male_Stoned",
+          "palette": "SIGNAL_SHIRT_BLUE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 571
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Mohawk",
+          "eyes": "Male_SquintLeft",
+          "palette": "SIGNAL_SHIRT_GREEN",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 571
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Surfer",
+          "eyes": "Male_WideOpen",
+          "palette": "SIGNAL_SHIRT_ORANGE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 571
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Buns",
+          "eyes": "Male_CrossEyed",
+          "palette": "SIGNAL_SHIRT_PURPLE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 571
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        }
+      ],
+      "overlay": {
+        "pixel_pass": true,
+        "palette_pass": true,
+        "orphans": 0,
+        "pixel_count": 571
+      }
+    },
+    "rugged_male": {
+      "previews": [
+        {
+          "hair": "Male_Afro",
+          "eyes": "Male_Straight",
+          "palette": "SIGNAL_SHIRT_RED",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 560
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Dreads",
+          "eyes": "Male_Stoned",
+          "palette": "SIGNAL_SHIRT_BLUE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 560
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Mohawk",
+          "eyes": "Male_SquintLeft",
+          "palette": "SIGNAL_SHIRT_GREEN",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 560
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Surfer",
+          "eyes": "Male_WideOpen",
+          "palette": "SIGNAL_SHIRT_ORANGE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 560
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Male_Buns",
+          "eyes": "Male_CrossEyed",
+          "palette": "SIGNAL_SHIRT_PURPLE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 560
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        }
+      ],
+      "overlay": {
+        "pixel_pass": true,
+        "palette_pass": true,
+        "orphans": 0,
+        "pixel_count": 560
+      }
+    },
+    "angular_female": {
+      "previews": [
+        {
+          "hair": "Female_Afro",
+          "eyes": "Female_Straight",
+          "palette": "SIGNAL_SHIRT_RED",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 616
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_Dreads",
+          "eyes": "Female_LookLeft",
+          "palette": "SIGNAL_SHIRT_BLUE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 616
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_Mohawk",
+          "eyes": "Female_Stoned",
+          "palette": "SIGNAL_SHIRT_GREEN",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 616
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_Pompadour",
+          "eyes": "Female_CrissCrossed",
+          "palette": "SIGNAL_SHIRT_ORANGE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 616
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_FlatTop",
+          "eyes": "Female_LookRight",
+          "palette": "SIGNAL_SHIRT_PURPLE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 616
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        }
+      ],
+      "overlay": {
+        "pixel_pass": true,
+        "palette_pass": true,
+        "orphans": 0,
+        "pixel_count": 616
+      }
+    },
+    "rugged_female": {
+      "previews": [
+        {
+          "hair": "Female_Afro",
+          "eyes": "Female_Straight",
+          "palette": "SIGNAL_SHIRT_RED",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 607
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_Dreads",
+          "eyes": "Female_LookLeft",
+          "palette": "SIGNAL_SHIRT_BLUE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 607
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_Mohawk",
+          "eyes": "Female_Stoned",
+          "palette": "SIGNAL_SHIRT_GREEN",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 607
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_Pompadour",
+          "eyes": "Female_CrissCrossed",
+          "palette": "SIGNAL_SHIRT_ORANGE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 607
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        },
+        {
+          "hair": "Female_FlatTop",
+          "eyes": "Female_LookRight",
+          "palette": "SIGNAL_SHIRT_PURPLE",
+          "head_overlay": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0,
+            "pixel_count": 607
+          },
+          "composed_preview": {
+            "pixel_pass": true,
+            "palette_pass": true,
+            "orphans": 0
+          },
+          "passes_validators": true
+        }
+      ],
+      "overlay": {
+        "pixel_pass": true,
+        "palette_pass": true,
+        "orphans": 0,
+        "pixel_count": 607
+      }
+    }
+  },
+  "preview_sheet": "reports\\face_forge_preview.png"
+}

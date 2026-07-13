@@ -1,0 +1,177 @@
+{
+  "mergeThreshold": 6,
+  "changedPixels": 27,
+  "mergeGroups": [
+    {
+      "canonical": "#698494",
+      "members": [
+        {
+          "hex": "#698494",
+          "px": 2941
+        },
+        {
+          "hex": "#648693",
+          "px": 6
+        },
+        {
+          "hex": "#5f8994",
+          "px": 1
+        }
+      ]
+    },
+    {
+      "canonical": "#77bebf",
+      "members": [
+        {
+          "hex": "#77bebf",
+          "px": 111
+        },
+        {
+          "hex": "#7abec0",
+          "px": 3
+        }
+      ]
+    },
+    {
+      "canonical": "#000000",
+      "members": [
+        {
+          "hex": "#000000",
+          "px": 198
+        }
+      ]
+    },
+    {
+      "canonical": "#000207",
+      "members": [
+        {
+          "hex": "#000207",
+          "px": 9
+        }
+      ]
+    },
+    {
+      "canonical": "#0f171b",
+      "members": [
+        {
+          "hex": "#0f171b",
+          "px": 1
+        }
+      ]
+    },
+    {
+      "canonical": "#7ab7bc",
+      "members": [
+        {
+          "hex": "#7ab7bc",
+          "px": 1
+        }
+      ]
+    },
+    {
+      "canonical": "#80bdc1",
+      "members": [
+        {
+          "hex": "#80bdc1",
+          "px": 1
+        }
+      ]
+    },
+    {
+      "canonical": "#9ce0e0",
+      "members": [
+        {
+          "hex": "#9ce0e0",
+          "px": 228
+        }
+      ]
+    },
+    {
+      "canonical": "#a0e4e4",
+      "members": [
+        {
+          "hex": "#a0e4e4",
+          "px": 4
+        }
+      ]
+    },
+    {
+      "canonical": "#c9fbfc",
+      "members": [
+        {
+          "hex": "#c9fbfc",
+          "px": 573
+        },
+        {
+          "hex": "#ccf9fd",
+          "px": 12
+        },
+        {
+          "hex": "#cffbff",
+          "px": 5
+        }
+      ]
+    },
+    {
+      "canonical": "#c7f5f7",
+      "members": [
+        {
+          "hex": "#c7f5f7",
+          "px": 2
+        }
+      ]
+    }
+  ],
+  "mergesApplied": [
+    {
+      "from": "#7abec0",
+      "to": "#77bebf",
+      "px": 3,
+      "dist": 3.1622776601683795
+    },
+    {
+      "from": "#ccf9fd",
+      "to": "#c9fbfc",
+      "px": 12,
+      "dist": 3.7416573867739413
+    },
+    {
+      "from": "#648693",
+      "to": "#698494",
+      "px": 6,
+      "dist": 5.477225575051661
+    },
+    {
+      "from": "#cffbff",
+      "to": "#c9fbfc",
+      "px": 5,
+      "dist": 6.708203932499369
+    },
+    {
+      "from": "#5f8994",
+      "to": "#698494",
+      "px": 1,
+      "dist": 11.180339887498949
+    }
+  ],
+  "distinctOpaqueAfterMerge": 11,
+  "fits16Slots": true,
+  "proposedPalette31": [
+    "#000001",
+    "#698494",
+    "#c9fbfc",
+    "#9ce0e0",
+    "#000000",
+    "#77bebf",
+    "#000207",
+    "#a0e4e4",
+    "#c7f5f7",
+    "#0f171b",
+    "#7ab7bc",
+    "#80bdc1",
+    "#000002",
+    "#000003",
+    "#000004",
+    "#000005"
+  ]
+}

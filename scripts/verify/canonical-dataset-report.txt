@@ -1,0 +1,168 @@
+
+========================================================================================
+CANONICAL DATASET DETERMINATION -- REPORT ONLY, NO WRITES TO ANY DATASET FILE
+========================================================================================
+Repo root: X:\Cursor\Homies
+Frozen root under test: 0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd
+Commemorative contract: 0x3C8C9615889762bDcF9647a3C86C74aFA498a158
+
+========================================================================================
+Step 0: locating the real merkle construction
+========================================================================================
+Construction file: art-pipeline\candidate-merkle.js
+Frozen root string found in: ['src\\pages\\Provenance.jsx', 'scripts\\verify\\determine-canonical-dataset.py', 'chromies-engine\\reports\\ROBINHOOD_DATASET_FREEZE_RULING.md', 'chromies-engine\\generated\\regen_5150_current\\candidate-merkle-root.txt']
+Other files containing a leafHash/MerkleTree construction (candidates considered): ['art-pipeline\\candidate-merkle.js', 'art-pipeline\\generate-merkle.js', 'art-pipeline\\generate-reveal-merkle.js', 'art-pipeline\\upload-ipfs-collection.js', 'art-pipeline\\verify-ipfs-collection.js', 'art-pipeline\\_verify_canonical_merkle.cjs', 'lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', 'lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-HEAD\\art-pipeline\\generate-merkle.js', '.verify-tmp-HEAD\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-HEAD\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-HEAD\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-f320b77\\art-pipeline\\generate-merkle.js', '.verify-tmp-f320b77\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-f320b77\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-f320b77\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-e944eba\\art-pipeline\\generate-merkle.js', '.verify-tmp-e944eba\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-e944eba\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-e944eba\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-d287307\\art-pipeline\\generate-merkle.js', '.verify-tmp-d287307\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-d287307\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-d287307\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-c9877a4\\art-pipeline\\generate-merkle.js', '.verify-tmp-c9877a4\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-c9877a4\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-c9877a4\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-bd8c7bb\\art-pipeline\\generate-merkle.js', '.verify-tmp-bd8c7bb\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-bd8c7bb\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-bd8c7bb\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-b6b7b30\\art-pipeline\\generate-merkle.js', '.verify-tmp-b6b7b30\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-b6b7b30\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-b6b7b30\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-7e24f51\\art-pipeline\\generate-merkle.js', '.verify-tmp-7e24f51\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-7e24f51\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-7e24f51\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-6d95113\\art-pipeline\\generate-merkle.js', '.verify-tmp-6d95113\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-6d95113\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-6d95113\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-60d0f12\\art-pipeline\\generate-merkle.js', '.verify-tmp-60d0f12\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-60d0f12\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-60d0f12\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-43500af\\art-pipeline\\generate-merkle.js', '.verify-tmp-43500af\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-43500af\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-43500af\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-3626430\\art-pipeline\\generate-merkle.js', '.verify-tmp-3626430\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-3626430\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-3626430\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-31162d1\\art-pipeline\\generate-merkle.js', '.verify-tmp-31162d1\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-31162d1\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-31162d1\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-2f040cc\\art-pipeline\\generate-merkle.js', '.verify-tmp-2f040cc\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-2f040cc\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-2f040cc\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js', '.verify-tmp-1c5cd46\\art-pipeline\\generate-merkle.js', '.verify-tmp-1c5cd46\\art-pipeline\\generate-reveal-merkle.js', '.verify-tmp-1c5cd46\\lib\\openzeppelin-contracts\\test\\utils\\cryptography\\MerkleProof.test.js', '.verify-tmp-1c5cd46\\lib\\openzeppelin-contracts\\test\\utils\\structs\\MerkleTree.test.js']
+Leaf shape corroborated against contracts/Chroma.sol's own reveal(): True
+NOTE: 
+NOTE: candidate-merkle.js's leafHash() body differs from generate-reveal-merkle.js's, despite candidate-merkle.js's header comment claiming they mirror each other. Using candidate-merkle.js's own body verbatim regardless (it's the one the freeze ruling names), but flagging this drift.
+Node helper (verbatim copy of the leafHash/MerkleTree call, parameterized by input file only): art-pipeline\_verify_canonical_merkle.cjs
+
+========================================================================================
+Step 0b: self-check -- does the helper reproduce the frozen root on the file the ruling doc names?
+========================================================================================
+X:\Cursor\Homies\chromies-engine\generated\regen_5150_current\mint-data-excl-legendary.json
+  records: 5141
+  computed root: 0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd
+  MATCHES FROZEN ROOT: True
+
+========================================================================================
+Step 1: legendary token IDs (for non-legendary-subset comparisons)
+========================================================================================
+Legendary token IDs (derived live from art-pipeline/legendary-token-ids.js): [45, 264, 603, 1173, 1294, 2222, 3792, 4354, 4698]
+
+========================================================================================
+Step 2: recompute root over each candidate
+========================================================================================
+
+--- public/data/mint-data.json (working copy) ---
+  size: 21809145 bytes
+  full-file root (5150 records): 0xb17659ae0e19720a50a2c90d16c6445029140596486ea6d808d363212ac73e7e -- MATCHES FROZEN ROOT: False
+    (excluded 9 legendary-tagged record(s) from mint-data.json before hashing)
+  non-legendary-subset root (5141 records): 0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd -- MATCHES FROZEN ROOT: True
+
+--- _backups/art-pipeline-pre-beard-fix/output/mint-data.json ---
+  size: 21809145 bytes
+  full-file root (5150 records): 0xe84e1fec684dbb745dbf4b733ccd32549db7b8a7ca6cbc939ac9c42162503dd4 -- MATCHES FROZEN ROOT: False
+    (excluded 9 legendary-tagged record(s) from mint-data.json before hashing)
+  non-legendary-subset root (5141 records): 0xf374fbf08ee5d55686aa253c0e208dd0984ed50972137804d5498ee311df3687 -- MATCHES FROZEN ROOT: False
+
+--- HEAD copy of public/data/mint-data.json ---
+  Method: `git show HEAD:public/data/mint-data.json` written to an OS-tempfile (no .verify-tmp-*/.verify-worktrees dir was reused, since those are ephemeral and this is reproducible without depending on their presence).
+  size: 21809145 bytes
+  full-file root (5150 records): 0xb17659ae0e19720a50a2c90d16c6445029140596486ea6d808d363212ac73e7e -- MATCHES FROZEN ROOT: False
+    (excluded 9 legendary-tagged record(s) from tmpglb73s9u.json before hashing)
+  non-legendary-subset root (5141 records): 0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd -- MATCHES FROZEN ROOT: True
+
+========================================================================================
+Step 3: delta characterization (working copy vs HEAD copy)
+========================================================================================
+Working copy record count: 5150
+HEAD copy record count:    5150
+Token IDs only in working copy (0): []
+Token IDs only in HEAD copy (0): []
+Token IDs present in both, differing in pixelsHex/traitsHex: 0 of 5150 common
+
+First 0 differing token IDs (of 0):
+
+========================================================================================
+Git archaeology: public/data/mint-data.json
+========================================================================================
+Tracked in git: True
+Last 9 commit(s) touching public/data/mint-data.json:
+  209b88e  2026-07-12T00:45:01-07:00  ï»¿Freeze non-legendary 5,141 dataset for Robinhood commemorative re-do (JB ruling 2026-07-12)  [21809145 bytes]
+  eb791ef  2026-06-21T17:14:08-07:00  Sync public reveal data and add drift guard against InvalidMerkleProof.  [21809145 bytes]
+  46364e2  2026-06-17T21:22:10-07:00  Add on-chain character registry, Alien body guard, and regen mint-data.  [21809145 bytes]
+  86bc9f2  2026-06-16T21:42:06-07:00  Sync mint-data with merkle proofs and guard reveal payloads.  [21809145 bytes]
+  cbae97b  2026-06-14T09:01:04-07:00  Add /reveal page for on-chain placeholder reveals.  [21809145 bytes]
+  0dba964  2026-06-06T13:52:55-07:00  Regenerate mint data and reveal merkle with new eye variants  [None bytes]
+  bf883ef  2026-06-06T11:52:05-07:00  Regenerate mint data and reveal merkle with new male necklaces  [None bytes]
+  71634ef  2026-06-06T00:10:09-07:00  Regenerate mint data for 5150 token supply  [None bytes]
+  a752302  2026-06-05T19:24:49-07:00  Lock Cat weight at 18 â€” 72 cats at mint (1.4%)  [None bytes]
+21,834,896-byte version not found within the last 10 commits touching this path; walking further back to locate the introducing commit...
+  Not found within the last 500 commits touching this path either.
+
+git status --porcelain -- public/data/mint-data.json: (clean / no output)
+git diff --stat HEAD -- public/data/mint-data.json: (no diff vs HEAD)
+HEAD blob size: 21809145 bytes; working-tree size: 21809145 bytes; MATCH
+
+========================================================================================
+Git archaeology: art-pipeline/output/mint-data.json
+========================================================================================
+Tracked in git: True
+Last 9 commit(s) touching art-pipeline/output/mint-data.json:
+  209b88e  2026-07-12T00:45:01-07:00  ï»¿Freeze non-legendary 5,141 dataset for Robinhood commemorative re-do (JB ruling 2026-07-12)  [21809145 bytes]
+  b8fe577  2026-06-18T21:04:40-07:00  Swap Cat for Zombie in mint pipeline and regenerate reveal data.  [21809145 bytes]
+  46364e2  2026-06-17T21:22:10-07:00  Add on-chain character registry, Alien body guard, and regen mint-data.  [21809145 bytes]
+  f333d78  2026-06-16T11:58:10-07:00  WIP: SP hair/earrings/glasses/hood assets, hair PNG updates, HeadHeroC  [21809145 bytes]
+  31162d1  2026-06-16T10:29:47-07:00  Cut reveal gas by moving pixel count off-chain and inlining traits storage.  [21809145 bytes]
+  0dba964  2026-06-06T13:52:55-07:00  Regenerate mint data and reveal merkle with new eye variants  [21809145 bytes]
+  bf883ef  2026-06-06T11:52:05-07:00  Regenerate mint data and reveal merkle with new male necklaces  [21809145 bytes]
+  71634ef  2026-06-06T00:10:09-07:00  Regenerate mint data for 5150 token supply  [21809145 bytes]
+  a752302  2026-06-05T19:24:49-07:00  Lock Cat weight at 18 â€” 72 cats at mint (1.4%)  [21173895 bytes]
+21,834,896-byte version not found within the last 10 commits touching this path; walking further back to locate the introducing commit...
+  Not found within the last 500 commits touching this path either.
+
+git status --porcelain -- art-pipeline/output/mint-data.json: (clean / no output)
+git diff --stat HEAD -- art-pipeline/output/mint-data.json: (no diff vs HEAD)
+HEAD blob size: 21809145 bytes; working-tree size: 21809145 bytes; MATCH
+
+========================================================================================
+Git archaeology: dist/data/mint-data.json
+========================================================================================
+Tracked in git: False
+Matched by .gitignore: True
+Exists on disk (untracked): X:\Cursor\Homies\dist\data\mint-data.json -- 21809145 bytes
+
+========================================================================================
+Cross-check: deployed contract / on-chain root
+========================================================================================
+Files referencing commemorative contract address 0x3C8C9615889762bDcF9647a3C86C74aFA498a158:
+  src\lib\robinhood-contract.js
+  src\pages\Provenance.jsx
+  scripts\verify\determine-canonical-dataset.py
+  chromies-engine\reports\ROBINHOOD_COMMEMORATIVE_REDO.md
+  chromies-engine\reports\ROBINHOOD_RENDERER_BUG.md
+  broadcast\SetMintOpenMainnet.s.sol\4663\run-1783846564566.json
+  broadcast\SetMintOpenMainnet.s.sol\4663\run-latest.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783843802787.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783843858699.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783843910483.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783843963956.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783844022789.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783844084423.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783844139021.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783844198045.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783844289097.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-1783844358813.json
+  broadcast\SeedCommemorativeTestnet.s.sol\4663\run-latest.json
+  broadcast\DeployCorrectedRendererTestnet.s.sol\46630\run-1783825297781.json
+  broadcast\DeployCorrectedRendererTestnet.s.sol\46630\run-latest.json
+  broadcast\DeployCorrectedRendererTestnet.s.sol\46630\dry-run\run-1783825213421.json
+  broadcast\DeployCorrectedRendererTestnet.s.sol\46630\dry-run\run-latest.json
+  broadcast\DeployCommemorativeRedoMainnet.s.sol\4663\run-1783843573630.json
+  broadcast\DeployCommemorativeRedoMainnet.s.sol\4663\run-latest.json
+
+src\robinhood\ChromiesCommemorative.sol contains a merkle-root field or MerkleProof usage: False
+  -> ChromiesCommemorative uses owner-only `seedPayloads(ids, pixelsHex, traitsHex)` with NO merkle root and NO proof verification (confirmed by absence of revealRoot/merkleRoot/MerkleProof in the contract source). The frozen root is therefore NOT stored anywhere on-chain for this contract -- it is a purely off-chain provenance marker recording which dataset the 100 commemorative token payloads were selected from before being pushed via seedPayloads calldata.
+
+contracts\Chroma.sol (the DIFFERENT, main ETH-collection contract) DOES have a `revealRoot` field used in reveal(): True. This is a separate 5,150-token full-collection reveal root (see chromies-engine/reports/ROBINHOOD_DATASET_FREEZE_RULING.md: 0xb17659ae0e19720a50a2c90d16c6445029140596486ea6d808d363212ac73e7e), NOT the frozen 0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd this report is checking -- do not conflate the two roots or the two contracts.
+
+script\robinhood\DeployCommemorativeRedoMainnet.s.sol constructor args: no revealRoot/merkleRoot parameter present: True
+
+Conclusion: the frozen root is recorded in exactly two repo artifacts, neither of which is a deploy/broadcast artifact or on-chain storage slot:
+  1. chromies-engine\reports\ROBINHOOD_DATASET_FREEZE_RULING.md (human ruling doc)
+  2. chromies-engine\generated\regen_5150_current\candidate-merkle-root.txt (raw output of art-pipeline/candidate-merkle.js)
+     on-disk contents: 0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd  (MATCHES frozen root)
+No live RPC read against Robinhood Chain was performed by this script (no on-chain revealRoot storage slot exists for this contract to read, per above -- see note below if that reasoning needs to be independently re-verified live).
+
+========================================================================================
+VERDICT TABLE
+========================================================================================
+Path                                                                    Size (bytes)  Computed root                                                           MATCHES FROZEN ROOT
+chromies-engine\generated\regen_5150_current\mint-data-excl-legendary.json  [self-check: as-is, no filtering]      21771034  0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd      True
+public/data/mint-data.json (working copy) [as-is, 5150 records]             21809145  0xb17659ae0e19720a50a2c90d16c6445029140596486ea6d808d363212ac73e7e      False
+public/data/mint-data.json (working copy) [excl. 9 legendary]               21809145  0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd      True
+_backups/art-pipeline-pre-beard-fix/output/mint-data.json [as-is, 5150 records]      21809145  0xe84e1fec684dbb745dbf4b733ccd32549db7b8a7ca6cbc939ac9c42162503dd4      False
+_backups/art-pipeline-pre-beard-fix/output/mint-data.json [excl. 9 legendary]      21809145  0xf374fbf08ee5d55686aa253c0e208dd0984ed50972137804d5498ee311df3687      False
+HEAD:public/data/mint-data.json [as-is, 5150 records]                       21809145  0xb17659ae0e19720a50a2c90d16c6445029140596486ea6d808d363212ac73e7e      False
+HEAD:public/data/mint-data.json [excl. 9 legendary]                         21809145  0x73008f45bfe38ec43fd00c9fa3af0dab1d8d6f5acdca7f87af9937d0a2887abd      True

@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0.0",
+  "max_colors_per_family": 15,
+  "transparent_allowed": true,
+  "min_distinct_hues": 3,
+  "min_hue_separation_degrees": 25,
+  "max_family_overlap_per_color": 3,
+  "ramp_rules": {
+    "shadows_hue_shift": true,
+    "flat_value_only_shading": false
+  },
+  "mark_rules": {
+    "slot": "forehead_mark",
+    "must_be_highest_saturation_in_family": true,
+    "prism_uses_two_accents": true
+  },
+  "outline_rules": {
+    "width_px": 1,
+    "max_open_break_zones": 2,
+    "allowed_break_zones": ["hair_tips", "accessory_edges"]
+  },
+  "families": [
+    "Ember",
+    "Tide",
+    "Verdant",
+    "Ash",
+    "Violet Hour",
+    "Signal",
+    "Rust",
+    "Polar"
+  ],
+  "ash_note": "Lowest saturation family; ramps remain hue-shifted, never pure gray."
+}

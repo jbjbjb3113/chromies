@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_SERC
+Channels: RGBA
+#
+  0   0   0   0	background (transparent)
+  8   8   8 255	mask_dark
+ 20  20  20 255	mask_mid
+245 245 245 255	highlight
+ 35  35  35 255	skin_shadow_deep
+ 60  60  60 255	skin_shadow
+ 95  95  95 255	skin_mid
+135 135 135 255	skin_light
+175 175 175 255	skin_highlight
+ 15  15  15 255	hood/shirt (near black)
+  5   5   5 255	eye_socket (pure black)
+ 80  80  80 255	eye_glow
+210 210 210 255	eye_signal (bright grey)
+ 25  25  25 255	hair_dark
+ 55  55  55 255	hair_mid
+120 120 120 255	hair_bright

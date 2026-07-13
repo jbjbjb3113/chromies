@@ -1,0 +1,20 @@
+GIMP Palette
+Name: NORMIE_SNOWFRO
+Channels: RGBA
+#
+  0   0   0   0	idx 0 transparent (registry #e8e8e8)
+ 26  26  26 255	idx 1 #1a1a1a
+ 42  42  42 255	idx 2 #2a2a2a
+240 240 240 255	idx 3 #f0f0f0
+ 58  58  58 255	idx 4 #3a3a3a
+ 74  74  74 255	idx 5 #4a4a4a
+106 106 106 255	idx 6 #6a6a6a
+122 122 122 255	idx 7 #7a7a7a
+138 138 138 255	idx 8 #8a8a8a
+ 90  90  90 255	idx 9 #5a5a5a
+ 46  46  46 255	idx 10 #2e2e2e
+136 136 136 255	idx 11 #888888
+170 170 170 255	idx 12 #aaaaaa
+ 64  64  64 255	idx 13 #404040
+ 96  96  96 255	idx 14 #606060
+144 144 144 255	idx 15 #909090

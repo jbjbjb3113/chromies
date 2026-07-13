@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "generated_at": "2026-07-13T17:14:21.922940+00:00",
+    "base_trait": "Female_Neutral",
+    "target_trait": "Female_Smile",
+    "derived_from_token_id": 2,
+    "derivation": "Real diff between the token's actual canonical-byte-decoded Neutral-role render (public/data/mint-data.json, pure decode) and the same token re-rendered with its own character family's Smile-role variant through the real JS art-pipeline compositor (self-verified isolated-JS fidelity check before the swap). base_trait/target_trait are the family-specific variant names actually resolved for this token (e.g. Female_Neutral/Female_Smile), via getEligibleVariants() -- never string-constructed. See build-smile-transition.py docstring.",
+    "placeholder_flag": "Reveal choreography (which pixels land in step1/step2/step3) is a rule-derived linear top-to-bottom pixel reveal, NOT authored art -- pending JB sign-off on final motion. Every pixel color is real (sampled from the real Smile component asset through the token's own palette), only the step ORDER is a placeholder pacing choice.",
+    "grid": 64,
+    "n_steps": 3,
+    "total_delta_pixels": 4,
+    "packed_bytes_per_step": [
+      3,
+      9,
+      12
+    ]
+  },
+  "Female_Neutral": {
+    "target_trait": "Female_Smile",
+    "palette": [
+      [
+        58,
+        42,
+        28
+      ]
+    ],
+    "steps": [
+      [
+        [
+          28,
+          33,
+          0
+        ]
+      ],
+      [
+        [
+          28,
+          33,
+          0
+        ],
+        [
+          35,
+          33,
+          0
+        ],
+        [
+          29,
+          34,
+          0
+        ]
+      ],
+      [
+        [
+          28,
+          33,
+          0
+        ],
+        [
+          35,
+          33,
+          0
+        ],
+        [
+          29,
+          34,
+          0
+        ],
+        [
+          34,
+          34,
+          0
+        ]
+      ]
+    ]
+  }
+}

@@ -3,6 +3,7 @@
 ## Before Mainnet Deploy
 
 ### Contracts
+- [ ] **`KNOWN_DRIFT.md` empty / `known_drift.json` `waived_palette_ids: []`** — no palette drift waivers ship to mainnet (see `chromies-engine/reports/KNOWN_DRIFT.md`)
 - [ ] Redeploy Sepolia with level system (new contracts)
 - [ ] Test level trait showing in tokenURI
 - [ ] Informal contract review (ask Serc)

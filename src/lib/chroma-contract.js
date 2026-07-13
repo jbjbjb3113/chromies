@@ -3,28 +3,33 @@ import { chromaAbi, PHASE } from "../../abis/Chroma.ts";
 import { chromaCanvasV2Abi } from "../../abis/ChromaCanvasV2.ts";
 
 export const CHROMA_STORAGE_ADDRESS = {
-  [sepolia.id]: "0x78ee267c09be83eee64050e21ecc2ffe8296ae38",
+  [sepolia.id]: "0x557933b09005C6254d3884A1F93a03e740920A42",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 export const CHROMA_ADDRESS = {
-  [sepolia.id]: "0xba4c3797a18958877f895b69ca4a67b914949f5d",
+  [sepolia.id]: "0x8162114c056DfC49045c04C66f1E03b761d81eD5",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 /** ChromaCanvasV2 — per-token AP system. The `canvas` param for marketplace listings. */
 export const CANVAS_ADDRESS = {
-  [sepolia.id]: "0x684b85535eDFA1C14a16987c6Da20FEf63378c9a",
+  [sepolia.id]: "0xa2e15dF33b21dDB62190B2Cd8C08e63350608DfB",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 export const MARKETPLACE_ADDRESS = {
-  [sepolia.id]: "0x5aa3f3836013fb2c3d7261d885f78a8bdc42123d",
+  [sepolia.id]: "0x8D0b8327bcC96eF62b3de94687490298a52D3079",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
 export const CHROMA_RENDERER_ADDRESS = {
-  [sepolia.id]: "0xa43f589f399654037fCEB7644707d2566c5b424b",
+  [sepolia.id]: "0x7680D210ed242330877b31D9749a92307484Aae1",
+  [mainnet.id]: "0x0000000000000000000000000000000000000000",
+};
+
+export const CHROMA_PALETTE_DATA_ADDRESS = {
+  [sepolia.id]: "0x4Ff9Ef71A403579DdfCaC5294792306ebD38F0a7",
   [mainnet.id]: "0x0000000000000000000000000000000000000000",
 };
 
@@ -53,6 +58,10 @@ export function getMarketplaceAddress(chainId) {
 
 export function getChromaRendererAddress(chainId) {
   return CHROMA_RENDERER_ADDRESS[chainId] ?? null;
+}
+
+export function getChromaPaletteDataAddress(chainId) {
+  return CHROMA_PALETTE_DATA_ADDRESS[chainId] ?? null;
 }
 
 export function isChromaDeployed(chainId) {

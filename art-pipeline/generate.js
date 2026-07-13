@@ -1895,6 +1895,7 @@ module.exports = {
   resolveCharacter,
   pickTokenVariants,
   loadPickBuffers,
+  getEligibleVariants,
   applyCoverageRules,
   applyAntiNoneStacking,
   finalizeTokenTraits,
