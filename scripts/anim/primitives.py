@@ -94,10 +94,18 @@ def blink(grid: np.ndarray, frame_index: int, params: dict) -> np.ndarray:
 
 
 def smile(grid: np.ndarray, frame_index: int, params: dict) -> np.ndarray:
-    """Stepped mouth-trait delta-overlay transition: hold neutral -> step1 -> step2
-    -> step3 (smile/target) -> hold smile -> step2 -> step1 -> (loops back to
-    neutral hold). Loopable by construction (same state at frame 0 and at the end
-    of one full cycle).
+    """Stepped mouth-trait delta-overlay transition: hold neutral -> intermediate
+    step(s), forward -> hold smile (final step/target) -> back to neutral, per
+    `reverse_mode` (never a mirror of the forward lead-up -- JB ruling). Loopable
+    by construction (same state at frame 0 and at the end of one full cycle).
+
+    Step-count-agnostic: `steps` may be any length >= 1 (see the adaptive rule in
+    scripts/anim/expression_deltas.py::split_delta_into_steps -- it no longer
+    always produces exactly 3). With N steps there are N-1 forward intermediate
+    stops (steps[0..N-2]) before the target hold at steps[N-1]. N == 1 collapses
+    to a direct neutral<->target swap with no intermediates at all (step_frames
+    has no effect in that case, and reverse_mode makes no visible difference
+    either, since there are no reverse intermediate steps to play either way).
 
     Paints scripts/anim/expression_deltas.py delta-overlay steps on top of the
     sprite's own baked-in mouth pixels for the affected coordinates only; leaves
@@ -105,43 +113,72 @@ def smile(grid: np.ndarray, frame_index: int, params: dict) -> np.ndarray:
     `steps`/`palette` are derived (real compositor pixel diffs, not hand-drawn).
 
     params:
-      steps ([[[x, y, palette_index], ...], step1/step2/step3] -- exactly 3
-        cumulative delta lists, required; step3 is the full target delta.
+      steps ([[[x, y, palette_index], ...], ...] -- 1 or more cumulative delta
+        lists, required. The LAST entry is always the full target delta; every
+        earlier entry must be a subset of it (the cumulative-step invariant,
+        validated below in place of the old fixed-length-3 assertion).
       palette ([[r, g, b], ...], required) -- palette_index lookup table for `steps`.
       phase (int, default 0)
       hold_frames (int, default 12) -- frames held at the neutral end and at the
-        smile (step3/target) end of the cycle.
-      step_frames (int, default 2) -- frames held at each intermediate step
-        (step1, step2), forward and reverse.
+        smile (final step/target) end of the cycle. Forward-side timing only;
+        unaffected by `reverse_mode`.
+      step_frames (int, default 2) -- frames held at each FORWARD intermediate
+        step. Forward-side timing only; unaffected by `reverse_mode`.
+      reverse_mode (str, default "snap") -- JB ruling: the smile->neutral leg
+        never mirrors the neutral->smile lead-up.
+          "snap": go straight from the smile hold back to the neutral hold in a
+            single frame step -- no reverse intermediate steps at all, no
+            reverse hold. This is the default.
+          "fast": play the same intermediate steps used on the way up
+            (steps[N-2], ..., steps[0]) in reverse order, but at exactly 1 frame
+            each (never `step_frames`), with no hold at either end of that leg.
     """
     phase = int(params.get("phase", 0))
     hold_frames = int(params.get("hold_frames", 12))
     step_frames = int(params.get("step_frames", 2))
+    reverse_mode = params.get("reverse_mode", "snap")
+    if reverse_mode not in ("snap", "fast"):
+        raise ValueError(f"smile primitive: unknown reverse_mode {reverse_mode!r} (expected 'snap' or 'fast')")
 
     steps_raw = params["steps"]
-    if len(steps_raw) != 3:
-        raise ValueError("smile primitive requires exactly 3 steps (step1, step2, step3/target)")
+    if len(steps_raw) < 1:
+        raise ValueError("smile primitive requires at least 1 step (the target)")
     steps = [[tuple(p) for p in step] for step in steps_raw]
     palette = [tuple(c) for c in params["palette"]]
 
-    cycle = 2 * hold_frames + 4 * step_frames
+    target = set(steps[-1])
+    for i, step in enumerate(steps[:-1]):
+        if not set(step) <= target:
+            raise ValueError(
+                f"smile primitive: step {i} is not a subset of the final step -- steps must be "
+                f"cumulative, with the last step equal to the full target delta"
+            )
+
+    n_intermediate = len(steps) - 1  # forward stops before the target hold
+    # "snap" plays zero reverse frames (the very next frame after the smile hold
+    # is already the next cycle's neutral hold -- a single-frame cut); "fast"
+    # plays the same n_intermediate steps in reverse, 1 frame each, no holds.
+    reverse_step_frames = 1 if reverse_mode == "fast" else 0
+    reverse_len = n_intermediate * reverse_step_frames  # always 0 for "snap"
+
+    cycle = 2 * hold_frames + n_intermediate * step_frames + reverse_len
     t = (frame_index + phase) % cycle
 
     if t < hold_frames:
-        delta = None  # neutral hold
-    elif t < hold_frames + step_frames:
-        delta = steps[0]
-    elif t < hold_frames + 2 * step_frames:
-        delta = steps[1]
-    elif t < hold_frames + 2 * step_frames + hold_frames:
-        delta = steps[2]  # smile hold (target)
-    elif t < hold_frames + 2 * step_frames + hold_frames + step_frames:
-        delta = steps[1]  # reverse
-    else:
-        delta = steps[0]  # reverse
+        return grid.copy()  # neutral hold
 
-    if delta is None:
-        return grid.copy()
+    t -= hold_frames
+    if t < n_intermediate * step_frames:
+        return apply_delta(grid, steps[t // step_frames], palette)  # forward intermediate
+
+    t -= n_intermediate * step_frames
+    if t < hold_frames:
+        return apply_delta(grid, steps[-1], palette)  # smile hold (target)
+
+    # Only reachable when reverse_mode == "fast" (reverse_len == 0 for "snap"
+    # means `t` never lands here -- the cycle boundary is exactly the hold's end).
+    t -= hold_frames
+    delta = steps[n_intermediate - 1 - (t // reverse_step_frames)]  # reverse intermediate, "fast" only
     return apply_delta(grid, delta, palette)
 
 

@@ -24,6 +24,7 @@ is.
 
 from __future__ import annotations
 
+import math
 from typing import Sequence
 
 import numpy as np
@@ -67,23 +68,98 @@ def diff_to_delta(
     return delta, palette
 
 
-def split_delta_into_steps(delta: Delta, n_steps: int) -> list[Delta]:
-    """Partition `delta` into `n_steps` cumulative steps (step i contains all pixels
-    from steps 1..i), ordered by (y, x) for a deterministic top-to-bottom,
-    left-to-right reveal. Step `n_steps` is always the full delta (the target).
+def _order_delta_by_adjacency(base_grid: np.ndarray, delta: Delta) -> Delta:
+    """Order `delta`'s pixels by an adjacency-wave rank expanding outward from
+    `base_grid`'s own drawn (non-transparent) pixels:
 
-    This is a simple linear reveal -- a rule-derived default for pacing a
-    placeholder transition, not authored art. See build-smile-transition.py.
+      - Rank 0: delta pixels 8-adjacent to any alpha!=0 pixel already present in
+        `base_grid` (i.e. touching the sprite's real, existing art).
+      - Rank i (i >= 1): delta pixels 8-adjacent to a rank-(i-1) delta pixel --
+        each round only looks at the immediately preceding rank, which is
+        equivalent to "adjacent to any already-ranked pixel" here, since any pixel
+        adjacent to an *older* rank would already have been captured in an earlier
+        round (every unranked pixel is re-checked every round).
+      - Pixels the wave never reaches (not 8-adjacent to the base sprite or to any
+        other delta pixel, directly or transitively) all share one final rank --
+        "truly isolated", per split_delta_into_steps.
+
+    Ties within a rank are broken deterministically by (Euclidean distance to the
+    centroid of the full delta pixel set, then x, then y), so the same
+    (base_grid, delta) pair always produces the same order.
     """
+    coord_to_pixel = {(x, y): (x, y, idx) for x, y, idx in delta}
+    delta_coords = set(coord_to_pixel)
+
+    ys, xs = np.nonzero(base_grid[:, :, 3])
+    base_occupied = set(zip(xs.tolist(), ys.tolist()))
+
+    def neighbors8(x: int, y: int):
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                if dx or dy:
+                    yield x + dx, y + dy
+
+    rank: dict[tuple[int, int], int] = {}
+    unranked = set(delta_coords)
+    frontier = {c for c in unranked if any(n in base_occupied for n in neighbors8(*c))}
+    current_rank = 0
+    while frontier:
+        for coord in frontier:
+            rank[coord] = current_rank
+        unranked -= frontier
+        frontier = {c for c in unranked if any(n in frontier for n in neighbors8(*c))}
+        current_rank += 1
+    for coord in unranked:  # never reached by the wave -- all share the last rank
+        rank[coord] = current_rank
+
+    cx = sum(x for x, _ in delta_coords) / len(delta_coords)
+    cy = sum(y for _, y in delta_coords) / len(delta_coords)
+
+    def sort_key(coord: tuple[int, int]) -> tuple[int, float, int, int]:
+        x, y = coord
+        return (rank[coord], math.hypot(x - cx, y - cy), x, y)
+
+    return [coord_to_pixel[c] for c in sorted(delta_coords, key=sort_key)]
+
+
+def split_delta_into_steps(
+    base_grid: np.ndarray,
+    delta: Delta,
+    steps: int | None = None,
+) -> list[Delta]:
+    """Partition `delta` into cumulative steps (step i contains all pixels from
+    steps 1..i; the final step is always the full delta -- the target), ordered by
+    an adjacency wave expanding outward from `base_grid`'s own drawn pixels rather
+    than a fixed top-to-bottom scan -- see _order_delta_by_adjacency.
+
+    Step count: if `steps` is None (the default), it's derived from delta size --
+    `max(1, min(3, ceil(len(delta) / 3)))` -- so a delta of 3px or fewer collapses
+    to a single-step swap (no intermediates), a 4px delta gets 2 steps, and larger
+    deltas cap at 3. Pass an explicit integer `steps` to bypass this rule entirely.
+
+    Isolated delta pixels (unreached by the adjacency wave -- see
+    _order_delta_by_adjacency) rank last, so they appear only in the final forward
+    step and, since a caller reversing this list replays it backward for the
+    return leg, disappear first on the way back.
+
+    Still a rule-derived reveal order, not authored art -- see
+    build-smile-transition.py's placeholder-art flag.
+    """
+    if not delta:
+        raise ValueError("cannot split an empty delta")
+
+    n_steps = steps if steps is not None else max(1, min(3, math.ceil(len(delta) / 3)))
     if n_steps < 1:
-        raise ValueError("n_steps must be >= 1")
-    ordered = sorted(delta, key=lambda p: (p[1], p[0]))
-    steps: list[Delta] = []
+        raise ValueError("steps must be >= 1")
+
+    ordered = _order_delta_by_adjacency(base_grid, delta)
+
+    result: list[Delta] = []
     for i in range(1, n_steps + 1):
         cut = round(len(ordered) * i / n_steps)
-        steps.append(ordered[:cut])
-    steps[-1] = list(ordered)  # exact target, no rounding drift
-    return steps
+        result.append(ordered[:cut])
+    result[-1] = list(ordered)  # exact target, no rounding drift
+    return result
 
 
 def apply_delta(grid: np.ndarray, delta: Delta, palette: Palette) -> np.ndarray:

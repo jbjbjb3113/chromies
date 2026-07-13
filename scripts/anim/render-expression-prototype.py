@@ -1,8 +1,21 @@
 #!/usr/bin/env python3
-"""Task 4: render the prototype neutral<->smile transition to MP4, plus a 4-up
-keyframe contact sheet and a byte-cost report. Also runs the byte-identity
-regression check for the existing scenes/single-blink.json scene (Task 3's
-"don't break animate-scene.py" requirement).
+"""Task 4: render the prototype neutral<->smile transition to MP4, plus a dynamic
+keyframe contact sheet (neutral + N steps, N per expression_deltas.py's adaptive
+step count -- no longer assumed to be a fixed 4-up) and a byte-cost report. Also
+runs the byte-identity regression check for the existing scenes/single-blink.json
+scene (Task 3's "don't break animate-scene.py" requirement).
+
+JB ruling (asymmetric transition timing): the forward lead-up (neutral -> ... ->
+smile) is never mirrored on the way back. This script renders BOTH reverse
+variants of scripts/anim/primitives.py's smile primitive's `reverse_mode` to
+distinct MP4s in the same v2 output dir -- "snap" (single-frame cut straight
+back to neutral, no reverse steps) and "fast" (the same intermediate steps
+played in reverse, 1 frame each, no holds) -- so JB can pick by eye. Forward
+timing and the smile-hold duration are identical between the two; only the
+reverse leg differs. Playback-only: no changes to expression_deltas.py or
+expression-transitions.json: reverse frames reuse the exact same stored step
+data (or none at all, for "snap"), so stored bytes are unaffected -- see
+print_byte_report, which is unaffected by reverse_mode and prints once.
 
 Same ffmpeg invocation pattern as scripts/animate-scene.py / scripts/animate-chromie.py
 (literal nearest-neighbor upscale via numpy repeat, then libx264/crf18/yuv420p/
@@ -50,7 +63,7 @@ from anim.expression_deltas import pack_delta  # noqa: E402
 
 TRANSITIONS_PATH = ANIM_ROOT / "expression-transitions.json"
 FACE_REGIONS_PATH = ANIM_ROOT / "face-regions.json"
-OUT_DIR = REPO_ROOT / "out" / "anim" / "expression-prototype"
+OUT_DIR = REPO_ROOT / "out" / "anim" / "expression-prototype-v2"
 SCENES_DIR = REPO_ROOT / "scenes"
 
 GRID = 64
@@ -99,14 +112,22 @@ def resolve_base_token(base_trait: str, token_id: int | None, scan_limit: int) -
     return matched_token_id, canonical_grid_for_token(matched_token_id, mint_records)
 
 
-def build_frames(base_grid: np.ndarray, transition: dict) -> tuple[list[np.ndarray], dict]:
+def build_frames(base_grid: np.ndarray, transition: dict, reverse_mode: str) -> tuple[list[np.ndarray], dict]:
+    steps = transition["steps"]
+    n_intermediate = len(steps) - 1  # forward stops before the target hold
     params = {
-        "steps": transition["steps"],
+        "steps": steps,
         "palette": transition["palette"],
         "hold_frames": HOLD_FRAMES,
         "step_frames": STEP_FRAMES,
+        "reverse_mode": reverse_mode,
     }
-    cycle = 2 * HOLD_FRAMES + 4 * STEP_FRAMES
+    # Must match primitives.py::smile's own cycle formula exactly -- "snap" plays
+    # zero reverse frames (reverse_len == 0); "fast" plays n_intermediate reverse
+    # frames at 1 frame each. See primitives.py's smile() docstring.
+    reverse_step_frames = 1 if reverse_mode == "fast" else 0
+    reverse_len = n_intermediate * reverse_step_frames
+    cycle = 2 * HOLD_FRAMES + n_intermediate * STEP_FRAMES + reverse_len
     smile_fn = PRIMITIVES["smile"]
 
     frames: list[np.ndarray] = []
@@ -118,18 +139,21 @@ def build_frames(base_grid: np.ndarray, transition: dict) -> tuple[list[np.ndarr
     next_grid = smile_fn(base_grid, cycle, params)
     loop_clean = bool(np.array_equal(frames[0], next_grid))
 
-    # Keyframe indices: neutral hold, step1, step2, step3/target hold.
-    keyframe_indices = {
-        "neutral": 0,
-        "step1": HOLD_FRAMES,
-        "step2": HOLD_FRAMES + STEP_FRAMES,
-        "smile": HOLD_FRAMES + 2 * STEP_FRAMES,
-    }
+    # Keyframe indices, in timeline order: neutral hold, then each forward
+    # intermediate stop (step1..step{n_intermediate}), then the final step's hold
+    # (labeled "smile" -- always the full target delta, see
+    # expression_deltas.split_delta_into_steps). Dynamic per the adaptive step
+    # count -- no longer assumes exactly 3 steps (2 intermediates).
+    keyframe_indices: dict[str, int] = {"neutral": 0}
+    for i in range(n_intermediate):
+        keyframe_indices[f"step{i + 1}"] = HOLD_FRAMES + i * STEP_FRAMES
+    keyframe_indices["smile"] = HOLD_FRAMES + n_intermediate * STEP_FRAMES
+
     return frames, {"cycle": cycle, "loop_clean": loop_clean, "keyframe_indices": keyframe_indices}
 
 
-def render_mp4(frames: list[np.ndarray], token_id: int) -> tuple[Path, int]:
-    frames_dir = OUT_DIR / "frames"
+def render_mp4(frames: list[np.ndarray], token_id: int, suffix: str) -> tuple[Path, int]:
+    frames_dir = OUT_DIR / f"frames-{suffix}"
     frames_dir.mkdir(parents=True, exist_ok=True)
     for existing in frames_dir.glob("frame_*.png"):
         existing.unlink()
@@ -140,7 +164,7 @@ def render_mp4(frames: list[np.ndarray], token_id: int) -> tuple[Path, int]:
         upscaled = nn_upscale(rgb, SCALE)
         save_rgb_png(upscaled, frames_dir / f"frame_{i:0{digits}d}.png")
 
-    mp4_path = OUT_DIR / f"chromie-{token_id}-expression-prototype.mp4"
+    mp4_path = OUT_DIR / f"chromie-{token_id}-expression-prototype-{suffix}.mp4"
     cmd = [
         "ffmpeg", "-y",
         "-framerate", str(FPS),
@@ -159,7 +183,7 @@ def render_mp4(frames: list[np.ndarray], token_id: int) -> tuple[Path, int]:
 
 
 def build_contact_sheet(frames: list[np.ndarray], keyframe_indices: dict, token_id: int) -> Path:
-    labels = ["neutral", "step1", "step2", "smile"]
+    labels = list(keyframe_indices.keys())  # dynamic: neutral + N steps -- see build_frames
     cell_scale = 8
     cell = GRID * cell_scale
     label_h = 20
@@ -185,30 +209,47 @@ def build_contact_sheet(frames: list[np.ndarray], keyframe_indices: dict, token_
 
 def print_byte_report(transition: dict, vocabulary_sizes: list[int], n_traits_options: list[int]) -> None:
     steps = transition["steps"]
+    n_steps = len(steps)
+    n_intermediate = n_steps - 1
     packed_sizes = [len(pack_delta([tuple(p) for p in step])) for step in steps]
     target_bytes = packed_sizes[-1]
-    cumulative_stored_total = sum(packed_sizes)  # as actually stored: 3 independent cumulative deltas
+    cumulative_stored_total = sum(packed_sizes)  # as actually stored: n_steps independent cumulative deltas
+
+    step_labels = [f"step{i}" for i in range(1, n_steps)] + ["target"]  # last is always the full delta
 
     print()
     print("=== Byte report ===")
-    print(f"Steps: {len(steps)} (step1, step2, step3/target)")
+    print(
+        f"Steps: {n_steps} ({', '.join(step_labels)}) -- adaptive count, see "
+        f"expression_deltas.split_delta_into_steps"
+    )
     for i, size in enumerate(packed_sizes, start=1):
         print(f"  step{i}: {len(steps[i - 1])} px -> {size} bytes (3 bytes/px: x, y, palette_index)")
     print(f"Target (full neutral->smile) delta: {target_bytes} bytes")
     print(
-        f"Full neutral<->smile transition as stored (3 independent cumulative step deltas, "
-        f"forward direction only): {cumulative_stored_total} bytes"
+        f"Full neutral<->smile transition as stored ({n_steps} independent cumulative step "
+        f"delta{'s' if n_steps != 1 else ''}, forward direction only): {cumulative_stored_total} bytes"
     )
-    print(
-        f"  (reverse leg reuses step1/step2/target -- no additional bytes; if steps were stored "
-        f"incrementally instead of cumulatively, forward cost would collapse to just "
-        f"{target_bytes} bytes, since step1/step2 are subsets of the target)"
-    )
+    if n_intermediate > 0:
+        earlier_labels = "/".join(step_labels[:-1])
+        print(
+            f"  (reverse leg reuses {earlier_labels}/target -- no additional bytes; if steps were stored "
+            f"incrementally instead of cumulatively, forward cost would collapse to just "
+            f"{target_bytes} bytes, since {earlier_labels} are subsets of the target)"
+        )
+    else:
+        print(
+            f"  (single-step transition -- no intermediates to reuse on the reverse leg; forward cost "
+            f"is already just the {target_bytes}-byte target delta)"
+        )
 
     print()
-    print("Extrapolation: 4-expression vocabulary (e.g. neutral/smile/frown/surprised, i.e. 3 "
-          "non-neutral targets each needing a target+2-intermediate-step transition like this one) "
-          "across N mouth traits:")
+    print(
+        f"Extrapolation: 4-expression vocabulary (e.g. neutral/smile/frown/surprised, i.e. 3 "
+        f"non-neutral targets each needing a "
+        f"{'target+' + str(n_intermediate) + '-intermediate-step transition' if n_intermediate > 0 else 'direct target swap'} "
+        f"like this one) across N mouth traits:"
+    )
     per_trait_bytes = 3 * cumulative_stored_total  # 3 non-neutral target expressions, each like this one
     for n in n_traits_options:
         print(f"  N={n:>3} mouth traits: {per_trait_bytes} bytes/trait * {n} = {per_trait_bytes * n} bytes total")
@@ -294,15 +335,28 @@ def main() -> None:
     token_id, base_grid = resolve_base_token(base_trait, args.token_id, args.scan_limit)
     print(f"Base token: {token_id} (mouth trait: {base_trait})")
 
-    frames, meta = build_frames(base_grid, transition)
-    print(f"Frames: {meta['cycle']} @ {FPS}fps ({meta['cycle'] / FPS:.2f}s), scale={SCALE}x -> {GRID*SCALE}x{GRID*SCALE}")
-    print(f"Loop-clean (frame 0 == frame after last): {meta['loop_clean']}")
+    # JB ruling: render both reverse-timing variants -- forward lead-up and the
+    # smile hold are identical between them; only the smile->neutral leg differs.
+    # See this module's docstring and primitives.py::smile's reverse_mode.
+    reverse_modes = ["snap", "fast"]
+    contact_sheet_path = None
+    for reverse_mode in reverse_modes:
+        frames, meta = build_frames(base_grid, transition, reverse_mode)
+        print(
+            f"[{reverse_mode}] Frames: {meta['cycle']} @ {FPS}fps ({meta['cycle'] / FPS:.2f}s), "
+            f"scale={SCALE}x -> {GRID*SCALE}x{GRID*SCALE}"
+        )
+        print(f"[{reverse_mode}] Loop-clean (frame 0 == frame after last): {meta['loop_clean']}")
 
-    mp4_path, mp4_size = render_mp4(frames, token_id)
-    print(f"MP4: {mp4_path} ({mp4_size} bytes)")
+        mp4_path, mp4_size = render_mp4(frames, token_id, reverse_mode)
+        print(f"[{reverse_mode}] MP4: {mp4_path} ({mp4_size} bytes)")
 
-    contact_sheet_path = build_contact_sheet(frames, meta["keyframe_indices"], token_id)
-    print(f"Keyframe contact sheet: {contact_sheet_path}")
+        if contact_sheet_path is None:
+            # Forward-side keyframes (neutral/step*/smile) are identical across
+            # reverse_mode variants -- only the reverse leg differs -- so one
+            # shared contact sheet (built from the first variant) covers both.
+            contact_sheet_path = build_contact_sheet(frames, meta["keyframe_indices"], token_id)
+            print(f"Keyframe contact sheet: {contact_sheet_path}")
 
     if not FACE_REGIONS_PATH.exists():
         print(f"NOTE: {FACE_REGIONS_PATH} not found -- run compile-face-regions.py for the face-region deliverables.")

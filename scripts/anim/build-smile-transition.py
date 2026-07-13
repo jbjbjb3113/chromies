@@ -52,17 +52,19 @@ How the transition is derived (never hand-drawn pixels):
   4. Diff the real Neutral render against the real Smile render, restricted to the
      union of both variants' face-region coordinates (scripts/anim/face-regions.json,
      Task 1's output) -- see scripts/anim/expression_deltas.py::diff_to_delta.
-  5. Split that diff into 3 cumulative steps (linear pixel reveal, ordered
-     top-to-bottom/left-to-right) via expression_deltas.split_delta_into_steps.
-     Step 3 is exactly the full diff (the target/smile state) -- not an
-     approximation of it.
+  5. Split that diff into cumulative steps via
+     expression_deltas.split_delta_into_steps(base_grid, delta) -- step count is
+     now adaptive (max(1, min(3, ceil(len(delta)/3)))), and reveal order is an
+     adjacency wave expanding outward from the base sprite's own drawn pixels
+     (isolated pixels last), not a fixed top-to-bottom scan. The final step is
+     exactly the full diff (the target/smile state) -- not an approximation of it.
 
 Placeholder-art flag: step 5's reveal *order* (which pixels appear in step 1 vs 2 vs
-3) is a rule-derived pacing choice, not authored art -- every pixel and color is
-real, but WHICH sub-set of real pixels appears at which intermediate step is an
-arbitrary-but-deterministic split. This is exactly the kind of thing flagged in the
-task as placeholder pacing pending JB's sign-off on final motion -- the pixels
-themselves are not placeholder, only the reveal choreography is.
+the target) is a rule-derived pacing choice, not authored art -- every pixel and
+color is real, but WHICH sub-set of real pixels appears at which intermediate step
+is an arbitrary-but-deterministic split. This is exactly the kind of thing flagged
+in the task as placeholder pacing pending JB's sign-off on final motion -- the
+pixels themselves are not placeholder, only the reveal choreography is.
 
 Usage:
     python scripts/anim/build-smile-transition.py
@@ -147,7 +149,7 @@ def build_transition(scan_limit: int, prefer_token_id: int | None) -> dict:
             f"Diff between {base_trait!r} and {target_trait!r} on token {token_id} is empty -- "
             f"these two variants render identically in the derived region; refusing to fabricate a delta."
         )
-    steps = split_delta_into_steps(delta, N_STEPS)
+    steps = split_delta_into_steps(base_grid, delta)
 
     packed_sizes = [len(pack_delta(step)) for step in steps]
 
