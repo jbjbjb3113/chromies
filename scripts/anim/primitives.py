@@ -124,19 +124,23 @@ def smile(grid: np.ndarray, frame_index: int, params: dict) -> np.ndarray:
         unaffected by `reverse_mode`.
       step_frames (int, default 2) -- frames held at each FORWARD intermediate
         step. Forward-side timing only; unaffected by `reverse_mode`.
-      reverse_mode (str, default "snap") -- JB ruling: the smile->neutral leg
-        never mirrors the neutral->smile lead-up.
-          "snap": go straight from the smile hold back to the neutral hold in a
-            single frame step -- no reverse intermediate steps at all, no
-            reverse hold. This is the default.
+      reverse_mode (str, default "fast") -- JB ruling: the smile->neutral leg
+        never mirrors the neutral->smile lead-up. JB ruling (second pass): the
+        default for this primitive, and for all future expression transitions,
+        is "fast" -- "snap" remains available as an explicit opt-in, but is no
+        longer the default.
           "fast": play the same intermediate steps used on the way up
             (steps[N-2], ..., steps[0]) in reverse order, but at exactly 1 frame
             each (never `step_frames`), with no hold at either end of that leg.
+            This is the default.
+          "snap": go straight from the smile hold back to the neutral hold in a
+            single frame step -- no reverse intermediate steps at all, no
+            reverse hold.
     """
     phase = int(params.get("phase", 0))
     hold_frames = int(params.get("hold_frames", 12))
     step_frames = int(params.get("step_frames", 2))
-    reverse_mode = params.get("reverse_mode", "snap")
+    reverse_mode = params.get("reverse_mode", "fast")
     if reverse_mode not in ("snap", "fast"):
         raise ValueError(f"smile primitive: unknown reverse_mode {reverse_mode!r} (expected 'snap' or 'fast')")
 
