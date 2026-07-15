@@ -1513,6 +1513,11 @@
           "weight": 0
         },
         {
+          "name": "Chubby_Frown",
+          "file": "chubby/EXPRESSION_Chubby_Frown.png",
+          "weight": 0
+        },
+        {
           "name": "SP_Smile_Female",
           "file": "SideProfile_Female/SP_EXPRESSION_Smile_Female.png",
           "weight": 0

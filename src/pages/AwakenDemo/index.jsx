@@ -1,8 +1,16 @@
 import React, { useState } from "react";
 import AccessGate from "./AccessGate.jsx";
 import ConversationPanel from "./ConversationPanel.jsx";
-import MistHero from "./MistHero.jsx";
-import { MIST_BG, SESSION_UNLOCK_KEY } from "./constants.js";
+import MistIdleSprite from "./MistIdleSprite.jsx";
+import TokenListingCard from "../../components/TokenListingCard.jsx";
+import { useRobinhoodTokenListing } from "../../lib/useRobinhoodTokenListing.js";
+import {
+  CONVERSATION_PANEL_HEIGHT,
+  MIST_BG,
+  MIST_NAME,
+  SESSION_UNLOCK_KEY,
+  TOKEN_ID,
+} from "./constants.js";
 import { useElevenAgentSession } from "./useElevenAgentSession.js";
 
 function readUnlocked() {
@@ -15,26 +23,42 @@ function readUnlocked() {
 
 export default function AwakenDemo() {
   const [unlocked, setUnlocked] = useState(readUnlocked);
+  const [conversationTab, setConversationTab] = useState("chat");
   const session = useElevenAgentSession();
+  const listingState = useRobinhoodTokenListing(TOKEN_ID);
 
   if (!unlocked) {
     return <AccessGate onUnlock={() => setUnlocked(true)} />;
   }
 
-  return (
+  const conversationFooter = (
     <div
-      className="flex min-h-screen flex-col lg:h-screen lg:max-h-screen lg:overflow-hidden"
-      style={{ backgroundColor: MIST_BG }}
+      className="flex min-h-0 w-full flex-col overflow-hidden border border-ink/10 bg-paper"
+      style={{ height: CONVERSATION_PANEL_HEIGHT }}
     >
-      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-2 lg:overflow-hidden">
-        <section className="min-h-[42vh] shrink-0 lg:min-h-0 lg:overflow-hidden">
-          <MistHero />
-        </section>
+      <ConversationPanel
+        {...session}
+        tab={conversationTab}
+        onTabChange={setConversationTab}
+        avatarSrc={listingState.pngUrl}
+      />
+    </div>
+  );
 
-        <section className="flex min-h-[50vh] flex-1 flex-col lg:min-h-0 lg:overflow-hidden">
-          <ConversationPanel {...session} />
-        </section>
-      </div>
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: MIST_BG }}>
+      <TokenListingCard
+        tokenId={TOKEN_ID}
+        personaName={MIST_NAME}
+        conversationFooter={conversationFooter}
+        listingState={listingState}
+        SpriteComponent={MistIdleSprite}
+        spriteProps={{
+          mouthLevel: session.mouthLevel,
+          isSpeaking: session.isSpeaking,
+          isSpeechSession: session.isSpeechSession,
+        }}
+      />
     </div>
   );
 }

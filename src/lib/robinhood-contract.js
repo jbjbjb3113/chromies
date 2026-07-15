@@ -65,6 +65,16 @@ export const CHROMIES_COMMEMORATIVE_ADDRESS = {
   [robinhoodChain.id]: "0x3C8C9615889762bDcF9647a3C86C74aFA498a158",
 };
 
+/** Live label-fix ChromaRendererRobinhood — post setRenderer() mainnet cutover. */
+export const CHROMA_RENDERER_ROBINHOOD_ADDRESS = {
+  [robinhoodChain.id]: "0x8b6380ca9247D9cA6C8E9a078c2c31E12034e364",
+};
+
+export function getChromaRendererRobinhoodAddress(chainId) {
+  const address = CHROMA_RENDERER_ROBINHOOD_ADDRESS[chainId] ?? null;
+  return address && address !== "0x0000000000000000000000000000000000000000" ? address : null;
+}
+
 export { chromiesCommemorativeAbi };
 
 export function getChromiesCommemorativeAddress(chainId) {

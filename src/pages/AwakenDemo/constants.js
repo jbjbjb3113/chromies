@@ -10,5 +10,8 @@ export const ACCESS_CODE =
 
 export const SESSION_UNLOCK_KEY = "awaken-demo-unlocked";
 
+/** Character-column conversation stack — chat history + PTT without dominating the page. */
+export const CONVERSATION_PANEL_HEIGHT = "clamp(320px, 32vh, 400px)";
+
 export const MIST_TRAIT_SUMMARY =
   "Male · BLOOD palette · Neo glasses · Mohawk · Full beard";
