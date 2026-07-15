@@ -1,0 +1,28 @@
+{
+  "chainId": 4663,
+  "chain": "Robinhood Chain mainnet",
+  "deployScript": "script/robinhood/DeployLabelFixRendererMainnet.s.sol:DeployLabelFixRendererMainnetScript",
+  "deployer": "0xa29A83012CEE23A51ED4B7e087cE5aA0790FB06a",
+  "previousRenderer": "0x9C34Bd0c872983e33611f0cF1cF3C1C968516736",
+  "chromiesCommemorative": "0x3C8C9615889762bDcF9647a3C86C74aFA498a158",
+  "chromaPaletteData": "0xb3ad67d60C44E6db461f8957AF7a2f664c01275a",
+  "chromaTraitLabelsLibrary": {
+    "address": "0x93f1e6358a2f78d7a024e6e3e7c2e3997bd9caa6",
+    "deployTxHash": "0xbc9fa069e603cdb9ac90a1eea59a82e61adebe20a187cdfc794234e7a0943106",
+    "runtimeBytecodeLenBytes": 11613
+  },
+  "chromaRendererRobinhood": {
+    "address": "0x8b6380ca9247D9cA6C8E9a078c2c31E12034e364",
+    "deployTxHash": "0x450285670dbdfc134b4a81f2f7176bb40117912a3f017a71a5bafaf8596a50b5",
+    "blockNumber": 10111139,
+    "blockNumberHex": "0x9a43a3",
+    "runtimeBytecodeLenBytes": 18340,
+    "constructorArgs": [
+      "0x3C8C9615889762bDcF9647a3C86C74aFA498a158",
+      "0xb3ad67d60C44E6db461f8957AF7a2f664c01275a",
+      "0xa29A83012CEE23A51ED4B7e087cE5aA0790FB06a"
+    ]
+  },
+  "setRendererCalled": false,
+  "note": "setRenderer() NOT called — await explicit JB go before live cutover."
+}

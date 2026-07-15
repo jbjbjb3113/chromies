@@ -1,0 +1,12 @@
+{
+  "commemorativeCount": 100,
+  "labelDivergenceCount": 0,
+  "labelDivergences": [],
+  "onchainTraitsMismatchCount": 0,
+  "onchainTraitsMismatches": [],
+  "pngMainnetVsLocalCount": 0,
+  "pngMainnetVsLocal": [],
+  "pngVsPixelsHexCount": 0,
+  "pngVsPixelsHex": [],
+  "pass": true
+}

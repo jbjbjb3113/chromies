@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "On-chain trait variant bytes per slot. Compiled to JS/Python mint encoders.",
+  "description": "On-chain trait variant bytes per slot. Source of truth for mint encoders (on-chain-trait-bytes.js, mint_payload.py) and ChromaTraitLabels.sol. Regenerate all compiled outputs: py -3 scripts/compile_palette_registry.py (see scripts/trait_byte_registry.py).",
   "slots": {
     "hood": {
       "index": 2,

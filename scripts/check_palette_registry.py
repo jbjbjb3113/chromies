@@ -11,10 +11,13 @@ REPO = Path(__file__).resolve().parents[1]
 COMPILE = REPO / "scripts" / "compile_palette_registry.py"
 TRACKED = [
     REPO / "contracts" / "generated" / "ChromaPaletteData.sol",
+    REPO / "contracts" / "generated" / "ChromaTraitLabels.sol",
     REPO / "test" / "size" / "InlinePaletteProbe.sol",
     REPO / "art-pipeline" / "generated" / "on-chain-palette-bytes.js",
+    REPO / "art-pipeline" / "generated" / "on-chain-bg-colors.js",
     REPO / "chromies-engine" / "engine_data" / "on_chain_palette_bytes.json",
     REPO / "chromies-engine" / "engine_data" / "palette_colors_expanded.json",
+    REPO / "chromies-engine" / "engine_data" / "bg_colors.json",
 ]
 
 
@@ -31,7 +34,8 @@ def main() -> int:
     )
     if diff.returncode != 0:
         print(
-            "Palette registry outputs are stale. Run scripts/compile_palette_registry.py and commit.",
+            "Palette registry outputs are stale. Run: py -3 scripts/compile_palette_registry.py\n"
+            "  (also regenerates ChromaTraitLabels.sol and trait-byte artifacts — then commit).",
             file=sys.stderr,
         )
         return 1

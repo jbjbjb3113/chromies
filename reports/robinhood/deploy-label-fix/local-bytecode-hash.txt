@@ -1,0 +1,15 @@
+Label-fix build (ChromaTraitLabels external library + linked renderer)
+forge build: success
+
+[ChromaTraitLabels]
+creation_bytecode_len_bytes: 11644
+runtime_bytecode_len_bytes: 11613
+creation_bytecode_keccak256: 0xd3a3bc41c6d07f37d88a79e9645c9198d781b92ee2ee53aef027bce64a43ee37
+runtime_bytecode_keccak256: 0xe95c4854d612662492dc8e7d8f85b5c3a42d02e731b31a5d60be9f66169d9f8a
+
+[ChromaRendererRobinhood]
+linked_labels_library: 0x93f1e6358a2f78d7a024e6e3e7c2e3997bd9caa6
+creation_bytecode_len_bytes: 18706
+runtime_bytecode_len_bytes: 18340
+creation_bytecode_keccak256: 0x197a65e2c79f5ca4cdabd5568fab2c693165d908b6d4f2161942039c311a31ef
+runtime_bytecode_keccak256: 0xfceda824cf75ad6535c383adeb73d7b63e988396b19845c74969fa344bae7949

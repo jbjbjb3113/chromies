@@ -21,6 +21,7 @@ fs_permissions = [
     { access = "read", path = "./chromies-engine/engine_data" },
     { access = "read", path = "./chromies-engine/generated" },
     { access = "read", path = "./reports/robinhood" },
+    { access = "read-write", path = "./reports/robinhood/label-parity-100" },
 ]
 
 [rpc_endpoints]

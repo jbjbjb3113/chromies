@@ -10,6 +10,7 @@ import {IChromaStorage} from "./IChromaStorage.sol";
 import {IChromaToken} from "./IChromaToken.sol";
 import {ChromaRendererPngLib} from "./ChromaRendererPngLib.sol";
 import {ChromaRendererSvgLib} from "./ChromaRendererSvgLib.sol";
+import {ChromaTraitLabels} from "./generated/ChromaTraitLabels.sol";
 
 contract ChromaRenderer is Ownable {
     using Strings for uint256;
@@ -122,35 +123,35 @@ contract ChromaRenderer is Ownable {
         string memory image =
             string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(shellBytes)));
         bytes memory coreTraits = abi.encodePacked(
-            _jsonAttribute("Character", _characterLabel(uint8(traits[0]))),
+            _jsonAttribute("Character", ChromaTraitLabels.characterLabel(uint8(traits[0]))),
             ",",
             _jsonAttribute("Palette", paletteData.paletteName(uint8(traits[1]))),
             ",",
-            _jsonAttribute("Hood", _hoodLabel(uint8(traits[2]))),
+            _jsonAttribute("Hood", ChromaTraitLabels.hoodLabel(uint8(traits[2]))),
             ",",
-            _jsonAttribute("Shirt", _shirtLabel(uint8(traits[3]))),
+            _jsonAttribute("Shirt", ChromaTraitLabels.shirtLabel(uint8(traits[3]))),
             ",",
-            _jsonAttribute("Body", _bodyLabel(uint8(traits[4]))),
+            _jsonAttribute("Body", ChromaTraitLabels.bodyLabel(uint8(traits[4]))),
             ",",
-            _jsonAttribute("Bodytattoo", _bodytattooLabel(uint8(traits[5]))),
+            _jsonAttribute("Bodytattoo", ChromaTraitLabels.bodytattooLabel(uint8(traits[5]))),
             ",",
-            _jsonAttribute("Necklace", _necklaceLabel(uint8(traits[6]))),
+            _jsonAttribute("Necklace", ChromaTraitLabels.necklaceLabel(uint8(traits[6]))),
             ",",
-            _jsonAttribute("Tattoo", _tattooLabel(uint8(traits[7])))
+            _jsonAttribute("Tattoo", ChromaTraitLabels.tattooLabel(uint8(traits[7])))
         );
         bytes memory faceTraits = abi.encodePacked(
             ",",
-            _jsonAttribute("Beard", _beardLabel(uint8(traits[9]))),
+            _jsonAttribute("Beard", ChromaTraitLabels.beardLabel(uint8(traits[9]))),
             ",",
-            _jsonAttribute("Mustache", _mustacheLabel(uint8(traits[10]))),
+            _jsonAttribute("Mustache", ChromaTraitLabels.mustacheLabel(uint8(traits[10]))),
             ",",
-            _jsonAttribute("Eyes", _eyesLabel(uint8(traits[11]))),
+            _jsonAttribute("Eyes", ChromaTraitLabels.eyesLabel(uint8(traits[11]))),
             ",",
-            _jsonAttribute("Earrings", _earringsLabel(uint8(traits[12]))),
+            _jsonAttribute("Earrings", ChromaTraitLabels.earringsLabel(uint8(traits[12]))),
             ",",
-            _jsonAttribute("Glasses", _glassesLabel(uint8(traits[13]))),
+            _jsonAttribute("Glasses", ChromaTraitLabels.glassesLabel(uint8(traits[13]))),
             ",",
-            _jsonAttribute("Hair", _hairLabel(uint8(traits[14])))
+            _jsonAttribute("Hair", ChromaTraitLabels.hairLabel(uint8(traits[14])))
         );
 
         return abi.encodePacked(
@@ -251,111 +252,5 @@ contract ChromaRenderer is Ownable {
     function _paletteForRender(bytes memory traits) internal view returns (string[16] memory palette) {
         palette = _paletteForToken(traits);
         palette[0] = UNIVERSAL_BACKGROUND;
-    }
-
-    function _characterLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0 || value == 1) return "Human";
-        if (value == 2) return "Alien";
-        if (value == 3) return "Cat";
-        if (value == 4) return "Agent";
-        if (value == 8) return "Zombie";
-        return "Human";
-    }
-
-    function _hoodLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Classic";
-        return "None";
-    }
-
-    function _shirtLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Crew";
-        if (value == 2) return "Tank";
-        if (value == 3) return "Tank_Female";
-        return "None";
-    }
-
-    function _bodyLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Default";
-        if (value == 2) return "Female";
-        if (value == 3) return "Female_Tank";
-        if (value == 4) return "Alien";
-        return "None";
-    }
-
-    function _bodytattooLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "UnderArmour";
-        if (value == 2) return "AkuHeart";
-        if (value == 3) return "Pyramid";
-        if (value == 4) return "Normies";
-        return "None";
-    }
-
-    function _necklaceLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Male_Chain";
-        if (value == 2) return "Female_Chain";
-        if (value == 3) return "Female_Ornate";
-        if (value == 4) return "Female_Flower";
-        if (value == 5) return "Female_UpsideDownCross";
-        if (value == 6) return "Female_Opal";
-        return "None";
-    }
-
-    function _tattooLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Signal";
-        if (value == 2) return "Thug";
-        if (value == 3) return "Marks";
-        if (value == 4) return "Scar";
-        return "None";
-    }
-
-    function _beardLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Full";
-        if (value == 2) return "Goat";
-        return "None";
-    }
-
-    function _mustacheLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Thick";
-        return "None";
-    }
-
-    function _eyesLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "Signal";
-        if (value == 1) return "Alien";
-        return "Signal";
-    }
-
-    function _earringsLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Stud";
-        return "None";
-    }
-
-    function _glassesLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Shades";
-        if (value == 2) return "Neo";
-        if (value == 3) return "VR";
-        return "None";
-    }
-
-    function _hairLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "None";
-        if (value == 1) return "Mohawk";
-        if (value == 2) return "Pompadour";
-        if (value == 3) return "MrT";
-        if (value == 4) return "Afro";
-        if (value == 5) return "Dreads";
-        if (value == 6) return "Surfer";
-        if (value == 7) return "FadeRight";
-        return "None";
     }
 }

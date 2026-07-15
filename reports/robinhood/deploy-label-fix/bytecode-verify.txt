@@ -1,0 +1,21 @@
+renderer_address: 0x8b6380ca9247d9ca6c8e9a078c2c31e12034e364
+labels_lib_address: 0x93f1e6358a2f78d7a024e6e3e7c2e3997bd9caa6
+rpc: robinhood_mainnet
+note: renderer compare patches solc immutable slots (chromaStorage, paletteData)
+
+[ChromaTraitLabels]
+local_runtime_len_bytes: 11613
+onchain_runtime_len_bytes: 11613
+local_runtime_keccak256: 0xe95c4854d612662492dc8e7d8f85b5c3a42d02e731b31a5d60be9f66169d9f8a
+onchain_runtime_keccak256: 0xe95c4854d612662492dc8e7d8f85b5c3a42d02e731b31a5d60be9f66169d9f8a
+ChromaTraitLabels_RESULT: PASS
+
+ChromaRendererRobinhood_metadata_stripped: true
+[ChromaRendererRobinhood]
+local_runtime_len_bytes: 18287
+onchain_runtime_len_bytes: 18287
+local_runtime_keccak256: 0xc180710f582394dd367923e60f5719d5c8ccc1e84d50dbd62539638a3b4faf9e
+onchain_runtime_keccak256: 0xc180710f582394dd367923e60f5719d5c8ccc1e84d50dbd62539638a3b4faf9e
+ChromaRendererRobinhood_RESULT: PASS
+
+OVERALL_RESULT: PASS
