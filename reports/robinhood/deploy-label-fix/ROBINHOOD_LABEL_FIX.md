@@ -27,6 +27,16 @@ Initial label-fix build inlined `ChromaTraitLabels` (`internal` functions) → r
 
 Label semantics unchanged; library is called via `DELEGATECALL` instead of inlined if-chains.
 
+### ChromaTraitLabels linking model (deployed renderer)
+
+**Statically linked at compile/deploy time — not a stored or mutable address.**
+
+- `ChromaTraitLabels` is a Solidity **`library`** with **`external`** functions (not `internal` inlined).
+- `ChromaRenderer` / `ChromaRendererRobinhood` call `ChromaTraitLabels.<slot>Label(...)` with **no** `address` field, storage slot, setter, or `immutable` variable holding the library location.
+- At deploy, Foundry resolves the library link and **embeds** `0x93f1e6358a2f78d7a024e6e3e7c2e3997bd9caa6` directly in the renderer runtime bytecode (verified: on-chain `eth_getCode` contains that address; broadcast `libraries` entry matches).
+- Each label lookup executes as an **`external library call`** → `DELEGATECALL` to that **fixed, bytecode-baked** address for the lifetime of this renderer instance.
+- **Cannot** repoint an already-deployed renderer to a different `ChromaTraitLabels` without redeploying a new renderer (and re-linking). This is distinct from `chromaStorage` / `paletteData`, which are constructor `immutable`s patched into bytecode separately.
+
 ---
 
 ## Deployed addresses
