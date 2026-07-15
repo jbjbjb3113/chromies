@@ -7,6 +7,57 @@
     "mint_encode": "reject",
     "tokenuri_render": "error_palette_magenta"
   },
+  "bg_colors": {
+    "ruling": "JB 2026-07-13 \u2014 mint-native background color palette (8 colors)",
+    "note": "Colored BG is stored as a trait byte in traitsHex, never in pixelsHex. Renderer maps trait byte to PLTE slot 0; canvas state, where set, overrides the trait byte (single-source precedence, parity-checked). traitsHex byte index 15 (JB addendum 2026-07-13, re-designated mutation-era retired byte; 16 stays retired).",
+    "default": {
+      "trait_byte": 0,
+      "color": "#e3e5e4",
+      "note": "Renderer-applied default; never stored in payload data."
+    },
+    "colors": [
+      {
+        "trait_byte": 1,
+        "name": "BG_ROSE",
+        "color": "#e3c8c8"
+      },
+      {
+        "trait_byte": 2,
+        "name": "BG_CREAM",
+        "color": "#e8dfc5"
+      },
+      {
+        "trait_byte": 3,
+        "name": "BG_SEAFOAM",
+        "color": "#bdd9d5"
+      },
+      {
+        "trait_byte": 4,
+        "name": "BG_LILAC",
+        "color": "#d3c9de"
+      },
+      {
+        "trait_byte": 5,
+        "name": "BG_BLUE",
+        "color": "#c7d4e2"
+      },
+      {
+        "trait_byte": 6,
+        "name": "BG_PEACH",
+        "color": "#e8d2be"
+      },
+      {
+        "trait_byte": 7,
+        "name": "BG_SAGE",
+        "color": "#cedac6"
+      },
+      {
+        "trait_byte": 8,
+        "name": "BG_MAUVE",
+        "color": "#e0ccd9"
+      }
+    ]
+  },
   "roles": [
     {
       "index": 0,

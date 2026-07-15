@@ -18,31 +18,31 @@ Solidity ^0.8.24 · Foundry · OpenZeppelin · Solady (SSTORE2)
 - `ChromaCanvasV2.sol`
 - `PixelMarketplace.sol`
 - `Chroma.sol`
+- `ChromaRendererCrc32.sol`
+- `ChromaRendererPngLib.sol`
+- `IChromaPaletteData.sol`
+- `PaletteStrings.sol`
 
 ---
 
 ## IChromaStorage.sol
 
 ```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
-
-interface IChromaStorage {
-    function writeTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external;
-
-    function revealTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external;
-
-    function hasData(uint256 tokenId) external view returns (bool);
-
-    function getPixels(uint256 tokenId) external view returns (bytes memory);
-
-    function getTraits(uint256 tokenId) external view returns (bytes memory);
-
-    function updateTrait(uint256 tokenId, uint256 traitIndex, uint8 value) external;
-
-    function rewritePixels(uint256 tokenId, bytes calldata pixels, uint16 newTotalPixels) external;
-
-    function getTotalPixels(uint256 tokenId) external view returns (uint256);
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+interface IChromaStorage {
+    function writeTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traits) external;
+
+    function hasData(uint256 tokenId) external view returns (bool);
+
+    function getPixels(uint256 tokenId) external view returns (bytes memory);
+
+    function getTraits(uint256 tokenId) external view returns (bytes memory);
+
+    function rewritePixels(uint256 tokenId, bytes calldata pixels, uint16 newTotalPixels) external;
+
+    function getTotalPixels(uint256 tokenId) external view returns (uint256);
 }
 ```
 
@@ -89,7 +89,7 @@ pragma solidity ^0.8.24;
 interface IChromaCanvas {
     function getDiff(uint256 tokenId) external view returns (uint16[] memory pixelIndexes, uint8[] memory newColorIndexes);
     function level(uint256 tokenId) external view returns (uint256);
-    /// @notice Lifetime-earn level: sqrt(totalApEarned / 50), uncapped. Separate from mutation tier.
+    /// @notice Lifetime-earn level: sqrt(totalApEarned / 50), uncapped.
     function getLevel(uint256 tokenId) external view returns (uint256);
     function totalApEarned(uint256 tokenId) external view returns (uint256);
     function getBurnCount(uint256 tokenId) external view returns (uint256);
@@ -195,11 +195,9 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     error TokenNotWritten();
 
-    error UnauthorizedTraitUpdater();
-
-    error InvalidTraitIndex();
-
     error InvalidTotalPixelsCount();
+
+    error ZeroAddress();
 
 
 
@@ -258,9 +256,10 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     //            5=Dreads, 6=Surfer, 7=FadeRight
 
-    // [15] Mutation tier: 0=Pristine, 1=Standard, 2=Drifted, 3=OffKilter
-
-    // [16] Drift tier: 0=Pristine, 1=Standard, 2=Drifted, 3=OffKilter
+    // [15] BG color: 0x00 default, 0x01-0x08 per palette ruling (JB 2026-07-13,
+    //      re-designated from mutation-era retired byte — see
+    //      chromies-engine/reports/BG_COLOR_PALETTE_RULING.md)
+    // [16] Retired / unused
 
     // [17] Total Pixels (uint16 high byte) — pipeline-computed non-zero nibble count
 
@@ -272,10 +271,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     address public writer;
 
-    address public traitUpdater;
-
-
-
     mapping(uint256 tokenId => address) public pixelPointers;
 
     mapping(uint256 tokenId => bytes32) public traits;
@@ -285,25 +280,15 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
 
     constructor(address initialOwner, address initialWriter) Ownable(initialOwner) {
-
+        if (initialWriter == address(0)) revert ZeroAddress();
         writer = initialWriter;
-
     }
 
 
 
     function setWriter(address newWriter) external onlyOwner {
-
+        if (newWriter == address(0)) revert ZeroAddress();
         writer = newWriter;
-
-    }
-
-
-
-    function setTraitUpdater(address newTraitUpdater) external onlyOwner {
-
-        traitUpdater = newTraitUpdater;
-
     }
 
 
@@ -338,26 +323,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
 
 
-    function revealTokenData(uint256 tokenId, bytes calldata pixels, bytes calldata traitBytes) external {
-
-        if (msg.sender != writer) revert UnauthorizedWriter();
-
-        if (pixels.length != PIXELS_LENGTH) revert InvalidPixelsLength();
-
-        if (traitBytes.length != TRAITS_LENGTH) revert InvalidTraitsLength();
-
-        if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
-
-
-
-        pixelPointers[tokenId] = SSTORE2.write(pixels);
-
-        traits[tokenId] = bytes32(traitBytes);
-
-    }
-
-
-
     function hasData(uint256 tokenId) external view returns (bool) {
 
         return pixelPointers[tokenId] != address(0);
@@ -383,28 +348,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
         if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
 
         return abi.encodePacked(traits[tokenId]);
-
-    }
-
-
-
-    function updateTrait(uint256 tokenId, uint256 traitIndex, uint8 value) external override {
-
-        if (msg.sender != traitUpdater) revert UnauthorizedTraitUpdater();
-
-        if (traitIndex >= TRAITS_LENGTH) revert InvalidTraitIndex();
-
-        if (pixelPointers[tokenId] == address(0)) revert TokenNotWritten();
-
-
-
-        bytes memory traitBytes = abi.encodePacked(traits[tokenId]);
-
-        traitBytes[traitIndex] = bytes1(value);
-
-        traits[tokenId] = bytes32(traitBytes);
-
-        totalPixels[tokenId] = _totalPixelsFromTraitsMemory(traitBytes);
 
     }
 
@@ -452,14 +395,6 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     }
 
-    function _totalPixelsFromTraitsMemory(bytes memory traitBytes) internal pure returns (uint256 count) {
-
-        count = (uint256(uint8(traitBytes[17])) << 8) | uint256(uint8(traitBytes[18]));
-
-        if (count > 4096) revert InvalidTotalPixelsCount();
-
-    }
-
 }
 ```
 
@@ -471,15 +406,18 @@ contract ChromaStorage is IChromaStorage, Ownable {
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-
 library ChromaRendererSvgLib {
-    using Strings for uint256;
-
     uint256 internal constant GRID = 64;
     uint256 internal constant CELL = 16;
-    uint256 internal constant MAX_RECTS = 4096;
-    uint256 internal constant MAX_RECT_BYTES = 128;
+    uint256 internal constant PATH_OPEN_BYTES = 12; // <path fill="
+    uint256 internal constant PATH_MID_BYTES = 5; // " d="
+    uint256 internal constant PATH_SUFFIX_BYTES = 2; // "/>
+    bytes internal constant SVG_PREFIX =
+        bytes(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges"><path fill="'
+        );
+    bytes internal constant SVG_MID = bytes('" d="M0,0h1024v1024h-1024z"/>');
+    bytes internal constant SVG_SUFFIX = bytes("</svg>");
 
     struct SvgRenderContext {
         uint256 tokenId;
@@ -487,92 +425,228 @@ library ChromaRendererSvgLib {
         string[16] palette;
         uint16[] diffIndexes;
         uint8[] diffColors;
-        uint8 mutationTier;
+    }
+
+    struct RunRecord {
+        uint8 x;
+        uint8 y;
+        uint8 run;
+        uint8 color;
     }
 
     function buildBody(SvgRenderContext memory ctx) internal pure returns (bytes memory) {
-        bytes memory body = new bytes(MAX_RECTS * MAX_RECT_BYTES);
-        uint256 written = _writeSvgBody(body, 0, ctx);
+        (uint256 runCount, uint256 bodySize) = _scanMeta(ctx);
+        if (runCount == 0) {
+            return new bytes(0);
+        }
+        RunRecord[] memory runs = new RunRecord[](runCount);
+        _fillRuns(ctx, runs);
+        bytes memory body = new bytes(bodySize);
+        uint256 written = _writeBodyFromRuns(body, 0, ctx, runs, runCount);
         assembly ("memory-safe") {
             mstore(body, written)
         }
         return body;
     }
 
-    function wrapSvg(string memory background, bytes memory body) internal pure returns (string memory) {
-        return string(
-            abi.encodePacked(
-                '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" shape-rendering="crispEdges"><rect width="1024" height="1024" fill="',
-                background,
-                '"/>',
-                body,
-                "</svg>"
-            )
-        );
+    function buildSvgBytes(SvgRenderContext memory ctx) internal pure returns (bytes memory) {
+        (uint256 runCount, uint256 bodySize) = _scanMeta(ctx);
+        bytes memory bg = bytes(ctx.palette[0]);
+        uint256 totalSize = SVG_PREFIX.length + bg.length + SVG_MID.length + bodySize + SVG_SUFFIX.length;
+        bytes memory svg = new bytes(totalSize);
+        uint256 offset;
+        offset = _copyBytes(svg, offset, SVG_PREFIX);
+        offset = _copyBytes(svg, offset, bg);
+        offset = _copyBytes(svg, offset, SVG_MID);
+        if (runCount > 0) {
+            RunRecord[] memory runs = new RunRecord[](runCount);
+            _fillRuns(ctx, runs);
+            offset = _writeBodyFromRuns(svg, offset, ctx, runs, runCount);
+        }
+        offset = _copyBytes(svg, offset, SVG_SUFFIX);
+        assembly ("memory-safe") {
+            mstore(svg, offset)
+        }
+        return svg;
     }
 
-    function _writeSvgBody(bytes memory body, uint256 offset, SvgRenderContext memory ctx)
+    function wrapSvg(string memory background, bytes memory body) internal pure returns (string memory) {
+        bytes memory svg = abi.encodePacked(
+            SVG_PREFIX,
+            bytes(background),
+            SVG_MID,
+            body,
+            SVG_SUFFIX
+        );
+        return string(svg);
+    }
+
+    function countRuns(SvgRenderContext memory ctx) internal pure returns (uint256 runCount) {
+        (runCount,) = _scanMeta(ctx);
+    }
+
+    function _scanMeta(SvgRenderContext memory ctx)
         private
         pure
-        returns (uint256)
+        returns (uint256 runCount, uint256 bodySize)
     {
+        bool[16] memory seen;
         for (uint256 y = 0; y < GRID; ++y) {
             uint256 x = 0;
             while (x < GRID) {
-                uint256 flatIndex = y * GRID + x;
                 uint8 idx = _getCompositePixelIndex(ctx.pixels, x, y, ctx.diffIndexes, ctx.diffColors);
-                if (ctx.mutationTier != 0) {
-                    idx = _mutatePixelIndex(ctx.tokenId, flatIndex, idx, ctx.mutationTier);
-                }
-
                 uint256 run = 1;
                 while (x + run < GRID) {
-                    uint256 nextFlat = y * GRID + x + run;
-                    uint8 nextIdx = _getCompositePixelIndex(ctx.pixels, x + run, y, ctx.diffIndexes, ctx.diffColors);
-                    if (ctx.mutationTier != 0) {
-                        nextIdx = _mutatePixelIndex(ctx.tokenId, nextFlat, nextIdx, ctx.mutationTier);
-                    }
+                    uint8 nextIdx =
+                        _getCompositePixelIndex(ctx.pixels, x + run, y, ctx.diffIndexes, ctx.diffColors);
                     if (nextIdx != idx) break;
                     ++run;
                 }
-
                 if (idx != 0) {
-                    offset = _appendRect(body, offset, x, y, run, ctx.palette[idx]);
+                    ++runCount;
+                    seen[idx] = true;
+                    bodySize += _measureRunBytes(uint256(x) * CELL, uint256(y) * CELL, run * CELL);
                 }
                 x += run;
             }
         }
+        for (uint8 colorIdx = 1; colorIdx < 16; ++colorIdx) {
+            if (!seen[colorIdx]) continue;
+            bodySize += PATH_OPEN_BYTES + bytes(ctx.palette[colorIdx]).length + PATH_MID_BYTES + PATH_SUFFIX_BYTES;
+        }
+    }
+
+    function _fillRuns(SvgRenderContext memory ctx, RunRecord[] memory runs) private pure {
+        uint256 runCount;
+        for (uint256 y = 0; y < GRID; ++y) {
+            uint256 x = 0;
+            while (x < GRID) {
+                uint8 idx = _getCompositePixelIndex(ctx.pixels, x, y, ctx.diffIndexes, ctx.diffColors);
+                uint256 run = 1;
+                while (x + run < GRID) {
+                    uint8 nextIdx =
+                        _getCompositePixelIndex(ctx.pixels, x + run, y, ctx.diffIndexes, ctx.diffColors);
+                    if (nextIdx != idx) break;
+                    ++run;
+                }
+                if (idx != 0) {
+                    runs[runCount] = RunRecord(uint8(x), uint8(y), uint8(run), idx);
+                    ++runCount;
+                }
+                x += run;
+            }
+        }
+    }
+
+    function _writeBodyFromRuns(
+        bytes memory body,
+        uint256 offset,
+        SvgRenderContext memory ctx,
+        RunRecord[] memory runs,
+        uint256 runCount
+    ) private pure returns (uint256) {
+        bool[16] memory seen;
+        for (uint256 i = 0; i < runCount; ++i) {
+            seen[runs[i].color] = true;
+        }
+        for (uint8 colorIdx = 1; colorIdx < 16; ++colorIdx) {
+            if (!seen[colorIdx]) continue;
+            offset = _writeLiteral(body, offset, '<path fill="');
+            offset = _writeString(body, offset, ctx.palette[colorIdx]);
+            offset = _writeLiteral(body, offset, '" d="');
+            for (uint256 i = 0; i < runCount; ++i) {
+                if (runs[i].color != colorIdx) continue;
+                offset = _writeRunPath(
+                    body,
+                    offset,
+                    uint256(runs[i].x) * CELL,
+                    uint256(runs[i].y) * CELL,
+                    uint256(runs[i].run) * CELL
+                );
+            }
+            offset = _writeLiteral(body, offset, '"/>');
+        }
         return offset;
     }
 
-    function _appendRect(
-        bytes memory body,
-        uint256 offset,
-        uint256 x,
-        uint256 y,
-        uint256 run,
-        string memory color
-    ) private pure returns (uint256) {
-        bytes memory rect = abi.encodePacked(
-            '<rect x="',
-            (x * CELL).toString(),
-            '" y="',
-            (y * CELL).toString(),
-            '" width="',
-            (run * CELL).toString(),
-            '" height="16" fill="',
-            color,
-            '"/>'
-        );
-        _copyBytes(body, offset, rect);
-        return offset + rect.length;
+    function _measureRunBytes(uint256 x, uint256 y, uint256 width) private pure returns (uint256) {
+        return 1 + _decimalLength(x) + 1 + _decimalLength(y) + 1 + _decimalLength(width) + 5 + 1
+            + _decimalLength(width) + 1;
     }
 
-    function _copyBytes(bytes memory dest, uint256 destOffset, bytes memory src) private pure {
-        uint256 n = src.length;
-        for (uint256 i = 0; i < n; ++i) {
-            dest[destOffset + i] = src[i];
+    function _writeRunPath(bytes memory body, uint256 offset, uint256 x, uint256 y, uint256 width)
+        private
+        pure
+        returns (uint256)
+    {
+        offset = _writeChar(body, offset, "M");
+        offset = _writeUint(body, offset, x);
+        offset = _writeChar(body, offset, ",");
+        offset = _writeUint(body, offset, y);
+        offset = _writeChar(body, offset, "h");
+        offset = _writeUint(body, offset, width);
+        offset = _writeLiteral(body, offset, "v16h-");
+        offset = _writeUint(body, offset, width);
+        offset = _writeChar(body, offset, "z");
+        return offset;
+    }
+
+    function _decimalLength(uint256 value) private pure returns (uint256) {
+        if (value == 0) return 1;
+        uint256 len;
+        while (value != 0) {
+            ++len;
+            value /= 10;
         }
+        return len;
+    }
+
+    function _writeUint(bytes memory body, uint256 offset, uint256 value) private pure returns (uint256) {
+        if (value == 0) {
+            body[offset] = 0x30;
+            return offset + 1;
+        }
+        uint256 temp = value;
+        uint256 len;
+        while (temp != 0) {
+            ++len;
+            temp /= 10;
+        }
+        temp = value;
+        uint256 end = offset + len;
+        for (uint256 i = len; i > 0; --i) {
+            body[offset + i - 1] = bytes1(uint8(48 + (temp % 10)));
+            temp /= 10;
+        }
+        return end;
+    }
+
+    function _writeChar(bytes memory body, uint256 offset, bytes1 char) private pure returns (uint256) {
+        body[offset] = char;
+        return offset + 1;
+    }
+
+    function _writeLiteral(bytes memory body, uint256 offset, string memory literal) private pure returns (uint256) {
+        bytes memory raw = bytes(literal);
+        for (uint256 i = 0; i < raw.length; ++i) {
+            body[offset + i] = raw[i];
+        }
+        return offset + raw.length;
+    }
+
+    function _writeString(bytes memory body, uint256 offset, string memory value) private pure returns (uint256) {
+        bytes memory raw = bytes(value);
+        for (uint256 i = 0; i < raw.length; ++i) {
+            body[offset + i] = raw[i];
+        }
+        return offset + raw.length;
+    }
+
+    function _copyBytes(bytes memory dest, uint256 offset, bytes memory src) private pure returns (uint256) {
+        for (uint256 i = 0; i < src.length; ++i) {
+            dest[offset + i] = src[i];
+        }
+        return offset + src.length;
     }
 
     function _getPixelIndex(bytes memory pixels, uint256 x, uint256 y) private pure returns (uint8) {
@@ -589,43 +663,14 @@ library ChromaRendererSvgLib {
         uint16[] memory diffIndexes,
         uint8[] memory diffColors
     ) private pure returns (uint8) {
-        uint16 flatIndex = uint16(y * GRID + x);
-        for (uint256 i = diffIndexes.length; i > 0; --i) {
-            uint256 idx = i - 1;
-            if (diffIndexes[idx] == flatIndex) return diffColors[idx];
+        if (diffIndexes.length > 0) {
+            uint16 flatIndex = uint16(y * GRID + x);
+            for (uint256 i = diffIndexes.length; i > 0; --i) {
+                uint256 idx = i - 1;
+                if (diffIndexes[idx] == flatIndex) return diffColors[idx];
+            }
         }
         return _getPixelIndex(pixels, x, y);
-    }
-
-    function _mutationSwapThreshold(uint8 tier) private pure returns (uint8) {
-        if (tier == 1) return 5;
-        if (tier == 2) return 10;
-        if (tier == 3) return 20;
-        return 0;
-    }
-
-    function _mutatePixelIndex(uint256 tokenId, uint256 pixelIndex, uint8 paletteIndex, uint8 tier)
-        private
-        pure
-        returns (uint8)
-    {
-        if (tier == 0 || paletteIndex == 0) return paletteIndex;
-
-        uint8 threshold = _mutationSwapThreshold(tier);
-        if (threshold == 0) return paletteIndex;
-
-        uint256 seed = uint256(keccak256(abi.encodePacked(tokenId, pixelIndex, "mutation")));
-        if (seed % 100 >= threshold) return paletteIndex;
-
-        if (paletteIndex >= 4 && paletteIndex <= 8) {
-            uint256 familyPos = paletteIndex - 4;
-            return uint8(4 + ((familyPos + seed) % 5));
-        }
-        if (paletteIndex >= 13 && paletteIndex <= 15) {
-            uint256 familyPos = paletteIndex - 13;
-            return uint8(13 + ((familyPos + seed) % 3));
-        }
-        return paletteIndex;
     }
 }
 ```
@@ -642,19 +687,27 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {IChromaCanvas} from "./IChromaCanvas.sol";
+import {IChromaPaletteData} from "./IChromaPaletteData.sol";
 import {IChromaStorage} from "./IChromaStorage.sol";
 import {IChromaToken} from "./IChromaToken.sol";
+import {ChromaRendererPngLib} from "./ChromaRendererPngLib.sol";
 import {ChromaRendererSvgLib} from "./ChromaRendererSvgLib.sol";
 
 contract ChromaRenderer is Ownable {
     using Strings for uint256;
 
+    /// @dev Universal collection background — renderer-level only (not payload / registry slot 0).
+    string internal constant UNIVERSAL_BACKGROUND = "#e3e5e4";
+    bytes3 internal constant UNIVERSAL_BACKGROUND_RGB = 0xE3E5E4;
+
     IChromaStorage public immutable chromaStorage;
+    IChromaPaletteData public immutable paletteData;
     IChromaCanvas public chromaCanvas;
     IChromaToken public chroma;
 
-    constructor(address storageAddress, address initialOwner) Ownable(initialOwner) {
+    constructor(address storageAddress, address paletteDataAddress, address initialOwner) Ownable(initialOwner) {
         chromaStorage = IChromaStorage(storageAddress);
+        paletteData = IChromaPaletteData(paletteDataAddress);
     }
 
     function setCanvas(address canvasAddress) external onlyOwner {
@@ -665,42 +718,95 @@ contract ChromaRenderer is Ownable {
         chroma = IChromaToken(chromaAddress);
     }
 
+    /// @notice Secondary path renderer — used by `/chroma/:id/image.svg` API and dev tooling.
     function renderSVG(uint256 tokenId) public view returns (string memory) {
-        ChromaRendererSvgLib.SvgRenderContext memory ctx = _loadSvgContext(tokenId);
-        bytes memory body = ChromaRendererSvgLib.buildBody(ctx);
-        return ChromaRendererSvgLib.wrapSvg(ctx.palette[0], body);
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        ChromaRendererSvgLib.SvgRenderContext memory ctx = _loadSvgContext(tokenId, traits);
+        return string(ChromaRendererSvgLib.buildSvgBytes(ctx));
     }
 
-    function _loadSvgContext(uint256 tokenId)
+    /// @notice Primary tokenURI image shell — SVG wrapper embedding indexed PNG (base64).
+    function renderImageShell(uint256 tokenId) public view returns (string memory) {
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        return string(_buildImageShellBytes(tokenId, traits));
+    }
+
+    function tokenURI(uint256 tokenId) external view returns (string memory) {
+        bytes memory traits = chromaStorage.getTraits(tokenId);
+        bytes memory shell = _buildImageShellBytes(tokenId, traits);
+        bytes memory json = _encodeTokenJson(tokenId, traits, shell);
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+    }
+
+    function _buildImageShellBytes(uint256 tokenId, bytes memory traits) internal view returns (bytes memory) {
+        ChromaRendererPngLib.RenderContext memory ctx = _loadPngContext(tokenId, traits);
+        bytes memory png = ChromaRendererPngLib.buildPng(ctx);
+        return ChromaRendererPngLib.buildImageShellSvg(png);
+    }
+
+    function _loadPngContext(uint256 tokenId, bytes memory traits)
+        internal
+        view
+        returns (ChromaRendererPngLib.RenderContext memory ctx)
+    {
+        ctx.pixels = chromaStorage.getPixels(tokenId);
+        ctx.paletteRgb = ChromaRendererPngLib.paletteHexToRgb(_paletteForRender(traits));
+        ctx.paletteRgb[0] = UNIVERSAL_BACKGROUND_RGB;
+        (ctx.diffIndexes, ctx.diffColors) = _getDiff(tokenId);
+    }
+
+    function _loadSvgContext(uint256 tokenId, bytes memory traits)
         internal
         view
         returns (ChromaRendererSvgLib.SvgRenderContext memory ctx)
     {
         ctx.tokenId = tokenId;
-        bytes memory traits = chromaStorage.getTraits(tokenId);
         ctx.pixels = chromaStorage.getPixels(tokenId);
-        ctx.palette = _paletteForToken(traits);
+        ctx.palette = _paletteForRender(traits);
         (ctx.diffIndexes, ctx.diffColors) = _getDiff(tokenId);
-        ctx.mutationTier = uint8(traits[15]);
     }
 
-    function tokenURI(uint256 tokenId) external view returns (string memory) {
+    /// @dev Measurement hook — PNG path artifacts + phase gas for profiling.
+    function profileRenderParts(uint256 tokenId)
+        external
+        view
+        returns (
+            ChromaRendererPngLib.RenderContext memory ctx,
+            bytes memory png,
+            bytes memory shell,
+            uint256 crcGas,
+            ChromaRendererPngLib.PhaseGas memory phases
+        )
+    {
         bytes memory traits = chromaStorage.getTraits(tokenId);
-        string memory svg = renderSVG(tokenId);
-        bytes memory json = _encodeTokenJson(tokenId, traits, svg);
-        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+        ctx = _loadPngContext(tokenId, traits);
+        phases = ChromaRendererPngLib.profilePhases(ctx);
+        crcGas = phases.crcRuntime;
+        png = ChromaRendererPngLib.buildPng(ctx);
+        shell = ChromaRendererPngLib.buildImageShellSvg(png);
     }
 
-    function _encodeTokenJson(uint256 tokenId, bytes memory traits, string memory svg)
+    function profileTokenJsonParts(uint256 tokenId, bytes memory shellBytes)
+        external
+        view
+        returns (bytes memory traits, bytes memory json, string memory uri)
+    {
+        traits = chromaStorage.getTraits(tokenId);
+        json = _encodeTokenJson(tokenId, traits, shellBytes);
+        uri = string(abi.encodePacked("data:application/json;base64,", Base64.encode(json)));
+    }
+
+    function _encodeTokenJson(uint256 tokenId, bytes memory traits, bytes memory shellBytes)
         internal
         view
         returns (bytes memory)
     {
-        string memory image = string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(bytes(svg))));
+        string memory image =
+            string(abi.encodePacked("data:image/svg+xml;base64,", Base64.encode(shellBytes)));
         bytes memory coreTraits = abi.encodePacked(
             _jsonAttribute("Character", _characterLabel(uint8(traits[0]))),
             ",",
-            _jsonAttribute("Palette", _paletteName(uint8(traits[1]))),
+            _jsonAttribute("Palette", paletteData.paletteName(uint8(traits[1]))),
             ",",
             _jsonAttribute("Hood", _hoodLabel(uint8(traits[2]))),
             ",",
@@ -726,15 +832,15 @@ contract ChromaRenderer is Ownable {
             ",",
             _jsonAttribute("Glasses", _glassesLabel(uint8(traits[13]))),
             ",",
-            _jsonAttribute("Hair", _hairLabel(uint8(traits[14]))),
-            ",",
-            _jsonAttribute("Mutation", _mutationLabel(uint8(traits[15])))
+            _jsonAttribute("Hair", _hairLabel(uint8(traits[14])))
         );
 
         return abi.encodePacked(
-            '{"name":"Chroma #',
-            tokenId.toString(),
-            '","description":"Chroma is a fully on-chain 64x64 indexed-color NFT.","image":"',
+            '{"name":"',
+            _tokenName(tokenId),
+            '","description":"',
+            _tokenDescription(),
+            '","image":"',
             image,
             '","attributes":[',
             coreTraits,
@@ -749,8 +855,22 @@ contract ChromaRenderer is Ownable {
         );
     }
 
+    /// @dev ETH-collection name string, UNCHANGED. Override in a chain-specific
+    /// subclass (e.g. Robinhood Chain deployment) rather than editing this default.
+    function _tokenName(uint256 tokenId) internal view virtual returns (string memory) {
+        return string(abi.encodePacked("Chroma #", tokenId.toString()));
+    }
+
+    /// @dev ETH-collection description string, UNCHANGED. Override in a chain-specific
+    /// subclass (e.g. Robinhood Chain deployment) rather than editing this default.
+    function _tokenDescription() internal view virtual returns (string memory) {
+        return "Chroma is a fully on-chain 64x64 indexed-color NFT.";
+    }
+
     function _getDiff(uint256 tokenId) internal view returns (uint16[] memory diffIndexes, uint8[] memory diffColors) {
-        if (address(chromaCanvas) == address(0)) return (new uint16[](0), new uint8[](0));
+        if (address(chromaCanvas) == address(0)) {
+            return (new uint16[](0), new uint8[](0));
+        }
         return chromaCanvas.getDiff(tokenId);
     }
 
@@ -805,179 +925,14 @@ contract ChromaRenderer is Ownable {
         );
     }
 
-    function _paletteForToken(bytes memory traits) internal pure returns (string[16] memory palette) {
-        return _paletteColors(uint8(traits[1]));
+    function _paletteForToken(bytes memory traits) internal view returns (string[16] memory palette) {
+        return paletteData.paletteColors(uint8(traits[1]));
     }
 
-    function _paletteColors(uint8 paletteId) internal pure returns (string[16] memory palette) {
-        if (paletteId == 26) {
-            return [
-                "#e3e5e4", "#0e0d08", "#27261d", "#481213", "#403e31", "#61472f", "#535342", "#646451",
-                "#76745b", "#7f7e7a", "#a0855a", "#858869", "#999c81", "#adb195", "#c2c4ba", "#c2c4ba"
-            ];
-        }
-        if (paletteId == 27) {
-            return [
-                "#e8e0c8", "#3d2e00", "#5c4600", "#fff8e0", "#7a5c00", "#a07800", "#c49a00", "#d4aa00",
-                "#e8c840", "#c49a00", "#5c4400", "#c8960a", "#ffd700", "#9a7400", "#b08800", "#e8c020"
-            ];
-        }
-        uint8 id = paletteId % 26;
-        if (id == 0) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#4d051b", "#9b2352", "#db5a91"
-            ];
-        }
-        if (id == 1) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#1f3a14", "#52a01e", "#9be042"
-            ];
-        }
-        if (id == 2) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#0d2a3a", "#1e6a90", "#4ec3e8"
-            ];
-        }
-        if (id == 3) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#2a2030", "#6a5a8a", "#a8a0c8"
-            ];
-        }
-        if (id == 4) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#3a0606", "#8a1818", "#d83838"
-            ];
-        }
-        if (id == 5) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#283018", "#5a6830", "#8a9848"
-            ];
-        }
-        if (id == 6) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 7) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 8) {
-            return [
-                "#e3e5e4", "#1a0d0e", "#2a1518", "#f0eae0", "#4c270f", "#89532a", "#b2723f", "#d18b4d",
-                "#df9c5e", "#1c1c26", "#1a0a14", "#a01856", "#ff2d8a", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 9) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 10) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 11) {
-            return [
-                "#e3e5e4", "#0a1410", "#152620", "#e8f5d8", "#3a2a1c", "#7a5a3e", "#b0876a", "#d4a890",
-                "#e8c5a8", "#0f1a16", "#0d1c14", "#5a8a2e", "#a8ff2d", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 12) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 13) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 14) {
-            return [
-                "#e3e5e4", "#0a0e14", "#152028", "#d8eef5", "#1a1008", "#3a2818", "#5e4028", "#7a5538",
-                "#9a704a", "#0e1a26", "#08141c", "#1e6088", "#2dd6ff", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 15) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 16) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 17) {
-            return [
-                "#e3e5e4", "#1f1a22", "#322a36", "#fafafa", "#5a4030", "#8a6a55", "#b89888", "#d4b8a8",
-                "#e8d2c0", "#3d3445", "#1a1620", "#7d5a9a", "#c8a8ff", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 18) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 19) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 20) {
-            return [
-                "#e3e5e4", "#100404", "#220808", "#f5d8d2", "#3a2a1c", "#6e3520", "#a05c3a", "#c47550",
-                "#dc8e68", "#180806", "#0a0202", "#7a1818", "#ff3030", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 21) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#3d2e00", "#8c6914", "#e8b84b"
-            ];
-        }
-        if (id == 22) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#2a2a2a", "#707070", "#c0c0c0"
-            ];
-        }
-        if (id == 23) {
-            return [
-                "#e3e5e4", "#0e1208", "#1c2515", "#ebe2c8", "#2a1c0a", "#553a20", "#8a6238", "#a87a4a",
-                "#bc8e5a", "#1c2618", "#0a1006", "#5a6820", "#a8b830", "#3d0a00", "#8c2200", "#d94f1e"
-            ];
-        }
-        if (id == 24) {
-            return [
-                "#e3e5e4", "#0f0c08", "#1e1a12", "#e8dfc8", "#1a1510", "#3d3428", "#6b5e4a", "#9a8a72",
-                "#c8b89a", "#2a2218", "#0a0e08", "#4a7a20", "#8ac830", "#1a1510", "#4a3e2e", "#7a6a52"
-            ];
-        }
-
-        return [
-            "#e1e5e0", "#080704", "#1d1a05", "#c8c39b", "#2c280f", "#5e593d", "#877f51", "#9e9662",
-            "#b8b17e", "#211e0c", "#131412", "#55523b", "#fdfbfb", "#383525", "#5d5840", "#b2ac78"
-        ];
+    /// @dev Palette for raster output — slot 0 forced to universal background per collection ruling.
+    function _paletteForRender(bytes memory traits) internal view returns (string[16] memory palette) {
+        palette = _paletteForToken(traits);
+        palette[0] = UNIVERSAL_BACKGROUND;
     }
 
     function _characterLabel(uint8 value) internal pure returns (string memory) {
@@ -987,38 +942,6 @@ contract ChromaRenderer is Ownable {
         if (value == 4) return "Agent";
         if (value == 8) return "Zombie";
         return "Human";
-    }
-
-    function _paletteName(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "SIGNAL";
-        if (value == 1) return "ACID";
-        if (value == 2) return "CYAN";
-        if (value == 3) return "GHOST";
-        if (value == 4) return "BLOOD";
-        if (value == 5) return "MOSS";
-        if (value == 6) return "SIGNAL_BLONDE";
-        if (value == 7) return "SIGNAL_GREY";
-        if (value == 8) return "SIGNAL_RED";
-        if (value == 9) return "ACID_BLONDE";
-        if (value == 10) return "ACID_GREY";
-        if (value == 11) return "ACID_RED";
-        if (value == 12) return "CYAN_BLONDE";
-        if (value == 13) return "CYAN_GREY";
-        if (value == 14) return "CYAN_RED";
-        if (value == 15) return "GHOST_BLONDE";
-        if (value == 16) return "GHOST_GREY";
-        if (value == 17) return "GHOST_RED";
-        if (value == 18) return "BLOOD_BLONDE";
-        if (value == 19) return "BLOOD_GREY";
-        if (value == 20) return "BLOOD_RED";
-        if (value == 21) return "MOSS_BLONDE";
-        if (value == 22) return "MOSS_GREY";
-        if (value == 23) return "MOSS_RED";
-        if (value == 24) return "CAT";
-        if (value == 25) return "ALIEN";
-        if (value == 26) return "ZOMBIE";
-        if (value == 27) return "GOLD";
-        return "SIGNAL";
     }
 
     function _hoodLabel(uint8 value) internal pure returns (string memory) {
@@ -1117,14 +1040,6 @@ contract ChromaRenderer is Ownable {
         if (value == 7) return "FadeRight";
         return "None";
     }
-
-    function _mutationLabel(uint8 value) internal pure returns (string memory) {
-        if (value == 0) return "Pristine";
-        if (value == 1) return "Standard";
-        if (value == 2) return "Drifted";
-        if (value == 3) return "OffKilter";
-        return "Standard";
-    }
 }
 ```
 
@@ -1147,14 +1062,10 @@ contract ChromaCanvas is Ownable {
     error InsufficientActionPoints();
     error MissingCommit();
     error InvalidReveal();
-    error InvalidMutationShift();
-    error InvalidMutationTier();
     error InvalidTransfer();
     error TokenLocked();
-    error NotInscribed();
 
     uint256 internal constant GRID_PIXELS = 4096;
-    uint256 internal constant TRAIT_MUTATION_INDEX = 15;
     uint256 public constant ACTION_POINTS_PER_BURN = 100;
     address public constant DEAD_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
@@ -1178,7 +1089,6 @@ contract ChromaCanvas is Ownable {
     event CommitSubmitted(address indexed user, bytes32 indexed commitment);
     event BurnRevealed(address indexed user, uint256 indexed burnedTokenId, uint256 actionPointsAwarded);
     event DiffApplied(address indexed user, uint256 indexed tokenId, uint256 entriesApplied);
-    event MutationTierShifted(uint256 indexed tokenId, uint8 oldTier, uint8 newTier);
     event ActionPointsTransferred(address indexed from, address indexed to, uint256 amount);
 
     constructor(address chromaAddress, address storageAddress, address initialOwner) Ownable(initialOwner) {
@@ -1215,23 +1125,6 @@ contract ChromaCanvas is Ownable {
 
     function applyDiff(uint256 tokenId, bytes calldata diffData) external {
         _applyDiff(tokenId, diffData, msg.sender);
-    }
-
-    function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
-        if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
-        if (chroma.isLocked(tokenId)) revert TokenLocked();
-        if (!chromaStorage.hasData(tokenId)) revert NotInscribed();
-        if (newTier > 3) revert InvalidMutationTier();
-
-        bytes memory traits = chromaStorage.getTraits(tokenId);
-        uint8 currentTier = uint8(traits[TRAIT_MUTATION_INDEX]);
-        uint256 cost = _mutationShiftCost(currentTier, newTier);
-        if (actionPoints[msg.sender] < cost) revert InsufficientActionPoints();
-
-        actionPoints[msg.sender] -= cost;
-        totalApSpent[tokenId] += cost;
-        chromaStorage.updateTrait(tokenId, TRAIT_MUTATION_INDEX, newTier);
-        emit MutationTierShifted(tokenId, currentTier, newTier);
     }
 
     function level(uint256 tokenId) public view returns (uint256) {
@@ -1298,14 +1191,6 @@ contract ChromaCanvas is Ownable {
         return ACTION_POINTS_PER_BURN + bonus;
     }
 
-    function _mutationShiftCost(uint8 currentTier, uint8 newTier) internal pure returns (uint256) {
-        if (newTier >= currentTier) revert InvalidMutationShift();
-        if (currentTier == 3 && newTier == 2) return 500;
-        if (currentTier == 2 && newTier == 1) return 1500;
-        if (currentTier == 1 && newTier == 0) return 5000;
-        revert InvalidMutationShift();
-    }
-
     function _applyDiff(uint256 tokenId, bytes calldata diffData, address user) internal {
         if (chroma.isLocked(tokenId)) revert TokenLocked();
         if (diffData.length == 0 || diffData.length % 3 != 0) revert InvalidDiffEncoding();
@@ -1364,15 +1249,11 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     error InsufficientActionPoints();
     error MissingCommit();
     error InvalidReveal();
-    error InvalidMutationShift();
-    error InvalidMutationTier();
     error InvalidTransfer();
     error TokenLocked();
     error UnauthorizedChromaCaller();
-    error NotInscribed();
 
     uint256 internal constant GRID_PIXELS = 4096;
-    uint256 internal constant TRAIT_MUTATION_INDEX = 15;
     uint256 public constant TIER1_THRESHOLD = 1500;
     uint256 public constant TIER2_THRESHOLD = 2000;
     uint256 public constant TIER1_MIN_PERCENT = 1;
@@ -1414,7 +1295,6 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     event CommitSubmitted(address indexed user, bytes32 indexed commitment);
     event BurnRevealed(address indexed user, uint256 indexed burnedTokenId, uint256 indexed creditedTokenId, uint256 actionPointsAwarded);
     event DiffApplied(address indexed user, uint256 indexed tokenId, uint256 entriesApplied);
-    event MutationTierShifted(uint256 indexed tokenId, uint8 oldTier, uint8 newTier);
     event APEarned(uint256 indexed tokenId, uint256 amount);
     event APSpent(uint256 indexed tokenId, uint256 amount);
     event OperatorApprovalSet(address indexed operator, bool approved);
@@ -1458,7 +1338,8 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
     /// @notice Admin AP grant (promotions, migrations from V1 balances, etc).
     ///         Organic earning happens through the burn flow below.
     function earnAP(uint256 tokenId, uint256 amount) external onlyOwner {
-        chroma.ownerOf(tokenId); // reverts for nonexistent token
+        // Intentionally discards return value; reverts if tokenId does not exist.
+        chroma.ownerOf(tokenId);
         _earnAP(tokenId, amount);
     }
 
@@ -1518,23 +1399,6 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         _applyDiff(tokenId, diffData, msg.sender);
     }
 
-    /// @notice Shift mutation tier toward Pristine, spending the token's own AP.
-    ///         Requires on-chain inscription — pre-inscribe shifts would break the merkle leaf.
-    function shiftMutationTier(uint256 tokenId, uint8 newTier) external {
-        if (chroma.ownerOf(tokenId) != msg.sender) revert NotTokenOwner();
-        if (chroma.isLocked(tokenId)) revert TokenLocked();
-        if (!chromaStorage.hasData(tokenId)) revert NotInscribed();
-        if (newTier > 3) revert InvalidMutationTier();
-
-        bytes memory traits = chromaStorage.getTraits(tokenId);
-        uint8 currentTier = uint8(traits[TRAIT_MUTATION_INDEX]);
-        uint256 cost = _mutationShiftCost(currentTier, newTier);
-
-        _spendAP(tokenId, cost);
-        chromaStorage.updateTrait(tokenId, TRAIT_MUTATION_INDEX, newTier);
-        emit MutationTierShifted(tokenId, currentTier, newTier);
-    }
-
     // ========================================================================
     // Views
     // ========================================================================
@@ -1565,7 +1429,7 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
         return chromaStorage.getTotalPixels(tokenId);
     }
 
-    /// @notice Uncapped activity level from lifetime AP earned (sqrt curve, separate from mutation tier).
+    /// @notice Uncapped activity level from lifetime AP earned (sqrt curve).
     function getLevel(uint256 tokenId) public view returns (uint256) {
         uint256 earned = totalApEarned[tokenId];
         if (earned == 0) return 0;
@@ -1650,20 +1514,13 @@ contract ChromaCanvasV2 is Ownable, IPixelCanvas, IChromaCanvasFinalize {
 
     function _transferAP(uint256 fromTokenId, uint256 toTokenId, uint256 amount) internal {
         if (fromTokenId == toTokenId) revert InvalidTransfer();
-        chroma.ownerOf(toTokenId); // reverts for nonexistent destination
+        // Intentionally discards return value; reverts if destination token does not exist.
+        chroma.ownerOf(toTokenId);
         if (actionPoints[fromTokenId] < amount) revert InsufficientActionPoints();
 
         actionPoints[fromTokenId] -= amount;
         actionPoints[toTokenId] += amount;
         emit APTransferred(fromTokenId, toTokenId, amount);
-    }
-
-    function _mutationShiftCost(uint8 currentTier, uint8 newTier) internal pure returns (uint256) {
-        if (newTier >= currentTier) revert InvalidMutationShift();
-        if (currentTier == 3 && newTier == 2) return 500;
-        if (currentTier == 2 && newTier == 1) return 1500;
-        if (currentTier == 1 && newTier == 0) return 5000;
-        revert InvalidMutationShift();
     }
 
     function _applyDiff(uint256 tokenId, bytes calldata diffData, address user) internal {
@@ -1856,6 +1713,7 @@ pragma solidity ^0.8.24;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC2981} from "@openzeppelin/contracts/token/common/ERC2981.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {MerkleProof} from "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
@@ -1863,7 +1721,7 @@ import {IChromaRenderer} from "./IChromaRenderer.sol";
 import {ChromaStorage} from "./ChromaStorage.sol";
 import {IChromaCanvasFinalize} from "./IChromaCanvasFinalize.sol";
 
-contract Chroma is ERC721, ERC2981, Ownable {
+contract Chroma is ERC721, ERC2981, Ownable, ReentrancyGuard {
     using Strings for uint256;
 
     enum Phase {
@@ -1890,12 +1748,18 @@ contract Chroma is ERC721, ERC2981, Ownable {
     error InvalidPayload();
     error AlreadyInscribed();
     error RevealedBaseURINotSet();
+    error PhaseSupplyExceeded();
 
     uint256 public constant MAX_SUPPLY = 5150;
-    uint256 public constant MINT_PRICE = 0.006 ether;
-    uint256 public constant ALLOWLIST_ONE_PRICE = 0.003 ether;
-    uint256 public constant ALLOWLIST_TWO_PRICE = 0.005 ether;
-    uint256 public constant MAX_PER_WALLET_ONE = 2;
+    uint256 public constant TEAM_RESERVE = 200;
+    uint256 public constant MAX_MINT_ALLOWLIST_ONE = 2500;
+    uint256 public constant MAX_MINT_ALLOWLIST_TWO = 1000;
+    uint256 public constant MINT_PRICE = 0.0045 ether;
+    uint256 public constant ALLOWLIST_ONE_PRICE = 0.0025 ether;
+    uint256 public constant ALLOWLIST_TWO_PRICE = 0.0035 ether;
+    uint256 public constant MAX_PER_WALLET_ONE = 5;
+    uint256 public constant MAX_PER_WALLET_TWO = 5;
+    uint256 public constant MAX_PER_WALLET_PUBLIC = 5;
 
     uint256 internal constant PIXELS_LENGTH = 2048;
     uint256 internal constant TRAITS_LENGTH = 32;
@@ -1909,6 +1773,8 @@ contract Chroma is ERC721, ERC2981, Ownable {
     mapping(address => uint256) public claimedOne;
     mapping(address => uint256) public claimedTwo;
     mapping(address => uint256) public claimedPublic;
+    uint256 public mintedAllowlistOne;
+    uint256 public mintedAllowlistTwo;
     mapping(uint256 => bool) public revealed;
     mapping(uint256 => bool) public locked;
     mapping(uint256 => bytes32) public revealedTraits;
@@ -1942,11 +1808,11 @@ contract Chroma is ERC721, ERC2981, Ownable {
     function mint(address to, uint256 tokenId) external onlyOwner {
         if (tokenId != _totalSupply + 1) revert InvalidTokenId();
         if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
-        _safeMint(to, tokenId);
         ++_totalSupply;
+        _safeMint(to, tokenId);
     }
 
-    function mint(bytes32[] calldata proof, uint256 quantity) external payable {
+    function mint(bytes32[] calldata proof, uint256 quantity) external payable nonReentrant {
         if (phase == Phase.AllowlistOne) {
             _mintAllowlistOne(proof, quantity);
         } else if (phase == Phase.AllowlistTwo) {
@@ -1956,7 +1822,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
         }
     }
 
-    function mint(uint256 quantity) external payable {
+    function mint(uint256 quantity) external payable nonReentrant {
         if (phase != Phase.Public) revert WrongPhase();
         _mintPublic(quantity);
     }
@@ -1969,7 +1835,7 @@ contract Chroma is ERC721, ERC2981, Ownable {
         if (revealed[tokenId]) revert AlreadyRevealed();
         if (pixels.length != PIXELS_LENGTH || traits.length != TRAITS_LENGTH) revert InvalidPayload();
 
-        bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
+        bytes32 leaf = keccak256(abi.encode(tokenId, pixels, traits));
         if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
 
         revealed[tokenId] = true;
@@ -1987,13 +1853,13 @@ contract Chroma is ERC721, ERC2981, Ownable {
         if (chromaStorage.hasData(tokenId)) revert AlreadyInscribed();
         if (pixels.length != PIXELS_LENGTH || traits.length != TRAITS_LENGTH) revert InvalidPayload();
 
-        bytes32 leaf = keccak256(abi.encodePacked(tokenId, pixels, traits));
+        bytes32 leaf = keccak256(abi.encode(tokenId, pixels, traits));
         if (!MerkleProof.verify(proof, revealRoot, leaf)) revert InvalidMerkleProof();
 
+        locked[tokenId] = true;
         chromaStorage.writeTokenData(tokenId, pixels, traits);
         delete revealedTraits[tokenId];
         _bakeCanvasEdits(tokenId);
-        locked[tokenId] = true;
         emit TokenInscribed(tokenId);
         emit TokenLocked(tokenId);
     }
@@ -2066,42 +1932,55 @@ contract Chroma is ERC721, ERC2981, Ownable {
         if (quantity == 0) revert InvalidQuantity();
         if (msg.value != ALLOWLIST_ONE_PRICE * quantity) revert InsufficientPayment();
         if (claimedOne[msg.sender] + quantity > MAX_PER_WALLET_ONE) revert MaxPerWalletExceeded();
+        if (mintedAllowlistOne + quantity > MAX_MINT_ALLOWLIST_ONE) revert PhaseSupplyExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootOne)) revert InvalidMerkleProof();
 
         claimedOne[msg.sender] += quantity;
+        mintedAllowlistOne += quantity;
         for (uint256 i = 0; i < quantity; ++i) {
-            _mintPlaceholder(msg.sender);
+            _mintCommunity(msg.sender);
         }
     }
 
     function _mintAllowlistTwo(bytes32[] calldata proof, uint256 quantity) internal {
         if (quantity == 0) revert InvalidQuantity();
         if (msg.value != ALLOWLIST_TWO_PRICE * quantity) revert InsufficientPayment();
-        if (claimedTwo[msg.sender] + quantity > 2) revert MaxPerWalletExceeded();
+        if (claimedTwo[msg.sender] + quantity > MAX_PER_WALLET_TWO) revert MaxPerWalletExceeded();
+        if (mintedAllowlistTwo + quantity > MAX_MINT_ALLOWLIST_TWO) revert PhaseSupplyExceeded();
         if (!_verifyAllowlist(msg.sender, proof, merkleRootTwo)) revert InvalidMerkleProof();
 
         claimedTwo[msg.sender] += quantity;
+        mintedAllowlistTwo += quantity;
         for (uint256 i = 0; i < quantity; ++i) {
-            _mintPlaceholder(msg.sender);
+            _mintCommunity(msg.sender);
         }
     }
 
     function _mintPublic(uint256 quantity) internal {
         if (quantity == 0) revert InvalidQuantity();
         if (msg.value != MINT_PRICE * quantity) revert InsufficientPayment();
-        if (claimedPublic[msg.sender] + quantity > 3) revert MaxPerWalletExceeded();
+        if (claimedPublic[msg.sender] + quantity > MAX_PER_WALLET_PUBLIC) revert MaxPerWalletExceeded();
 
         claimedPublic[msg.sender] += quantity;
         for (uint256 i = 0; i < quantity; ++i) {
-            _mintPlaceholder(msg.sender);
+            _mintCommunity(msg.sender);
         }
+    }
+
+    function _communityMintCap() internal pure returns (uint256) {
+        return MAX_SUPPLY - TEAM_RESERVE;
+    }
+
+    function _mintCommunity(address to) internal {
+        if (_totalSupply + 1 > _communityMintCap()) revert MaxSupplyReached();
+        _mintPlaceholder(to);
     }
 
     function _mintPlaceholder(address to) internal {
         if (_totalSupply >= MAX_SUPPLY) revert MaxSupplyReached();
         uint256 tokenId = _totalSupply + 1;
-        _safeMint(to, tokenId);
         ++_totalSupply;
+        _safeMint(to, tokenId);
     }
 
     function _verifyAllowlist(address account, bytes32[] calldata proof, bytes32 root) internal pure returns (bool) {
@@ -2154,6 +2033,528 @@ contract Chroma is ERC721, ERC2981, Ownable {
                 )
             )
         );
+    }
+}
+```
+
+---
+
+## ChromaRendererCrc32.sol
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+/// @notice Table-driven CRC32 + Adler32 for PNG zlib (Pass B.1 assembly path).
+library ChromaRendererCrc32 {
+    // CRC32 over "IHDR" + width=64 height=64 bitDepth=4 colorType=3
+    // compression=0 filter=0 interlace=0. Derived by this script, not hand-pasted.
+    uint32 internal constant CRC_IHDR = 0x58476ced;
+    uint32 internal constant CRC_IEND = 0xae426082;
+
+    function initTable(uint256 dest) internal pure {
+        assembly ("memory-safe") {
+            mstore(add(dest, 0), 0x0000000077073096ee0e612c990951ba076dc419706af48fe963a5359e6495a3)
+            mstore(add(dest, 32), 0x0edb883279dcb8a4e0d5e91e97d2d98809b64c2b7eb17cbde7b82d0790bf1d91)
+            mstore(add(dest, 64), 0x1db710646ab020f2f3b9714884be41de1adad47d6ddde4ebf4d4b55183d385c7)
+            mstore(add(dest, 96), 0x136c9856646ba8c0fd62f97a8a65c9ec14015c4f63066cd9fa0f3d638d080df5)
+            mstore(add(dest, 128), 0x3b6e20c84c69105ed56041e4a26771723c03e4d14b04d447d20d85fda50ab56b)
+            mstore(add(dest, 160), 0x35b5a8fa42b2986cdbbbc9d6acbcf94032d86ce345df5c75dcd60dcfabd13d59)
+            mstore(add(dest, 192), 0x26d930ac51de003ac8d75180bfd0611621b4f4b556b3c423cfba9599b8bda50f)
+            mstore(add(dest, 224), 0x2802b89e5f058808c60cd9b2b10be9242f6f7c8758684c11c1611dabb6662d3d)
+            mstore(add(dest, 256), 0x76dc419001db710698d220bcefd5102a71b1858906b6b51f9fbfe4a5e8b8d433)
+            mstore(add(dest, 288), 0x7807c9a20f00f9349609a88ee10e98187f6a0dbb086d3d2d91646c97e6635c01)
+            mstore(add(dest, 320), 0x6b6b51f41c6c6162856530d8f262004e6c0695ed1b01a57b8208f4c1f50fc457)
+            mstore(add(dest, 352), 0x65b0d9c612b7e9508bbeb8eafcb9887c62dd1ddf15da2d498cd37cf3fbd44c65)
+            mstore(add(dest, 384), 0x4db261583ab551cea3bc0074d4bb30e24adfa5413dd895d7a4d1c46dd3d6f4fb)
+            mstore(add(dest, 416), 0x4369e96a346ed9fcad678846da60b8d044042d7333031de5aa0a4c5fdd0d7cc9)
+            mstore(add(dest, 448), 0x5005713c270241aabe0b1010c90c20865768b525206f85b3b966d409ce61e49f)
+            mstore(add(dest, 480), 0x5edef90e29d9c998b0d09822c7d7a8b459b33d172eb40d81b7bd5c3bc0ba6cad)
+            mstore(add(dest, 512), 0xedb883209abfb3b603b6e20c74b1d29aead547399dd277af04db261573dc1683)
+            mstore(add(dest, 544), 0xe3630b1294643b840d6d6a3e7a6a5aa8e40ecf0b9309ff9d0a00ae277d079eb1)
+            mstore(add(dest, 576), 0xf00f93448708a3d21e01f2686906c2fef762575d806567cb196c36716e6b06e7)
+            mstore(add(dest, 608), 0xfed41b7689d32be010da7a5a67dd4accf9b9df6f8ebeeff917b7be4360b08ed5)
+            mstore(add(dest, 640), 0xd6d6a3e8a1d1937e38d8c2c44fdff252d1bb67f1a6bc57673fb506dd48b2364b)
+            mstore(add(dest, 672), 0xd80d2bdaaf0a1b4c36034af641047a60df60efc3a867df55316e8eef4669be79)
+            mstore(add(dest, 704), 0xcb61b38cbc66831a256fd2a05268e236cc0c7795bb0b4703220216b95505262f)
+            mstore(add(dest, 736), 0xc5ba3bbeb2bd0b282bb45a925cb36a04c2d7ffa7b5d0cf312cd99e8b5bdeae1d)
+            mstore(add(dest, 768), 0x9b64c2b0ec63f226756aa39c026d930a9c0906a9eb0e363f7207678505005713)
+            mstore(add(dest, 800), 0x95bf4a82e2b87a147bb12bae0cb61b3892d28e9be5d5be0d7cdcefb70bdbdf21)
+            mstore(add(dest, 832), 0x86d3d2d4f1d4e24268ddb3f81fda836e81be16cdf6b9265b6fb077e118b74777)
+            mstore(add(dest, 864), 0x88085ae6ff0f6a7066063bca11010b5c8f659efff862ae69616bffd3166ccf45)
+            mstore(add(dest, 896), 0xa00ae278d70dd2ee4e0483543903b3c2a7672661d06016f74969474d3e6e77db)
+            mstore(add(dest, 928), 0xaed16a4ad9d65adc40df0b6637d83bf0a9bcae53debb9ec547b2cf7f30b5ffe9)
+            mstore(add(dest, 960), 0xbdbdf21ccabac28a53b3933024b4a3a6bad03605cdd7069354de572923d967bf)
+            mstore(add(dest, 992), 0xb3667a2ec4614ab85d681b022a6f2b94b40bbe37c30c8ea15a05df1b2d02ef8d)
+        }
+    }
+
+    function allocTable() internal pure returns (uint256 table) {
+        assembly ("memory-safe") {
+            table := mload(0x40)
+            mstore(0x40, add(table, 0x400))
+        }
+        initTable(table);
+    }
+
+    // initTable() packs 256 uint32 entries at 4-byte stride (8 entries per
+    // 32-byte mstore above). mload(add(table, shl(2, b))) therefore returns a
+    // 32-byte word whose HIGH 4 bytes are table[b] and whose low 28 bytes are
+    // the next 7 packed entries -- every lookup below MUST shr(224, ...) that
+    // mload result to isolate table[b]. Omitting the shr(224, ...) silently
+    // corrupts every CRC32 this library computes -- see ROBINHOOD_RENDERER_BUG.md.
+    //
+    // Also note: the running `crc` register must stay a clean 32-bit value.
+    // `not(0)` is 2**256-1 (all 256 bits set), NOT the 32-bit CRC32 seed
+    // 0xffffffff -- using the former polluted every accumulation with garbage
+    // in bits [32:255] that leaked into the low 32 bits via shr(8, crc) on
+    // every iteration. Seed with the literal 0xffffffff instead, and mask the
+    // final not(crc) back down to 32 bits before returning.
+
+    function crc32(uint256 table, bytes memory data) internal pure returns (uint32 result) {
+        assembly ("memory-safe") {
+            let crc := 0xffffffff
+            let ptr := add(data, 0x20)
+            let end := add(ptr, mload(data))
+            for {} lt(ptr, end) { ptr := add(ptr, 1) } {
+                let b := xor(and(crc, 0xff), byte(0, mload(ptr)))
+                crc := xor(shr(8, crc), shr(224, mload(add(table, shl(2, b)))))
+            }
+            result := and(not(crc), 0xffffffff)
+        }
+    }
+
+    function crc32Chunk(uint256 table, bytes4 chunkType, bytes memory data) internal pure returns (uint32 result) {
+        assembly ("memory-safe") {
+            let crc := 0xffffffff
+            let t := chunkType
+            for { let i := 0 } lt(i, 4) { i := add(i, 1) } {
+                // chunkType is bytes4 (left-aligned: byte 0 is bits [255:248]).
+                let b := xor(and(crc, 0xff), and(shr(sub(248, mul(8, i)), t), 0xff))
+                crc := xor(shr(8, crc), shr(224, mload(add(table, shl(2, b)))))
+            }
+            let ptr := add(data, 0x20)
+            let end := add(ptr, mload(data))
+            for {} lt(ptr, end) { ptr := add(ptr, 1) } {
+                let b := xor(and(crc, 0xff), byte(0, mload(ptr)))
+                crc := xor(shr(8, crc), shr(224, mload(add(table, shl(2, b)))))
+            }
+            result := and(not(crc), 0xffffffff)
+        }
+    }
+
+    /// @dev `chunkType` is intentionally UNUSED in the loop below -- every call
+    /// site (ChromaRendererPngLib._writePlteChunk/_writeIdatChunk) passes memPtr
+    /// pointing AT the chunk's 4 type bytes in memory with totalLen already
+    /// covering type+data together (matching the PNG spec's CRC32(type||data)),
+    /// so a separate type-mixing pass here would double-count the type bytes.
+    /// The parameter is kept for call-site self-documentation / a future
+    /// memPtr-past-type calling convention, but must not be mixed in here.
+    function crc32ChunkMem(uint256 table, bytes4, uint256 memPtr, uint256 totalLen)
+        internal
+        pure
+        returns (uint32 result)
+    {
+        assembly ("memory-safe") {
+            let crc := 0xffffffff
+            let end := add(memPtr, totalLen)
+            for {} lt(memPtr, end) { memPtr := add(memPtr, 1) } {
+                let b := xor(and(crc, 0xff), byte(0, mload(memPtr)))
+                crc := xor(shr(8, crc), shr(224, mload(add(table, shl(2, b)))))
+            }
+            result := and(not(crc), 0xffffffff)
+        }
+    }
+
+    function adler32(bytes memory data) internal pure returns (uint32 result) {
+        assembly ("memory-safe") {
+            let a := 1
+            let b := 0
+            let k := 0
+            let ptr := add(data, 0x20)
+            let end := add(ptr, mload(data))
+            for {} lt(ptr, end) { ptr := add(ptr, 1) } {
+                a := add(a, byte(0, mload(ptr)))
+                b := add(b, a)
+                k := add(k, 1)
+                if eq(k, 256) {
+                    a := mod(a, 65521)
+                    b := mod(b, 65521)
+                    k := 0
+                }
+            }
+            a := mod(a, 65521)
+            b := mod(b, 65521)
+            result := or(shl(16, b), a)
+        }
+    }
+}
+```
+
+---
+
+## ChromaRendererPngLib.sol
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+import {ChromaRendererCrc32} from "./ChromaRendererCrc32.sol";
+
+/// @notice Indexed PNG (4bpp, PLTE, zlib STORED) + SVG shell for tokenURI image field.
+library ChromaRendererPngLib {
+    uint256 internal constant GRID = 64;
+    uint256 internal constant FILTERED_ROW = 33;
+    uint256 internal constant RAW_IDAT_LEN = GRID * FILTERED_ROW;
+    uint256 internal constant IDAT_PAYLOAD_LEN = 2 + 5 + RAW_IDAT_LEN + 4;
+    uint256 internal constant PNG_LEN = 8 + 25 + 60 + 12 + IDAT_PAYLOAD_LEN + 12;
+
+    uint256 internal constant OFF_IHDR = 8;
+    uint256 internal constant OFF_PLTE = 33;
+    uint256 internal constant OFF_IDAT = 93;
+    uint256 internal constant OFF_IDAT_TYPE = 97;
+    uint256 internal constant OFF_IDAT_DATA = 101;
+    uint256 internal constant OFF_IEND = 2228;
+
+    bytes internal constant PNG_SIG = hex"89504e470d0a1a0a";
+    // width=64 (0x40), height=64 (0x40), bitDepth=4, colorType=3 (indexed),
+    // compression=0, filter=0, interlace=0. Height was previously hardcoded
+    // to 0x00000000 instead of 0x00000040 -- see ROBINHOOD_RENDERER_BUG.md.
+    bytes internal constant IHDR_DATA = hex"00000040000000400403000000";
+
+    bytes internal constant SVG_SHELL_PREFIX =
+        bytes(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" image-rendering="pixelated"><image width="1024" height="1024" href="data:image/png;base64,'
+        );
+    bytes internal constant SVG_SHELL_SUFFIX = bytes('"/></svg>');
+
+    struct RenderContext {
+        bytes pixels;
+        bytes3[16] paletteRgb;
+        uint16[] diffIndexes;
+        uint8[] diffColors;
+    }
+
+    struct PhaseGas {
+        uint256 pixelPack;
+        uint256 plteBuild;
+        uint256 adler;
+        uint256 crcRuntime;
+        uint256 zlibFrame;
+        uint256 pngAssemble;
+    }
+
+    function buildPng(RenderContext memory ctx) internal pure returns (bytes memory png) {
+        png = new bytes(PNG_LEN);
+        uint256 table = ChromaRendererCrc32.allocTable();
+
+        for (uint256 i = 0; i < 8; ++i) {
+            png[i] = PNG_SIG[i];
+        }
+        _writeU32(png, OFF_IHDR, 13);
+        _writeType(png, OFF_IHDR + 4, "IHDR");
+        for (uint256 i = 0; i < 13; ++i) {
+            png[OFF_IHDR + 8 + i] = IHDR_DATA[i];
+        }
+        _writeU32(png, OFF_IHDR + 21, ChromaRendererCrc32.CRC_IHDR);
+
+        _writePlteChunk(png, ctx.paletteRgb, table);
+        bytes memory raw = _buildFilteredImage(ctx);
+        _writeIdatChunk(png, raw, table);
+
+        _writeU32(png, OFF_IEND, 0);
+        _writeType(png, OFF_IEND + 4, "IEND");
+        _writeU32(png, OFF_IEND + 8, ChromaRendererCrc32.CRC_IEND);
+        raw;
+    }
+
+    function buildImageShellSvg(bytes memory png) internal pure returns (bytes memory) {
+        return abi.encodePacked(SVG_SHELL_PREFIX, Base64.encode(png), SVG_SHELL_SUFFIX);
+    }
+
+    function profileCrcGas(RenderContext memory ctx) internal view returns (uint256 gasUsed) {
+        bytes memory plte = _plteBytes(ctx.paletteRgb);
+        bytes memory raw = _buildFilteredImage(ctx);
+        bytes memory idatBody = _idatBody(raw);
+        uint256 table = ChromaRendererCrc32.allocTable();
+        uint256 g = gasleft();
+        ChromaRendererCrc32.crc32Chunk(table, "PLTE", plte);
+        ChromaRendererCrc32.crc32Chunk(table, "IDAT", idatBody);
+        gasUsed = g - gasleft();
+        raw;
+        idatBody;
+    }
+
+    function profilePhases(RenderContext memory ctx) internal view returns (PhaseGas memory g) {
+        uint256 mark = gasleft();
+        bytes memory raw = _buildFilteredImage(ctx);
+        g.pixelPack = mark - gasleft();
+
+        mark = gasleft();
+        bytes memory plte = _plteBytes(ctx.paletteRgb);
+        g.plteBuild = mark - gasleft();
+
+        mark = gasleft();
+        uint32 adler = ChromaRendererCrc32.adler32(raw);
+        g.adler = mark - gasleft();
+
+        mark = gasleft();
+        bytes memory idatBody = _idatBodyWithAdler(raw, adler);
+        g.zlibFrame = mark - gasleft();
+
+        mark = gasleft();
+        uint256 table = ChromaRendererCrc32.allocTable();
+        ChromaRendererCrc32.crc32Chunk(table, "PLTE", plte);
+        ChromaRendererCrc32.crc32Chunk(table, "IDAT", idatBody);
+        g.crcRuntime = mark - gasleft();
+
+        mark = gasleft();
+        bytes memory png = buildPng(ctx);
+        g.pngAssemble = mark - gasleft();
+        png;
+        plte;
+        idatBody;
+        adler;
+        raw;
+    }
+
+    function extractPlteRgb(bytes memory png) internal pure returns (bytes3[16] memory out) {
+        uint256 i = 8;
+        while (i + 12 <= png.length) {
+            uint256 len = _readU32(png, i);
+            bytes4 typ = bytes4(_readU32Bytes(png, i + 4));
+            if (typ == "PLTE") {
+                require(len == 48, "bad PLTE");
+                for (uint8 c = 0; c < 16; ++c) {
+                    uint256 p = i + 8 + uint256(c) * 3;
+                    out[c] = bytes3(_readU24(png, p));
+                }
+                return out;
+            }
+            i += 12 + len;
+        }
+        revert("PLTE missing");
+    }
+
+    function paletteHexToRgb(string[16] memory paletteHex) internal pure returns (bytes3[16] memory rgb) {
+        for (uint8 i = 0; i < 16; ++i) {
+            rgb[i] = _parseHexColor(paletteHex[i]);
+        }
+    }
+
+    function _writePlteChunk(bytes memory png, bytes3[16] memory palette, uint256 table) private pure {
+        _writeU32(png, OFF_PLTE, 48);
+        _writeType(png, OFF_PLTE + 4, "PLTE");
+        for (uint8 i = 0; i < 16; ++i) {
+            uint24 v = uint24(palette[i]);
+            uint256 p = OFF_PLTE + 8 + uint256(i) * 3;
+            png[p] = bytes1(uint8(v >> 16));
+            png[p + 1] = bytes1(uint8(v >> 8));
+            png[p + 2] = bytes1(uint8(v));
+        }
+        uint256 base;
+        assembly ("memory-safe") {
+            base := add(png, 0x20)
+        }
+        uint32 crc = ChromaRendererCrc32.crc32ChunkMem(table, "PLTE", base + OFF_PLTE + 4, 52);
+        _writeU32(png, OFF_PLTE + 56, crc);
+    }
+
+    function _writeIdatChunk(bytes memory png, bytes memory raw, uint256 table) private pure {
+        _writeU32(png, OFF_IDAT, IDAT_PAYLOAD_LEN);
+        _writeType(png, OFF_IDAT + 4, "IDAT");
+        uint32 adler = ChromaRendererCrc32.adler32(raw);
+        _writeZlibStored(png, OFF_IDAT_DATA, raw, adler);
+        uint256 base;
+        assembly ("memory-safe") {
+            base := add(png, 0x20)
+        }
+        uint32 crc = ChromaRendererCrc32.crc32ChunkMem(table, "IDAT", base + OFF_IDAT_TYPE, 4 + IDAT_PAYLOAD_LEN);
+        _writeU32(png, OFF_IDAT_DATA + IDAT_PAYLOAD_LEN, crc);
+    }
+
+    function _writeType(bytes memory buf, uint256 offset, bytes4 chunkType) private pure {
+        buf[offset] = chunkType[0];
+        buf[offset + 1] = chunkType[1];
+        buf[offset + 2] = chunkType[2];
+        buf[offset + 3] = chunkType[3];
+    }
+
+    function _writeZlibStored(bytes memory png, uint256 offset, bytes memory raw, uint32 adler) private pure {
+        png[offset] = 0x78;
+        png[offset + 1] = 0x01;
+        png[offset + 2] = 0x01;
+        png[offset + 3] = bytes1(uint8(RAW_IDAT_LEN & 0xff));
+        png[offset + 4] = bytes1(uint8(RAW_IDAT_LEN >> 8));
+        uint16 nlen = uint16(~uint16(RAW_IDAT_LEN));
+        png[offset + 5] = bytes1(uint8(nlen & 0xff));
+        png[offset + 6] = bytes1(uint8(nlen >> 8));
+        assembly ("memory-safe") {
+            let dest := add(add(png, 0x20), add(offset, 7))
+            let src := add(raw, 0x20)
+            let i := 0
+            for {} lt(i, 2112) { i := add(i, 0x20) } {
+                mstore(add(dest, i), mload(add(src, i)))
+            }
+        }
+        uint256 tail = offset + 7 + RAW_IDAT_LEN;
+        png[tail] = bytes1(uint8(adler >> 24));
+        png[tail + 1] = bytes1(uint8(adler >> 16));
+        png[tail + 2] = bytes1(uint8(adler >> 8));
+        png[tail + 3] = bytes1(uint8(adler));
+    }
+
+    function _idatBody(bytes memory raw) private pure returns (bytes memory body) {
+        uint32 adler = ChromaRendererCrc32.adler32(raw);
+        return _idatBodyWithAdler(raw, adler);
+    }
+
+    function _idatBodyWithAdler(bytes memory raw, uint32 adler) private pure returns (bytes memory body) {
+        body = new bytes(IDAT_PAYLOAD_LEN);
+        _writeZlibStored(body, 0, raw, adler);
+    }
+
+    function _parseHexColor(string memory hexColor) private pure returns (bytes3) {
+        bytes memory h = bytes(hexColor);
+        require(h.length == 7 && h[0] == "#", "bad hex");
+        uint8 r = (_hexNibble(h[1]) << 4) | _hexNibble(h[2]);
+        uint8 g = (_hexNibble(h[3]) << 4) | _hexNibble(h[4]);
+        uint8 b = (_hexNibble(h[5]) << 4) | _hexNibble(h[6]);
+        return bytes3(uint24(r) << 16 | uint24(g) << 8 | uint24(b));
+    }
+
+    function _hexNibble(bytes1 c) private pure returns (uint8) {
+        uint8 v = uint8(c);
+        if (v >= 48 && v <= 57) return v - 48;
+        if (v >= 97 && v <= 102) return v - 87;
+        if (v >= 65 && v <= 70) return v - 55;
+        revert("hex");
+    }
+
+    function _buildFilteredImage(RenderContext memory ctx) private pure returns (bytes memory raw) {
+        raw = new bytes(RAW_IDAT_LEN);
+        uint256 diffLen = ctx.diffIndexes.length;
+        if (diffLen == 0) {
+            for (uint256 y = 0; y < GRID; ++y) {
+                uint256 rowStart = y * FILTERED_ROW;
+                raw[rowStart] = 0x00;
+                uint256 rowBase = y * GRID;
+                for (uint256 x = 0; x < GRID; x += 2) {
+                    uint256 flat = rowBase + x;
+                    uint8 packed = uint8(ctx.pixels[flat >> 1]);
+                    uint8 left = (flat & 1) == 0 ? packed >> 4 : packed & 0x0f;
+                    uint8 rightPacked = uint8(ctx.pixels[(flat + 1) >> 1]);
+                    uint8 right = ((flat + 1) & 1) == 0 ? rightPacked >> 4 : rightPacked & 0x0f;
+                    raw[rowStart + 1 + (x >> 1)] = bytes1((left << 4) | (right & 0x0f));
+                }
+            }
+            return raw;
+        }
+        for (uint256 y = 0; y < GRID; ++y) {
+            uint256 rowStart = y * FILTERED_ROW;
+            raw[rowStart] = 0x00;
+            for (uint256 x = 0; x < GRID; x += 2) {
+                uint8 left = _getCompositePixelIndex(ctx, x, y);
+                uint8 right = _getCompositePixelIndex(ctx, x + 1, y);
+                raw[rowStart + 1 + (x >> 1)] = bytes1((left << 4) | (right & 0x0f));
+            }
+        }
+    }
+
+    function _plteBytes(bytes3[16] memory palette) private pure returns (bytes memory plte) {
+        plte = new bytes(48);
+        for (uint8 i = 0; i < 16; ++i) {
+            uint24 v = uint24(palette[i]);
+            uint256 p = uint256(i) * 3;
+            plte[p] = bytes1(uint8(v >> 16));
+            plte[p + 1] = bytes1(uint8(v >> 8));
+            plte[p + 2] = bytes1(uint8(v));
+        }
+    }
+
+    function _getCompositePixelIndex(RenderContext memory ctx, uint256 x, uint256 y)
+        private
+        pure
+        returns (uint8)
+    {
+        if (ctx.diffIndexes.length > 0) {
+            uint16 flatIndex = uint16(y * GRID + x);
+            for (uint256 i = ctx.diffIndexes.length; i > 0; --i) {
+                if (ctx.diffIndexes[i - 1] == flatIndex) return ctx.diffColors[i - 1];
+            }
+        }
+        uint256 flat = y * GRID + x;
+        uint8 packed = uint8(ctx.pixels[flat >> 1]);
+        if ((flat & 1) == 0) return packed >> 4;
+        return packed & 0x0f;
+    }
+
+    function _writeU32(bytes memory buf, uint256 offset, uint256 value) private pure {
+        buf[offset] = bytes1(uint8(value >> 24));
+        buf[offset + 1] = bytes1(uint8(value >> 16));
+        buf[offset + 2] = bytes1(uint8(value >> 8));
+        buf[offset + 3] = bytes1(uint8(value));
+    }
+
+    function _readU32(bytes memory buf, uint256 offset) private pure returns (uint256) {
+        return (uint256(uint8(buf[offset])) << 24) | (uint256(uint8(buf[offset + 1])) << 16)
+            | (uint256(uint8(buf[offset + 2])) << 8) | uint256(uint8(buf[offset + 3]));
+    }
+
+    function _readU32Bytes(bytes memory buf, uint256 offset) private pure returns (uint32) {
+        return (uint32(uint8(buf[offset])) << 24) | (uint32(uint8(buf[offset + 1])) << 16)
+            | (uint32(uint8(buf[offset + 2])) << 8) | uint32(uint8(buf[offset + 3]));
+    }
+
+    function _readU24(bytes memory buf, uint256 offset) private pure returns (uint24) {
+        return (uint24(uint8(buf[offset])) << 16) | (uint24(uint8(buf[offset + 1])) << 8) | uint24(uint8(buf[offset + 2]));
+    }
+}
+```
+
+---
+
+## IChromaPaletteData.sol
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+interface IChromaPaletteData {
+    function MAX_VALID_PALETTE_ID() external pure returns (uint8);
+
+    function ERROR_PALETTE_ID() external pure returns (uint8);
+
+    function paletteColors(uint8 paletteId) external pure returns (string[16] memory);
+
+    function paletteName(uint8 paletteId) external pure returns (string memory);
+}
+```
+
+---
+
+## PaletteStrings.sol
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+library PaletteStrings {
+    bytes16 private constant _HEX = "0123456789abcdef";
+
+    function toHex(bytes3 rgb) internal pure returns (string memory) {
+        bytes memory str = new bytes(7);
+        str[0] = "#";
+        _writeHexByte(str, 1, uint8(rgb[0]));
+        _writeHexByte(str, 3, uint8(rgb[1]));
+        _writeHexByte(str, 5, uint8(rgb[2]));
+        return string(str);
+    }
+
+    function _writeHexByte(bytes memory str, uint256 offset, uint8 value) private pure {
+        str[offset] = _HEX[value >> 4];
+        str[offset + 1] = _HEX[value & 0x0f];
     }
 }
 ```

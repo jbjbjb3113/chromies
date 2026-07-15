@@ -85,7 +85,9 @@ contract ChromaStorage is IChromaStorage, Ownable {
 
     //            5=Dreads, 6=Surfer, 7=FadeRight
 
-    // [15] Retired / unused
+    // [15] BG color: 0x00 default, 0x01-0x08 per palette ruling (JB 2026-07-13,
+    //      re-designated from mutation-era retired byte — see
+    //      chromies-engine/reports/BG_COLOR_PALETTE_RULING.md)
     // [16] Retired / unused
 
     // [17] Total Pixels (uint16 high byte) — pipeline-computed non-zero nibble count

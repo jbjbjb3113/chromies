@@ -1,0 +1,26 @@
+{
+  "ruling": "JB 2026-07-13 \u2014 mint-native background color palette (8 colors)",
+  "default_trait_byte": 0,
+  "byte_to_name": {
+    "0": "BG_DEFAULT",
+    "1": "BG_ROSE",
+    "2": "BG_CREAM",
+    "3": "BG_SEAFOAM",
+    "4": "BG_LILAC",
+    "5": "BG_BLUE",
+    "6": "BG_PEACH",
+    "7": "BG_SAGE",
+    "8": "BG_MAUVE"
+  },
+  "byte_to_color": {
+    "0": "#e3e5e4",
+    "1": "#e3c8c8",
+    "2": "#e8dfc5",
+    "3": "#bdd9d5",
+    "4": "#d3c9de",
+    "5": "#c7d4e2",
+    "6": "#e8d2be",
+    "7": "#cedac6",
+    "8": "#e0ccd9"
+  }
+}

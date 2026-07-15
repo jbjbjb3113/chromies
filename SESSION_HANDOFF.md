@@ -1,6 +1,6 @@
 # Chromies Session Handoff
 
-Last updated: 2026-07-08
+Last updated: 2026-07-13
 
 ## Status board
 
@@ -46,12 +46,24 @@ pre-existing, still-gated legendary rows, untouched). Reveal merkle root:
 promotion does not lift that gate (see "Pipeline — FROZEN" below); it only
 supplies fresh input to `scripts/robinhood/select-commemorative-100.js`.
 
+### BG Color Palette
+
+**Ratified (JB ruling, 2026-07-13)** — see `chromies-engine/reports/BG_COLOR_PALETTE_RULING.md`.
+
+- 8 mint-native BG colors (ROSE/CREAM/SEAFOAM/LILAC/BLUE/PEACH/SAGE/MAUVE), trait bytes `0x01`–`0x08`; `0x00` = default `#E3E5E4` (renderer-applied, never stored in payload)
+- Stored in `traitsHex` only, never `pixelsHex`; renderer maps byte → PLTE slot 0; canvas state overrides trait byte (parity-checked)
+- Registered in `palette-registry.json` (`bg_colors` section); compiled artifacts `on-chain-bg-colors.js` + `bg_colors.json`, CI drift-gated
+- **Trait byte assigned (JB addendum, 2026-07-13):** `traitsHex` index **15** — re-designated from the mutation-era retired byte; index 16 stays retired. Safety grep confirmed nothing live reads byte 15; legacy forensic script `check-token29-mutation.mjs` deleted, `docs/chromies-contracts.md` regenerated
+- **Not yet wired** into generation/encoder/renderer — ~35% coverage roll not implemented (pipeline FROZEN)
+- Open per ruling: per-color weighting within 35%, mint-native vs burn-applied metadata, burn redemption structure, mint-time vs post-mint assignment
+
 ---
 
 ## Still open (awaiting JB — do not act)
 
 1. **#4698 merge ruling:** (a) as-applied per `merge_report.json` (includes 6.71 and transitive 11.18 merges, visually verified) vs (b) strict ≤6 only (13 colors, also fits). Registry ID 31 waits.
 2. **Model B §12** items 1, 6, 7, 8.
+3. **BG palette follow-ups** (2026-07-13 ruling leaves open): per-color weighting within the 35%, mint-native vs burn-applied metadata distinction, burn redemption structure, mint-time vs post-mint assignment. (traitsHex byte index: **assigned to 15** per JB addendum 2026-07-13 — no longer open.)
 
 ---
 
@@ -69,7 +81,7 @@ main-collection launch decision.)
 - `art-pipeline/chromies-config.js` — trait weights, palette tables, legendary token map
 - `art-pipeline/legendary-finals.js` + `legendary-token-ids.js` — injection path only
 - `art-pipeline/snapshot-holders.js` + `generate-merkle.js` — Tier 2 = Brain Rots ∪ Akutars
-- Trait bytes **15/16 retired**; bytes **17/18** = Total Pixels
+- Trait byte **15 = BG color** (assigned 2026-07-13, not yet wired — encoder still writes 0); byte **16 retired**; bytes **17/18** = Total Pixels
 - Mint encoder artifacts compiled from `palette-registry.json` + `trait-byte-registry.json` — no hand-maintained byte tables
 
 **Legendary-finals gate (blocking regen):**
@@ -136,7 +148,9 @@ node generate-reveal-merkle.js
 |------|------|
 | `art-pipeline/bridge-mint-data.js` | Mint payload + `PayloadDedupeGuard` |
 | `art-pipeline/trait-byte-registry.json` | Trait variant byte source of truth |
-| `scripts/compile_palette_registry.py` | Compiles palette + trait encoder artifacts |
+| `scripts/compile_palette_registry.py` | **Authoritative compiler** — palette + trait encoders + `ChromaTraitLabels.sol` |
+| `scripts/trait_byte_registry.py` | Library only (called by compile_palette_registry.py); do not run directly |
+| `contracts/generated/ChromaTraitLabels.sol` | Generated tokenURI label lookups (redeploy renderer after edits) |
 | `scripts/check_mint_encoder.py` | CI diff gate |
 | `chromies-engine/scripts/traits_parity_check.py` | TraitsHex semantic round-trip (1011 seeds) |
 | `reports/ENCODER_AUDIT.md` | Split-authority audit |

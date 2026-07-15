@@ -13,6 +13,7 @@ import Canvas from "./pages/Canvas.jsx";
 import LaunchEdition from "./pages/LaunchEdition.jsx";
 import Provenance from "./pages/Provenance.jsx";
 import PixelChroma from "./PixelChroma.jsx";
+import AwakenDemo from "./pages/AwakenDemo/index.jsx";
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
       <Route path="/launch-edition" element={<LaunchEdition />} />
       <Route path="/provenance" element={<Provenance />} />
       <Route path="/pixel-chroma" element={<PixelChroma />} />
+      <Route path="/awaken-demo" element={<AwakenDemo />} />
     </Routes>
   );
 }
