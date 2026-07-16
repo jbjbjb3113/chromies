@@ -4,21 +4,37 @@
  */
 import { rmsToMouthTarget, smoothMouthLevel } from "../../lib/chromie-agent-mouth.js";
 
-export const MIST_TALK_MOUTH = {
+const MIST_TALK_MOUTH_BASE = {
   anchor: [32, 34],
   lineXMin: 29,
   lineXMax: 34,
   centerY: 34,
-  yMin: 32,
   yMax: 35,
   gate: 0.04,
-  maxOpenRows: 4,
   // Warm skin row above lip on token #1 base sprite (y=32 ≈ SIGNAL skin_light #d18b4d).
   interiorSkinRefY: 32,
   // Rosy lip-cavity tone — sprite has no native pink pixels; blend into local skin sample.
   interiorRoseRgba: [188, 102, 98],
   interiorRoseBlend: 0.5,
 };
+
+/** Desktop / TokenListingCard — full 4-row talk slit (y 32–35). */
+export const MIST_TALK_MOUTH = {
+  ...MIST_TALK_MOUTH_BASE,
+  yMin: 32,
+  maxOpenRows: 4,
+};
+
+/** Mobile full-bleed layout — one row less amplitude (y 33–35). */
+export const MIST_TALK_MOUTH_MOBILE = {
+  ...MIST_TALK_MOUTH_BASE,
+  yMin: 33,
+  maxOpenRows: 3,
+};
+
+export function getTalkMouthConfig(mobileLayout = false) {
+  return mobileLayout ? MIST_TALK_MOUTH_MOBILE : MIST_TALK_MOUTH;
+}
 
 function blendInteriorPink(skinR, skinG, skinB, rose, blend) {
   const keep = 1 - blend;
@@ -42,23 +58,29 @@ export function smoothTalkMouthLevel(current, target) {
  * Paint a vertically expanding mouth opening on the mouth line pixels.
  * Only touches the talk line columns; corner pixels stay from base/expression.
  */
-export function applyTalkSyncToImageData(imageData, mouthLevel, baseImageData) {
-  if (mouthLevel <= MIST_TALK_MOUTH.gate) return;
+export function applyTalkSyncToImageData(
+  imageData,
+  mouthLevel,
+  baseImageData,
+  { mobileLayout = false } = {},
+) {
+  const talkMouth = getTalkMouthConfig(mobileLayout);
+  if (mouthLevel <= talkMouth.gate) return;
 
   const { data, width } = imageData;
   const base = baseImageData.data;
-  const openRows = Math.max(1, Math.round(mouthLevel * MIST_TALK_MOUTH.maxOpenRows));
-  const slitStart = MIST_TALK_MOUTH.centerY - Math.floor(openRows / 2);
+  const openRows = Math.max(1, Math.round(mouthLevel * talkMouth.maxOpenRows));
+  const slitStart = talkMouth.centerY - Math.floor(openRows / 2);
 
-  for (let x = MIST_TALK_MOUTH.lineXMin; x <= MIST_TALK_MOUTH.lineXMax; x++) {
-    const closedI = (MIST_TALK_MOUTH.centerY * width + x) * 4;
+  for (let x = talkMouth.lineXMin; x <= talkMouth.lineXMax; x++) {
+    const closedI = (talkMouth.centerY * width + x) * 4;
     const lipR = base[closedI];
     const lipG = base[closedI + 1];
     const lipB = base[closedI + 2];
 
     for (let r = 0; r < openRows; r++) {
       const y = slitStart + r;
-      if (y < MIST_TALK_MOUTH.yMin || y > MIST_TALK_MOUTH.yMax) continue;
+      if (y < talkMouth.yMin || y > talkMouth.yMax) continue;
       const i = (y * width + x) * 4;
       const isEdge = r === 0 || r === openRows - 1;
       if (isEdge && openRows > 1) {
@@ -67,13 +89,13 @@ export function applyTalkSyncToImageData(imageData, mouthLevel, baseImageData) {
         data[i + 2] = lipB;
         data[i + 3] = 255;
       } else {
-        const skinI = (MIST_TALK_MOUTH.interiorSkinRefY * width + x) * 4;
+        const skinI = (talkMouth.interiorSkinRefY * width + x) * 4;
         const [pr, pg, pb] = blendInteriorPink(
           base[skinI],
           base[skinI + 1],
           base[skinI + 2],
-          MIST_TALK_MOUTH.interiorRoseRgba,
-          MIST_TALK_MOUTH.interiorRoseBlend,
+          talkMouth.interiorRoseRgba,
+          talkMouth.interiorRoseBlend,
         );
         data[i] = pr;
         data[i + 1] = pg;

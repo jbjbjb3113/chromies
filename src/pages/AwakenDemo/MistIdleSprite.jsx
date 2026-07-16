@@ -263,7 +263,9 @@ export default function MistIdleSprite({
       }
 
       if (!reducedMotion && speechActive && talkLevel > MIST_TALK_MOUTH.gate) {
-        applyTalkSyncToImageData(frame, talkLevel, base);
+        applyTalkSyncToImageData(frame, talkLevel, base, {
+          mobileLayout: variant === "mobile",
+        });
       }
 
       if (mouthDebug.enabled && frameIndex % 12 === 0) {
@@ -338,12 +340,14 @@ export default function MistIdleSprite({
     ready,
     reducedMotion,
     bobPx,
+    variant,
     isSpeaking,
     isSpeechSession,
     mouthDebug.enabled,
     mouthDebug.forceVariant,
     mouthDebug.talkSim,
     mouthDebug.forceTalkLevel,
+    debugConfig.enabled,
     debugConfig.forceVariant,
     debugConfig.fastCycle,
   ]);
