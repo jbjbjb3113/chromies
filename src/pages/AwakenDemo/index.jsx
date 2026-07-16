@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import AccessGate from "./AccessGate.jsx";
 import AwakenDemoMobile from "./AwakenDemoMobile.jsx";
 import ConversationPanel from "./ConversationPanel.jsx";
 import MistIdleSprite from "./MistIdleSprite.jsx";
@@ -10,29 +9,15 @@ import {
   CONVERSATION_PANEL_HEIGHT,
   MIST_BG,
   MIST_NAME,
-  SESSION_UNLOCK_KEY,
   TOKEN_ID,
 } from "./constants.js";
 import { useElevenAgentSession } from "./useElevenAgentSession.js";
 
-function readUnlocked() {
-  try {
-    return sessionStorage.getItem(SESSION_UNLOCK_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
 export default function AwakenDemo() {
-  const [unlocked, setUnlocked] = useState(readUnlocked);
   const [conversationTab, setConversationTab] = useState("chat");
   const isLargeScreen = useIsLargeScreen();
   const session = useElevenAgentSession();
   const listingState = useRobinhoodTokenListing(TOKEN_ID);
-
-  if (!unlocked) {
-    return <AccessGate onUnlock={() => setUnlocked(true)} />;
-  }
 
   const spriteProps = {
     mouthLevel: session.mouthLevel,
