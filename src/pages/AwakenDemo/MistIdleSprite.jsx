@@ -48,17 +48,17 @@ function useReducedMotion() {
   return reduced;
 }
 
-function BobClipShell({ bobPaddingPx, shellRef, children }) {
+function BobClipShell({ bobPaddingPx, shellRef, children, className = "" }) {
   return (
     <div
-      className="overflow-hidden"
+      className={`overflow-hidden ${className}`.trim()}
       style={{
         backgroundColor: MIST_SPRITE_BG,
         paddingTop: bobPaddingPx,
         paddingBottom: bobPaddingPx,
       }}
     >
-      <div ref={shellRef} className="will-change-transform">
+      <div ref={shellRef} className="h-full w-full will-change-transform">
         {children}
       </div>
     </div>
@@ -360,10 +360,10 @@ export default function MistIdleSprite({
       height={GRID}
       aria-label={alt}
       role="img"
-      className="pixelated max-w-none block"
+      className="pixelated block h-full w-full max-w-none"
       style={
         variant === "mobile"
-          ? { imageRendering: "pixelated", maxHeight: "min(100vw, 70vh)", width: "100%", height: "auto", aspectRatio: "1" }
+          ? { imageRendering: "pixelated" }
           : { ...DESKTOP_SPRITE_STYLE, display: "block" }
       }
     />
@@ -372,10 +372,10 @@ export default function MistIdleSprite({
   if (variant === "mobile") {
     return (
       <div
-        className="flex w-full items-center justify-center"
+        className="h-full w-full"
         style={{ backgroundColor: MIST_SPRITE_BG }}
       >
-        <BobClipShell bobPaddingPx={bobPaddingPx} shellRef={shellRef}>
+        <BobClipShell bobPaddingPx={bobPaddingPx} shellRef={shellRef} className="h-full w-full">
           {canvas}
         </BobClipShell>
       </div>

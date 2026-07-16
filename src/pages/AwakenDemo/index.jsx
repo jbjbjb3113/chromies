@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import AccessGate from "./AccessGate.jsx";
+import AwakenDemoMobile from "./AwakenDemoMobile.jsx";
 import ConversationPanel from "./ConversationPanel.jsx";
 import MistIdleSprite from "./MistIdleSprite.jsx";
 import TokenListingCard from "../../components/TokenListingCard.jsx";
+import { useIsLargeScreen } from "../../hooks/useIsLargeScreen.js";
 import { useRobinhoodTokenListing } from "../../lib/useRobinhoodTokenListing.js";
 import {
   CONVERSATION_PANEL_HEIGHT,
@@ -24,11 +26,35 @@ function readUnlocked() {
 export default function AwakenDemo() {
   const [unlocked, setUnlocked] = useState(readUnlocked);
   const [conversationTab, setConversationTab] = useState("chat");
+  const isLargeScreen = useIsLargeScreen();
   const session = useElevenAgentSession();
   const listingState = useRobinhoodTokenListing(TOKEN_ID);
 
   if (!unlocked) {
     return <AccessGate onUnlock={() => setUnlocked(true)} />;
+  }
+
+  const spriteProps = {
+    mouthLevel: session.mouthLevel,
+    isSpeaking: session.isSpeaking,
+    isSpeechSession: session.isSpeechSession,
+  };
+
+  if (!isLargeScreen) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: MIST_BG }}>
+        <AwakenDemoMobile
+          tokenId={TOKEN_ID}
+          personaName={MIST_NAME}
+          listingState={listingState}
+          session={session}
+          conversationTab={conversationTab}
+          onConversationTabChange={setConversationTab}
+          SpriteComponent={MistIdleSprite}
+          spriteProps={spriteProps}
+        />
+      </div>
+    );
   }
 
   const conversationFooter = (
@@ -46,18 +72,14 @@ export default function AwakenDemo() {
   );
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: MIST_BG }}>
+    <div className="min-h-screen" style={{ backgroundColor: MIST_BG }} data-awaken-layout="desktop">
       <TokenListingCard
         tokenId={TOKEN_ID}
         personaName={MIST_NAME}
         conversationFooter={conversationFooter}
         listingState={listingState}
         SpriteComponent={MistIdleSprite}
-        spriteProps={{
-          mouthLevel: session.mouthLevel,
-          isSpeaking: session.isSpeaking,
-          isSpeechSession: session.isSpeechSession,
-        }}
+        spriteProps={spriteProps}
       />
     </div>
   );

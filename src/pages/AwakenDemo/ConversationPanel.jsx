@@ -39,6 +39,8 @@ function MessageBubble({ message, avatarSrc }) {
   );
 }
 
+export { MicButton };
+
 function MicButton({
   isConnecting,
   isMicActive,
@@ -189,6 +191,7 @@ function TalkTab({
   onHoldStart,
   onHoldEnd,
   avatarSrc,
+  showMic = true,
 }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -221,21 +224,25 @@ function TalkTab({
           </p>
         ) : null}
 
-        <MicButton
-          isConnecting={isConnecting}
-          isMicActive={isMicActive}
-          isHoldActive={isHoldActive}
-          isOpenMic={isOpenMic}
-          onTapToggle={onTapToggle}
-          onHoldStart={onHoldStart}
-          onHoldEnd={onHoldEnd}
-        />
+        {showMic ? (
+          <>
+            <MicButton
+              isConnecting={isConnecting}
+              isMicActive={isMicActive}
+              isHoldActive={isHoldActive}
+              isOpenMic={isOpenMic}
+              onTapToggle={onTapToggle}
+              onHoldStart={onHoldStart}
+              onHoldEnd={onHoldEnd}
+            />
 
-        <p className="mt-3 text-center text-xs text-ink/45">
-          {isOpenMic && !isHoldActive
-            ? "Open mic on — tap to mute, or hold to override"
-            : "Tap to toggle open mic · Hold for push-to-talk"}
-        </p>
+            <p className="mt-3 text-center text-xs text-ink/45">
+              {isOpenMic && !isHoldActive
+                ? "Open mic on — tap to mute, or hold to override"
+                : "Tap to toggle open mic · Hold for push-to-talk"}
+            </p>
+          </>
+        ) : null}
       </div>
     </div>
   );
@@ -260,6 +267,7 @@ export default function ConversationPanel({
   tab: controlledTab,
   onTabChange,
   avatarSrc = null,
+  showTalkMic = true,
 }) {
   const [internalTab, setInternalTab] = useState("chat");
   const tab = controlledTab ?? internalTab;
@@ -340,6 +348,7 @@ export default function ConversationPanel({
           onHoldStart={startHoldToTalk}
           onHoldEnd={stopHoldToTalk}
           avatarSrc={avatarSrc}
+          showMic={showTalkMic}
         />
       )}
     </div>

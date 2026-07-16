@@ -8,6 +8,7 @@ import {
   getChromiesCommemorativeAddress,
   robinhoodChain,
 } from "../lib/robinhood-contract.js";
+import { useIsLargeScreen } from "../hooks/useIsLargeScreen.js";
 import { useRobinhoodTokenListing } from "../lib/useRobinhoodTokenListing.js";
 
 const traitGridClass = "[grid-template-columns:repeat(auto-fit,minmax(140px,1fr))]";
@@ -20,22 +21,6 @@ const DESKTOP_SPRITE_STYLE = {
   height: "min(50vw, 90vh)",
   maxWidth: "100%",
 };
-
-function useIsLargeScreen() {
-  const query = "(min-width: 1024px)";
-  const [matches, setMatches] = useState(
-    () => typeof window !== "undefined" && window.matchMedia(query).matches,
-  );
-
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const onChange = () => setMatches(mq.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, []);
-
-  return matches;
-}
 
 function Badge({ children }) {
   return (
