@@ -6,12 +6,9 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outDir = path.join(__dirname, "screenshots");
 const baseUrl = "http://localhost:5173/awaken-demo";
-const accessCode = "chromies-mist-demo";
 
-async function unlock(page) {
+async function openDemo(page) {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
-  await page.fill('input[type="password"]', accessCode);
-  await page.click('button[type="submit"]');
   await page.waitForSelector("text=Chromie #0001");
 }
 
@@ -20,7 +17,7 @@ async function main() {
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 
-  await unlock(page);
+  await openDemo(page);
   await page.waitForTimeout(500);
   await page.screenshot({ path: path.join(outDir, "awaken-demo-chat.png"), fullPage: false });
 
