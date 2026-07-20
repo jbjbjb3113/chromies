@@ -23,40 +23,19 @@ export default function SiteHeader() {
             className="min-w-0 overflow-x-auto whitespace-nowrap [-ms-overflow-style:none] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden sm:overflow-visible sm:whitespace-normal"
           >
             <div className="flex items-center gap-6 pr-1 sm:pr-0">
-              <NavLink to="/faq" className={navLinkClass}>
-                FAQ
-              </NavLink>
-              <span
-                className="shrink-0 cursor-not-allowed text-xs uppercase tracking-widest"
-                style={{ color: "var(--chroma-muted)" }}
-                title="Coming soon"
-                aria-disabled="true"
-              >
-                Mint{" "}
-                <span className="text-[0.65em] tracking-normal">(Coming soon)</span>
-              </span>
               <NavLink to="/launch-edition" className={navLinkClass}>
                 Chain Launch
+              </NavLink>
+              <NavLink to="/faq" className={navLinkClass}>
+                FAQ
               </NavLink>
               <NavLink to="/provenance" className={navLinkClass}>
                 Provenance
               </NavLink>
-              <NavLink to="/market" className={navLinkClass}>
-                Pixel Marketplace
-              </NavLink>
-              <NavLink to="/my-chromies" className={navLinkClass}>
-                My Chromies
-              </NavLink>
-              <NavLink to="/inscribe" className={navLinkClass}>
-                Inscribe
-              </NavLink>
-              <NavLink to="/burn" className={navLinkClass}>
-                Burn
-              </NavLink>
-              {/* Lab tab hidden for now — route still works at /lab */}
               <NavLink to="/canvas" className={navLinkClass}>
                 Canvas
               </NavLink>
+              {/* Hidden from nav (routes still work): Mint coming-soon, Market, My Chromies, Inscribe, Burn, Lab */}
             </div>
           </nav>
           <WalletButton compact />

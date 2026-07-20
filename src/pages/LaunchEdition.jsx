@@ -350,8 +350,12 @@ export default function LaunchEdition() {
             original Chromies collection. 0.0169 ETH, max 2 per wallet.
           </p>
           <p className="mx-auto mt-3 max-w-xl text-sm font-medium text-ink/60">
-            Holders at snapshot receive whitelist access and TWO free ETH-edition Chromies
+            Holders at snapshot receive whitelist access and THREE free ETH-edition Chromies
             per commemorative at main launch.
+          </p>
+          <p className="mx-auto mt-3 max-w-xl text-sm font-medium text-ink/60">
+            Commemorative holders will share in a percentage of ETH mainnet royalty revenue
+            (target: 10%), distributed via smart contract at main launch.
           </p>
 
           <div className="mt-10">
@@ -478,7 +482,7 @@ export default function LaunchEdition() {
             </p>
             <p className="mt-4">
               If you're holding one at snapshot, you're first in line for the main
-              launch: whitelist access and two free ETH-edition Chromies per
+              launch: whitelist access and three free ETH-edition Chromies per
               commemorative.
             </p>
             <p className="mt-4">The first hundred. It starts here.</p>
