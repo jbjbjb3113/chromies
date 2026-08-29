@@ -1,0 +1,6 @@
+{
+  "name": "SeaDrop Mint Test #3",
+  "description": "Disposable, throwaway test collection — verifying whether OpenSea shows a native Mint button for a self-deployed, unmodified ERC721SeaDrop contract on Robinhood Chain mainnet. Not part of the Chromies collection.",
+  "image": "https://placehold.co/512x512/1a1a1e/e3e5e4.png?text=SeaDrop+Test+%233",
+  "attributes": [{ "trait_type": "Purpose", "value": "OpenSea SeaDrop spike" }]
+}

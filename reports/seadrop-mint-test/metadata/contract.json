@@ -1,0 +1,7 @@
+{
+  "name": "SeaDrop Mint Test",
+  "description": "Disposable, throwaway test collection deployed to verify whether OpenSea auto-detects a native Mint button for a self-deployed, unmodified ERC721SeaDrop contract on Robinhood Chain mainnet. Not affiliated with or part of the Chromies collection. Max supply 10, trivial mint price, purely a spike.",
+  "image": "https://placehold.co/512x512/1a1a1e/e3e5e4.png?text=SeaDrop+Test",
+  "seller_fee_basis_points": 0,
+  "fee_recipient": "0xaDD80C1A4C8fD10b3393b07336b2722D32aaad76"
+}
